@@ -267,3 +267,9 @@ __pycache__/
 *.gif
 *.png
 *.pdf
+
+config/config.out
+
+lib/
+bin/
+build/

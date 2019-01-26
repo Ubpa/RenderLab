@@ -1,0 +1,6 @@
+#ifndef _ROOT_PATH_H_
+#define _ROOT_PATH_H_
+
+const char * const ROOT_PATH = "${CMAKE_SOURCE_DIR}";
+
+#endif //!_ROOT_PATH_H_

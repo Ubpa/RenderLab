@@ -1,0 +1,6 @@
+assimp/
+glad/
+glm/
+KHR/
+GLFW/glfw3.h
+GLFW/glfw3native.h

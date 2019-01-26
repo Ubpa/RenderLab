@@ -1,0 +1,146 @@
+#----------------------------------------------
+# Ubpa
+#----------------------------------------------
+# 这是配置文件，格式描述详见 Syntax
+#----------------------------------------------
+# [ Syntax ]
+# string strT = "(string)";
+# string intT = "(int)";
+# string floatT = "(float)";
+# string hexT = "(hex)";
+# string binT = "(bin)";
+#  
+# string blank = "(?:[ \\t]*)";
+# string vName = "([_a-zA-Z][_0-9a-zA-Z]*)";
+# 
+# string strVal = "(?:\"([^\"]*)\")";
+# string strExp = "(?:" + strT + blank + vName + blank + "=" + blank + strVal + blank + ";)";
+# 
+# string intVal = "([1-9][0-9]*|0)";
+# string intExp = "(?:" + intT + blank + vName + blank + "=" + blank + intVal + blank + ";)";
+# 
+# string binVal = "([01]{1,32})";
+# string binExp = "(?:" + binT + blank + vName + blank + "=" + blank + binVal + blank + ";)";
+# 
+# string hexVal = "([0-9A-F]{1,8})";
+# string hexExp = "(?:" + hexT + blank + vName + blank + "=" + blank + hexVal + blank + ";)";
+# 
+# string floatVal = "((?:[1-9][0-9]*|0)(?:\\.[0-9]*)?)";
+# string floatExp = "(?:" + floatT + blank + vName + blank + "=" + blank + floatVal + blank + ";)";
+# 
+# string allExp = "(?:" + strExp + "|" + intExp + "|" + floatExp + "|" + hexExp + "|" + binExp + ")";
+# string note = "(?:#.*)";
+# string line = "(?:" + blank + allExp + "?" + blank + note + "?" + "\n?)";
+#----------------------------------------------
+
+# Option
+# enum ENUM_OPTION {
+#	ENUM_OPTION_EMPTY = 0,
+#	ENUM_OPTION_POST_PROCESS_FLIP = 1 << 0,
+#	ENUM_OPTION_POST_PROCESS_BLUR = 1 << 1,
+#	ENUM_OPTION_POST_PROCESS_INTERPOLATION = 1 << 2,
+#	ENUM_OPTION_POST_PROCESS_GAMMA = 1 << 3,
+#	ENUM_OPTION_SAVE_SRC_IMG = 1 << 4,
+#	ENUM_OPTION_SAVE_POST_PROCESS_IMG = 1 << 5,
+# };
+bin option = 111100;
+
+# 根目录
+string RootPath = "${CMAKE_SOURCE_DIR}";
+
+# 默认输出图像大小
+int val_Default_ImgWidth = 1280;
+int val_Default_ImgHeight = 768;
+
+# 图像更新帧率
+int FPS = 40;
+
+# 采样率
+int sampleNum = 200;
+
+# 高斯模糊次数
+int blurNum = 1;
+
+# 01_in_a_Weekend / 01_Image 输出图像大小
+int val_01_in_a_Weekend_01_Image_ImgWidth = 200;
+int val_01_in_a_Weekend_01_Image_ImgHeight = 100;
+
+# 01_in_a_Weekend / 02_Camera 输出图像大小
+int val_01_in_a_Weekend_02_Camera_ImgWidth = 200;
+int val_01_in_a_Weekend_02_Camera_ImgHeight = 100;
+
+# 01_in_a_Weekend / 03_Sphere 输出图像大小
+int val_01_in_a_Weekend_03_Sphere_ImgWidth = 1920;
+int val_01_in_a_Weekend_03_Sphere_ImgHeight = 1080;
+
+# 01_in_a_Weekend / 04_Group 输出图像大小
+int val_01_in_a_Weekend_04_Group_ImgWidth = 1920;
+int val_01_in_a_Weekend_04_Group_ImgHeight = 1080;
+
+# 01_in_a_Weekend / 05_Material 输出图像大小
+int val_01_in_a_Weekend_05_Material_ImgWidth = 1280;
+int val_01_in_a_Weekend_05_Material_ImgHeight = 768;
+
+# 01_in_a_Weekend / 06_Scene 输出图像大小
+int val_01_in_a_Weekend_06_Scene_ImgWidth = 1280;
+int val_01_in_a_Weekend_06_Scene_ImgHeight = 768;
+
+# 02_the_Next_Week / 01_MotionBlur 输出图像大小
+int val_02_the_Next_Week_01_MotionBlur_ImgWidth = 640;
+int val_02_the_Next_Week_01_MotionBlur_ImgHeight = 384;
+
+# 02_the_Next_Week / 02_AABB 输出图像大小
+int val_02_the_Next_Week_02_AABB_ImgWidth = 1280;
+int val_02_the_Next_Week_02_AABB_ImgHeight = 768;
+
+# 02_the_Next_Week / 03_Texture 输出图像大小
+int val_02_the_Next_Week_03_Texture_ImgWidth = 1280;
+int val_02_the_Next_Week_03_Texture_ImgHeight = 768;
+
+# 02_the_Next_Week / 04_RectLight 输出图像大小
+int val_02_the_Next_Week_04_RectLight_ImgWidth = 1280;
+int val_02_the_Next_Week_04_RectLight_ImgHeight = 768;
+
+# 02_the_Next_Week / 05_TriMesh 输出图像大小
+int val_02_the_Next_Week_05_TriMesh_ImgWidth = 1280;
+int val_02_the_Next_Week_05_TriMesh_ImgHeight = 768;
+
+# 02_the_Next_Week / 06_Transform 输出图像大小
+int val_02_the_Next_Week_06_Transform_ImgWidth = 768;
+int val_02_the_Next_Week_06_Transform_ImgHeight = 768;
+
+# 02_the_Next_Week / 07_Volume 输出图像大小
+int val_02_the_Next_Week_07_Volume_ImgWidth = 768;
+int val_02_the_Next_Week_07_Volume_ImgHeight = 768;
+
+# 02_the_Next_Week / 08_All 输出图像大小
+int val_02_the_Next_Week_08_All_ImgWidth = 768;
+int val_02_the_Next_Week_08_All_ImgHeight = 768;
+
+# 03_GPU_RayTracing / 02_RayTracingBasicSystem 输出图像大小
+int val_03_GPU_RayTracing_02_RayTracingBasicSystem_ImgWidth = 1280;
+int val_03_GPU_RayTracing_02_RayTracingBasicSystem_ImgHeight = 640;
+
+# 03_GPU_RayTracing / 03_Material 输出图像大小
+int val_03_GPU_RayTracing_03_Material_ImgWidth = 1280;
+int val_03_GPU_RayTracing_03_Material_ImgHeight = 640;
+
+# 03_GPU_RayTracing / 09_Transform 输出图像大小
+int val_03_GPU_RayTracing_09_Transform_ImgWidth = 768;
+int val_03_GPU_RayTracing_09_Transform_ImgHeight = 768;
+
+# 03_GPU_RayTracing / 10_Volume 输出图像大小
+int val_03_GPU_RayTracing_10_Volume_ImgWidth = 768;
+int val_03_GPU_RayTracing_10_Volume_ImgHeight = 768;
+
+# 03_GPU_RayTracing / 11_All 输出图像大小
+int val_03_GPU_RayTracing_11_All_ImgWidth = 768;
+int val_03_GPU_RayTracing_11_All_ImgHeight = 768;
+
+# 04_Extension / 02_Model 输出图像大小
+int val_04_Extension_02_Model_ImgWidth = 1280;
+int val_04_Extension_02_Model_ImgHeight = 768;
+
+# 04_Extension / 04_GPU_Loop 输出图像大小
+int val_04_Extension_04_GPU_Loop_ImgWidth = 1280;
+int val_04_Extension_04_GPU_Loop_ImgHeight = 768;
