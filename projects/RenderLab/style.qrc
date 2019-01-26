@@ -1,0 +1,46 @@
+<RCC>
+  <qresource prefix="qss_icons">
+    <file>Resources/styleImg/up_arrow_disabled.png</file>
+    <file>Resources/styleImg/Hmovetoolbar.png</file>
+    <file>Resources/styleImg/stylesheet-branch-end.png</file>
+    <file>Resources/styleImg/branch_closed-on.png</file>
+    <file>Resources/styleImg/stylesheet-vline.png</file>
+    <file>Resources/styleImg/branch_closed.png</file>
+    <file>Resources/styleImg/branch_open-on.png</file>
+    <file>Resources/styleImg/transparent.png</file>
+    <file>Resources/styleImg/right_arrow_disabled.png</file>
+    <file>Resources/styleImg/sizegrip.png</file>
+    <file>Resources/styleImg/close.png</file>
+    <file>Resources/styleImg/close-hover.png</file>
+    <file>Resources/styleImg/close-pressed.png</file>
+    <file>Resources/styleImg/down_arrow.png</file>
+    <file>Resources/styleImg/Vmovetoolbar.png</file>
+    <file>Resources/styleImg/left_arrow.png</file>
+    <file>Resources/styleImg/stylesheet-branch-more.png</file>
+    <file>Resources/styleImg/up_arrow.png</file>
+    <file>Resources/styleImg/right_arrow.png</file>
+    <file>Resources/styleImg/left_arrow_disabled.png</file>
+    <file>Resources/styleImg/Hsepartoolbar.png</file>
+    <file>Resources/styleImg/branch_open.png</file>
+    <file>Resources/styleImg/Vsepartoolbar.png</file>
+    <file>Resources/styleImg/down_arrow_disabled.png</file>
+    <file>Resources/styleImg/undock.png</file>
+    <file>Resources/styleImg/checkbox_checked_disabled.png</file>
+    <file>Resources/styleImg/checkbox_checked_focus.png</file>
+    <file>Resources/styleImg/checkbox_checked.png</file>
+    <file>Resources/styleImg/checkbox_indeterminate.png</file>
+    <file>Resources/styleImg/checkbox_indeterminate_focus.png</file>
+    <file>Resources/styleImg/checkbox_unchecked_disabled.png</file>
+    <file>Resources/styleImg/checkbox_unchecked_focus.png</file>
+    <file>Resources/styleImg/checkbox_unchecked.png</file>
+    <file>Resources/styleImg/radio_checked_disabled.png</file>
+    <file>Resources/styleImg/radio_checked_focus.png</file>
+    <file>Resources/styleImg/radio_checked.png</file>
+    <file>Resources/styleImg/radio_unchecked_disabled.png</file>
+    <file>Resources/styleImg/radio_unchecked_focus.png</file>
+    <file>Resources/styleImg/radio_unchecked.png</file>
+  </qresource>
+  <qresource prefix="qdarkstyle">
+      <file>Resources/style.qss</file>
+  </qresource>
+</RCC>
