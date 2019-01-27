@@ -1,6 +1,6 @@
 #include <CppUtil/RTX/OpMaterial.h>
 
-using namespace RayTracing;
+using namespace RTX;
 using namespace glm;
 using namespace std;
 

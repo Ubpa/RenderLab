@@ -1,6 +1,6 @@
 #include <CppUtil/RTX/ConstTexture.h>
 
-using namespace RayTracing;
+using namespace RTX;
 using namespace glm;
 
 ConstTexture::ConstTexture(const glm::rgb & color)

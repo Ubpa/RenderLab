@@ -1,6 +1,6 @@
 #include <CppUtil/RTX/Group.h>
 
-using namespace RayTracing;
+using namespace RTX;
 using namespace CppUtil::Basic;
 
 Group::Group(Material::CPtr material)

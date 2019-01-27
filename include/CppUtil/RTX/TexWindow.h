@@ -10,7 +10,7 @@ namespace CppUtil {
 	}
 }
 
-namespace RayTracing {
+namespace RTX {
 	class TexWindow {
 	public:
 		enum ENUM_OPTION {

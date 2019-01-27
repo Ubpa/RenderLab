@@ -4,7 +4,7 @@
 #include <CppUtil/RTX/Hitable.h>
 #include <vector>
 
-namespace RayTracing {
+namespace RTX {
 	class BVH_Node : public Hitable{
 		HITABLE_SETUP(BVH_Node)
 	public:

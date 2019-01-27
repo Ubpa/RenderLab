@@ -3,7 +3,7 @@
 
 #include <CppUtil/RTX/Hitable.h>
 
-namespace RayTracing {
+namespace RTX {
 	class Triangle : public Hitable {
 		HITABLE_SETUP(Triangle)
 	public:

@@ -8,7 +8,7 @@
 #include <vector>
 #include <map>
 
-namespace RayTracing {
+namespace RTX {
 	class Texture;
 	class GenData_TV;
 

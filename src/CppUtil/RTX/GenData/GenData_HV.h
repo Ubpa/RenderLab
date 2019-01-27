@@ -8,7 +8,7 @@
 #include <vector>
 #include <map>
 
-namespace RayTracing {
+namespace RTX {
 	class Material;
 	class GenData_MV;
 

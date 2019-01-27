@@ -5,7 +5,7 @@
 
 #include <glm/glm.hpp>
 
-namespace RayTracing {
+namespace RTX {
 	class Texture;
 
 	class Lambertian : public Material {

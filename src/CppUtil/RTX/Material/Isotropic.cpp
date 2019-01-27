@@ -5,7 +5,7 @@
 
 #include <CppUtil/Basic/Math.h>
 
-using namespace RayTracing;
+using namespace RTX;
 using namespace CppUtil::Basic;
 using namespace glm;
 

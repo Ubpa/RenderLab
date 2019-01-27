@@ -3,7 +3,7 @@
 
 #include <CppUtil/RTX/BVH_Node.h>
 
-namespace RayTracing {
+namespace RTX {
 	class TriMesh : public BVH_Node{
 		HITABLE_SETUP(TriMesh)
 	public:

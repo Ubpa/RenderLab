@@ -3,7 +3,7 @@
 
 #include <CppUtil/RTX/Material.h>
 
-namespace RayTracing {
+namespace RTX {
 	class Texture;
 
 	class Isotropic : public Material{

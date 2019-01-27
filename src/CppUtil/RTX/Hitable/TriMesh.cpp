@@ -2,7 +2,7 @@
 
 #include <CppUtil/RTX/Triangle.h>
 
-using namespace RayTracing;
+using namespace RTX;
 using namespace CppUtil::Basic;
 using namespace glm;
 using namespace std;

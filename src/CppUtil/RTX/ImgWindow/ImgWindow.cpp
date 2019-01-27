@@ -2,7 +2,7 @@
 
 #include <CppUtil/Basic/OpNode.h>
 
-using namespace RayTracing;
+using namespace RTX;
 using namespace CppUtil::OpenGL;
 using namespace CppUtil::Basic;
 using namespace std;

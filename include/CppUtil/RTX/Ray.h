@@ -4,7 +4,7 @@
 #include <CppUtil/Basic/HeapObj.h>
 #include <glm/glm.hpp>
 
-namespace RayTracing {
+namespace RTX {
 	class Ray : public CppUtil::Basic::HeapObj{
 		HEAP_OBJ_SETUP(Ray)
 	public:

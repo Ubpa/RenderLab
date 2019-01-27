@@ -4,7 +4,7 @@
 #include <CppUtil/RTX/TexWindow.h>
 #include <CppUtil/Basic/Image.h>
 
-namespace RayTracing {
+namespace RTX {
 	class ImgWindow : public TexWindow{
 	public:
 		ImgWindow(const std::string & title = "Window");

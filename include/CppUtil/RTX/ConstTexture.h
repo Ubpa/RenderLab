@@ -3,7 +3,7 @@
 
 #include <CppUtil/RTX/Texture.h>
 
-namespace RayTracing {
+namespace RTX {
 	class ConstTexture : public Texture{
 		TEXTURE_SETUP(ConstTexture)
 	public:

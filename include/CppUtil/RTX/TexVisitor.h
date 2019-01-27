@@ -3,7 +3,7 @@
 
 #include <CppUtil/Basic/HeapObj.h>
 
-namespace RayTracing {
+namespace RTX {
 	class Texture;
 	class ConstTexture;
 	class OpTexture;

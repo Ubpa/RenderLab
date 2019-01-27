@@ -1,7 +1,7 @@
 #include <CppUtil/RTX/OpTexture.h>
 #include <CppUtil/Basic/Perlin.h>
 
-using namespace RayTracing;
+using namespace RTX;
 using namespace CppUtil::Basic;
 using namespace glm;
 using namespace std;

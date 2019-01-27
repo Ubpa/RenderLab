@@ -1,7 +1,7 @@
 #include <CppUtil/RTX/Ray.h>
 
 using namespace glm;
-using namespace RayTracing;
+using namespace RTX;
 
 const float Ray::tMin = 10e-4;
 

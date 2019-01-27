@@ -4,7 +4,7 @@
 #include <CppUtil/RTX/Hitable.h>
 #include <glm/glm.hpp>
 
-namespace RayTracing {
+namespace RTX {
 	class RayTracer {
 	public:
 		RayTracer(size_t depth = 50);

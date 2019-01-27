@@ -3,7 +3,7 @@
 
 #include <CppUtil/RTX/Material.h>
 
-namespace RayTracing {
+namespace RTX {
 	class Dielectric : public Material {
 		MATERIAL_SETUP(Dielectric)
 	public:

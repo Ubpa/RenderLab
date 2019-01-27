@@ -11,7 +11,7 @@
 #include <CppUtil/RTX/TriMesh.h>
 #include <CppUtil/RTX/Transform.h>
 
-using namespace RayTracing;
+using namespace RTX;
 using namespace glm;
 using namespace std;
 

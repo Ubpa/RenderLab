@@ -3,7 +3,7 @@
 #include <CppUtil/RTX/ConstTexture.h>
 #include <CppUtil/RTX/Ray.h>
 
-using namespace RayTracing;
+using namespace RTX;
 using namespace CppUtil::Basic;
 using namespace glm;
 

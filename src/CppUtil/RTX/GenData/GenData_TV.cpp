@@ -6,7 +6,7 @@
 #include <CppUtil/Basic/Image.h>
 
 using namespace CppUtil::Basic;
-using namespace RayTracing;
+using namespace RTX;
 using namespace glm;
 using namespace std;
 

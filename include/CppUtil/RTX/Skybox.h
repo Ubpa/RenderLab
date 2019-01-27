@@ -14,7 +14,7 @@ namespace CppUtil {
 	}
 }
 
-namespace RayTracing {
+namespace RTX {
 	class Skybox : public Texture {
 		TEXTURE_SETUP(Skybox)
 	public:

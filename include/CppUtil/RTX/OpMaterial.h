@@ -5,7 +5,7 @@
 
 #include <functional>
 
-namespace RayTracing {
+namespace RTX {
 	class OpMaterial : public Material{
 		MATERIAL_SETUP(OpMaterial)
 	public:

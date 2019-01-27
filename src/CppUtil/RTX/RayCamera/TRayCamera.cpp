@@ -5,7 +5,7 @@
 #include <CppUtil/Basic/Math.h>
 
 using namespace CppUtil::Basic;
-using namespace RayTracing;
+using namespace RTX;
 using namespace glm;
 
 TRayCamera::TRayCamera(const glm::vec3 & pos, const glm::vec3 & viewPoint, float ratioWH,

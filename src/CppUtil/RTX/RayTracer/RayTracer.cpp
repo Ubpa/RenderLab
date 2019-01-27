@@ -2,7 +2,7 @@
 
 #include <CppUtil/RTX/Ray.h>
 
-using namespace RayTracing;
+using namespace RTX;
 using namespace glm;
 
 RayTracer::RayTracer(size_t depth) 

@@ -3,7 +3,7 @@
 
 #include <CppUtil/RTX/Ray.h>
 
-namespace RayTracing {
+namespace RTX {
 	class TRay : public Ray {
 		HEAP_OBJ_SETUP(TRay)
 	public:

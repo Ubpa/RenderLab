@@ -16,7 +16,7 @@ virtual void Accept(MatVisitor::Ptr matVisitor) const{\
 	matVisitor->Visit(CThis());\
 }
 
-namespace RayTracing {
+namespace RTX {
 	class Ray;
 	
 	struct Vertex {

@@ -4,7 +4,7 @@
 #include <glm/glm.hpp>
 #include <CppUtil/RTX/RayCamera.h>
 
-namespace RayTracing {
+namespace RTX {
 	class TRayCamera : public RayCamera{
 	   HEAP_OBJ_SETUP(TRayCamera)
 	public:

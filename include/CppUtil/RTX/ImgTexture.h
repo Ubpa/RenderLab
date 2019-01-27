@@ -13,7 +13,7 @@ namespace CppUtil {
 	}
 }
 
-namespace RayTracing {
+namespace RTX {
 	class ImgTexture : public Texture{
 		TEXTURE_SETUP(ImgTexture)
 	public:

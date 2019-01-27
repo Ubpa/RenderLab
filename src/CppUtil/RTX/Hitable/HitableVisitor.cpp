@@ -1,7 +1,7 @@
 #include <CppUtil/RTX/HitableVisitor.h>
 
 using namespace CppUtil;
-using namespace RayTracing;
+using namespace RTX;
 
 void HitableVisitor::Visit(Basic::CPtr<Hitable> hitable) { }
 void HitableVisitor::Visit(Basic::CPtr<Sphere> sphere) { }

@@ -6,7 +6,7 @@
 
 #include <bitset>
 
-using namespace RayTracing;
+using namespace RTX;
 using namespace CppUtil::Basic;
 using namespace glm;
 using namespace std;

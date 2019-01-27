@@ -12,7 +12,7 @@ namespace CppUtil {
 	}
 }
 
-namespace RayTracing {
+namespace RTX {
 	// Generate Fragmen Shader -- Texture Visitor
 	class GenData_TV : public TexVisitor{
 		HEAP_OBJ_SETUP(GenData_TV)

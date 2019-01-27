@@ -14,7 +14,7 @@ virtual void Accept(TexVisitor::Ptr texVisitor) const{\
 	texVisitor->Visit(CThis());\
 }
 
-namespace RayTracing {
+namespace RTX {
 	class Texture : public CppUtil::Basic::HeapObj {
 		HEAP_OBJ_SETUP(Texture)
 	public:

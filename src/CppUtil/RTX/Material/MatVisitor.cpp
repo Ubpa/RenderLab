@@ -1,6 +1,6 @@
 #include <CppUtil/RTX/MatVisitor.h>
 
-using namespace RayTracing;
+using namespace RTX;
 using namespace CppUtil;
 
 void MatVisitor::Visit(Basic::CPtr<Material> material) { }

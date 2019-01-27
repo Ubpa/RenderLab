@@ -14,7 +14,7 @@ virtual void Accept(HitableVisitor::Ptr hitableVisitor) const{\
 }
 
 
-namespace RayTracing {
+namespace RTX {
 	class Ray;
 
 	struct HitRst {

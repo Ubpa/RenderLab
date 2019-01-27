@@ -12,7 +12,7 @@ namespace CppUtil {
 	}
 }
 
-namespace RayTracing {
+namespace RTX {
 	class Hitable;
 	class Group;
 	class GenData_HV;

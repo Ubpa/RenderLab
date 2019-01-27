@@ -3,7 +3,7 @@
 
 #include <CppUtil/RTX/Sphere.h>
 
-namespace RayTracing {
+namespace RTX {
 	class MoveSphere : public Hitable{
 		HITABLE_SETUP(MoveSphere)
 	public:

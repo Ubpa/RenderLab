@@ -5,7 +5,7 @@
 
 #include <functional>
 
-namespace RayTracing {
+namespace RTX {
 	class OpTexture : public Texture {
 		TEXTURE_SETUP(OpTexture)
 	public:

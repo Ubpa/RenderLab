@@ -2,7 +2,7 @@
 
 #include <CppUtil/RTX/Ray.h>
 
-using namespace RayTracing;
+using namespace RTX;
 using namespace glm;
 
 const AABB AABB::InValid(vec3(1), vec3(-1), false);

@@ -17,7 +17,7 @@
  
 #include <ROOT_PATH.h>
 
-using namespace RayTracing;
+using namespace RTX;
 using namespace CppUtil::OpenGL;
 using namespace CppUtil::Basic;
 using namespace Define;

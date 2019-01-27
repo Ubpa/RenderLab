@@ -7,7 +7,7 @@ struct aiNode;
 struct aiMesh;
 struct aiScene;
 
-namespace RayTracing{
+namespace RTX{
 	class Model : public TriMesh {
 		HITABLE_SETUP(Model)
 	public:

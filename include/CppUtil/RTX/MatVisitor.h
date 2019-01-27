@@ -3,7 +3,7 @@
 
 #include <CppUtil/Basic/HeapObj.h>
 
-namespace RayTracing {
+namespace RTX {
 	class Material;
 	class Lambertian;
 	class Metal;

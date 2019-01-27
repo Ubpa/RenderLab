@@ -4,7 +4,7 @@
 #include <CppUtil/RTX/Hitable.h>
 #include <vector>
 
-namespace RayTracing {
+namespace RTX {
 	class Group : public Hitable{
 		HITABLE_SETUP(Group)
 	public:

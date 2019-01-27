@@ -1,7 +1,7 @@
 #include <CppUtil/RTX/TexVisitor.h>
 
 using namespace CppUtil;
-using namespace RayTracing;
+using namespace RTX;
 
 void TexVisitor::Visit(Basic::CPtr<Texture> tex) { }
 void TexVisitor::Visit(Basic::CPtr<ConstTexture> constTexture) { }

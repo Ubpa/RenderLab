@@ -3,7 +3,7 @@
 
 #include <CppUtil/RTX/Hitable.h>
 
-namespace RayTracing {
+namespace RTX {
 	class Volume : public Hitable{
 		HITABLE_SETUP(Volume)
 	public:
