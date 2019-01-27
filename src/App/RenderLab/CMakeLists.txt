@@ -20,7 +20,7 @@ endforeach(SOURCE ${ALL_SOURCES})
 #set(STR_TARGET_SOURCES "${DIRNAME}.cpp ${DIRNAME}.fs ${DIRNAME}.vs")
 #多个库文件用 [空格] 分隔，如果为空，就输入[一个空格]
 #如：set(STR_TARGET_LIBS "lib1.lib lib2.lib")
-set(STR_TARGET_LIBS "Qt5::Widgets")
+set(STR_TARGET_LIBS "Qt5::Widgets Operation RawAPI_OGLW")
 
 SETUP_PROJECT(${MODE} ${TARGET_NAME} ${STR_TARGET_SOURCES} ${STR_TARGET_LIBS})
 

@@ -26,7 +26,7 @@
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
-         <widget class="QOpenGLWidget" name="OGLW_Raster"/>
+         <widget class="CppUtil::Qt::RawAPI_OGLW" name="OGLW_Raster"/>
         </item>
        </layout>
       </widget>
@@ -36,7 +36,7 @@
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
-         <widget class="QOpenGLWidget" name="OGLW_RayTracer"/>
+         <widget class="CppUtil::Qt::RawAPI_OGLW" name="OGLW_RayTracer"/>
         </item>
        </layout>
       </widget>
@@ -214,6 +214,13 @@ font: 15pt &quot;Consolas&quot;;
   </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>CppUtil::Qt::RawAPI_OGLW</class>
+   <extends>QOpenGLWidget</extends>
+   <header location="global">CppUtil/Qt/RawAPI_OGLW.h</header>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="RenderLab.qrc"/>
  </resources>
