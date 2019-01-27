@@ -1,9 +1,6 @@
 #ifndef SHADER_H_
 #define SHADER_H_
 
-#include <GLFW/Glfw.h>
-#include <CppUtil/Basic/File.h>
-
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>

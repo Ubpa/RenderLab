@@ -1,7 +1,11 @@
 #include <CppUtil/Qt/RawAPI_OGLW.h>
+//#include <CppUtil/Qt/QOpenGL_API.h>
 
 using namespace CppUtil::Qt;
 using namespace CppUtil::Basic;
+
+//RawAPI_OGLW * RawAPI_OGLW::QOGL = nullptr;
+//bool RawAPI_OGLW::setQOGL = bool;
 
 RawAPI_OGLW::RawAPI_OGLW(QWidget* parent, ::Qt::WindowFlags f)
 	: QOpenGLWidget(parent, f), paintOp(nullptr) {
@@ -16,7 +20,7 @@ void RawAPI_OGLW::SetPaintOp(Operation::Ptr paintOp) {
 }
 
 void RawAPI_OGLW::initializeGL(){
-	initializeOpenGLFunctions();
+	context()->setShareContext(QOpenGLContext::globalShareContext());
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 }

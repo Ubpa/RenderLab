@@ -1,5 +1,9 @@
 #include <CppUtil/OpenGL/Shader.h>
 
+#include <CppUtil/Basic/File.h>
+
+#include <glad/glad.h>
+
 #include <iostream>
 
 using namespace std;
