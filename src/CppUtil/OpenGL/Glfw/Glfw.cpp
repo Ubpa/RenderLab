@@ -1,7 +1,5 @@
 #include <GLFW/Glfw.h>
 
-#include <glad/glad.h>
-
 #include <CppUtil/Basic/EventManager.h>
 #include <CppUtil/Basic/GStorage.h>
 #include <CppUtil/Basic/Operation.h>

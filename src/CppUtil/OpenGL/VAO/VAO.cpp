@@ -2,10 +2,16 @@
 
 #include<CppUtil/OpenGL/Shader.h>
 
+#if USE_QT_OPENGL_API
+#include <CppUtil/Qt/RawAPI_Define.h>
+#else
 #include <glad/glad.h>
+#endif // USE_QT_OPENGL_API
 
 using namespace CppUtil::OpenGL;
 using namespace std;
+
+VAO::VAO() :isValid(false) { }
 
 VAO::VAO(float const * data, size_t dataSize, const std::vector<size_t> & attrLen){
 	if (data == NULL || dataSize == 0 || attrLen.size() == 0) {
@@ -13,7 +19,7 @@ VAO::VAO(float const * data, size_t dataSize, const std::vector<size_t> & attrLe
 		ID = 0;
 		return;
 	}
-
+	
 	glGenVertexArrays(1, &ID);
 	glBindVertexArray(ID);
 

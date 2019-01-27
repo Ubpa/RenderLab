@@ -7,12 +7,8 @@
 #include <qopenglfunctions_3_3_core.h>
 #include <qopenglcontext.h>
 
-#include <CppUtil/Qt/RawAPI_Define.h>
-
 namespace CppUtil {
 	namespace Qt {
-
-		//class Impl_RawAPI_OGLW;
 
 		class RawAPI_OGLW : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core {
 			Q_OBJECT
@@ -20,7 +16,8 @@ namespace CppUtil {
 			explicit RawAPI_OGLW(QWidget* parent = nullptr, ::Qt::WindowFlags f = ::Qt::WindowFlags());
 			~RawAPI_OGLW();
 
-			void SetPaintOp(Basic::Ptr<Basic::Operation> paintOp);
+			void SetPaintOp(Basic::Operation::Ptr paintOp);
+			static void SetInitOp(Basic::Operation::Ptr initOp);
 
 		protected:
 			virtual void initializeGL();
@@ -28,11 +25,11 @@ namespace CppUtil {
 			virtual void paintGL();
 
 		private:
-			Basic::Ptr<Basic::Operation> paintOp;
+			Basic::Operation::Ptr paintOp;
 			size_t ID;
+			bool init;
 
-			//static RawAPI_OGLW * QOGL;
-			//static bool setQOGL;
+			static Basic::Operation::Ptr initOp;
 		};
 	}
 }

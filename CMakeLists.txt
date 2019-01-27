@@ -85,6 +85,7 @@ set (${PROJECT_NAME}_VERSION_MINOR 0)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 # Find the QtWidgets library
+set(USE_QT_OPENGL_API ON)
 find_package(Qt5 REQUIRED Widgets OpenGL)
 
 set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR})

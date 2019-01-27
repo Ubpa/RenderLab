@@ -2,8 +2,12 @@
 
 #include <CppUtil/Basic/Image.h>
 
+// Choose OpenGL API
+#ifdef USE_QT_OPENGL_API
+#include <CppUtil/Qt/RawAPI_Define.h>
+#else
 #include <glad/glad.h>
-#include <GLFW/glfw3.h>
+#endif
 
 #include <cstdio>
 

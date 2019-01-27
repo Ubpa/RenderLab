@@ -16,6 +16,7 @@ cmake .. -Wno-dev
 
 ## 2. TODO
 
+- [x] 移植 OpenGL
 - [ ] 移植 CPU RTX
 - [ ] 优化数据结构
   - [ ] 结点

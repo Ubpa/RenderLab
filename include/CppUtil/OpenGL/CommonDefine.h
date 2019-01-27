@@ -17,6 +17,11 @@ namespace Define{
 	const std::string config_CameraMoveSpeed = "CameraMoveSpeed";
 	const std::string config_CameraRotateSensitivity = "CameraRotateSensitivity";
 
+	//------------ textures
+	const std::string texture_Prefix = "/data/textures/";
+	const std::string texture_wood = texture_Prefix + "wood.jpg";
+	const std::string texture_earth = texture_Prefix + "earth.jpg";
+
 	//------------ common shader
 	const std::string str_ShadersCommon_Prefix = "/data/shaders/Common/";
 	const std::string str_VsPostfix = ".vs";

@@ -1,6 +1,12 @@
 #include <CppUtil/OpenGL/FBO.h>
 
+// Choose OpenGL API
+#ifdef USE_QT_OPENGL_API
+#include <CppUtil/Qt/RawAPI_Define.h>
+#else
 #include <glad/glad.h>
+#endif
+
 #include <cstdio>
 
 using namespace CppUtil::OpenGL;

@@ -4,12 +4,14 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <string>
 
 namespace CppUtil {
 	namespace OpenGL {
 		class Shader {
 		public:
 			// constructor generates the shader on the fly
+			Shader();
 			Shader(const std::string &  vertexPath, const std::string & fragmentPath, const std::string & geometryPath = "");
 
 			size_t GetID() const;
@@ -36,7 +38,6 @@ namespace CppUtil {
 			//------------
 			void UniformBlockBind(const std::string &name, size_t bindPoint);
 		private:
-			static size_t curID;
 			// utility function for checking shader compilation/linking errors.
 			int CheckCompileErrors(size_t shader, std::string type);
 			//------------

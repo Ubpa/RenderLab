@@ -1,6 +1,11 @@
 #include <CppUtil/OpenGL/Mesh.h>
 
-#include <glad/glad.h> // holds all OpenGL type declarations
+// Choose OpenGL API
+#ifdef USE_QT_OPENGL_API
+#include <CppUtil/Qt/RawAPI_Define.h>
+#else
+#include <glad/glad.h>
+#endif
 
 #include <CppUtil/OpenGL/Shader.h>
 

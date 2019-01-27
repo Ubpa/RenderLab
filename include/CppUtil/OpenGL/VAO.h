@@ -14,7 +14,7 @@ namespace CppUtil {
 				size_t dataSize;
 				size_t attrLen;
 			};
-
+			VAO();
 			VAO(float const * data, size_t dataSize, const std::vector<size_t> & attrLen);
 			VAO(float const * data, size_t dataSize, const std::vector<size_t> & attrLen, size_t const * index, size_t indexSize);
 			VAO(const std::vector<VBO_DataPatch> & vec_VBO_DataPatch, const std::vector<size_t> & divisors = std::vector<size_t>());

@@ -1,13 +1,14 @@
 #include "RenderLab.h"
 #include <QtWidgets/QApplication>
+#include <qopenglcontext.h>
+#include <qoffscreensurface.h>
+#include <qopenglfunctions_3_3_core.h>
 
 #include <qfile.h>
 #include <qtextstream.h>
 
 int main(int argc, char *argv[])
 {
-	QApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
-
 	QApplication a(argc, argv);
 
 	// load style sheet

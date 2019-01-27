@@ -1,6 +1,9 @@
 #ifndef _RAW_API_DEFINE_H_
 #define _RAW_API_DEFINE_H_
 
+#include <qopenglfunctions_3_3_core.h>
+#include <qopenglcontext.h>
+
 #define _OPENGL_API_VERSION_ QOpenGLFunctions_3_3_Core
 
 #define _OPENGL_API_PREFIX_ QOpenGLContext::currentContext()->versionFunctions<_OPENGL_API_VERSION_>()

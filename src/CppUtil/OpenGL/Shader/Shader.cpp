@@ -2,7 +2,12 @@
 
 #include <CppUtil/Basic/File.h>
 
+// Choose OpenGL API
+#ifdef USE_QT_OPENGL_API
+#include <CppUtil/Qt/RawAPI_Define.h>
+#else
 #include <glad/glad.h>
+#endif
 
 #include <iostream>
 
@@ -10,7 +15,7 @@ using namespace std;
 using namespace CppUtil::OpenGL;
 using namespace CppUtil::Basic;
 
-size_t Shader::curID = 0;
+Shader::Shader() : valid(false){ }
 
 Shader::Shader(const string & vertexPath, const string & fragmentPath, const string & geometryPath) {
 	valid = true;
@@ -95,9 +100,8 @@ size_t Shader::GetID() const { return ID; }
 bool Shader::IsValid() const { return valid; }
 
 bool Shader::Use() const{
-	if (valid && curID != ID) {
+	if (valid) {
 		glUseProgram(ID);
-		curID = ID;
 	}
 	return valid;
 }
