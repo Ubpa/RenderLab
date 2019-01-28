@@ -28,8 +28,8 @@ namespace CppUtil {
 			friend class Singleton<EventManager>;
 			static EventManager * GetInstance();
 			//------------
-			void Register(size_t event, Ptr<Operation> op);
-			void Register(size_t event, const std::function<void()> & op);
+			void Reg(size_t event, Ptr<Operation> op);
+			void Reg(size_t event, const std::function<void()> & op);
 			void Response(size_t event);
 		protected:
 			EventManager() = default;

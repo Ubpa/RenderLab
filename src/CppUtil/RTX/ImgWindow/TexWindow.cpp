@@ -166,7 +166,7 @@ bool TexWindow::Run(Operation::Ptr texUpdateOp) {
 
 	// ×¢²áÊäÈë
 
-	EventManager::GetInstance()->Register(EventManager::KEYBOARD_PRESS | GLFW_KEY_ESCAPE,
+	EventManager::GetInstance()->Reg(EventManager::KEYBOARD_PRESS | GLFW_KEY_ESCAPE,
 		[]() { Glfw::GetInstance()->CloseWindow(); });
 
 	// ¸üÐÂ
@@ -337,6 +337,6 @@ Ptr<Config> TexWindow::DoConfig() {
 	auto pRootPath = const_cast<string*>(config->GetStrPtr("RootPath"));
 	*pRootPath = rootPath;
 	printf("INFO: config.out read success\nINFO: RootPath is %s\n", config->GetStrPtr("RootPath")->c_str());
-	GStorage<Ptr<Config>>::GetInstance()->Register(str_MainConfig, config);
+	GStorage<Ptr<Config>>::GetInstance()->Reg(str_MainConfig, config);
 	return config;
 }

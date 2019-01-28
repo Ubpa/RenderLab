@@ -11,15 +11,15 @@ EventManager * EventManager::GetInstance() {
 
 //------------
 
-void EventManager::Register(size_t event, Ptr<Operation> op) {
+void EventManager::Reg(size_t event, Ptr<Operation> op) {
 	if (directory.find(event) == directory.end())
 		directory[event] = ToPtr(new OpQueue);
 	directory[event]->Push(op);
 }
 
 
-void EventManager::Register(size_t event, const std::function<void ()> & op) {
-	Register(event, ToPtr(new LambdaOp(op)));
+void EventManager::Reg(size_t event, const std::function<void ()> & op) {
+	Reg(event, ToPtr(new LambdaOp(op)));
 }
 
 void EventManager::Response(size_t event) {

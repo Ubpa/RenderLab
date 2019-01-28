@@ -11,15 +11,15 @@ namespace CppUtil {
 		class LStorage {
 		public:
 			// 第一次注册返回 true, 后续返回 false
-			bool Register(const std::string & uniqueID, const T & item);
+			bool Reg(const std::string & uniqueID, const T & item);
 
-			bool Unregister(const std::string & uniqueID);
+			bool UnReg(const std::string & uniqueID);
 
-			T * GetPtr(const std::string & uniqueID);
+			T * GetP(const std::string & uniqueID);
 
-			const T * GetPtr(const std::string & uniqueID) const;
+			const T * GetP(const std::string & uniqueID) const;
 
-			bool Register(const std::string & uniqueID);
+			bool Reg(const std::string & uniqueID);
 		private:
 
 			std::map<std::string, T> directory;
@@ -28,7 +28,7 @@ namespace CppUtil {
 		//----------------------------------------------------------------------
 
 		template<typename T>
-		bool LStorage<T>::Register(const std::string & uniqueID, const T & item) {
+		bool LStorage<T>::Reg(const std::string & uniqueID, const T & item) {
 			auto target = directory.find(uniqueID);
 			if (target != directory.end()) {
 				target->second = item;
@@ -40,7 +40,7 @@ namespace CppUtil {
 		}
 
 		template<typename T>
-		bool LStorage<T>::Unregister(const std::string & uniqueID) {
+		bool LStorage<T>::UnReg(const std::string & uniqueID) {
 			auto target = directory.find(uniqueID);
 			if (target == directory.end())
 				return false;
@@ -50,7 +50,7 @@ namespace CppUtil {
 		}
 
 		template<typename T>
-		T * LStorage<T>::GetPtr(const std::string & uniqueID) {
+		T * LStorage<T>::GetP(const std::string & uniqueID) {
 			auto target = directory.find(uniqueID);
 			if (target == directory.end())
 				return NULL;
@@ -59,7 +59,7 @@ namespace CppUtil {
 		}
 
 		template<typename T>
-		const T * LStorage<T>::GetPtr(const std::string & uniqueID) const {
+		const T * LStorage<T>::GetP(const std::string & uniqueID) const {
 			auto target = directory.find(uniqueID);
 			if (target == directory.end())
 				return NULL;
@@ -68,7 +68,7 @@ namespace CppUtil {
 		}
 
 		template<typename T>
-		bool LStorage<T>::Register(const std::string & uniqueID) {
+		bool LStorage<T>::Reg(const std::string & uniqueID) {
 			auto target = directory.find(uniqueID);
 			if (target != directory.end())
 				return false;

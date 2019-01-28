@@ -17,7 +17,7 @@ namespace CppUtil {
 			~RawAPI_OGLW();
 
 			void SetPaintOp(Basic::Operation::Ptr paintOp);
-			static void SetInitOp(Basic::Operation::Ptr initOp);
+			void SetInitOp(Basic::Operation::Ptr initOp);
 
 		protected:
 			virtual void initializeGL();
@@ -25,11 +25,9 @@ namespace CppUtil {
 			virtual void paintGL();
 
 		private:
+			Basic::Operation::Ptr initOp;
 			Basic::Operation::Ptr paintOp;
 			size_t ID;
-			bool init;
-
-			static Basic::Operation::Ptr initOp;
 		};
 	}
 }

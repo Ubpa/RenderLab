@@ -6,16 +6,41 @@
 
 namespace CppUtil {
 	namespace Basic {
-		template<typename T>
-		class GStorage final : public Singleton<GStorage<T>>, public LStorage<T> {
-			friend class Singleton<GStorage<T>>;
-		public:
-			static GStorage<T> * GetInstance() {
-				return Singleton<GStorage<T>>::GetInstance();
-			}
+		
+		class GS{
 		private:
-			GStorage() = default;
-			~GStorage() = default;
+			template<typename T>
+			class _GStorage final : public Singleton<_GStorage<T>>, public LStorage<T> {
+				friend class Singleton<_GStorage<T>>;
+			public:
+				static _GStorage<T> * GetInstance() {
+					return Singleton<_GStorage<T>>::GetInstance();
+				}
+			private:
+				_GStorage() = default;
+				~_GStorage() = default;
+			};
+
+		private:
+			GS() = default;
+
+		public:
+			template<typename T>
+			static bool Reg(const std::string & uniqueID, const T & item) {
+				return _GStorage<T>::GetInstance()->Reg(uniqueID, item);
+			}
+
+			template<typename T>
+			static void GetP(const std::string & uniqueID, T * & p) {
+				p = _GStorage<T>::GetInstance()->GetP(uniqueID);
+			}
+
+			template<typename T>
+			static void GetV(const std::string & uniqueID, T & val) {
+				auto p = _GStorage<T>::GetInstance()->GetP(uniqueID);
+				if (p != nullptr)
+					val = *p;
+			}
 		};
 	}
 }

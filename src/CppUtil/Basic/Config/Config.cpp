@@ -121,21 +121,21 @@ bool Config::DecodeLine(const string & data) {
 		string valueStr = result[idxVec[i + 2]].str();
 		if (type == "string") {
 			printf("Config: string %s = \"%s\"\n", varName.c_str(), valueStr.c_str());
-			strDirectory.Register(varName, valueStr);
+			strDirectory.Reg(varName, valueStr);
 		}
 		else if (type == "float") {
 			istringstream iss(valueStr);
 			float val;
 			iss >> val;
 			printf("Config: float %s = %f\n", varName.c_str(), val);
-			floatDirectory.Register(varName, val);
+			floatDirectory.Reg(varName, val);
 		}
 		else if (type == "int") {
 			istringstream iss(valueStr);
 			int val;
 			iss >> val;
 			printf("Config: int %s = %d\n", varName.c_str(), val);
-			intDirectory.Register(varName, val);
+			intDirectory.Reg(varName, val);
 		}
 		else if (type == "hex") {
 			unsigned int val = 0;
@@ -145,7 +145,7 @@ bool Config::DecodeLine(const string & data) {
 				val <<= 4;
 			}
 			printf("Config: hex %s = %s(%u)\n", varName.c_str(), valueStr.c_str(), val);
-			unsignedIntDirectory.Register(varName, val);
+			unsignedIntDirectory.Reg(varName, val);
 		}
 		else if (type == "bin") {
 			unsigned int val = 0;
@@ -154,7 +154,7 @@ bool Config::DecodeLine(const string & data) {
 				val += valueStr[i] - '0';
 			}
 			printf("Config: bin %s = %s(%u)\n", varName.c_str(), valueStr.c_str(), val);
-			unsignedIntDirectory.Register(varName, val);
+			unsignedIntDirectory.Reg(varName, val);
 		}
 		else {
 			printf("ERROR : Type [%s] is unknown\nvarName : %s\nvalue : %s\n",
@@ -170,23 +170,23 @@ bool Config::IsValid() const {
 }
 
 const string * Config::GetStrPtr(const std::string & id) const {
-	return strDirectory.GetPtr(id);
+	return strDirectory.GetP(id);
 }
 
 const float * Config::GetFloatPtr(const std::string & id) const {
-	return floatDirectory.GetPtr(id);
+	return floatDirectory.GetP(id);
 }
 
 const int * Config::GetIntPtr(const std::string & id) const {
-	return intDirectory.GetPtr(id);
+	return intDirectory.GetP(id);
 }
 
 const unsigned int * Config::GetUnsignedIntPtr(const std::string & id) const {
-	return unsignedIntDirectory.GetPtr(id);
+	return unsignedIntDirectory.GetP(id);
 }
 
 
-bool Config::GetVal(const std::string & id, float & val, float defaultVal) const {
+bool Config::GetV(const std::string & id, float & val, float defaultVal) const {
 	auto p = GetFloatPtr(id);
 	if (p == NULL) {
 		val = defaultVal;
@@ -196,7 +196,7 @@ bool Config::GetVal(const std::string & id, float & val, float defaultVal) const
 	val = *p;
 	return true;
 }
-bool Config::GetVal(const std::string & id, int & val, int defaultVal) const {
+bool Config::GetV(const std::string & id, int & val, int defaultVal) const {
 	auto p = GetIntPtr(id);
 	if (p == NULL) {
 		val = defaultVal;
@@ -206,7 +206,7 @@ bool Config::GetVal(const std::string & id, int & val, int defaultVal) const {
 	val = *p;
 	return true;
 }
-bool Config::GetVal(const std::string & id, unsigned int & val, unsigned int defaultVal) const {
+bool Config::GetV(const std::string & id, unsigned int & val, unsigned int defaultVal) const {
 	auto p = GetUnsignedIntPtr(id);
 	if (p == NULL) {
 		val = defaultVal;
@@ -216,7 +216,7 @@ bool Config::GetVal(const std::string & id, unsigned int & val, unsigned int def
 	val = *p;
 	return true;
 }
-bool Config::GetVal(const std::string & id, std::string & val, const string & defaultVal) const {
+bool Config::GetV(const std::string & id, std::string & val, const string & defaultVal) const {
 	auto p = GetStrPtr(id);
 	if (p == NULL) {
 		val = defaultVal;

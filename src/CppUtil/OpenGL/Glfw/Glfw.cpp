@@ -41,8 +41,8 @@ void Glfw::Init(size_t width, size_t height, const string & title){
 	glfwSetCursorPosCallback(window, [](GLFWwindow* window, double xPos, double yPos) {
 		static float lastX = xPos, lastY = yPos;
 		static float mousePos_XOffset, mousePos_YOffset;
-		GStorage<float *>::GetInstance()->Register("mousePos_XOffset", &mousePos_XOffset);
-		GStorage<float *>::GetInstance()->Register("mousePos_YOffset", &mousePos_YOffset);
+		GS::Reg("mousePos_XOffset", &mousePos_XOffset);
+		GS::Reg("mousePos_YOffset", &mousePos_YOffset);
 		//------------
 		mousePos_XOffset = xPos - lastX;
 		mousePos_YOffset = lastY - yPos;
@@ -53,7 +53,7 @@ void Glfw::Init(size_t width, size_t height, const string & title){
 	//------------
 	glfwSetScrollCallback(window, [](GLFWwindow* window, double xOffset, double yOffset) {
 		static float mouseScroll_YOffset;
-		GStorage<float *>::GetInstance()->Register("mouseScroll_YOffset", &mouseScroll_YOffset);
+		GS::Reg("mouseScroll_YOffset", &mouseScroll_YOffset);
 		//------------
 		mouseScroll_YOffset = yOffset;
 		EventManager::GetInstance()->Response(EventManager::MOUSE_SCROLL);
