@@ -6,36 +6,53 @@
 
 #include <functional>
 #include <map>
+#include <tuple>
 
 namespace CppUtil {
 	namespace Basic {
 		class Operation;
 		class OpQueue;
 
-		class EventManager : public Singleton<EventManager> {
+		class EventMngr : public Singleton<EventMngr> {
 		public:
-			enum ENUM_EVENT {
-				//KEY = 0x00000000 ~ 0x0000FFFF
-				KEYBOARD_PRESS = 0x00010000,
-				KEYBOARD_REPEAT = 0x00020000,
-				KEYBOARD_RELEASE = 0x00040000,
-				KEYBOARD = KEYBOARD_PRESS | KEYBOARD_REPEAT | KEYBOARD_RELEASE,
-				MOUSE_SCROLL = 0x00080000,
-				MOUSE_MOUVE = 0x00080001,
-				WINDOW_ZOOM = 0x00080002,
+			enum ENUM_EVENT_TYPE {
+				KB_PRESS,
+				KB_RELEASE,
+				MOUSE_MOVE,
+				MOUSE_PRESS,
+				MOUSE_RELEASE,
+				MOUSE_WHEEL,
 			};
 			//------------
-			friend class Singleton<EventManager>;
-			static EventManager * GetInstance();
+			friend class Singleton<EventMngr>;
+		private:
+			static EventMngr * GetInstance();
 			//------------
-			void Reg(size_t event, Ptr<Operation> op);
-			void Reg(size_t event, const std::function<void()> & op);
-			void Response(size_t event);
+			void _Reg(size_t event, Ptr<Operation> op);
+			void _Reg(size_t event, void * target, Ptr<Operation> op);
+			void _Reg(size_t event, void * target, ENUM_EVENT_TYPE eventType, Ptr<Operation> op);
+
+			void _Response(size_t event);
+			void _Response(size_t event, void * target);
+			void _Response(size_t event, void * target, ENUM_EVENT_TYPE eventType);
+		public:
+			static void Reg(size_t event, Ptr<Operation> op) { GetInstance()->_Reg(event, op); }
+			static void Reg(size_t event, void * target, Ptr<Operation> op) { GetInstance()->_Reg(event, target, op); }
+			static void Reg(size_t event, void * target, ENUM_EVENT_TYPE eventType, Ptr<Operation> op) { GetInstance()->_Reg(event, target, eventType, op); }
+
+			static void Response(size_t event) { GetInstance()->_Response(event); }
+			static void Response(size_t event, void * target) { GetInstance()->_Response(event, target); }
+			static void Response(size_t event, void * target, ENUM_EVENT_TYPE eventType) { GetInstance()->_Response(event, target, eventType); }
+
 		protected:
-			EventManager() = default;
-			~EventManager() = default;
+			EventMngr() = default;
+			~EventMngr() = default;
+
+		private:
 			//------------
 			std::map<size_t, Ptr<OpQueue> > directory;
+			std::map<std::tuple<size_t, void*>, Ptr<OpQueue> > directory2;
+			std::map<std::tuple<size_t, void*, ENUM_EVENT_TYPE>, Ptr<OpQueue> > directory3;
 		};
 	}
 }

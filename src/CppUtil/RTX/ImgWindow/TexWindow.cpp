@@ -166,7 +166,7 @@ bool TexWindow::Run(Operation::Ptr texUpdateOp) {
 
 	// ×¢²בÊהÈכ
 
-	EventManager::GetInstance()->Reg(EventManager::KEYBOARD_PRESS | GLFW_KEY_ESCAPE,
+	EventMngr::GetInstance()->Reg(EventMngr::KB_PRESS | GLFW_KEY_ESCAPE,
 		[]() { Glfw::GetInstance()->CloseWindow(); });
 
 	// ¸üÐÂ

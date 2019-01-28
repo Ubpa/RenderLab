@@ -25,6 +25,7 @@ public:
 
 	private:
 		CppUtil::Basic::Operation::Ptr GetDefaultResizeOp();
+		CppUtil::Basic::Operation::Ptr GetDefaultListenerInitOp();
 
 	private:
 		CppUtil::Qt::RawAPI_OGLW * pOGLW;
@@ -32,6 +33,7 @@ public:
 		CppUtil::Basic::Operation::Ptr initOp;
 		CppUtil::Basic::Operation::Ptr paintOp;
 		CppUtil::Basic::Operation::Ptr resizeOp;
+		CppUtil::Basic::Operation::Ptr listenerInitOp;
 	};
 
 	SceneOp::Ptr GenScenePaintOp(int n);

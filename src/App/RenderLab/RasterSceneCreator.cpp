@@ -12,12 +12,17 @@
 #include <CppUtil/OpenGL/Camera.h>
 #include <CppUtil/OpenGL/FBO.h>
 
+#include <CppUtil/Basic/EventManager.h>
 #include <CppUtil/Basic/OpNode.h>
 #include <CppUtil/Basic/OpQueue.h>
 #include <CppUtil/Basic/Cube.h>
 #include <CppUtil/Basic/LambdaOp.h>
 #include <CppUtil/Basic/OpQueue.h>
 #include <CppUtil/Basic/GStorage.h>
+
+#include <qevent.h>
+#include <qcursor.h>
+#include <QtWidgets/QApplication>
 
 #include <ROOT_PATH.h>
 
@@ -34,7 +39,7 @@ const string rootPath = ROOT_PATH;
 //---------------------------
 
 RasterSceneCreator::SceneOp::SceneOp(CppUtil::Qt::RawAPI_OGLW * pOGLW)
-	: pOGLW(pOGLW), initOp(nullptr), paintOp(nullptr), resizeOp(nullptr) { }
+	: pOGLW(pOGLW), initOp(nullptr), paintOp(nullptr), resizeOp(nullptr), listenerInitOp(nullptr) { }
 
 bool RasterSceneCreator::SceneOp::SetOp() {
 	if (pOGLW == nullptr)
@@ -43,6 +48,8 @@ bool RasterSceneCreator::SceneOp::SetOp() {
 	pOGLW->SetInitOp(initOp);
 	pOGLW->SetPaintOp(paintOp);
 	pOGLW->SetResizeOp(resizeOp);
+	if (listenerInitOp != nullptr)
+		listenerInitOp->Run();
 	return true;
 }
 
@@ -61,6 +68,101 @@ CppUtil::Basic::Operation::Ptr RasterSceneCreator::SceneOp::GetDefaultResizeOp()
 		glViewport(0, 0, *w, *h);
 	}));
 	return defaultResizeOp;
+}
+
+CppUtil::Basic::Operation::Ptr RasterSceneCreator::SceneOp::GetDefaultListenerInitOp() {
+	auto listenerInitOp = ToPtr(new LambdaOp([this]() {
+		// log mouse pos and track mouse
+		auto MRB_PressOp = ToPtr(new LambdaOp([this]() {
+			auto pOGWL = this->GetOGLW();
+
+			pOGWL->setMouseTracking(true);
+
+			pOGWL->Reg("lock", true);
+			int x;
+			int y;
+			pOGWL->GetV(RawAPI_OGLW::str_x, x);
+			pOGWL->GetV(RawAPI_OGLW::str_y, y);
+
+			pOGWL->Reg("lockX", x);
+			pOGWL->Reg("lockY", y);
+
+			QApplication::setOverrideCursor(Qt::BlankCursor);
+		}));
+		EventMngr::Reg(Qt::RightButton, (void*)this->GetOGLW(), EventMngr::MOUSE_PRESS, MRB_PressOp);
+
+		// lock mouse and rotate camera
+		auto mouseMoveOp = ToPtr(new LambdaOp([this]() {
+			auto pOGWL = this->GetOGLW();
+
+			bool * lock;
+			pOGWL->GetP("lock", lock);
+			if (lock == nullptr || *lock == false)
+				return;
+
+			int x;
+			int y;
+			pOGWL->GetV(RawAPI_OGLW::str_x, x);
+			pOGWL->GetV(RawAPI_OGLW::str_y, y);
+
+			int lockX;
+			int lockY;
+			pOGWL->GetV("lockX", lockX);
+			pOGWL->GetV("lockY", lockY);
+
+			int xOffset = x - lockX;
+			int yOffset = lockY - y;
+
+			Camera * mainCamera;
+			pOGLW->GetP("mainCamera", mainCamera);
+
+			mainCamera->ProcessMouseMovement(xOffset, yOffset);
+
+			QCursor::setPos(pOGWL->mapToGlobal(QPoint(lockX, lockY)));
+		}));
+		EventMngr::Reg(Qt::NoButton, (void*)this->GetOGLW(), EventMngr::MOUSE_MOVE, mouseMoveOp);
+
+		// release mouse cursor
+		auto MRB_ReleaseOp = ToPtr(new LambdaOp([this]() {
+			auto pOGWL = this->GetOGLW();
+
+			pOGWL->setMouseTracking(false);
+
+			pOGWL->Reg("lock", false);
+
+			QApplication::restoreOverrideCursor();
+		}));
+		EventMngr::Reg(Qt::RightButton, (void*)this->GetOGLW(), EventMngr::MOUSE_RELEASE, MRB_ReleaseOp);
+
+		// wheel
+		auto wheelOp = ToPtr(new LambdaOp([this]() {
+			auto pOGWL = this->GetOGLW();
+
+			int angle;
+			pOGWL->GetV(RawAPI_OGLW::str_angle, angle);
+
+			Camera * mainCamera;
+			pOGLW->GetP("mainCamera", mainCamera);
+
+			mainCamera->ProcessMouseScroll(angle*0.1f);
+		}));
+		EventMngr::Reg(Qt::NoButton, (void*)this->GetOGLW(), EventMngr::MOUSE_WHEEL, wheelOp);
+
+		// Move
+		size_t moveKey[] = { Qt::Key_W, Qt::Key_S, Qt::Key_A, Qt::Key_D, Qt::Key_Q, Qt::Key_E };
+		for (size_t i = 0; i < 6; i++) {
+			auto op = ToPtr(new LambdaOp([this, moveKey, i]() {
+				auto pOGLW = this->GetOGLW();
+				Camera * mainCamera;
+				pOGLW->GetP("mainCamera", mainCamera);
+				mainCamera->ProcessKeyboard(Camera::ENUM_Movement(Camera::MOVE_FORWARD + i), 0.015f);
+			}));
+
+			EventMngr::Reg(moveKey[i], (void*)this->GetOGLW(), EventMngr::KB_PRESS, op);
+		}
+	}));
+
+	return listenerInitOp;
 }
 
 //---------------------------
@@ -484,9 +586,14 @@ RasterSceneCreator::SceneOp::Ptr RasterSceneCreator::GenScenePaintOp_1() {
 		mainCamera->SetRatioWH(*w, *h);
 	}));
 
+	// listenerInitOp
+
+	auto listenerInitOp = sceneOp->GetDefaultListenerInitOp();
+
 	sceneOp->initOp = initOp;
 	sceneOp->paintOp = paintOp;
 	sceneOp->resizeOp = resizeOp;
+	sceneOp->listenerInitOp = listenerInitOp;
 	// register the sceneOp to let op work
 	pOGLW->Reg("sceneOp_1", sceneOp);
 

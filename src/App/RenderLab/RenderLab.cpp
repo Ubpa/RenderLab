@@ -41,8 +41,11 @@ RenderLab::RenderLab(QWidget *parent)
 		ui.OGLW_Raster->update();
 		ui.OGLW_RayTracer->update();
 	});
-	timer->start(33);
 
+	const size_t fps = 60;
+	timer->start(1000/fps);
+
+	ui.OGLW_Raster->setFocusPolicy(Qt::ClickFocus);
 	rasterSceneOp->SetOp();
 	ui.OGLW_RayTracer->SetPaintOp(paintOp1);
 }

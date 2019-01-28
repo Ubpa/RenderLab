@@ -34,9 +34,20 @@ namespace CppUtil {
 			virtual void paintGL();
 			virtual void resizeGL(int w, int h);
 
+		protected:
+			virtual void keyPressEvent(QKeyEvent *event);
+			virtual void keyReleaseEvent(QKeyEvent *event);
+			virtual void mouseMoveEvent(QMouseEvent *event);
+			virtual void mousePressEvent(QMouseEvent *event);
+			virtual void mouseReleaseEvent(QMouseEvent *event);
+			virtual void wheelEvent(QWheelEvent *event);
+
 		public:
 			static std::string str_w;
 			static std::string str_h;
+			static std::string str_x;
+			static std::string str_y;
+			static std::string str_angle;
 
 		private:
 			Basic::Operation::Ptr initOp;
@@ -60,7 +71,7 @@ namespace CppUtil {
 
 		template<typename T>
 		bool RawAPI_OGLW::GetV(const std::string & uniqueID, T & val) {
-			return GS::GetV(objectName().toStdString() + uniqueID, val)
+			return GS::GetV(objectName().toStdString() + uniqueID, val);
 		}
 	}
 }
