@@ -1,7 +1,7 @@
 #include <CppUtil/OpenGL/FBO.h>
 
 // Choose OpenGL API
-#ifdef USE_QT_OPENGL_API
+#if USE_QT_OPENGL_API
 #include <CppUtil/Qt/RawAPI_Define.h>
 #else
 #include <glad/glad.h>
@@ -12,7 +12,12 @@
 using namespace CppUtil::OpenGL;
 using namespace std;
 
-size_t FBO::DefaultBuffer = 0;
+#if !USE_QT_OPENGL_API
+#define DEFAULT_FRAMEBUFFER 0
+#endif
+
+FBO::FBO()
+	: type(ENUM_TYPE_INVALID), isValid(false) { }
 
 FBO::FBO(size_t width, size_t height, ENUM_TYPE type)
 	: type(type), width(width), height(height) {
@@ -522,5 +527,5 @@ bool FBO::Use() const{
 }
 
 void FBO::UseDefault() {
-	glBindFramebuffer(GL_FRAMEBUFFER, DefaultBuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, DEFAULT_FRAMEBUFFER);
 }

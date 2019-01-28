@@ -1,8 +1,5 @@
 #include "RenderLab.h"
 #include <QtWidgets/QApplication>
-#include <qopenglcontext.h>
-#include <qoffscreensurface.h>
-#include <qopenglfunctions_3_3_core.h>
 
 #include <qfile.h>
 #include <qtextstream.h>

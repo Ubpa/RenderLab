@@ -36,10 +36,13 @@ namespace CppUtil {
 			}
 
 			template<typename T>
-			static void GetV(const std::string & uniqueID, T & val) {
+			static bool GetV(const std::string & uniqueID, T & val) {
 				auto p = _GStorage<T>::GetInstance()->GetP(uniqueID);
-				if (p != nullptr)
-					val = *p;
+				if (p == nullptr)
+					return false;
+
+				val = *p;
+				return true;
 			}
 		};
 	}

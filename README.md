@@ -8,6 +8,8 @@ CMake: 3.1.0 以上
 
 Visual Studio: 2017
 
+Qt: 5.12.0
+
 ```bash
 mkdir build
 cd build
@@ -17,6 +19,8 @@ cmake .. -Wno-dev
 ## 2. TODO
 
 - [x] 移植 OpenGL
+- [x] 通过移植 LearnOpenGL / [ 05_08_Bloom ] 测试是否成功移植
+- [ ] 实现事件传递机制（键盘，鼠标等）
 - [ ] 移植 CPU RTX
 - [ ] 优化数据结构
   - [ ] 结点

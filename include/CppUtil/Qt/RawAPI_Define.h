@@ -6,7 +6,11 @@
 
 #define _OPENGL_API_VERSION_ QOpenGLFunctions_3_3_Core
 
-#define _OPENGL_API_PREFIX_ QOpenGLContext::currentContext()->versionFunctions<_OPENGL_API_VERSION_>()
+#define _CURRENT_CONTEXT_ QOpenGLContext::currentContext()
+
+#define DEFAULT_FRAMEBUFFER _CURRENT_CONTEXT_->defaultFramebufferObject()
+
+#define _OPENGL_API_PREFIX_ _CURRENT_CONTEXT_->versionFunctions<_OPENGL_API_VERSION_>()
 
 #ifndef glActiveTexture
 #define glActiveTexture _OPENGL_API_PREFIX_->glActiveTexture

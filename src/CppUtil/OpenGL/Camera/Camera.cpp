@@ -13,12 +13,12 @@ const float Camera::FOV = 45.0f;
 const Camera::ENUM_Projection Camera::PROJECTION_MODE = Camera::PROJECTION_PERSEPCTIVE;
 
 // Constructor with vectors
-Camera::Camera(glm::vec3 position, float yaw, float pitch , float rationWH , float nearPlane , float farPlane , glm::vec3 up, ENUM_Projection projectionMode)
+Camera::Camera(glm::vec3 position, float yaw, float pitch , float ratioWH , float nearPlane , float farPlane , glm::vec3 up, ENUM_Projection projectionMode)
 	:
 	position(position),
 	yaw(yaw),
 	pitch(pitch),
-	rationWH(rationWH),
+	ratioWH(ratioWH),
 	nearPlane(nearPlane),
 	farPlane(farPlane),
 	worldUp(up),
@@ -62,10 +62,10 @@ glm::mat4 Camera::GetProjectionMatrix() {
 	switch (projectionMode)
 	{
 	case OpenGL::Camera::PROJECTION_PERSEPCTIVE:
-		return glm::perspective(glm::radians(fov), rationWH, nearPlane, farPlane);
+		return glm::perspective(glm::radians(fov), ratioWH, nearPlane, farPlane);
 		break;
 	case OpenGL::Camera::PROJECTION_ORTHO:
-		return glm::ortho(-fov / 4.0f, fov / 4.0f, -fov / 4.0f / rationWH, fov / 4.0f / rationWH, nearPlane, farPlane);
+		return glm::ortho(-fov / 4.0f, fov / 4.0f, -fov / 4.0f / ratioWH, fov / 4.0f / ratioWH, nearPlane, farPlane);
 		break;
 	default:
 		return glm::mat4(1.0f);

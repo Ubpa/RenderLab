@@ -3,12 +3,13 @@
 #include "RasterSceneCreator.h"
 
 #include <CppUtil/Qt/RawAPI_Define.h>
+
 #include <CppUtil/Basic/LambdaOp.h>
-#include <qtimer.h>
 
 #include <ROOT_PATH.h>
 
 #include <qdebug.h>
+#include <qtimer.h>
 
 using namespace CppUtil::Basic;
 using namespace CppUtil::Qt;
@@ -25,7 +26,7 @@ RenderLab::RenderLab(QWidget *parent)
 	delete lTitleBar;
 
 	RasterSceneCreator sc(ui.OGLW_Raster);
-	auto rasterSceneOp = sc.GenScenePaintOp(0);
+	auto rasterSceneOp = sc.GenScenePaintOp(1);
 
 	// raytracer paint op
 	auto paintOp1 = ToPtr(new LambdaOp([this]() {

@@ -11,6 +11,7 @@ namespace CppUtil {
 		public:
 			enum ENUM_TYPE
 			{
+				ENUM_TYPE_INVALID,
 				ENUM_TYPE_BASIC,
 				ENUM_TYPE_RGBF1_DEPTH,
 				ENUM_TYPE_RGBF2_DEPTH,
@@ -30,6 +31,7 @@ namespace CppUtil {
 				ENUM_PASS_DEPTH,
 			};
 
+			FBO();
 			FBO(size_t width, size_t height, ENUM_TYPE type = ENUM_TYPE_BASIC);
 			bool PassTo(const FBO & fbo, ENUM_PASS_TYPE passType = ENUM_PASS_COLOR) const;
 			bool PassTo(size_t fboID, size_t width, size_t height, ENUM_PASS_TYPE passType = ENUM_PASS_COLOR) const;
@@ -55,8 +57,6 @@ namespace CppUtil {
 
 			bool IsComplete() const;
 			static size_t PassType2GL(ENUM_PASS_TYPE passType);
-
-			FBO & operator=(const FBO & fbo) = delete;
 
 			ENUM_TYPE type;
 			size_t ID;

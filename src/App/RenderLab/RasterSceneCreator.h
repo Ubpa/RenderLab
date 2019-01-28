@@ -17,19 +17,28 @@ public:
 	class SceneOp : public CppUtil::Basic::HeapObj {
 		HEAP_OBJ_SETUP(SceneOp)
 		friend class RasterSceneCreator;
+
 	public:
-		SceneOp(CppUtil::Qt::RawAPI_OGLW * pOGLW, CppUtil::Basic::Operation::Ptr initOp = nullptr, CppUtil::Basic::Operation::Ptr paintOp = nullptr);
+		SceneOp(CppUtil::Qt::RawAPI_OGLW * pOGLW);
 		bool SetOp();
+		CppUtil::Qt::RawAPI_OGLW * GetOGLW() { return pOGLW; }
+
+	private:
+		CppUtil::Basic::Operation::Ptr GetDefaultResizeOp();
+
 	private:
 		CppUtil::Qt::RawAPI_OGLW * pOGLW;
+
 		CppUtil::Basic::Operation::Ptr initOp;
 		CppUtil::Basic::Operation::Ptr paintOp;
+		CppUtil::Basic::Operation::Ptr resizeOp;
 	};
 
 	SceneOp::Ptr GenScenePaintOp(int n);
 
 private:
 	SceneOp::Ptr GenScenePaintOp_0();
+	SceneOp::Ptr GenScenePaintOp_1();
 
 
 	CppUtil::Qt::RawAPI_OGLW * pOGLW;

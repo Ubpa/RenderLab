@@ -21,6 +21,7 @@ namespace Define{
 	const std::string texture_Prefix = "/data/textures/";
 	const std::string texture_wood = texture_Prefix + "wood.jpg";
 	const std::string texture_earth = texture_Prefix + "earth.jpg";
+	const std::string texture_box = texture_Prefix + "box.png";
 
 	//------------ common shader
 	const std::string str_ShadersCommon_Prefix = "/data/shaders/Common/";

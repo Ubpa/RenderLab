@@ -1,7 +1,7 @@
 #include <CppUtil/OpenGL/Mesh.h>
 
 // Choose OpenGL API
-#ifdef USE_QT_OPENGL_API
+#if USE_QT_OPENGL_API
 #include <CppUtil/Qt/RawAPI_Define.h>
 #else
 #include <glad/glad.h>

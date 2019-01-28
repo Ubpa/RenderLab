@@ -6,32 +6,39 @@
 using namespace CppUtil::Qt;
 using namespace CppUtil::Basic;
 
+std::string RawAPI_OGLW::str_w = "resizeGL::width";
+std::string RawAPI_OGLW::str_h = "resizeGL::height";
+
 RawAPI_OGLW::RawAPI_OGLW(QWidget* parent, ::Qt::WindowFlags f)
-	: QOpenGLWidget(parent, f), paintOp(nullptr), initOp(nullptr) { }
+	: QOpenGLWidget(parent, f), resizeOp(nullptr), paintOp(nullptr), initOp(nullptr) { }
 
 RawAPI_OGLW::~RawAPI_OGLW() { }
-
-void RawAPI_OGLW::SetPaintOp(Operation::Ptr paintOp) {
-	this->paintOp = paintOp;
-}
 
 void RawAPI_OGLW::SetInitOp(Operation::Ptr initOp) {
 	this->initOp = initOp;
 }
 
+void RawAPI_OGLW::SetPaintOp(Operation::Ptr paintOp) {
+	this->paintOp = paintOp;
+}
+
+void RawAPI_OGLW::SetResizeOp(Operation::Ptr resizeOp) {
+	this->resizeOp = resizeOp;
+}
+
 void RawAPI_OGLW::initializeGL(){
 	if (initOp != nullptr) {
-		GS::Reg("objectname", objectName().toStdString());
 		initOp->Run();
 		initOp = nullptr;
 	}
-
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_CULL_FACE);
 }
 
 void RawAPI_OGLW::resizeGL(int w, int h) {
-	glViewport(0, 0, w, h);
+	if (resizeOp != nullptr) {
+		Reg(str_w, w);
+		Reg(str_h, h);
+		resizeOp->Run();
+	}
 }
 
 void RawAPI_OGLW::paintGL() {
