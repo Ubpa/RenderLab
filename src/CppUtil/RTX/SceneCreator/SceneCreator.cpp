@@ -3,12 +3,12 @@
 #include <CppUtil/OpenGL/CommonDefine.h>
 
 #include <CppUtil/RTX/Scene.h>
-#include <CppUtil/RTX/TRayCamera.h>
-#include <CppUtil/RTX/TRay.h>
+#include <CppUtil/RTX/RayCamera.h>
+#include <CppUtil/RTX/Ray.h>
 
 #include <CppUtil/RTX/Sky.h>
 #include <CppUtil/RTX/BVH_Node.h>
-#include <CppUtil/RTX/MoveSphere.h>
+#include <CppUtil/RTX/Sphere.h>
 #include <CppUtil/RTX/Group.h>
 
 #include <CppUtil/RTX/OpMaterial.h>
@@ -30,11 +30,11 @@ using namespace std;
 
 const string rootPath = ROOT_PATH;
 
-Scene::CPtr SceneCreator::Gen(ENUM_SCENE scene) {
+Scene::CPtr SceneCreator::Gen(ENUM_SCENE scene, int w, int h) {
 	switch (scene)
 	{
 	case RTX::SceneCreator::LOTS_OF_BALLS:
-		return Gen_LOS_OF_BALLS();
+		return Gen_LOS_OF_BALLS(w, h);
 		break;
 	default:
 		return nullptr;
@@ -42,7 +42,8 @@ Scene::CPtr SceneCreator::Gen(ENUM_SCENE scene) {
 	}
 }
 
-Scene::CPtr SceneCreator::Gen_LOS_OF_BALLS() {
+Scene::CPtr SceneCreator::Gen_LOS_OF_BALLS(int w, int h) {
+	
 	auto skyMat = ToPtr(new OpMaterial([](const HitRecord & rec)->bool {
 		float t = 0.5f * (rec.vertex.pos.y + 1.0f);
 		vec3 white = vec3(1.0f, 1.0f, 1.0f);
@@ -56,6 +57,7 @@ Scene::CPtr SceneCreator::Gen_LOS_OF_BALLS() {
 	float t0 = 0.0f;
 	float t1 = 1.0f;
 
+	
 	vector<Hitable::CPtr> bvhData;
 	for (int a = -11; a < 11; a++) {
 		for (int b = -11; b < 11; b++) {
@@ -64,7 +66,7 @@ Scene::CPtr SceneCreator::Gen_LOS_OF_BALLS() {
 			if ((center - vec3(4, 0.2, 0)).length() > 0.9) {
 				if (choose_mat < 0.8) {  // diffuse
 					auto mat = ToPtr(new Lambertian(vec3(Math::Rand_F()*Math::Rand_F(), Math::Rand_F()*Math::Rand_F(), Math::Rand_F()*Math::Rand_F())));
-					auto sphere = ToPtr(new MoveSphere(t0, t1, center, center + vec3(0, Math::Rand_F()*0.5f, 0), 0.2f, mat));
+					auto sphere = ToPtr(new Sphere(center, 0.2f, mat));
 					bvhData.push_back(sphere);
 				}
 				else if (choose_mat < 0.95) { // metal
@@ -81,15 +83,22 @@ Scene::CPtr SceneCreator::Gen_LOS_OF_BALLS() {
 		}
 	}
 
+	
 	auto bvhNode = ToPtr(new BVH_Node(bvhData));
 
+	
 	auto checkTex = OpTexture::CheckerTexture(vec3(0.2, 0.3, 0.1), vec3(0.9, 0.9, 0.9));
+	
 	auto noiseTex = OpTexture::NoiseTexture(0, vec3(1), 3);
+	
 	auto earthTex = ToPtr(new ImgTexture(rootPath + texture_earth, true));
+
+	
 	if (!earthTex->IsValid()) {
 		printf("ERROR: earthTex[%s] is invalid.\n", (rootPath + texture_earth).c_str());
 		exit(1);
 	}
+	
 
 	auto group = ToPtr(new Group);
 	auto sphereBottom = ToPtr(new Sphere(vec3(0, -1000, 0), 1000, ToPtr(new Lambertian(noiseTex))));
@@ -101,13 +110,14 @@ Scene::CPtr SceneCreator::Gen_LOS_OF_BALLS() {
 
 	(*group) << bvhNode << sphere0 << sphere1 << sphere2 << sphere3 << sphere4 << sphereBottom << sky;
 
+	
 	vec3 origin(13, 2, 3);
 	vec3 viewPoint(0, 0, 0);
 	float fov = 20.0f;
 	float lenR = 0.05f;
 	float distToFocus = 10.0f;
-	float ratioWH = 16.0f / 9.0f;
-	TRayCamera::Ptr camera = ToPtr(new TRayCamera(origin, viewPoint, ratioWH, t0, t1, fov, lenR, distToFocus));
+	float ratioWH = float(w) / float(h);
+	RayCamera::Ptr camera = ToPtr(new RayCamera(origin, viewPoint, ratioWH, fov, lenR, distToFocus));
 
 	return ToPtr(new Scene(group, camera));
 }

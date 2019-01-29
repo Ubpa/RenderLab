@@ -51,6 +51,11 @@ void RawAPI_OGLW::resizeGL(int w, int h) {
 }
 
 void RawAPI_OGLW::paintGL() {
+	if (initOp != nullptr) {
+		initOp->Run();
+		initOp = nullptr;
+	}
+
 	if (paintOp != nullptr)
 		paintOp->Run();
 }

@@ -1,6 +1,7 @@
 #include <CppUtil/Qt/PaintImgOpCreator.h>
 
 #include <CppUtil/Qt/RawAPI_OGLW.h>
+#include <CppUtil/Qt/RawAPI_Define.h>
 
 #include <CppUtil/OpenGL/VAO.h>
 #include <CppUtil/OpenGL/Texture.h>
@@ -25,13 +26,16 @@ using namespace std;
 
 const string rootPath = ROOT_PATH;
 
+Ptr<VAO> GenImgVAO(int imgW, int imgH, int winW, int winH);
+
 PaintImgOpCreator::PaintImgOp::PaintImgOp(RawAPI_OGLW * pOGLW)
 	: pOGLW(pOGLW), initOp(nullptr), paintOp(nullptr), resizeOp(nullptr), img(nullptr) { }
 
-bool PaintImgOpCreator::PaintImgOp::SetOp() {
+bool PaintImgOpCreator::PaintImgOp::SetOp(int w, int h) {
 	if (pOGLW == nullptr)
 		return false;
 
+	img = ToPtr(new Image(w, h, 3));
 	pOGLW->SetInitOp(initOp);
 	pOGLW->SetPaintOp(paintOp);
 	pOGLW->SetResizeOp(resizeOp);
@@ -41,20 +45,25 @@ bool PaintImgOpCreator::PaintImgOp::SetOp() {
 PaintImgOpCreator::PaintImgOpCreator(RawAPI_OGLW * pOGLW)
 	: pOGLW(pOGLW) { }
 
-PaintImgOpCreator::PaintImgOp::Ptr PaintImgOpCreator::GenScenePaintOp(int w, int h) {
+PaintImgOpCreator::PaintImgOp::Ptr PaintImgOpCreator::GenScenePaintOp() {
 	// init
 	PaintImgOp::Ptr paintImgOp = ToPtr(new PaintImgOp(pOGLW));
 
-	auto initOp = ToPtr(new LambdaOp([paintImgOp, w, h]() {
+	auto initOp = ToPtr(new LambdaOp([paintImgOp]() {
 		auto pOGLW = paintImgOp->GetOGLW();
+		auto img = paintImgOp->GetImg();
+		int imgW = img->GetWidth();
+		int imgH = img->GetHeight();
+		int winW = pOGLW->width();
+		int winH = pOGLW->height();
 		
 		//------------ Texture
 		Texture showImgTex(Texture::ENUM_TYPE_2D_DYNAMIC);
 		pOGLW->Reg("showImgTex", showImgTex);
 
 		//------------ VAO
-		VAO VAO_Screen(&(data_ScreenVertices[0]), sizeof(data_ScreenVertices), { 2,2 });
-		pOGLW->Reg("VAO_Screen", VAO_Screen);
+		Ptr<VAO> imgVAO = GenImgVAO(imgW, imgH, winW, winH);
+		pOGLW->Reg("imgVAO", imgVAO);
 
 		//------------ Screen Shader
 		string screen_vs = rootPath + str_Screen_vs;
@@ -72,28 +81,83 @@ PaintImgOpCreator::PaintImgOp::Ptr PaintImgOpCreator::GenScenePaintOp(int w, int
 		auto pOGLW = paintImgOp->GetOGLW();
 
 		Texture * showImgTex;
-		VAO * VAO_Screen;
+		Ptr<VAO> imgVAO;
 		Shader * screenShader;
 
 		pOGLW->GetP("showImgTex", showImgTex);
-		pOGLW->GetP("VAO_Screen", VAO_Screen);
+		pOGLW->GetV("imgVAO", imgVAO);
 		pOGLW->GetP("screenShader", screenShader);
 
-		if (!showImgTex || !VAO_Screen || !screenShader) {
+		if (!showImgTex || !imgVAO || !screenShader) {
 			qDebug() << "ERROR: get pointer fail";
 			return;
 		}
 
 		FBO::UseDefault();
-		showImgTex->SetImg(*paintImgOp->GetImg());
-		showImgTex->Use(0);
-		VAO_Screen->Draw(*screenShader);
+		if (paintImgOp->GetImg() && paintImgOp->GetImg()->GetConstData()) {
+			showImgTex->SetImg(*paintImgOp->GetImg());
+			showImgTex->Use(0);
+			imgVAO->Draw(*screenShader);
+		}
+	}));
+
+	auto resizeOp = ToPtr(new LambdaOp([paintImgOp]() {
+		auto pOGLW = paintImgOp->GetOGLW();
+		auto img = paintImgOp->GetImg();
+		int imgW = img->GetWidth();
+		int imgH = img->GetHeight();
+
+		int * w;
+		int * h;
+		pOGLW->GetP(RawAPI_OGLW::str_w, w);
+		pOGLW->GetP(RawAPI_OGLW::str_h, h);
+		if (!w || !h) {
+			qDebug() << "get w or h fail\n";
+			return;
+		}
+		glViewport(0, 0, *w, *h);
+
+		Ptr<VAO> imgVAO = GenImgVAO(imgW, imgH, *w, *h);
+		pOGLW->Reg("imgVAO", imgVAO);
 	}));
 
 	paintImgOp->initOp = initOp;
 	paintImgOp->paintOp = paintOp;
-	paintImgOp->img = ToPtr(new Image(w, h, 3));
+	paintImgOp->resizeOp = resizeOp;
 
 	pOGLW->Reg("paintImgOp", paintImgOp);
 	return paintImgOp;
+}
+
+Ptr<VAO> GenImgVAO(int imgW, int imgH, int winW, int winH){
+	float imgRatioWH = float(imgW) / float(imgH);
+	float winRatioWH = float(winW) / float(winH);
+	float minX, maxX, minY, maxY;
+	if (winRatioWH > imgRatioWH) {
+		float R = imgRatioWH / winRatioWH;
+		minX = -R;
+		maxX = R;
+		minY = -1;
+		maxY = 1;
+	}
+	else {
+		float R = winRatioWH / imgRatioWH;
+		minX = -1;
+		maxX = 1;
+		minY = -R;
+		maxY = R;
+	}
+
+	float data[] = {
+		minX, maxY,  0.0f, 1.0f,
+		minX, minY,  0.0f, 0.0f,
+		maxX, minY,  1.0f, 0.0f,
+
+		minX, maxY,  0.0f, 1.0f,
+		maxX, minY,  1.0f, 0.0f,
+		maxX, maxY,  1.0f, 1.0f
+	};
+
+	Ptr<VAO> imgVAO = Ptr<VAO>(new VAO(&(data[0]), sizeof(data), { 2,2 }));
+	return imgVAO;
 }

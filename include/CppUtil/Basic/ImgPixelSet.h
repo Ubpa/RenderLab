@@ -13,7 +13,8 @@ namespace CppUtil {
 			ImgPixelSet(size_t width, size_t height);
 
 			using RandSet<glm::uvec2>::RandPick;
-			size_t RandPick(size_t n, std::vector<glm::uvec2> & pixels);
+			std::vector<glm::uvec2> RandPick(size_t n);
+			std::vector<glm::uvec2> PickAll();
 		};
 	}
 }

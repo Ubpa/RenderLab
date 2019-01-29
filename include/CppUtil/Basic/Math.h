@@ -68,6 +68,8 @@ namespace CppUtil {
 			template<typename T>
 			T max(const std::vector<T> & val);
 
+			bool IsBase2(int n);
+
 			//--------------以下为模板的实现----------------
 			//--------------以下为模板的实现----------------
 			//--------------以下为模板的实现----------------

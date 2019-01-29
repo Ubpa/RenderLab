@@ -13,9 +13,9 @@ namespace RTX {
 			LOTS_OF_BALLS,
 		};
 
-		static CppUtil::Basic::CPtr<Scene> Gen(ENUM_SCENE scene);
+		static CppUtil::Basic::CPtr<Scene> Gen(ENUM_SCENE scene, int w, int h);
 	private:
-		static CppUtil::Basic::CPtr<Scene> Gen_LOS_OF_BALLS();
+		static CppUtil::Basic::CPtr<Scene> Gen_LOS_OF_BALLS(int w, int h);
 	};
 }
 

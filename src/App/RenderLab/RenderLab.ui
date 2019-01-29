@@ -18,7 +18,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="rasterTap">
        <attribute name="title">
@@ -184,7 +184,10 @@ font: 15pt &quot;Consolas&quot;;
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="btn_RenderPause">
+      <widget class="QPushButton" name="btn_RenderStop">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="sizePolicy">
         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
          <horstretch>0</horstretch>
@@ -205,7 +208,7 @@ font: 15pt &quot;Consolas&quot;;
         </sizepolicy>
        </property>
        <property name="value">
-        <number>24</number>
+        <number>0</number>
        </property>
       </widget>
      </item>

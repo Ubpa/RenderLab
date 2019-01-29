@@ -17,10 +17,15 @@ namespace RTX {
 	public:
 		RTX_Renderer(CppUtil::Basic::CPtr<Scene> scene, CppUtil::Basic::Ptr<CppUtil::Basic::Image> img);
 		void Run();
+		void Stop();
+		float ProcessRate();
 	private:
 		CppUtil::Basic::Ptr<CppUtil::Basic::Image> img;
 		CppUtil::Basic::Ptr<RayTracer> rayTracer;
 		CppUtil::Basic::CPtr<Scene> scene;
+		volatile bool isStop;
+		size_t maxLoop;
+		size_t curLoop;
 	};
 }
 

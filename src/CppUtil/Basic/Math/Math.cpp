@@ -87,3 +87,13 @@ vec4 Math::Intersect_RayTri(const vec3 & e, const vec3 & d, const vec3 & a, cons
 	float alpha = 1 - equation_X[0] - equation_X[1];
 	return vec4(alpha, equation_X);
 }
+
+bool Math::IsBase2(int n) {
+	while (n > 1) {
+		if (n & 0x1)
+			return false;
+
+		n >>= 1;
+	}
+	return true;
+}

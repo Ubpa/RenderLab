@@ -3,6 +3,8 @@
 #include <CppUtil/Qt/PaintImgOpCreator.h>
 #include <CppUtil/Qt/RasterOpCreator.h>
 #include <CppUtil/Qt/RawAPI_Define.h>
+#include <CppUtil/Qt/OpThread.h>
+
 #include <CppUtil/RTX/SceneCreator.h>
 #include <CppUtil/RTX/RTX_Renderer.h>
 
@@ -49,17 +51,43 @@ RenderLab::RenderLab(QWidget *parent)
 	// raytracer
 	ui.OGLW_RayTracer->setFocusPolicy(Qt::ClickFocus);
 	PaintImgOpCreator pioc(ui.OGLW_RayTracer);
-	auto paintImgOp = pioc.GenScenePaintOp(1024, 768);
-	paintImgOp->SetOp();
+	paintImgOp = pioc.GenScenePaintOp();
+}
 
-	
-	auto drawImgFunc = [paintImgOp]() {
+void RenderLab::on_btn_RenderStart_clicked(){
+	ui.btn_RenderStart->setEnabled(false);
+	ui.btn_RenderStop->setEnabled(true);
+
+	OpThread::Ptr drawImgThread = ToPtr(new OpThread());
+
+	auto drawImgOp = ToPtr(new LambdaOp([this, drawImgThread]() {
+		paintImgOp->SetOp(1024, 768);
+		auto scene = SceneCreator::Gen(RTX::SceneCreator::LOTS_OF_BALLS, 1024, 768);
 		auto img = paintImgOp->GetImg();
-		auto scene = SceneCreator::Gen(RTX::SceneCreator::LOTS_OF_BALLS);
 		RTX_Renderer rtxRenderer(scene, img);
-		rtxRenderer.Run();
-	};
 
-	std::thread drawImg(drawImgFunc);
-	drawImg.detach();
+		OpThread::Ptr controller = ToPtr(new OpThread(ToPtr(new LambdaOp([this, drawImgThread, &rtxRenderer]() {
+			while (!drawImgThread->IsStop())
+				Sleep(100);
+			rtxRenderer.Stop();
+		}))));
+		controller->start();
+
+		rtxRenderer.Run();
+		qDebug() << "rtx is finished or stop\n";
+	}));
+	drawImgThread->SetOp(drawImgOp);
+
+	GS::Reg("drawImgThread", drawImgThread);
+	drawImgThread->start();
+}
+
+void RenderLab::on_btn_RenderStop_clicked() {
+	ui.btn_RenderStart->setEnabled(true);
+	ui.btn_RenderStop->setEnabled(false);
+	OpThread::Ptr drawImgThread;
+	GS::GetV("drawImgThread", drawImgThread);
+	if (!drawImgThread)
+		return;
+	drawImgThread->Stop();
 }

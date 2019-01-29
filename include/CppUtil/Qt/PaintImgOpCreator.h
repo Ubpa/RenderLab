@@ -23,7 +23,7 @@ namespace CppUtil {
 
 			public:
 				PaintImgOp(Qt::RawAPI_OGLW * pOGLW);
-				bool SetOp();
+				bool SetOp(int w, int h);
 				Qt::RawAPI_OGLW * GetOGLW() { return pOGLW; }
 				Basic::Ptr<Basic::Image> GetImg() { return img; }
 
@@ -36,8 +36,8 @@ namespace CppUtil {
 				Basic::Ptr<Basic::Image> img;
 			};
 
-			PaintImgOp::Ptr GenScenePaintOp(int w, int h);
-
+			PaintImgOp::Ptr GenScenePaintOp();
+			
 		private:
 			Qt::RawAPI_OGLW * pOGLW;
 		};
