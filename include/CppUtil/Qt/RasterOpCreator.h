@@ -11,14 +11,14 @@ namespace CppUtil {
 	namespace Qt {
 		class RawAPI_OGLW;
 
-		class RasterSceneCreator {
+		class RasterOpCreator {
 		public:
-			RasterSceneCreator(RawAPI_OGLW * pOGLW);
+			RasterOpCreator(RawAPI_OGLW * pOGLW);
 
 		public:
 			class SceneOp : public Basic::HeapObj {
 				HEAP_OBJ_SETUP(SceneOp)
-					friend class RasterSceneCreator;
+					friend class RasterOpCreator;
 
 			public:
 				SceneOp(Qt::RawAPI_OGLW * pOGLW);

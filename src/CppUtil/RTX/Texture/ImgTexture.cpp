@@ -8,7 +8,7 @@ using namespace glm;
 using namespace std;
 
 ImgTexture::ImgTexture(const std::string & fileName, bool flip)
-	: img(new Image(fileName.c_str(), flip)) { }
+	: img(ToCPtr(new Image(fileName.c_str(), flip))) { }
 
 vec3 ImgTexture::Value(float u, float v, const glm::vec3 & p) const {
 	if (!img->IsValid())

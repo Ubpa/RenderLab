@@ -1,6 +1,7 @@
 #include "RenderLab.h"
 
-#include <CppUtil/Qt/RasterSceneCreator.h>
+#include <CppUtil/Qt/PaintImgOpCreator.h>
+#include <CppUtil/Qt/RasterOpCreator.h>
 #include <CppUtil/Qt/RawAPI_Define.h>
 
 #include <CppUtil/Basic/LambdaOp.h>
@@ -22,17 +23,7 @@ RenderLab::RenderLab(QWidget *parent)
 	ui.dock_Top->setTitleBarWidget(lEmptyWidget);
 	delete lTitleBar;
 
-	RasterSceneCreator sc(ui.OGLW_Raster);
-	auto rasterSceneOp = sc.GenScenePaintOp(1);
-
-	// raytracer paint op
-	auto paintOp1 = ToPtr(new LambdaOp([this]() {
-		static int i = 0;
-		i++;
-		glClearColor(0.5f*(1+sinf(i*0.1f)), 0.5f*(1 + sinf(1+i*0.1f)), 0.5f*(1 + sinf(2+i*0.1f)), 1);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	}));
-	
+	// update per frame
 	QTimer * timer = new QTimer;
 	timer->callOnTimeout([this]() {
 		ui.OGLW_Raster->update();
@@ -40,9 +31,17 @@ RenderLab::RenderLab(QWidget *parent)
 	});
 
 	const size_t fps = 60;
-	timer->start(1000/fps);
+	timer->start(1000 / fps);
 
+	// raster
 	ui.OGLW_Raster->setFocusPolicy(Qt::ClickFocus);
+	RasterOpCreator roc(ui.OGLW_Raster);
+	auto rasterSceneOp = roc.GenScenePaintOp(1);
 	rasterSceneOp->SetOp();
-	ui.OGLW_RayTracer->SetPaintOp(paintOp1);
+
+	// raytracer
+	ui.OGLW_RayTracer->setFocusPolicy(Qt::ClickFocus);
+	PaintImgOpCreator pioc(ui.OGLW_RayTracer);
+	auto paintImgOp = pioc.GenScenePaintOp(1024, 768);
+	paintImgOp->SetOp();
 }

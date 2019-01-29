@@ -46,6 +46,8 @@ void RawAPI_OGLW::resizeGL(int w, int h) {
 		Reg(str_h, h);
 		resizeOp->Run();
 	}
+	else
+		glViewport(0, 0, w, h);
 }
 
 void RawAPI_OGLW::paintGL() {

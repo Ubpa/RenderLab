@@ -74,14 +74,14 @@ bool Texture::Load(const std::vector<std::string> & skybox) {
 	// -------------------------------------------------------
 	for (size_t i = 0; i < skybox.size(); i++)
 	{
-		Image img(skybox[i].c_str());
-		if (!img.IsValid()) {
+		auto img = ToPtr(new Image(skybox[i].c_str()));
+		if (!img->IsValid()) {
 			printf("Cubemap texture failed to load at path: %s\n", skybox[i].c_str());
 			type = ENUM_TYPE_NOT_VALID;
 			return false;
 		}
 
-		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, img.GetWidth(), img.GetHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, img.GetConstData());
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, img->GetWidth(), img->GetHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, img->GetConstData());
 		glGenerateMipmap(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i);
 	}
 
@@ -135,8 +135,8 @@ bool Texture::Load(const std::string & path, bool flip, bool gammaCorrection) {
 		return false;
 	}
 	
-	Image img(path.c_str(), flip);
-	if (!img.IsValid()) {
+	auto img = ToPtr(new Image(path.c_str(), flip));
+	if (!img->IsValid()) {
 		printf("ERROR: Texture [%s] load failed\n", path.c_str());
 		type = ENUM_TYPE_NOT_VALID;
 		return false;
@@ -144,7 +144,7 @@ bool Texture::Load(const std::string & path, bool flip, bool gammaCorrection) {
 
 	GLenum internalFormat;
 	GLenum dataFormat;
-	int nrComponents = img.GetChannel();
+	int nrComponents = img->GetChannel();
 	if (nrComponents == 1) {
 		internalFormat = GL_RED;
 		dataFormat = GL_RED;
@@ -172,7 +172,7 @@ bool Texture::Load(const std::string & path, bool flip, bool gammaCorrection) {
 	@8 源图类型
 	@9 图像数据
 	*/
-	glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, img.GetWidth(), img.GetHeight(), 0, dataFormat, GL_UNSIGNED_BYTE, img.GetConstData());
+	glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, img->GetWidth(), img->GetHeight(), 0, dataFormat, GL_UNSIGNED_BYTE, img->GetConstData());
 
 	glGenerateMipmap(GL_TEXTURE_2D);
 

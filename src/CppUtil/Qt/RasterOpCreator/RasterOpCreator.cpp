@@ -1,4 +1,4 @@
-#include <CppUtil/Qt/RasterSceneCreator.h>
+#include <CppUtil/Qt/RasterOpCreator.h>
 
 #include "Defines.h"
 
@@ -20,12 +20,11 @@
 #include <CppUtil/Basic/OpQueue.h>
 #include <CppUtil/Basic/GStorage.h>
 
+#include <ROOT_PATH.h>
+
 #include <qevent.h>
 #include <qcursor.h>
 #include <QtWidgets/QApplication>
-
-#include <ROOT_PATH.h>
-
 #include <qdebug.h>
 
 using namespace CppUtil::Qt;
@@ -38,10 +37,10 @@ const string rootPath = ROOT_PATH;
 
 //---------------------------
 
-RasterSceneCreator::SceneOp::SceneOp(RawAPI_OGLW * pOGLW)
+RasterOpCreator::SceneOp::SceneOp(RawAPI_OGLW * pOGLW)
 	: pOGLW(pOGLW), initOp(nullptr), paintOp(nullptr), resizeOp(nullptr), listenerInitOp(nullptr) { }
 
-bool RasterSceneCreator::SceneOp::SetOp() {
+bool RasterOpCreator::SceneOp::SetOp() {
 	if (pOGLW == nullptr)
 		return false;
 
@@ -53,7 +52,7 @@ bool RasterSceneCreator::SceneOp::SetOp() {
 	return true;
 }
 
-Operation::Ptr RasterSceneCreator::SceneOp::GetDefaultResizeOp() {
+Operation::Ptr RasterOpCreator::SceneOp::GetDefaultResizeOp() {
 	auto defaultResizeOp = ToPtr(new LambdaOp([this](){
 		auto pOGLW = this->GetOGLW();
 
@@ -70,7 +69,7 @@ Operation::Ptr RasterSceneCreator::SceneOp::GetDefaultResizeOp() {
 	return defaultResizeOp;
 }
 
-CppUtil::Basic::Operation::Ptr RasterSceneCreator::SceneOp::GetDefaultListenerInitOp() {
+CppUtil::Basic::Operation::Ptr RasterOpCreator::SceneOp::GetDefaultListenerInitOp() {
 	auto listenerInitOp = ToPtr(new LambdaOp([this]() {
 		// log mouse pos and track mouse
 		auto MRB_PressOp = ToPtr(new LambdaOp([this]() {
@@ -167,10 +166,10 @@ CppUtil::Basic::Operation::Ptr RasterSceneCreator::SceneOp::GetDefaultListenerIn
 
 //---------------------------
 
-RasterSceneCreator::RasterSceneCreator(RawAPI_OGLW * pOGLW)
+RasterOpCreator::RasterOpCreator(RawAPI_OGLW * pOGLW)
 	: pOGLW(pOGLW) { }
 
-RasterSceneCreator::SceneOp::Ptr RasterSceneCreator::GenScenePaintOp(int n) {
+RasterOpCreator::SceneOp::Ptr RasterOpCreator::GenScenePaintOp(int n) {
 	switch (n)
 	{
 	case 0: {
@@ -187,7 +186,7 @@ RasterSceneCreator::SceneOp::Ptr RasterSceneCreator::GenScenePaintOp(int n) {
 	}
 }
 
-RasterSceneCreator::SceneOp::Ptr RasterSceneCreator::GenScenePaintOp_0() {
+RasterOpCreator::SceneOp::Ptr RasterOpCreator::GenScenePaintOp_0() {
 	// init
 	SceneOp::Ptr sceneOp = ToPtr(new SceneOp(pOGLW));
 
@@ -239,7 +238,7 @@ RasterSceneCreator::SceneOp::Ptr RasterSceneCreator::GenScenePaintOp_0() {
 	return sceneOp;
 }
 
-RasterSceneCreator::SceneOp::Ptr RasterSceneCreator::GenScenePaintOp_1() {
+RasterOpCreator::SceneOp::Ptr RasterOpCreator::GenScenePaintOp_1() {
 	// init
 	SceneOp::Ptr sceneOp = ToPtr(new SceneOp(pOGLW));
 

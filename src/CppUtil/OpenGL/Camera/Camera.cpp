@@ -75,8 +75,8 @@ glm::mat4 Camera::GetProjectionMatrix() {
 
 // Processes input received from a mouse input system. Expects the offset value in both the x and y direction.
 void Camera::ProcessMouseMovement(float xoffset, float yoffset, bool constrainPitch) {
-	xoffset *= 0.02;
-	yoffset *= 0.02;
+	xoffset *= 0.02f;
+	yoffset *= 0.02f;
 
 	yaw += xoffset;
 	pitch += yoffset;

@@ -22,14 +22,14 @@ Skybox::Skybox(const vector<string> & skybox) {
 	// -------------------------------------------------------
 	for (size_t i = 0; i < 6; i++)
 	{
-		auto img = new Image(skybox[i].c_str(), false);
+		auto img = ToCPtr(new Image(skybox[i].c_str(), false));
 		if (!img->IsValid()) {
 			printf("ERROR: Skybox texture failed to load at path: %s\n", skybox[i].c_str());
 			imgs.clear();
 			return;
 		}
 
-		imgs.push_back(CppUtil::Basic::CPtr<Image>(img));
+		imgs.push_back(img);
 	}
 }
 

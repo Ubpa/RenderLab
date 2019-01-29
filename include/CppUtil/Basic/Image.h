@@ -2,14 +2,16 @@
 #define _IMAGE_H_
 
 #include <string>
+#include <CppUtil/Basic/HeapObj.h>
 #include <glm/glm.hpp>
 
 namespace CppUtil {
 	namespace Basic {
 		typedef unsigned char uByte;
-		class Image {
-		public:
+		class Image : public HeapObj{
+			HEAP_OBJ_SETUP_SELF_DELETE(Image)
 
+		public:
 			template<typename T>
 			struct Pixel {
 				Pixel(size_t channel)
@@ -32,7 +34,6 @@ namespace CppUtil {
 			Image();
 			Image(size_t width, size_t height, size_t channel);
 			Image(const char * fileName, bool flip = false);
-			~Image();
 			//------------
 			bool IsValid() const;
 			uByte * GetData();
@@ -62,6 +63,9 @@ namespace CppUtil {
 			static Pixel<double> Pixel_UB2D(const Pixel<uByte> & pixel);
 			//------------
 			Image & operator =(const Image & img) = delete;
+
+		protected:
+			~Image();
 		private:
 			enum ENUM_SRC_TYPE
 			{
@@ -82,6 +86,7 @@ namespace CppUtil {
 
 		template<typename T>
 		T & Image::Pixel<T>::operator[](size_t idx) {
+			static T error;
 			switch (idx)
 			{
 			case 0:
@@ -92,11 +97,14 @@ namespace CppUtil {
 				return b;
 			case 3:
 				return a;
+			default:
+				return error;
 			}
 		}
 
 		template<typename T>
 		const T & Image::Pixel<T>::operator[](size_t idx) const {
+			static T error;
 			switch (idx)
 			{
 			case 0:
@@ -107,6 +115,8 @@ namespace CppUtil {
 				return b;
 			case 3:
 				return a;
+			default:
+				return error;
 			}
 		}
 	}
