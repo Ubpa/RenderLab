@@ -54,5 +54,5 @@ void RTX_Renderer::Stop() {
 	isStop = true;
 }
 float RTX_Renderer::ProcessRate() {
-	return float(curLoop) / float(maxLoop);
+	return (float(curLoop) + 0.5f) / float(maxLoop);
 }

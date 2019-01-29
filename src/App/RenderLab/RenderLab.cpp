@@ -58,22 +58,37 @@ void RenderLab::on_btn_RenderStart_clicked(){
 	ui.btn_RenderStart->setEnabled(false);
 	ui.btn_RenderStop->setEnabled(true);
 
-	OpThread::Ptr drawImgThread = ToPtr(new OpThread());
+	OpThread::Ptr drawImgThread = ToPtr(new OpThread);
+	drawImgThread->UIConnect(this, &RenderLab::UI_Op);
 
 	auto drawImgOp = ToPtr(new LambdaOp([this, drawImgThread]() {
 		paintImgOp->SetOp(1024, 768);
-		auto scene = SceneCreator::Gen(RTX::SceneCreator::LOTS_OF_BALLS, 1024, 768);
 		auto img = paintImgOp->GetImg();
+		auto scene = SceneCreator::Gen(RTX::SceneCreator::LOTS_OF_BALLS, 1024, 768);
 		RTX_Renderer rtxRenderer(scene, img);
 
-		OpThread::Ptr controller = ToPtr(new OpThread(ToPtr(new LambdaOp([this, drawImgThread, &rtxRenderer]() {
-			while (!drawImgThread->IsStop())
+		OpThread::Ptr controller = ToPtr(new OpThread);
+		controller->UIConnect(this, &RenderLab::UI_Op);
+		auto controllOp = ToPtr(new LambdaOp([this, drawImgThread, controller, &rtxRenderer]() {
+			while (!drawImgThread->IsStop()) {
+				controller->UI_Op_Run([&, this]() {
+					ui.rtxProgress->setValue(rtxRenderer.ProgressRate() * ui.rtxProgress->maximum());
+				});
 				Sleep(100);
+			}
 			rtxRenderer.Stop();
-		}))));
+		}));
+		controller->SetOp(controllOp);
 		controller->start();
 
 		rtxRenderer.Run();
+		drawImgThread->Stop();
+		controller->terminate();
+		drawImgThread->UI_Op_Run([this]() {
+			ui.btn_RenderStart->setEnabled(true);
+			ui.btn_RenderStop->setEnabled(false);
+			ui.rtxProgress->setValue(ui.rtxProgress->maximum());
+		});
 		qDebug() << "rtx is finished or stop\n";
 	}));
 	drawImgThread->SetOp(drawImgOp);
@@ -90,4 +105,8 @@ void RenderLab::on_btn_RenderStop_clicked() {
 	if (!drawImgThread)
 		return;
 	drawImgThread->Stop();
+}
+
+void RenderLab::UI_Op(Operation::Ptr op) {
+	op->Run();
 }
