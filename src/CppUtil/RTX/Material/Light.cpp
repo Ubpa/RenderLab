@@ -8,7 +8,7 @@ using namespace CppUtil::Basic;
 using namespace glm;
 
 
-Light::Light(const rgb & color, float linear, float quadratic)
+Light::Light(const vec3 & color, float linear, float quadratic)
 	: lightTex(ToPtr(new ConstTexture(color))), linear(linear), quadratic(quadratic) { }
 
 Light::Light(Texture::CPtr lightTex, float linear, float quadratic)

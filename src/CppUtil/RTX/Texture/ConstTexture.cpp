@@ -3,9 +3,9 @@
 using namespace RTX;
 using namespace glm;
 
-ConstTexture::ConstTexture(const glm::rgb & color)
+ConstTexture::ConstTexture(const glm::vec3 & color)
 	: color(color) { }
 
-rgb ConstTexture::Value(float u, float v, const vec3 & p) const {
+vec3 ConstTexture::Value(float u, float v, const vec3 & p) const {
 	return color;
 }

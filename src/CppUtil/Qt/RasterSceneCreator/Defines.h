@@ -7,7 +7,7 @@
 namespace Define {
 	//------------ shader
 
-	const std::string str_ShaderPrefix = "/data/shaders/App/RenderLab/";
+	const std::string str_ShaderPrefix = "/data/shaders/CppUtil/Qt/RasterSceneCreator/";
 
 	const std::string str_BloomObj = "bloomObj";
 	const std::string str_BloomObj_vs = str_Basic_P3N3T2_vs;

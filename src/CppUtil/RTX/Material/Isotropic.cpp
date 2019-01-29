@@ -10,7 +10,7 @@ using namespace CppUtil::Basic;
 using namespace glm;
 
 
-Isotropic::Isotropic(const rgb & color)
+Isotropic::Isotropic(const vec3 & color)
 	: tex(ToPtr(new ConstTexture(color))) { }
 
 bool Isotropic::Scatter(const HitRecord & rec) const {

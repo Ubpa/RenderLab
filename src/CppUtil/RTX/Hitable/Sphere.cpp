@@ -8,7 +8,7 @@ using namespace RTX;
 using namespace CppUtil::Basic;
 using namespace glm;
 
-Sphere::Sphere(const vec3 & center, float radius, Material::CPtr material)
+Sphere::Sphere(const vec3 & center, float radius, CppUtil::Basic::CPtr<Material> material)
 	: center(center), radius(radius), Hitable(material) {
 	vec3 minP = center - vec3(radius);
 	vec3 maxP = center + vec3(radius);

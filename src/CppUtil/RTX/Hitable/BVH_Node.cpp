@@ -11,10 +11,10 @@ using namespace CppUtil::Basic;
 using namespace glm;
 using namespace std;
 
-BVH_Node::BVH_Node(Material::CPtr material)
+BVH_Node::BVH_Node(CppUtil::Basic::CPtr<Material> material)
 	: box(AABB::InValid), Hitable(material) { }
 
-BVH_Node::BVH_Node(vector<Hitable::CPtr> & hitables, Material::CPtr material)
+BVH_Node::BVH_Node(vector<Hitable::CPtr> & hitables, CppUtil::Basic::CPtr<Material> material)
 	: box(AABB::InValid), Hitable(material){
 	if (hitables.size() == 0)
 		return;
@@ -23,7 +23,7 @@ BVH_Node::BVH_Node(vector<Hitable::CPtr> & hitables, Material::CPtr material)
 	Build(hitables.cbegin(), hitables.cend());
 }
 
-BVH_Node::BVH_Node(const vector<Hitable::CPtr>::const_iterator begin, const vector<Hitable::CPtr>::const_iterator end, Material::CPtr material)
+BVH_Node::BVH_Node(const vector<Hitable::CPtr>::const_iterator begin, const vector<Hitable::CPtr>::const_iterator end, CppUtil::Basic::CPtr<Material> material)
 	: box(AABB::InValid), Hitable(material) { Build(begin, end); }
 
 void BVH_Node::Build(const vector<Hitable::CPtr>::const_iterator begin, const vector<Hitable::CPtr>::const_iterator end){

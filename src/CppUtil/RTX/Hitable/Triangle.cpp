@@ -9,7 +9,7 @@ using namespace CppUtil::Basic;
 using namespace glm;
 
 
-Triangle::Triangle(const Vertex & A, const Vertex & B, const Vertex & C, Material::CPtr material)
+Triangle::Triangle(const Vertex & A, const Vertex & B, const Vertex & C, CppUtil::Basic::CPtr<Material> material)
 	: A(A), B(B), C(C), Hitable(material) {
 	vec3 minP = min(min(A.pos, B.pos), C.pos);
 	vec3 maxP = max(max(A.pos, B.pos), C.pos);

@@ -20,7 +20,7 @@ namespace RTX {
 		typedef CppUtil::Basic::CPtr<CppUtil::Basic::Image> ImgCPtr;
 		ImgTexture(const std::string & fileName, bool flip = false);
 
-		virtual glm::rgb Value(float u = 0, float v = 0, const glm::vec3 & p = glm::vec3(0)) const;
+		virtual glm::vec3 Value(float u = 0, float v = 0, const glm::vec3 & p = glm::vec3(0)) const;
 		bool IsValid() const;
 		const ImgCPtr GetImg() const { return img; }
 	private:

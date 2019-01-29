@@ -7,7 +7,7 @@ namespace RTX {
 	class Sphere : public Hitable {
 		HITABLE_SETUP(Sphere)
 	public:
-		Sphere(const glm::vec3 & center = glm::vec3(0.0f), float radius = 1.0f, Material::CPtr material = NULL);
+		Sphere(const glm::vec3 & center = glm::vec3(0.0f), float radius = 1.0f, CppUtil::Basic::CPtr<Material> material = NULL);
 
 		virtual HitRst RayIn(CppUtil::Basic::Ptr<Ray> & ray) const;
 		virtual const AABB GetBoundingBox() const { return box; }

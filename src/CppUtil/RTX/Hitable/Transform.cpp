@@ -11,7 +11,7 @@ using namespace CppUtil::Basic;
 using namespace glm;
 using namespace std;
 
-Transform::Transform(const mat4 & transform, Hitable::CPtr hitable, Material::CPtr material)
+Transform::Transform(const mat4 & transform, Hitable::CPtr hitable, CppUtil::Basic::CPtr<Material> material)
 	: transform(transform),
 	inverseTransform(inverse(transform)),
 	normalTransform(transpose(inverse(mat3(transform)))),

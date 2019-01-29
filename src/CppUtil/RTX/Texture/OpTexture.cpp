@@ -6,31 +6,31 @@ using namespace CppUtil::Basic;
 using namespace glm;
 using namespace std;
 
-OpTexture::OpTexture(const function<glm::rgb(float u, float v, const vec3 & p)> & op)
+OpTexture::OpTexture(const function<glm::vec3(float u, float v, const vec3 & p)> & op)
 	: op(op) { }
 
-rgb OpTexture::Value(float u, float v, const vec3 & p) const {
+vec3 OpTexture::Value(float u, float v, const vec3 & p) const {
 	if (op == NULL)
-		return rgb(0);
+		return vec3(0);
 	
 	return op(u, v, p);
 }
 
-const Texture::CPtr OpTexture::ConstantTexture(const rgb & color) {
-	return ToPtr(new OpTexture([=](float u, float v, const vec3 & p) -> rgb {
+const Texture::CPtr OpTexture::ConstantTexture(const vec3 & color) {
+	return ToPtr(new OpTexture([=](float u, float v, const vec3 & p) -> vec3 {
 		return color;
 	}));
 }
 
-const Texture::CPtr OpTexture::CheckerTexture(const glm::rgb & color0, const glm::rgb & color1, float scale) {
-	return ToPtr(new OpTexture([=](float u, float v, const vec3 & p) -> rgb {
+const Texture::CPtr OpTexture::CheckerTexture(const glm::vec3 & color0, const glm::vec3 & color1, float scale) {
+	return ToPtr(new OpTexture([=](float u, float v, const vec3 & p) -> vec3 {
 		float sines = sinf(scale * p.x) * sinf(scale * p.y) * sinf(scale * p.z);
 		return sines < 0 ? color0 : color1;
 	}));
 }
 
-const Texture::CPtr OpTexture::NoiseTexture(size_t mode, const glm::rgb & color, float scale) {
-	return ToPtr(new OpTexture([=](float u, float v, const vec3 & p) -> rgb {
+const Texture::CPtr OpTexture::NoiseTexture(size_t mode, const glm::vec3 & color, float scale) {
+	return ToPtr(new OpTexture([=](float u, float v, const vec3 & p) -> vec3 {
 		vec3 rst;
 		switch (mode)
 		{

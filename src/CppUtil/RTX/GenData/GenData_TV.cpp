@@ -31,7 +31,7 @@ void GenData_TV::Visit(ConstTexture::CPtr constTexture) {
 	texData.push_back(TexT_ConstTexture);
 
 	texData.push_back(packData.size() / 4);
-	const rgb color = constTexture->GetColor();
+	const vec3 color = constTexture->GetColor();
 	packData.push_back(color.r);
 	packData.push_back(color.g);
 	packData.push_back(color.b);

@@ -1,4 +1,4 @@
-#include "RasterSceneCreator.h"
+#include <CppUtil/Qt/RasterSceneCreator.h>
 
 #include "Defines.h"
 
@@ -38,7 +38,7 @@ const string rootPath = ROOT_PATH;
 
 //---------------------------
 
-RasterSceneCreator::SceneOp::SceneOp(CppUtil::Qt::RawAPI_OGLW * pOGLW)
+RasterSceneCreator::SceneOp::SceneOp(RawAPI_OGLW * pOGLW)
 	: pOGLW(pOGLW), initOp(nullptr), paintOp(nullptr), resizeOp(nullptr), listenerInitOp(nullptr) { }
 
 bool RasterSceneCreator::SceneOp::SetOp() {
@@ -53,7 +53,7 @@ bool RasterSceneCreator::SceneOp::SetOp() {
 	return true;
 }
 
-CppUtil::Basic::Operation::Ptr RasterSceneCreator::SceneOp::GetDefaultResizeOp() {
+Operation::Ptr RasterSceneCreator::SceneOp::GetDefaultResizeOp() {
 	auto defaultResizeOp = ToPtr(new LambdaOp([this](){
 		auto pOGLW = this->GetOGLW();
 
@@ -87,9 +87,9 @@ CppUtil::Basic::Operation::Ptr RasterSceneCreator::SceneOp::GetDefaultListenerIn
 			pOGWL->Reg("lockX", x);
 			pOGWL->Reg("lockY", y);
 
-			QApplication::setOverrideCursor(Qt::BlankCursor);
+			QApplication::setOverrideCursor(::Qt::BlankCursor);
 		}));
-		EventMngr::Reg(Qt::RightButton, (void*)this->GetOGLW(), EventMngr::MOUSE_PRESS, MRB_PressOp);
+		EventMngr::Reg(::Qt::RightButton, (void*)this->GetOGLW(), EventMngr::MOUSE_PRESS, MRB_PressOp);
 
 		// lock mouse and rotate camera
 		auto mouseMoveOp = ToPtr(new LambdaOp([this]() {
@@ -120,7 +120,7 @@ CppUtil::Basic::Operation::Ptr RasterSceneCreator::SceneOp::GetDefaultListenerIn
 
 			QCursor::setPos(pOGWL->mapToGlobal(QPoint(lockX, lockY)));
 		}));
-		EventMngr::Reg(Qt::NoButton, (void*)this->GetOGLW(), EventMngr::MOUSE_MOVE, mouseMoveOp);
+		EventMngr::Reg(::Qt::NoButton, (void*)this->GetOGLW(), EventMngr::MOUSE_MOVE, mouseMoveOp);
 
 		// release mouse cursor
 		auto MRB_ReleaseOp = ToPtr(new LambdaOp([this]() {
@@ -132,7 +132,7 @@ CppUtil::Basic::Operation::Ptr RasterSceneCreator::SceneOp::GetDefaultListenerIn
 
 			QApplication::restoreOverrideCursor();
 		}));
-		EventMngr::Reg(Qt::RightButton, (void*)this->GetOGLW(), EventMngr::MOUSE_RELEASE, MRB_ReleaseOp);
+		EventMngr::Reg(::Qt::RightButton, (void*)this->GetOGLW(), EventMngr::MOUSE_RELEASE, MRB_ReleaseOp);
 
 		// wheel
 		auto wheelOp = ToPtr(new LambdaOp([this]() {
@@ -146,10 +146,10 @@ CppUtil::Basic::Operation::Ptr RasterSceneCreator::SceneOp::GetDefaultListenerIn
 
 			mainCamera->ProcessMouseScroll(angle*0.1f);
 		}));
-		EventMngr::Reg(Qt::NoButton, (void*)this->GetOGLW(), EventMngr::MOUSE_WHEEL, wheelOp);
+		EventMngr::Reg(::Qt::NoButton, (void*)this->GetOGLW(), EventMngr::MOUSE_WHEEL, wheelOp);
 
 		// Move
-		size_t moveKey[] = { Qt::Key_W, Qt::Key_S, Qt::Key_A, Qt::Key_D, Qt::Key_Q, Qt::Key_E };
+		size_t moveKey[] = { ::Qt::Key_W, ::Qt::Key_S, ::Qt::Key_A, ::Qt::Key_D, ::Qt::Key_Q, ::Qt::Key_E };
 		for (size_t i = 0; i < 6; i++) {
 			auto op = ToPtr(new LambdaOp([this, moveKey, i]() {
 				auto pOGLW = this->GetOGLW();
@@ -167,7 +167,7 @@ CppUtil::Basic::Operation::Ptr RasterSceneCreator::SceneOp::GetDefaultListenerIn
 
 //---------------------------
 
-RasterSceneCreator::RasterSceneCreator(CppUtil::Qt::RawAPI_OGLW * pOGLW)
+RasterSceneCreator::RasterSceneCreator(RawAPI_OGLW * pOGLW)
 	: pOGLW(pOGLW) { }
 
 RasterSceneCreator::SceneOp::Ptr RasterSceneCreator::GenScenePaintOp(int n) {
@@ -388,7 +388,7 @@ RasterSceneCreator::SceneOp::Ptr RasterSceneCreator::GenScenePaintOp_1() {
 		size_t * cameraMatrixsUBO;
 		FBO * FBO_HDR_Bloom;
 		FBO * blurFBOs[2];
-
+		
 		// val
 		pOGLW->GetP("VAO_P3N3T2_Cube", VAO_P3N3T2_Cube);
 		pOGLW->GetP("VAO_P3T2_Cube", VAO_P3T2_Cube);

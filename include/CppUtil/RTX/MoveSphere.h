@@ -7,7 +7,7 @@ namespace RTX {
 	class MoveSphere : public Hitable{
 		HITABLE_SETUP(MoveSphere)
 	public:
-		MoveSphere(float t0, float t1, const glm::vec3 & center0, const glm::vec3 & center1, float radius, Material::CPtr material = NULL);
+		MoveSphere(float t0, float t1, const glm::vec3 & center0, const glm::vec3 & center1, float radius, CppUtil::Basic::CPtr<Material> material = NULL);
 
 		virtual HitRst RayIn(CppUtil::Basic::Ptr<Ray> & ray) const;
 

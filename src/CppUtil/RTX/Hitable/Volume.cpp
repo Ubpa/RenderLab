@@ -8,7 +8,7 @@ using namespace RTX;
 using namespace CppUtil::Basic;
 using namespace glm;
 
-Volume::Volume(Hitable::CPtr boundary, float density, Material::CPtr material)
+Volume::Volume(Hitable::CPtr boundary, float density, CppUtil::Basic::CPtr<Material> material)
 	: Hitable(material), density(density), boundary(boundary) { }
 
 HitRst Volume::RayIn(CppUtil::Basic::Ptr<Ray> & ray) const {

@@ -3,7 +3,7 @@
 using namespace RTX;
 using namespace CppUtil::Basic;
 
-Group::Group(Material::CPtr material)
+Group::Group(CppUtil::Basic::CPtr<Material> material)
 	: Hitable(material), box(AABB::InValid) { }
 
 HitRst Group::RayIn(CppUtil::Basic::Ptr<Ray> & ray) const {

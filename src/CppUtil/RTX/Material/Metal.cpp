@@ -14,9 +14,9 @@ Metal::Metal(Texture::CPtr specular, float fuzz)
 	: specular(specular), fuzz(fuzz) { }
 
 Metal::Metal(float r, float g, float b, float fuzz)
-	: Metal(rgb(r,g,b), fuzz) { }
+	: Metal(vec3(r,g,b), fuzz) { }
 
-Metal::Metal(const glm::rgb & specular, float fuzz)
+Metal::Metal(const glm::vec3 & specular, float fuzz)
 	: Metal(ToPtr(new ConstTexture(specular)), fuzz) { }
 
 bool Metal::Scatter(const HitRecord & rec) const {

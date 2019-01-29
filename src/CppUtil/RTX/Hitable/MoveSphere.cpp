@@ -10,7 +10,7 @@ using namespace CppUtil::Basic;
 using namespace glm;
 using namespace std;
 
-MoveSphere::MoveSphere(float t0, float t1, const vec3 & center0, const vec3 & center1, float radius, Material::CPtr material)
+MoveSphere::MoveSphere(float t0, float t1, const vec3 & center0, const vec3 & center1, float radius, CppUtil::Basic::CPtr<Material> material)
 	: radius(radius), Hitable(material), center0(center0), center1(center1), t0(t0), t1(t1) {
 	vec3 minP = min(center0 - vec3(radius), center1 - vec3(radius));
 	vec3 maxP = max(center0 + vec3(radius), center1 + vec3(radius));

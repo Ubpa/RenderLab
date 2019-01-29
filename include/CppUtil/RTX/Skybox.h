@@ -24,7 +24,7 @@ namespace RTX {
 		const SkyboxImgs & GetSkyboxImgs() const { return imgs; }
 		bool IsValid() const;
 	private:
-		virtual glm::rgb Value(float u = 0, float v = 0, const glm::vec3 & p = glm::vec3(0)) const;
+		virtual glm::vec3 Value(float u = 0, float v = 0, const glm::vec3 & p = glm::vec3(0)) const;
 		SkyboxImgs imgs;
 	};
 }

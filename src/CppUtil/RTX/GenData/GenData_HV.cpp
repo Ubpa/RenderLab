@@ -10,6 +10,7 @@
 #include <CppUtil/RTX/Triangle.h>
 #include <CppUtil/RTX/TriMesh.h>
 #include <CppUtil/RTX/Transform.h>
+#include <CppUtil/RTX/Material.h>
 
 using namespace RTX;
 using namespace glm;

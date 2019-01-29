@@ -3,7 +3,7 @@
 
 #include <CppUtil/RTX/Material.h>
 
-#include <glm/glm.hpp>
+#include <glm/vec3.hpp>
 
 namespace RTX {
 	class Texture;
@@ -12,7 +12,7 @@ namespace RTX {
 		MATERIAL_SETUP(Lambertian)
 	public:
 		Lambertian(float r, float g, float b);
-		Lambertian(const glm::rgb & albedo);
+		Lambertian(const glm::vec3 & albedo);
 		Lambertian(CppUtil::Basic::CPtr<Texture> albedo);
 
 		// 返回值为 true 说明光线继续传播

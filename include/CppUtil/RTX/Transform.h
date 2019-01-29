@@ -8,7 +8,7 @@ namespace RTX {
 		HITABLE_SETUP(Transform)
 	public:
 		// 如果 material 不为空, 则覆盖子节点的 material
-		Transform(const glm::mat4 & transform, Hitable::CPtr hitable, Material::CPtr material = NULL);
+		Transform(const glm::mat4 & transform, Hitable::CPtr hitable, CppUtil::Basic::CPtr<Material> material = NULL);
 
 		virtual HitRst RayIn(CppUtil::Basic::Ptr<Ray> & ray) const;
 		virtual const AABB GetBoundingBox() const { return box; }

@@ -37,7 +37,7 @@ bool Skybox::IsValid() const {
 	return imgs.size() == 6;
 }
 
-rgb Skybox::Value(float u, float v, const vec3 & p) const {
+vec3 Skybox::Value(float u, float v, const vec3 & p) const {
 	vec3 leftP(-p.x, p.y, p.z);
 
 	size_t maxDim=0;
@@ -83,5 +83,5 @@ rgb Skybox::Value(float u, float v, const vec3 & p) const {
 	size_t width = imgs[imgIdx]->GetWidth();
 	size_t height = imgs[imgIdx]->GetHeight();
 	auto pixel = imgs[imgIdx]->GetPixel_F(clamp<size_t>(width*texcoords[0], 0, width - 1), clamp<size_t>(height*texcoords[1], 0, height - 1));
-	return rgb(pixel.r, pixel.g, pixel.b);
+	return vec3(pixel.r, pixel.g, pixel.b);
 }

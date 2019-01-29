@@ -7,11 +7,11 @@ namespace RTX {
 	class ConstTexture : public Texture{
 		TEXTURE_SETUP(ConstTexture)
 	public:
-		ConstTexture(const glm::rgb & color);
-		virtual glm::rgb Value(float u = 0, float v = 0, const glm::vec3 & p = glm::vec3(0)) const;
-		const glm::rgb & GetColor() const { return color; }
+		ConstTexture(const glm::vec3 & color);
+		virtual glm::vec3 Value(float u = 0, float v = 0, const glm::vec3 & p = glm::vec3(0)) const;
+		const glm::vec3 & GetColor() const { return color; }
 	private:
-		glm::rgb color;
+		glm::vec3 color;
 	};
 }
 

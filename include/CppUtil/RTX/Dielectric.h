@@ -2,6 +2,7 @@
 #define _DIELETRIC_H_
 
 #include <CppUtil/RTX/Material.h>
+#include <glm/vec3.hpp>
 
 namespace RTX {
 	class Dielectric : public Material {

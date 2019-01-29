@@ -2,6 +2,7 @@
 #define _METAL_H_
 
 #include <CppUtil/RTX/Material.h>
+#include <glm/vec3.hpp>
 
 namespace RTX {
 	class Texture;
@@ -10,7 +11,7 @@ namespace RTX {
 		MATERIAL_SETUP(Metal)
 	public:
 		Metal(float r, float g, float b, float fuzz = 0.0f);
-		Metal(const glm::rgb & specular, float fuzz = 0.0f);
+		Metal(const glm::vec3 & specular, float fuzz = 0.0f);
 		Metal(CppUtil::Basic::CPtr<Texture> specular, float fuzz = 0.0f);
 
 		// 返回值为 true 说明光线继续传播

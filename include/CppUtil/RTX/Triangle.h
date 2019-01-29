@@ -7,7 +7,7 @@ namespace RTX {
 	class Triangle : public Hitable {
 		HITABLE_SETUP(Triangle)
 	public:
-		Triangle(const Vertex & A, const Vertex & B, const Vertex & C, Material::CPtr material = NULL);
+		Triangle(const Vertex & A, const Vertex & B, const Vertex & C, CppUtil::Basic::CPtr<Material> material = NULL);
 
 		virtual HitRst RayIn(CppUtil::Basic::Ptr<Ray> & ray) const;
 		virtual const AABB GetBoundingBox() const { return box; }

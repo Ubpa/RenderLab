@@ -13,7 +13,7 @@ using namespace CppUtil::Basic;
 using namespace glm;
 using namespace std;
 
-Model::Model(const string & path, Material::CPtr material)
+Model::Model(const string & path, CppUtil::Basic::CPtr<Material> material)
 	: TriMesh(Load(path), material) { }
 
 vector<Vertex> Model::Load(const std::string & path) {

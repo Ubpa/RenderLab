@@ -7,7 +7,7 @@ namespace RTX {
 	class Volume : public Hitable{
 		HITABLE_SETUP(Volume)
 	public:
-		Volume(Hitable::CPtr boundary = NULL, float density = 1.0f, Material::CPtr material = NULL);
+		Volume(Hitable::CPtr boundary = NULL, float density = 1.0f, CppUtil::Basic::CPtr<Material> material = NULL);
 
 		virtual HitRst RayIn(CppUtil::Basic::Ptr<Ray> & ray) const;
 		virtual const AABB GetBoundingBox() const { return boundary ? boundary->GetBoundingBox() : AABB::InValid; }

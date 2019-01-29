@@ -7,7 +7,7 @@ using namespace CppUtil::Basic;
 using namespace glm;
 using namespace std;
 
-TriMesh::TriMesh(const vector<Vertex> & vertexs, Material::CPtr material)
+TriMesh::TriMesh(const vector<Vertex> & vertexs, CppUtil::Basic::CPtr<Material> material)
 	: BVH_Node(material){
 	if (vertexs.size() % 3 != 0) {
 		isValid = false;

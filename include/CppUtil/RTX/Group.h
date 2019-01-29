@@ -8,7 +8,7 @@ namespace RTX {
 	class Group : public Hitable{
 		HITABLE_SETUP(Group)
 	public:
-		Group(Material::CPtr material = NULL);
+		Group(CppUtil::Basic::CPtr<Material> material = NULL);
 
 		// 返回 true 说明光线继续传播
 		// 返回 false 说明光线传播结束

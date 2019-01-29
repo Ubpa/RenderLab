@@ -13,9 +13,9 @@ Lambertian::Lambertian(Texture::CPtr albedo)
 	: albedo(albedo) { }
 
 Lambertian::Lambertian(float r, float g, float b)
-	: Lambertian(rgb(r, g, b)) { }
+	: Lambertian(vec3(r, g, b)) { }
 
-Lambertian::Lambertian(const rgb & albedo) {
+Lambertian::Lambertian(const vec3 & albedo) {
 	this->albedo = ToPtr(new ConstTexture(albedo));
 }
 

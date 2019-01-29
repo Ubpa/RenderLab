@@ -2,6 +2,7 @@
 #define _LIGHT_H_
 
 #include <CppUtil/RTX/Material.h>
+#include <glm/vec3.hpp>
 
 namespace RTX {
 	class Texture;
@@ -9,7 +10,7 @@ namespace RTX {
 	class Light : public Material{
 		MATERIAL_SETUP(Light)
 	public:
-		Light(const glm::rgb & color, float linear = 0.0f, float quadratic = 0.0f);
+		Light(const glm::vec3 & color, float linear = 0.0f, float quadratic = 0.0f);
 		Light(CppUtil::Basic::CPtr<Texture> lightTex, float linear = 0.0f, float quadratic = 0.0f);
 
 		// 返回值为 true 说明光线继续传播

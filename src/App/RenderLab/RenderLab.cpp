@@ -1,12 +1,9 @@
 #include "RenderLab.h"
 
-#include "RasterSceneCreator.h"
-
+#include <CppUtil/Qt/RasterSceneCreator.h>
 #include <CppUtil/Qt/RawAPI_Define.h>
 
 #include <CppUtil/Basic/LambdaOp.h>
-
-#include <ROOT_PATH.h>
 
 #include <qdebug.h>
 #include <qtimer.h>
@@ -35,7 +32,7 @@ RenderLab::RenderLab(QWidget *parent)
 		glClearColor(0.5f*(1+sinf(i*0.1f)), 0.5f*(1 + sinf(1+i*0.1f)), 0.5f*(1 + sinf(2+i*0.1f)), 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}));
-
+	
 	QTimer * timer = new QTimer;
 	timer->callOnTimeout([this]() {
 		ui.OGLW_Raster->update();
