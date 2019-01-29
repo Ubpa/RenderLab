@@ -3,13 +3,20 @@
 #include <CppUtil/Qt/PaintImgOpCreator.h>
 #include <CppUtil/Qt/RasterOpCreator.h>
 #include <CppUtil/Qt/RawAPI_Define.h>
+#include <CppUtil/RTX/SceneCreator.h>
+#include <CppUtil/RTX/RTX_Renderer.h>
+
+#include <CppUtil/Basic/Image.h>
 
 #include <CppUtil/Basic/LambdaOp.h>
 
 #include <qdebug.h>
 #include <qtimer.h>
 
+#include <thread>
+
 using namespace CppUtil::Basic;
+using namespace RTX;
 using namespace CppUtil::Qt;
 
 RenderLab::RenderLab(QWidget *parent)
@@ -44,4 +51,15 @@ RenderLab::RenderLab(QWidget *parent)
 	PaintImgOpCreator pioc(ui.OGLW_RayTracer);
 	auto paintImgOp = pioc.GenScenePaintOp(1024, 768);
 	paintImgOp->SetOp();
+
+	
+	auto drawImgFunc = [paintImgOp]() {
+		auto img = paintImgOp->GetImg();
+		auto scene = SceneCreator::Gen(RTX::SceneCreator::LOTS_OF_BALLS);
+		RTX_Renderer rtxRenderer(scene, img);
+		rtxRenderer.Run();
+	};
+
+	std::thread drawImg(drawImgFunc);
+	drawImg.detach();
 }

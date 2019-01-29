@@ -47,10 +47,6 @@ PaintImgOpCreator::PaintImgOp::Ptr PaintImgOpCreator::GenScenePaintOp(int w, int
 
 	auto initOp = ToPtr(new LambdaOp([paintImgOp, w, h]() {
 		auto pOGLW = paintImgOp->GetOGLW();
-
-		//------------ Image
-		// paintImgOp->img = ToPtr(new Image(w, h, 3));
-		paintImgOp->img = ToPtr(new Image((rootPath + texture_wood).c_str()));
 		
 		//------------ Texture
 		Texture showImgTex(Texture::ENUM_TYPE_2D_DYNAMIC);
@@ -96,6 +92,8 @@ PaintImgOpCreator::PaintImgOp::Ptr PaintImgOpCreator::GenScenePaintOp(int w, int
 
 	paintImgOp->initOp = initOp;
 	paintImgOp->paintOp = paintOp;
+	paintImgOp->img = ToPtr(new Image(w, h, 3));
+
 	pOGLW->Reg("paintImgOp", paintImgOp);
 	return paintImgOp;
 }
