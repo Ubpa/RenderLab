@@ -3,6 +3,7 @@
 
 #include <CppUtil/Basic/Singleton.h>
 #include <CppUtil/Basic/LStorage.h>
+#include <string>
 
 namespace CppUtil {
 	namespace Basic {
@@ -10,7 +11,7 @@ namespace CppUtil {
 		class GS{
 		private:
 			template<typename T>
-			class _GStorage final : public Singleton<_GStorage<T>>, public LStorage<T> {
+			class _GStorage final : public Singleton<_GStorage<T>>, public LStorage<std::string, T> {
 				friend class Singleton<_GStorage<T>>;
 			public:
 				static _GStorage<T> * GetInstance() {

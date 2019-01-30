@@ -2,33 +2,32 @@
 #define _LSTORAGE_H_
 
 #include <map>
-#include <string>
 
 namespace CppUtil {
 	namespace Basic {
 		// Local Storage
-		template<typename T>
+		template<typename ID_Type, typename T>
 		class LStorage {
 		public:
 			// 第一次注册返回 true, 后续返回 false
-			bool Reg(const std::string & uniqueID, const T & item);
+			bool Reg(const ID_Type & uniqueID, const T & item);
 
-			bool UnReg(const std::string & uniqueID);
+			bool UnReg(const ID_Type & uniqueID);
 
-			T * GetP(const std::string & uniqueID);
+			T * GetP(const ID_Type & uniqueID);
 
-			const T * GetP(const std::string & uniqueID) const;
+			bool GetV(const ID_Type & uniqueID, T & item);
 
-			bool Reg(const std::string & uniqueID);
+			const T * GetP(const ID_Type & uniqueID) const;
 		private:
 
-			std::map<std::string, T> directory;
+			std::map<ID_Type, T> directory;
 		};
 
 		//----------------------------------------------------------------------
 
-		template<typename T>
-		bool LStorage<T>::Reg(const std::string & uniqueID, const T & item) {
+		template<typename ID_Type, typename T>
+		bool LStorage<ID_Type, T>::Reg(const ID_Type & uniqueID, const T & item) {
 			auto target = directory.find(uniqueID);
 			if (target != directory.end()) {
 				target->second = item;
@@ -39,8 +38,8 @@ namespace CppUtil {
 			return true;
 		}
 
-		template<typename T>
-		bool LStorage<T>::UnReg(const std::string & uniqueID) {
+		template<typename ID_Type, typename T>
+		bool LStorage<ID_Type, T>::UnReg(const ID_Type & uniqueID) {
 			auto target = directory.find(uniqueID);
 			if (target == directory.end())
 				return false;
@@ -49,8 +48,8 @@ namespace CppUtil {
 			return true;
 		}
 
-		template<typename T>
-		T * LStorage<T>::GetP(const std::string & uniqueID) {
+		template<typename ID_Type, typename T>
+		T * LStorage<ID_Type, T>::GetP(const ID_Type & uniqueID) {
 			auto target = directory.find(uniqueID);
 			if (target == directory.end())
 				return NULL;
@@ -58,8 +57,8 @@ namespace CppUtil {
 			return &(target->second);
 		}
 
-		template<typename T>
-		const T * LStorage<T>::GetP(const std::string & uniqueID) const {
+		template<typename ID_Type, typename T>
+		const T * LStorage<ID_Type, T>::GetP(const ID_Type & uniqueID) const {
 			auto target = directory.find(uniqueID);
 			if (target == directory.end())
 				return NULL;
@@ -67,14 +66,14 @@ namespace CppUtil {
 			return &(target->second);
 		}
 
-		template<typename T>
-		bool LStorage<T>::Reg(const std::string & uniqueID) {
+		template<typename ID_Type, typename T>
+		bool LStorage<ID_Type, T>::GetV(const ID_Type & uniqueID, T & item) {
 			auto target = directory.find(uniqueID);
-			if (target != directory.end())
+			if (target == directory.end())
 				return false;
 
-			directory[uniqueID] = new decltype(*T);
-			return true;
+			item = target->second;
+			return false;
 		}
 	}
 }
