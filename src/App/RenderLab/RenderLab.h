@@ -22,6 +22,8 @@ public:
 private slots:
 	void on_btn_RenderStart_clicked();
 	void on_btn_RenderStop_clicked();
+	void on_btn_SaveRasterImg_clicked();
+	void on_btn_SaveRayTracerImg_clicked();
 	void UI_Op(CppUtil::Basic::Ptr<CppUtil::Basic::Operation> op);
 
 private:

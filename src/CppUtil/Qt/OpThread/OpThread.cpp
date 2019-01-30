@@ -11,7 +11,7 @@ using namespace std;
 
 OpThread::OpThread(Operation::Ptr op)
 	: op(op), isStop(false) {
-	static int registerOp = qRegisterMetaType<Basic::Ptr<Basic::Operation>>("Basic::Ptr<Basic::Operation>");
+	qRegisterMetaType<Basic::Ptr<Basic::Operation>>("Basic::Ptr<Basic::Operation>");
 }
 
 OpThread::OpThread(function<void()> op)
@@ -22,8 +22,12 @@ void OpThread::SetOp(std::function<void()> op) {
 }
 
 void OpThread::run() {
+	isStop = false;
+
 	if(op!=nullptr)
 		op->Run();
+
+	isStop = true;
 }
 
 void OpThread::UI_Op_Run(Operation::Ptr op) {

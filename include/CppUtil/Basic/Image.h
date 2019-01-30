@@ -62,7 +62,8 @@ namespace CppUtil {
 			static Pixel<float> Pixel_UB2F(const Pixel<uByte> & pixel);
 			static Pixel<double> Pixel_UB2D(const Pixel<uByte> & pixel);
 			//------------
-			Image & operator =(const Image & img) = delete;
+			Image & operator =(const Image & img);
+			Image(const Image & img);
 
 		protected:
 			~Image();

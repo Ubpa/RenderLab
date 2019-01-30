@@ -204,3 +204,26 @@ bool Image::SaveAsPNG(const string & fileName, bool flip) const{
 	stbi_flip_vertically_on_write(flip);
 	return stbi_write_png(fileName.c_str(), width, height, channel, data, width * 3);
 }
+
+Image & Image::operator =(const Image & img) {
+	Free();
+	width = img.width;
+	height = img.height;
+	channel = img.channel;
+	type = ENUM_SRC_TYPE_NEW;
+	size_t bytesNum = width * height * channel;
+	data = new uByte[bytesNum];
+	memcpy(data, img.data, bytesNum * sizeof(uByte));
+
+	return *this;
+}
+
+Image::Image(const Image & img) {
+	width = img.width;
+	height = img.height;
+	channel = img.channel;
+	type = ENUM_SRC_TYPE_NEW;
+	size_t bytesNum = width * height * channel;
+	data = new uByte[bytesNum];
+	memcpy(data, img.data, bytesNum * sizeof(uByte));
+}

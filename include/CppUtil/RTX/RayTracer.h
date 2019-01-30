@@ -12,7 +12,7 @@ namespace RTX {
 	public:
 		RayTracer(CppUtil::Basic::CPtr<Hitable> scene);
 		
-		glm::vec3 Trace(CppUtil::Basic::Ptr<Ray> & ray);
+		glm::vec3 Trace(CppUtil::Basic::Ptr<Ray> & ray, int depth = 0);
 
 	private:
 		CppUtil::Basic::CPtr<Hitable> scene;

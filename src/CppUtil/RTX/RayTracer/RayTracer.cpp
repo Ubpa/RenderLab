@@ -13,8 +13,9 @@ using namespace glm;
 RayTracer::RayTracer(Hitable::CPtr scene)
 	: scene(scene) { }
 
-vec3 RayTracer::Trace(Ray::Ptr & ray) {
-	if (Math::Rand_F() > 0.98)
+vec3 RayTracer::Trace(Ray::Ptr & ray, int depth) {
+	const float p = depth < 8 ? 1.0f : 0.98f;
+	if (Math::Rand_F() > p)
 		return vec3(0);
 
 	auto hitRst = scene->RayIn(ray);
@@ -23,9 +24,9 @@ vec3 RayTracer::Trace(Ray::Ptr & ray) {
 			return vec3(1, 0, 1);
 
 		if (hitRst.material->Scatter(hitRst.record))
-			return Trace(ray);
+			return Trace(ray, depth + 1) / p;
 		else
-			return ray->GetColor();
+			return ray->GetColor() / p;
 	}
 	else
 		return vec3(0);

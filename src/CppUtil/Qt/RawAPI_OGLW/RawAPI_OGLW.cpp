@@ -6,6 +6,7 @@
 #include <CppUtil/Basic/EventManager.h>
 
 #include <qevent.h>
+#include <qnamespace.h>
 
 using namespace CppUtil::Qt;
 using namespace CppUtil::Basic;
@@ -17,7 +18,9 @@ std::string RawAPI_OGLW::str_y = "resizeGL::y";
 std::string RawAPI_OGLW::str_angle = "resizeGL::angle";
 
 RawAPI_OGLW::RawAPI_OGLW(QWidget* parent, ::Qt::WindowFlags f)
-	: QOpenGLWidget(parent, f), resizeOp(nullptr), paintOp(nullptr), initOp(nullptr) { }
+	: QOpenGLWidget(parent, f), resizeOp(nullptr), paintOp(nullptr), initOp(nullptr) {
+	setFocusPolicy(::Qt::ClickFocus);
+}
 
 RawAPI_OGLW::~RawAPI_OGLW() { }
 
