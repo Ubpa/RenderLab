@@ -9,7 +9,8 @@ namespace CppUtil {
 	namespace Engine {
 		class Transform : public Component {
 		public:
-			Transform();
+			Transform(Basic::Ptr<SObj> sobj = nullptr, const glm::mat4 & mat = glm::mat4(1.0f))
+				: Component(sobj), mat(mat) { }
 
 			const glm::mat4 & GetMat() const { return mat; }
 			void SetMat(const glm::mat4 & mat) { this->mat = mat; }

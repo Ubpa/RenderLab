@@ -3,6 +3,7 @@
 
 #include <CppUtil/Engine/Primitive.h>
 #include <glm/vec3.hpp>
+#include <glm/mat4x4.hpp>
 
 namespace CppUtil {
 	namespace Engine {
@@ -16,6 +17,8 @@ namespace CppUtil {
 			const glm::vec3 GetDir() const { return dir; }
 			float GetTMin() const { return tMin; }
 			float GetTMax() const { return tMax; }
+
+			void Transform(const glm::mat4 & mat);
 
 			const glm::vec3 At(float t) const { return origin + t * dir; }
 		private:

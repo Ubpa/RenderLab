@@ -10,7 +10,9 @@ namespace CppUtil {
 		class Geometry : public Component {
 			HEAP_OBJ_SETUP(Geometry)
 		public:
-			Geometry(Basic::Ptr<Primitive> primitive = nullptr) : primitive(primitive) { }
+			Geometry(Basic::Ptr<SObj> sobj = nullptr, Basic::Ptr<Primitive> primitive = nullptr)
+				: Component(sobj), primitive(primitive) { }
+
 			Basic::Ptr<Primitive> GetPrimitive() { return primitive; }
 			void SetPrimitive(Basic::Ptr<Primitive> primitive) { this->primitive = primitive; }
 
