@@ -16,11 +16,11 @@ namespace CppUtil {
 
 			T * GetP(const ID_Type & uniqueID);
 
+			const T * GetP(const ID_Type & uniqueID) const;
+
 			bool GetV(const ID_Type & uniqueID, T & item);
 
-			const T * GetP(const ID_Type & uniqueID) const;
 		private:
-
 			std::map<ID_Type, T> directory;
 		};
 
@@ -73,7 +73,7 @@ namespace CppUtil {
 				return false;
 
 			item = target->second;
-			return false;
+			return true;
 		}
 	}
 }

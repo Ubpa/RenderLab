@@ -18,10 +18,16 @@ namespace CppUtil {
 			void Visit(Basic::Ptr<T> ele) {
 				Visit_Reg_UnReg<T>(ele);
 			}
+
 		protected:
-			template<typename T, typename ChildType>
-			void Reg(void (ChildType::* visitFunc)(Basic::Ptr<T>)) {
-				Visit_Reg_UnReg<T>(nullptr, [this, visitFunc](Basic::Ptr<T> a) { (dynamic_cast<ChildType*>(this)->*visitFunc)(a); });
+			template<typename ChildT, typename T>
+			void Reg(void (ChildT::* visitFunc)(Basic::Ptr<T>)) {
+				Visit_Reg_UnReg<T>(nullptr, [this, visitFunc](Basic::Ptr<T> a) { (dynamic_cast<ChildT*>(this)->*visitFunc)(a); });
+			}
+
+			template<typename ChildT, typename T>
+			void UnReg(void (ChildT::* visitFunc)(Basic::Ptr<T>)) {
+				Visit_Reg_UnReg<T>(nullptr, nullptr);
 			}
 
 			/* 为了对称，不使用这个接口
@@ -31,11 +37,6 @@ namespace CppUtil {
 			}
 			*/
 
-			template<typename T, typename ChildType>
-			void UnReg(void (ChildType::* visitFunc)(Basic::Ptr<T>)) {
-				Visit_Reg_UnReg<T>(nullptr, nullptr);
-			}
-
 		private:
 			template<typename T>
 			void Visit_Reg_UnReg(Basic::Ptr<T> ele = nullptr, std::function<void(Basic::Ptr<T>)> regOp = nullptr) {
@@ -43,8 +44,7 @@ namespace CppUtil {
 
 				if (ele != nullptr) {
 					std::function<void(Basic::Ptr<T>)> op = nullptr;
-					lsT.GetV(this, op);
-					if (op == nullptr)
+					if (!lsT.GetV(this, op))
 						return;
 
 					op(ele);

@@ -8,7 +8,13 @@
 #define NODE_SETUP(CLASS) \
 ELE_SETUP(CLASS)\
 virtual void TraverseAccept(CppUtil::Basic::EleVisitor::Ptr eleVisitor){\
+	eleVisitor->Visit(CThis());\
 	eleVisitor->Visit(This());\
+	for (auto child : children)\
+		child->TraverseAccept(eleVisitor); \
+}\
+virtual void TraverseAccept(CppUtil::Basic::EleVisitor::Ptr eleVisitor) const{\
+	eleVisitor->Visit(CThis());\
 	for (auto child : children)\
 		child->TraverseAccept(eleVisitor); \
 }

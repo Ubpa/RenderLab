@@ -9,7 +9,8 @@ namespace CppUtil {
 		class Sphere : public Primitive {
 			ELE_SETUP(Sphere)
 		public:
-			Sphere(const glm::vec3 & center, float r);
+			Sphere(const glm::vec3 & center, float r)
+				: center(center), r(r) { }
 
 			const glm::vec3 & GetCenter() const { return center; }
 			float GetR() const { return r; }

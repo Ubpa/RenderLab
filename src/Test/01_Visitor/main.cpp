@@ -4,7 +4,9 @@
 #include <iostream>
 #include <string>
 
-class A : public CppUtil::Basic::Element {
+using namespace CppUtil::Basic;
+
+class A : public Element {
 	ELE_SETUP(A)
 public:
 	A(int n) :n(n) { }
@@ -12,7 +14,7 @@ public:
 	int n;
 };
 
-class B : public CppUtil::Basic::Element {
+class B : public Element {
 	ELE_SETUP(B)
 public:
 	B(int n) :n(n) { }
@@ -20,41 +22,65 @@ public:
 	int n;
 };
 
-class V : public CppUtil::Basic::EleVisitor {
-	HEAP_OBJ_SETUP_SELF_DELETE(V)
+class Vc : public EleVisitor {
+	HEAP_OBJ_SETUP_SELF_DELETE(Vc)
 public:
-	V(const std::string & name):name(name) {
-		Reg(&V::VisitA);
-		Reg(&V::VisitB);
+	Vc(const std::string & name):name(name) {
+		Reg(&Vc::VisitA);
+		Reg(&Vc::VisitB);
 	}
 protected:
-	virtual ~V() {
-		UnReg(&V::VisitA);
-		UnReg(&V::VisitB);
+	virtual ~Vc() {
+		UnReg(&Vc::VisitA);
+		UnReg(&Vc::VisitB);
 	}
 private:
-	void VisitA(A::Ptr a) { std::cout << name << ": a's n is " << a->n << std::endl; }
-	void VisitB(B::Ptr b) { std::cout << name << ": b's n is " << b->n << std::endl; }
+	void VisitA(A::Ptr a) { std::cout << "Vc " << name << ": a's n is " << a->n << std::endl; }
+	void VisitB(B::Ptr b) { std::cout << "Vc " << name << ": b's n is " << b->n << std::endl; }
+	std::string name;
+};
+
+class Vd : public EleVisitor {
+	HEAP_OBJ_SETUP_SELF_DELETE(Vd)
+public:
+	Vd(const std::string & name) :name(name) {
+		Reg(&Vd::VisitA);
+		Reg(&Vd::VisitB);
+	}
+protected:
+	virtual ~Vd() {
+		UnReg(&Vd::VisitA);
+		UnReg(&Vd::VisitB);
+	}
+private:
+	void VisitA(A::Ptr a) { std::cout << "Vd " << name << ": a's n is " << a->n << std::endl; }
+	void VisitB(B::Ptr b) { std::cout << "Vd " << name << ": b's n is " << b->n << std::endl; }
 	std::string name;
 };
 
 int main() {
-	A::Ptr a1 = ToPtr(new A(1));
-	A::Ptr a2 = ToPtr(new A(2));
-	B::Ptr b1 = ToPtr(new B(3));
-	B::Ptr b2 = ToPtr(new B(4));
-	V::Ptr v1 = ToPtr(new V("v1"));
-	V::Ptr v2 = ToPtr(new V("v2"));
+	Element::Ptr eles[4] = { ToPtr(new A(1)) ,ToPtr(new A(2)),ToPtr(new B(3)),ToPtr(new B(4)) };
+	EleVisitor::Ptr visitors[2] = { ToPtr(new Vc("v1")) ,ToPtr(new Vd("v2")) };
 
-	a1->Accept(v1);
-	a1->Accept(v2);
-	a2->Accept(v1);
-	a2->Accept(v2);
+	const int elesNum = sizeof(eles) / sizeof(Element::Ptr);
+	const int visitorsNum = sizeof(visitors) / sizeof(EleVisitor::Ptr);
 
-	b1->Accept(v1);
-	b1->Accept(v2);
-	b2->Accept(v1);
-	b2->Accept(v2);
+	/*
+	* Vc v1: a's n is 1
+	* Vd v2: a's n is 1
+	* Vc v1: a's n is 2
+	* Vd v2: a's n is 2
+	* Vc v1: b's n is 3
+	* Vd v2: b's n is 3
+	* Vc v1: b's n is 4
+	* Vd v2: b's n is 4
+	*/
+
+	for (int i = 0; i < elesNum; i++) {
+		for (int j = 0; j < visitorsNum; j++) {
+			eles[i]->Accept(visitors[j]);
+		}
+	}
 
 	return 0;
 }

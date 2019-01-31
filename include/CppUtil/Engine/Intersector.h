@@ -9,16 +9,35 @@ namespace CppUtil {
 		class Sphere;
 
 		class Intersector : public Basic::EleVisitor {
+			HEAP_OBJ_SETUP(Intersector)
 		public:
 			struct Rst {
-				class Info { };
+				Rst(bool isIntersect = false)
+					: isIntersect(false) { }
 
+				void Clear() { isIntersect = false; }
 				bool isIntersect;
-				Basic::Ptr<Info> info;
 			};
 
 		public:
-			virtual Rst Intersect(Basic::CPtr<Sphere> sphere) = 0;
+			virtual void Intersect(Basic::CPtr<Sphere> sphere) = 0;
+
+			virtual const Rst * GetRst() const = 0;
+
+		protected:
+			template<typename ChildT>
+			void Reg(ChildT * useless_parameter = nullptr) {
+				Basic::EleVisitor::Reg<ChildT, const Sphere>(&ChildT::Intersect);
+			}
+
+			template<typename ChildT>
+			void UnReg(ChildT * useless_parameter = nullptr) {
+				Basic::EleVisitor::UnReg<ChildT, const Sphere>(&ChildT::Intersect);
+			}
+
+		private:
+			using Basic::EleVisitor::Reg;
+			using Basic::EleVisitor::UnReg;
 		};
 	}
 }
