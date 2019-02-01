@@ -23,7 +23,7 @@ public:
 };
 
 class Vc : public EleVisitor {
-	HEAP_OBJ_SETUP_SELF_DELETE(Vc)
+	HEAP_OBJ_SETUP_SELF_DEL(Vc)
 public:
 	Vc(const std::string & name):name(name) {
 		Reg(&Vc::VisitA);
@@ -41,7 +41,7 @@ private:
 };
 
 class Vd : public EleVisitor {
-	HEAP_OBJ_SETUP_SELF_DELETE(Vd)
+	HEAP_OBJ_SETUP_SELF_DEL(Vd)
 public:
 	Vd(const std::string & name) :name(name) {
 		Reg(&Vd::VisitA);

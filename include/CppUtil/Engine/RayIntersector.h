@@ -8,7 +8,7 @@ namespace CppUtil {
 		class Ray;
 
 		class RayIntersector : public Intersector {
-			HEAP_OBJ_SETUP_SELF_DELETE(RayIntersector)
+			HEAP_OBJ_SETUP_SELF_DEL(RayIntersector)
 		public:
 			struct Rst : public Intersector::Rst {
 				Rst(bool isIntersect = false, float t = 0)
@@ -19,14 +19,16 @@ namespace CppUtil {
 
 		public:
 			RayIntersector(Basic::CPtr<Ray> ray);
-			Basic::CPtr<Ray> GetRay() const { return ray; }
-
-			virtual const Rst * GetRst() const { return &rst; }
 
 		protected:
 			~RayIntersector();
 
 		public:
+
+			Basic::CPtr<Ray> GetRay() const { return ray; }
+
+			virtual const Rst * GetRst() const { return &rst; }
+
 			virtual void Intersect(Basic::CPtr<Sphere> sphere);
 
 		private:

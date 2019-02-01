@@ -26,7 +26,7 @@ using namespace std;
 
 const string rootPath = ROOT_PATH;
 
-Ptr<VAO> GenImgVAO(int imgW, int imgH, int winW, int winH);
+ptr<VAO> GenImgVAO(int imgW, int imgH, int winW, int winH);
 
 PaintImgOpCreator::PaintImgOp::PaintImgOp(RawAPI_OGLW * pOGLW)
 	: pOGLW(pOGLW), initOp(nullptr), paintOp(nullptr), resizeOp(nullptr), img(nullptr) { }
@@ -62,7 +62,7 @@ PaintImgOpCreator::PaintImgOp::Ptr PaintImgOpCreator::GenScenePaintOp() {
 		pOGLW->Reg("showImgTex", showImgTex);
 
 		//------------ VAO
-		Ptr<VAO> imgVAO = GenImgVAO(imgW, imgH, winW, winH);
+		ptr<VAO> imgVAO = GenImgVAO(imgW, imgH, winW, winH);
 		pOGLW->Reg("imgVAO", imgVAO);
 
 		//------------ Screen Shader
@@ -81,7 +81,7 @@ PaintImgOpCreator::PaintImgOp::Ptr PaintImgOpCreator::GenScenePaintOp() {
 		auto pOGLW = paintImgOp->GetOGLW();
 
 		Texture * showImgTex;
-		Ptr<VAO> imgVAO;
+		ptr<VAO> imgVAO;
 		Shader * screenShader;
 
 		pOGLW->GetP("showImgTex", showImgTex);
@@ -117,7 +117,7 @@ PaintImgOpCreator::PaintImgOp::Ptr PaintImgOpCreator::GenScenePaintOp() {
 		}
 		glViewport(0, 0, *w, *h);
 
-		Ptr<VAO> imgVAO = GenImgVAO(imgW, imgH, *w, *h);
+		ptr<VAO> imgVAO = GenImgVAO(imgW, imgH, *w, *h);
 		pOGLW->Reg("imgVAO", imgVAO);
 	}));
 
@@ -129,7 +129,7 @@ PaintImgOpCreator::PaintImgOp::Ptr PaintImgOpCreator::GenScenePaintOp() {
 	return paintImgOp;
 }
 
-Ptr<VAO> GenImgVAO(int imgW, int imgH, int winW, int winH){
+ptr<VAO> GenImgVAO(int imgW, int imgH, int winW, int winH){
 	float imgRatioWH = float(imgW) / float(imgH);
 	float winRatioWH = float(winW) / float(winH);
 	float minX, maxX, minY, maxY;
@@ -158,6 +158,6 @@ Ptr<VAO> GenImgVAO(int imgW, int imgH, int winW, int winH){
 		maxX, maxY,  1.0f, 1.0f
 	};
 
-	Ptr<VAO> imgVAO = Ptr<VAO>(new VAO(&(data[0]), sizeof(data), { 2,2 }));
+	ptr<VAO> imgVAO = ptr<VAO>(new VAO(&(data[0]), sizeof(data), { 2,2 }));
 	return imgVAO;
 }

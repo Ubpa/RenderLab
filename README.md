@@ -35,7 +35,9 @@ cmake .. -Wno-dev
   - [x] 相交器
 - [ ] 用新的架构来写离线渲染
   - [x] 相机
-  - [ ] OF_Renderer ( PTX )
+  - [x] 组件机制优化
+  - [ ] Material (BSDF)
+  - [ ] PB_Renderer ( PTX )
   - [ ] ...
 - [ ] 在层次面板中显示层次
 

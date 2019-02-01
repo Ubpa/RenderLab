@@ -28,11 +28,7 @@ namespace CppUtil {
 			void AddChild(Node::Ptr child);
 
 		protected:
-			void AddParent(Node::Ptr parent);
-
-		protected:
 			std::vector<Node::Ptr> children;
-			std::vector<Node::Ptr> parents;
 		};
 	}
 }

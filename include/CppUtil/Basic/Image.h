@@ -9,7 +9,7 @@ namespace CppUtil {
 	namespace Basic {
 		typedef unsigned char uByte;
 		class Image : public HeapObj{
-			HEAP_OBJ_SETUP_SELF_DELETE(Image)
+			HEAP_OBJ_SETUP_SELF_DEL(Image)
 
 		public:
 			template<typename T>

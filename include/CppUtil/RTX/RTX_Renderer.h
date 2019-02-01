@@ -21,7 +21,7 @@ namespace RTX {
 		float ProgressRate();
 	private:
 		CppUtil::Basic::Ptr<CppUtil::Basic::Image> img;
-		CppUtil::Basic::Ptr<RayTracer> rayTracer;
+		CppUtil::Basic::ptr<RayTracer> rayTracer;
 		CppUtil::Basic::CPtr<Scene> scene;
 		volatile bool isStop;
 		size_t maxLoop;

@@ -23,10 +23,10 @@ namespace CppUtil {
 		private:
 			bool Config::DecodeLine(const std::string & data);
 			//------------
-			LStorage<std::string> strDirectory;
-			LStorage<float> floatDirectory;
-			LStorage<int> intDirectory;
-			LStorage<unsigned int> unsignedIntDirectory;
+			LStorage<std::string, std::string> strDirectory;
+			LStorage<std::string, float> floatDirectory;
+			LStorage<std::string, int> intDirectory;
+			LStorage<std::string, unsigned int> unsignedIntDirectory;
 			bool valid;
 		};
 	}
