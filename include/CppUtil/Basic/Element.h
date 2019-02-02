@@ -9,10 +9,6 @@ HEAP_OBJ_SETUP(CLASS)\
 public:\
 virtual void Accept(CppUtil::Basic::EleVisitor::Ptr eleVisitor){\
 	eleVisitor->Visit(This());\
-	eleVisitor->Visit(CThis());\
-}\
-virtual void Accept(CppUtil::Basic::EleVisitor::Ptr eleVisitor) const{\
-	eleVisitor->Visit(CThis());\
 }
 
 #define ELE_SETUP_SELF_DEL(CLASS) \
@@ -20,10 +16,6 @@ HEAP_OBJ_SETUP_SELF_DEL(CLASS)\
 public:\
 virtual void Accept(CppUtil::Basic::EleVisitor::Ptr eleVisitor){\
 	eleVisitor->Visit(This());\
-	eleVisitor->Visit(CThis());\
-}\
-virtual void Accept(CppUtil::Basic::EleVisitor::Ptr eleVisitor) const{\
-	eleVisitor->Visit(CThis());\
 }
 
 namespace CppUtil {

@@ -3,10 +3,8 @@
 
 #include <CppUtil/Basic/LStorage.h>
 #include <CppUtil/Basic/Node.h>
+#include <CppUtil/Basic/TypeMap.h>
 
-#include <string>
-#include <unordered_map>
-#include <typeinfo>
 #include <string>
 #include <vector>
 
@@ -64,10 +62,8 @@ namespace CppUtil {
 				}
 			};
 
-			typedef std::unordered_map<TypeInfoRef, Basic::Ptr<Component>, Hasher, EqualTo> MapT2C;
-
+			Basic::TypeMap<Basic::Ptr<Component>> components;
 			std::string name;
-			MapT2C components;
 		};
 	}
 }

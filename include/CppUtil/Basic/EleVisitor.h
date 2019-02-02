@@ -2,10 +2,20 @@
 #define _ELE_VISITOR_H_
 
 #include <CppUtil/Basic/HeapObj.h>
-#include <CppUtil/Basic/LStorage.h>
+#include <CppUtil/Basic/TypeMap.h>
 
 #include <functional>
 #include <vector>
+
+#define ELEVISITOR_SETUP(CLASS) \
+HEAP_OBJ_SETUP(CLASS)\
+private:\
+/*参数不需要填写，只需给出 T 即可*/\
+template<typename T>\
+void Reg(T * useless_paramater = nullptr) {\
+	void (CLASS::*visitFunc)(CppUtil::Basic::Ptr<T>) = &CLASS::Visit;\
+	EleVisitor::Reg<CLASS, T>(visitFunc);\
+}
 
 namespace CppUtil {
 	namespace Basic {
@@ -13,47 +23,28 @@ namespace CppUtil {
 
 		class EleVisitor : public HeapObj {
 			HEAP_OBJ_SETUP(EleVisitor)
+			
 		public:
+			// 静态期编译得到 typeid
 			template<typename T>
 			void Visit(Basic::Ptr<T> ele) {
-				Visit_Reg_UnReg<T>(ele);
+				auto target = visitOps.find(typeid(T));
+				if (target == visitOps.end())
+					return;
+
+				target->second(ele);
 			}
 
 		protected:
-			template<typename ChildT, typename T>
-			void Reg(void (ChildT::* visitFunc)(Basic::Ptr<T>)) {
-				Visit_Reg_UnReg<T>(nullptr, [this, visitFunc](Basic::Ptr<T> a) { (dynamic_cast<ChildT*>(this)->*visitFunc)(a); });
+			template<typename VisitorType, typename EleType>
+			void Reg(void (VisitorType::*visitFunc)(Basic::Ptr<EleType>)) {
+				visitOps[typeid(EleType)] = [this, visitFunc](Basic::Ptr<Element> pEle) {
+					(dynamic_cast<VisitorType*>(this)->*visitFunc)(Basic::Ptr<EleType>(pEle));
+				};
 			}
-
-			template<typename ChildT, typename T>
-			void UnReg(void (ChildT::* visitFunc)(Basic::Ptr<T>)) {
-				Visit_Reg_UnReg<T>(nullptr, nullptr);
-			}
-
-			/* 为了对称，不使用这个接口
-			template<typename T>
-			void UnReg(Basic::Ptr<T> * useless_parameter = nullptr) {
-				Visit_Reg_UnReg<T>(nullptr, nullptr);
-			}
-			*/
 
 		private:
-			template<typename T>
-			void Visit_Reg_UnReg(Basic::Ptr<T> ele = nullptr, std::function<void(Basic::Ptr<T>)> regOp = nullptr) {
-				static LStorage<EleVisitor*, std::function<void(Basic::Ptr<T>)>> lsT;
-
-				if (ele != nullptr) {
-					std::function<void(Basic::Ptr<T>)> op = nullptr;
-					if (!lsT.GetV(this, op))
-						return;
-
-					op(ele);
-				}
-				else if (regOp != nullptr)
-					lsT.Reg(this, regOp);
-				else// ele == nullptr && regOp == nullptr
-					lsT.UnReg(this);
-			}
+			TypeMap< std::function< void(Basic::Ptr<Element>) > > visitOps;
 		};
 	}
 }

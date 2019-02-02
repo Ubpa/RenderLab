@@ -7,14 +7,9 @@
 
 #define NODE_SETUP(CLASS) \
 ELE_SETUP(CLASS)\
+public:\
 virtual void TraverseAccept(CppUtil::Basic::EleVisitor::Ptr eleVisitor){\
-	eleVisitor->Visit(CThis());\
 	eleVisitor->Visit(This());\
-	for (auto child : children)\
-		child->TraverseAccept(eleVisitor); \
-}\
-virtual void TraverseAccept(CppUtil::Basic::EleVisitor::Ptr eleVisitor) const{\
-	eleVisitor->Visit(CThis());\
 	for (auto child : children)\
 		child->TraverseAccept(eleVisitor); \
 }
@@ -25,7 +20,7 @@ namespace CppUtil {
 			NODE_SETUP(Node)
 
 		public:
-			void AddChild(Node::Ptr child);
+			void AddChild(Node::Ptr child) { children.push_back(child); }
 
 		protected:
 			std::vector<Node::Ptr> children;

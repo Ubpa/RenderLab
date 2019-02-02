@@ -13,6 +13,6 @@ foreach(SOURCE ${ALL_SOURCES})
 endforeach(SOURCE ${ALL_SOURCES})
 #多个库文件用 [空格] 分隔，如果为空，就输入[一个空格]
 #如：set(STR_TARGET_LIBS "lib1.lib lib2.lib")
-set(STR_TARGET_LIBS "Primitive Component")
+set(STR_TARGET_LIBS "Primitive Component Scene")
 
 SETUP_PROJECT(${MODE} ${TARGET_NAME} ${STR_TARGET_SOURCES} ${STR_TARGET_LIBS})

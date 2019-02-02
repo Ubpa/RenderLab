@@ -11,14 +11,10 @@ using namespace glm;
 
 RayIntersector::RayIntersector(CppUtil::Basic::CPtr<Ray> ray)
 	: ray(ray) {
-	Reg<RayIntersector>();
+	Reg<Sphere>();
 }
 
-RayIntersector::~RayIntersector() {
-	UnReg<RayIntersector>();
-}
-
-void RayIntersector::Intersect(CppUtil::Basic::CPtr<Sphere> sphere) {
+void RayIntersector::Visit(CppUtil::Basic::Ptr<Sphere> sphere) {
 	const vec3 dir = ray->GetDir();
 	const vec3 origin = ray->GetOrigin();
 	const vec3 center = sphere->GetCenter();

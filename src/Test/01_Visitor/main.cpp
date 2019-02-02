@@ -23,38 +23,30 @@ public:
 };
 
 class Vc : public EleVisitor {
-	HEAP_OBJ_SETUP_SELF_DEL(Vc)
+	ELEVISITOR_SETUP(Vc)
 public:
 	Vc(const std::string & name):name(name) {
-		Reg(&Vc::VisitA);
-		Reg(&Vc::VisitB);
+		Reg<A>();
+		Reg<B>();
 	}
-protected:
-	virtual ~Vc() {
-		UnReg(&Vc::VisitA);
-		UnReg(&Vc::VisitB);
-	}
+
 private:
-	void VisitA(A::Ptr a) { std::cout << "Vc " << name << ": a's n is " << a->n << std::endl; }
-	void VisitB(B::Ptr b) { std::cout << "Vc " << name << ": b's n is " << b->n << std::endl; }
+	void Visit(A::Ptr a) { std::cout << "Vc " << name << ": a's n is " << a->n << std::endl; }
+	void Visit(B::Ptr b) { std::cout << "Vc " << name << ": b's n is " << b->n << std::endl; }
 	std::string name;
 };
 
 class Vd : public EleVisitor {
-	HEAP_OBJ_SETUP_SELF_DEL(Vd)
+	ELEVISITOR_SETUP(Vd)
 public:
 	Vd(const std::string & name) :name(name) {
-		Reg(&Vd::VisitA);
-		Reg(&Vd::VisitB);
+		Reg<A>();
+		Reg<B>();
 	}
-protected:
-	virtual ~Vd() {
-		UnReg(&Vd::VisitA);
-		UnReg(&Vd::VisitB);
-	}
+
 private:
-	void VisitA(A::Ptr a) { std::cout << "Vd " << name << ": a's n is " << a->n << std::endl; }
-	void VisitB(B::Ptr b) { std::cout << "Vd " << name << ": b's n is " << b->n << std::endl; }
+	void Visit(A::Ptr a) { std::cout << "Vd " << name << ": a's n is " << a->n << std::endl; }
+	void Visit(B::Ptr b) { std::cout << "Vd " << name << ": b's n is " << b->n << std::endl; }
 	std::string name;
 };
 

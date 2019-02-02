@@ -22,9 +22,11 @@ int main() {
 	mat = translate(mat, vec3(1, 0, 0));
 	ray->Transform(mat);
 
-	// origin : ( 0,  0, -1)
-	// dir    : (-1,  0,  0)
-	cout
+	cout << "[ correct answer ]" << endl
+		<< "origin : ( 0,  0, -1)" << endl
+		<< "dir    : (-1,  0,  0)" << endl;
+
+	cout << "[ result ]" << endl
 		<< "origin : " << to_string(ray->GetOrigin()) << endl
 		<< "dir    : " << to_string(ray->GetDir()) << endl;
 

@@ -9,7 +9,7 @@ namespace CppUtil {
 		class Sphere;
 
 		class Intersector : public Basic::EleVisitor {
-			HEAP_OBJ_SETUP(Intersector)
+			ELEVISITOR_SETUP(Intersector)
 		public:
 			struct Rst {
 				Rst(bool isIntersect = false)
@@ -20,24 +20,7 @@ namespace CppUtil {
 			};
 
 		public:
-			virtual void Intersect(Basic::CPtr<Sphere> sphere) = 0;
-
 			virtual const Rst * GetRst() const = 0;
-
-		protected:
-			template<typename ChildT>
-			void Reg(ChildT * useless_parameter = nullptr) {
-				Basic::EleVisitor::Reg<ChildT, const Sphere>(&ChildT::Intersect);
-			}
-
-			template<typename ChildT>
-			void UnReg(ChildT * useless_parameter = nullptr) {
-				Basic::EleVisitor::UnReg<ChildT, const Sphere>(&ChildT::Intersect);
-			}
-
-		private:
-			using Basic::EleVisitor::Reg;
-			using Basic::EleVisitor::UnReg;
 		};
 	}
 }

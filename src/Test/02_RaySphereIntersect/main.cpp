@@ -11,10 +11,10 @@ using namespace CppUtil::Engine;
 using namespace glm;
 
 int main() {
-	Ray::Ptr ray = ToPtr(new Ray(vec3(0, 0, 2), vec3(0, 0, -1)));
-	RayIntersector::Ptr intersector = ToPtr(new RayIntersector(ray));
+	auto ray = ToPtr(new Ray(vec3(0, 0, 2), vec3(0, 0, -1)));
+	auto intersector = ToPtr(new RayIntersector(ray));
 
-	Primitive::Ptr sphere = ToPtr(new Sphere(vec3(0), 1));
+	auto sphere = ToPtr(new Sphere(vec3(0), 1));
 	sphere->Accept(intersector);
 
 	if (intersector->GetRst()->isIntersect) {
