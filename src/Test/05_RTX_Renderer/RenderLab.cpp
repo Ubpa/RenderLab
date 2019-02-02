@@ -5,12 +5,11 @@
 #include <CppUtil/Qt/RawAPI_Define.h>
 #include <CppUtil/Qt/OpThread.h>
 
-#include <CppUtil/RTX/SceneCreator.h>
-#include <CppUtil/RTX/RTX_Renderer.h>
+#include <CppUtil/Engine/RTX_Renderer.h>
 
 #include <CppUtil/Basic/Image.h>
-
 #include <CppUtil/Basic/LambdaOp.h>
+#include <CppUtil/Basic/GStorage.h>
 
 #include <qdebug.h>
 #include <qtimer.h>
@@ -18,7 +17,7 @@
 
 #include <thread>
 
-using namespace RTX;
+using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
 using namespace CppUtil::Qt;
 
@@ -64,24 +63,23 @@ void RenderLab::on_btn_RenderStart_clicked(){
 	auto drawImgOp = ToPtr(new LambdaOp([this, drawImgThread]() {
 		paintImgOp->SetOp(1024, 768);
 		auto img = paintImgOp->GetImg();
-		auto scene = SceneCreator::Gen(RTX::SceneCreator::LOTS_OF_BALLS, 1024, 768);
-		RTX_Renderer rtxRenderer(scene, img);
+		RTX_Renderer::Ptr rtxRenderer = ToPtr(new RTX_Renderer(nullptr));
 
 		OpThread::Ptr controller = ToPtr(new OpThread);
 		controller->UIConnect(this, &RenderLab::UI_Op);
-		auto controllOp = ToPtr(new LambdaOp([this, drawImgThread, controller, &rtxRenderer]() {
+		auto controllOp = ToPtr(new LambdaOp([this, drawImgThread, controller, rtxRenderer]() {
 			while (!drawImgThread->IsStop()) {
 				controller->UI_Op_Run([&, this]() {
-					ui.rtxProgress->setValue(rtxRenderer.ProgressRate() * ui.rtxProgress->maximum());
+					ui.rtxProgress->setValue(rtxRenderer->ProgressRate() * ui.rtxProgress->maximum());
 				});
 				Sleep(100);
 			}
-			rtxRenderer.Stop();
+			rtxRenderer->Stop();
 		}));
 		controller->SetOp(controllOp);
 		controller->start();
 
-		rtxRenderer.Run();
+		rtxRenderer->Run(nullptr, img);
 		controller->terminate();
 		drawImgThread->UI_Op_Run([this]() {
 			ui.btn_RenderStart->setEnabled(true);

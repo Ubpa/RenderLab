@@ -1,8 +1,6 @@
-#include <CppUtil/RTX/RTX_Renderer.h>
+#include <CppUtil/Engine/RTX_Renderer.h>
 
-#include <CppUtil/RTX/RayTracer.h>
-#include <CppUtil/RTX/Scene.h>
-#include <CppUtil/RTX/RayCamera.h>
+#include <CppUtil/Engine/Scene.h>
 
 #include <CppUtil/Basic/Image.h>
 #include <CppUtil/Basic/ImgPixelSet.h>
@@ -10,14 +8,14 @@
 
 #include <omp.h>
 
-using namespace RTX;
+using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
 using namespace glm;
 
-RTX_Renderer::RTX_Renderer(CppUtil::Basic::CPtr<Scene> scene, CppUtil::Basic::Ptr<CppUtil::Basic::Image> img)
-	: scene(scene), img(img), rayTracer(new RayTracer(scene->obj)), isStop(false), maxLoop(20) { }
+RTX_Renderer::RTX_Renderer(CppUtil::Basic::Ptr<RayTracer> rayTracer)
+	: rayTracer(rayTracer), isStop(false), maxLoop(20) { }
 
-void RTX_Renderer::Run() {
+void RTX_Renderer::Run(Scene::Ptr scene, Image::Ptr img) {
 	omp_set_num_threads(omp_get_num_procs() - 1);
 
 	int w = img->GetWidth();
@@ -38,21 +36,24 @@ void RTX_Renderer::Run() {
 			float u = (x + Math::Rand_F()) / (float)w;
 			float v = (y + Math::Rand_F()) / (float)h;
 
-			auto ray = scene->camera->GenRay(u, v);
-			vec3 rst = rayTracer->Trace(ray);
+			//auto ray = scene->camera->GenRay(u, v);
+			//vec3 rst = rayTracer->Trace(ray);
+			vec3 rst(u, v, (u + v) / 2);
 
 			auto origPixel = img->GetPixel_F(x, y);
 			vec3 origColor(origPixel.r*origPixel.r, origPixel.g*origPixel.g, origPixel.b*origPixel.b);
-			vec3 newColor = sqrt((float(sampleNum) * origColor + rst)/float(sampleNum+1));
+			vec3 newColor = sqrt((float(sampleNum) * origColor + rst) / float(sampleNum + 1));
 			img->SetPixel(x, y, newColor);
 		}
 		if (isStop)
 			return;
 	}
 }
+
 void RTX_Renderer::Stop() {
 	isStop = true;
 }
+
 float RTX_Renderer::ProgressRate() {
 	return (float(curLoop) + 0.5f) / float(maxLoop);
 }

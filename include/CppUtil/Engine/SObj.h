@@ -15,9 +15,11 @@ namespace CppUtil {
 		class SObj : public CppUtil::Basic::Node {
 			ELE_SETUP_SELF_DEL(SObj)
 		public:
-
 			SObj(const std::string & name = "")
 				: name(name) { }
+
+		protected:
+			~SObj();
 
 		public:
 			void AttachComponent(Basic::Ptr<Component> component);
@@ -39,30 +41,10 @@ namespace CppUtil {
 				components.erase(typeid(component));
 			}
 
-			const std::string & GetName() const { return name; }
-			void SetName(const std::string & name) { this->name = name; }
-
-		protected:
-			~SObj();
-
 		private:
-			using TypeInfoRef = std::reference_wrapper<const std::type_info>;
-
-			struct Hasher {
-				std::size_t operator()(TypeInfoRef code) const
-				{
-					return code.get().hash_code();
-				}
-			};
-
-			struct EqualTo {
-				bool operator()(TypeInfoRef lhs, TypeInfoRef rhs) const
-				{
-					return lhs.get() == rhs.get();
-				}
-			};
-
 			Basic::TypeMap<Basic::Ptr<Component>> components;
+
+		public:
 			std::string name;
 		};
 	}
