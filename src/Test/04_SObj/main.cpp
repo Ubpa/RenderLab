@@ -40,7 +40,7 @@ int main() {
 
 		cout << "sobj1 have " << sobj1->GetAllComponents().size() << " components." << endl;
 
-		cout << "datach camera 1" << endl;
+		cout << "datach camera1" << endl;
 		camera1->Detach();
 		cout << "camera1 have " << (camera1->GetSObj() ? "" : "not ") << "sobj." << endl;
 		cout << "sobj1 have " << (sobj1->GetComponent<Camera>() ? "" : "not ") << "a [ Camera ] component." << endl;
