@@ -8,16 +8,18 @@
 namespace CppUtil {
 	namespace Engine {
 		class BSDF_Diffuse : public BSDF {
-			ELE_SETUP(BSDF_Diffuse)
+			HEAP_OBJ_SETUP(BSDF_Diffuse)
 		public:
-			virtual glm::vec3 F(const glm::vec3 & wo, const glm::vec3 & wi) = 0;
+			BSDF_Diffuse(const glm::vec3 & albedo = glm::vec3(1)) :albedo(albedo) { }
+
+			virtual glm::vec3 F(const glm::vec3 & wo, const glm::vec3 & wi);
 
 			// probability density function
-			virtual float PDF(const glm::vec3 & wo, const glm::vec3 & wi) = 0;
+			virtual float PDF(const glm::vec3 & wo, const glm::vec3 & wi);
 
 			// pd is probability density
 			// return albedo
-			virtual glm::vec3 Sample(const glm::vec3 & wo, glm::vec3 & wi, float & pd) = 0;
+			virtual glm::vec3 Sample_f(const glm::vec3 & wo, glm::vec3 & wi, float & pd);
 
 			virtual glm::vec3 GetEmission() const { return glm::vec3(0); }
 

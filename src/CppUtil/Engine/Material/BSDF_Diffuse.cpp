@@ -9,7 +9,7 @@ vec3 BSDF_Diffuse::F(const vec3 & wo, const vec3 & wi) {
 	return albedo * (1.0f / PI);
 }
 
-vec3 BSDF_Diffuse::Sample(const vec3 & wo, vec3 & wi, float & pd) {
+vec3 BSDF_Diffuse::Sample_f(const vec3 & wo, vec3 & wi, float & pd) {
 	float Xi1 = Rand_F();
 	float Xi2 = Rand_F();
 

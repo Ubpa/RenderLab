@@ -4,24 +4,31 @@
 #include <CppUtil/Basic/HeapObj.h>
 
 #include <string>
+#include <vector>
 
 namespace CppUtil {
 	namespace Engine {
+		class Camera;
+		class Light;
+
 		class SObj;
 
 		class Scene : public Basic::HeapObj {
 			HEAP_OBJ_SETUP(Scene)
 		public:
-			Scene(Basic::Ptr<SObj> rootSObj, const std::string & name = "")
-				:rootSObj(rootSObj), name(name) { }
+			Scene(Basic::Ptr<SObj> rootSObj, const std::string & name = "");
 
 			Basic::Ptr<SObj> GetRootSObj() const { return rootSObj; }
-
-		private:
-			Basic::Ptr<SObj> rootSObj;
+			Basic::Ptr<Camera> GetMainCamera() const { return mainCamera; }
+			const std::vector<Basic::Ptr<Light>> & GetLights() const { return lights; }
 
 		public:
 			std::string name;
+
+		private:
+			Basic::Ptr<SObj> rootSObj;
+			Basic::Ptr<Camera> mainCamera;
+			std::vector<Basic::Ptr<Light>> lights;
 		};
 	}
 }

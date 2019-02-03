@@ -10,7 +10,7 @@ namespace CppUtil {
 		class Camera : public Component {
 			COMPONENT_SETUP(Camera)
 		public:
-			Camera(Basic::Ptr<SObj> sobj = nullptr, float ar = 16.f / 9.f, float fov = 60.f, float near = 0.001f, float far = 1000.f);
+			Camera(Basic::Ptr<SObj> sobj, float ar = 16.f / 9.f, float fov = 60.f, float near = 0.001f, float far = 1000.f);
 
 			Basic::Ptr<Ray> GenRay(float u, float v);
 		private:

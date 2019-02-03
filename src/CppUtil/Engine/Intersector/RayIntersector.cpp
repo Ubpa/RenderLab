@@ -14,7 +14,7 @@ RayIntersector::RayIntersector(CppUtil::Basic::CPtr<Ray> ray)
 	Reg<Sphere>();
 }
 
-void RayIntersector::Visit(CppUtil::Basic::Ptr<Sphere> sphere) {
+bool RayIntersector::Visit(CppUtil::Basic::Ptr<Sphere> sphere) {
 	const vec3 dir = ray->GetDir();
 	const vec3 origin = ray->GetOrigin();
 	const vec3 center = sphere->GetCenter();
@@ -28,7 +28,7 @@ void RayIntersector::Visit(CppUtil::Basic::Ptr<Sphere> sphere) {
 
 	if (discriminant <= 0) {
 		rst.Clear();
-		return;
+		return true;
 	}
 
 	const float tMin = ray->GetTMin();
@@ -37,10 +37,12 @@ void RayIntersector::Visit(CppUtil::Basic::Ptr<Sphere> sphere) {
 		t = (-b + sqrt(discriminant)) / a;
 		if (t > ray->GetTMax() || t < tMin) {
 			rst.Clear();
-			return;
+			return true;
 		}
 	}
 
 	rst.isIntersect = true;
 	rst.t = t;
+
+	return true;
 }

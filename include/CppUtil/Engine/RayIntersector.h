@@ -24,9 +24,9 @@ namespace CppUtil {
 
 			Basic::CPtr<Ray> GetRay() const { return ray; }
 
-			virtual const Rst * GetRst() const { return &rst; }
+			virtual const Rst & GetRst() const { return &rst; }
 
-			virtual void Visit(Basic::Ptr<Sphere> sphere);
+			bool Visit(Basic::Ptr<Sphere> sphere);
 
 		private:
 			Basic::CPtr<Ray> ray;

@@ -3,9 +3,6 @@
 
 #include <CppUtil/Basic/Math.h>
 
-#include <glm/gtx/string_cast.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-
 #include <iostream>
 #include <string>
 
@@ -18,7 +15,7 @@ int main() {
 	SObj::Ptr sobj1 = ToPtr(new SObj("sobj_test"));
 
 	cout << "new camera2, not attach" << endl;
-	Camera::Ptr camera2 = ToPtr(new Camera);
+	Camera::Ptr camera2 = ToPtr(new Camera(nullptr));
 	cout << "camera2 have " << (camera2->GetSObj() ? "" : "not ") << "sobj." << endl;
 
 	{

@@ -7,7 +7,7 @@
 namespace CppUtil {
 	namespace Engine {
 		class BSDF : public MaterialBase {
-			ELE_SETUP(BSDF)
+			HEAP_OBJ_SETUP(BSDF)
 		public:
 			virtual glm::vec3 F(const glm::vec3 & wo, const glm::vec3 & wi) = 0;
 
@@ -16,7 +16,7 @@ namespace CppUtil {
 
 			// pd is probability density
 			// return albedo
-			virtual glm::vec3 Sample(const glm::vec3 & wo, glm::vec3 & wi, float & pd) = 0;
+			virtual glm::vec3 Sample_f(const glm::vec3 & wo, glm::vec3 & wi, float & pd) = 0;
 
 			virtual glm::vec3 GetEmission() const = 0;
 

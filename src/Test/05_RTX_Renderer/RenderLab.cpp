@@ -6,10 +6,12 @@
 #include <CppUtil/Qt/OpThread.h>
 
 #include <CppUtil/Engine/RTX_Renderer.h>
+#include <CppUtil/Engine/RayTracer.h>
 
 #include <CppUtil/Basic/Image.h>
 #include <CppUtil/Basic/LambdaOp.h>
 #include <CppUtil/Basic/GStorage.h>
+#include <CppUtil/Basic/Math.h>
 
 #include <qdebug.h>
 #include <qtimer.h>
@@ -20,6 +22,15 @@
 using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
 using namespace CppUtil::Qt;
+
+class TestRayTracer : public RayTracer {
+	HEAP_OBJ_SETUP(TestRayTracer)
+
+public:
+	virtual glm::vec3 Trace(CppUtil::Basic::Ptr<Ray> ray) {
+		return glm::vec3(Math::Rand_F()*Math::Rand_F(), Math::Rand_F()*Math::Rand_F(), Math::Rand_F()*Math::Rand_F());
+	}
+};
 
 RenderLab::RenderLab(QWidget *parent)
 	: QMainWindow(parent)
@@ -63,7 +74,8 @@ void RenderLab::on_btn_RenderStart_clicked(){
 	auto drawImgOp = ToPtr(new LambdaOp([this, drawImgThread]() {
 		paintImgOp->SetOp(1024, 768);
 		auto img = paintImgOp->GetImg();
-		RTX_Renderer::Ptr rtxRenderer = ToPtr(new RTX_Renderer(nullptr));
+		auto testRayTracer = ToPtr(new TestRayTracer);
+		auto rtxRenderer = ToPtr(new RTX_Renderer(testRayTracer));
 
 		OpThread::Ptr controller = ToPtr(new OpThread);
 		controller->UIConnect(this, &RenderLab::UI_Op);

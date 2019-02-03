@@ -20,7 +20,7 @@ namespace CppUtil {
 			};
 
 		public:
-			virtual const Rst * GetRst() const = 0;
+			virtual const Rst & GetRst() const = 0;
 		};
 	}
 }

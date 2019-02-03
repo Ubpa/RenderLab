@@ -17,10 +17,10 @@ int main() {
 	auto sphere = ToPtr(new Sphere(vec3(0), 1));
 	sphere->Accept(intersector);
 
-	if (intersector->GetRst()->isIntersect) {
+	if (intersector->GetRst().isIntersect) {
 		std::cout
 			<< "intersect" << std::endl
-			<< "Hit Point is : " << to_string(ray->At(intersector->GetRst()->t)) << std::endl;
+			<< "Hit Point is : " << to_string(ray->At(intersector->GetRst().t)) << std::endl;
 	}
 	else
 		std::cout << "not intersect" << std::endl;

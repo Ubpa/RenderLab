@@ -15,7 +15,7 @@ using namespace glm;
 using namespace std;
 
 int main() {
-	Camera::Ptr camera = ToPtr(new Camera);
+	Camera::Ptr camera = ToPtr(new Camera(nullptr));
 	auto ray = camera->GenRay(0.5f, 0.5f);
 	mat4 mat(1.0f);
 	mat = rotate(mat, 0.5f * Math::PI, vec3(0, 1, 0));

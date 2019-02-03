@@ -10,11 +10,11 @@
 #define ELEVISITOR_SETUP(CLASS) \
 HEAP_OBJ_SETUP(CLASS)\
 private:\
-/*参数不需要填写，只需给出 T 即可*/\
-template<typename T>\
-void Reg(T * useless_paramater = nullptr) {\
-	void (CLASS::*visitFunc)(CppUtil::Basic::Ptr<T>) = &CLASS::Visit;\
-	EleVisitor::Reg<CLASS, T>(visitFunc);\
+/*参数不需要填写，只需给出 EleType 即可*/\
+template<typename EleType>\
+void Reg(EleType * useless_paramater = nullptr) {\
+	bool (CLASS::*visitFunc)(CppUtil::Basic::Ptr<EleType>) = &CLASS::Visit;\
+	EleVisitor::Reg<CLASS, EleType>(visitFunc);\
 }
 
 namespace CppUtil {
@@ -25,26 +25,34 @@ namespace CppUtil {
 			HEAP_OBJ_SETUP(EleVisitor)
 			
 		public:
-			// 静态期编译得到 typeid
+			// 静态编译期得到 typeid
+			// 在遍历的时候，返回 true 表示继续遍历
 			template<typename T>
-			void Visit(Basic::Ptr<T> ele) {
+			bool Visit(Basic::Ptr<T> ele) {
 				auto target = visitOps.find(typeid(T));
 				if (target == visitOps.end())
-					return;
+					return false;
 
-				target->second(ele);
+				return target->second(ele);
+			}
+
+			template<typename EleType>
+			void Reg(std::function<bool(Basic::Ptr<EleType>)> visitFunc) {
+				visitOps[typeid(EleType)] = [visitFunc](Basic::Ptr<Element> pEle)->bool {
+					return visitFunc(Basic::Ptr<EleType>(pEle));
+				};
 			}
 
 		protected:
 			template<typename VisitorType, typename EleType>
-			void Reg(void (VisitorType::*visitFunc)(Basic::Ptr<EleType>)) {
-				visitOps[typeid(EleType)] = [this, visitFunc](Basic::Ptr<Element> pEle) {
-					(dynamic_cast<VisitorType*>(this)->*visitFunc)(Basic::Ptr<EleType>(pEle));
+			void Reg(bool (VisitorType::*visitFunc)(Basic::Ptr<EleType>)) {
+				visitOps[typeid(EleType)] = [this, visitFunc](Basic::Ptr<Element> pEle)->bool {
+					return (dynamic_cast<VisitorType*>(this)->*visitFunc)(Basic::Ptr<EleType>(pEle));
 				};
 			}
 
 		private:
-			TypeMap< std::function< void(Basic::Ptr<Element>) > > visitOps;
+			TypeMap< std::function< bool (Basic::Ptr<Element>) > > visitOps;
 		};
 	}
 }

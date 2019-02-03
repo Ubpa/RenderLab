@@ -10,7 +10,7 @@ namespace CppUtil {
 		class Geometry : public Component {
 			COMPONENT_SETUP(Geometry)
 		public:
-			Geometry(Basic::Ptr<SObj> sobj = nullptr, Basic::Ptr<Primitive> primitive = nullptr)
+			Geometry(Basic::Ptr<SObj> sobj, Basic::Ptr<Primitive> primitive)
 				: Component(sobj), primitive(primitive) { }
 
 			Basic::Ptr<Primitive> GetPrimitive() { return primitive; }

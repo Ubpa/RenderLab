@@ -1,6 +1,7 @@
 #include <CppUtil/Engine/RTX_Renderer.h>
 
 #include <CppUtil/Engine/Scene.h>
+#include <CppUtil/Engine/RayTracer.h>
 
 #include <CppUtil/Basic/Image.h>
 #include <CppUtil/Basic/ImgPixelSet.h>
@@ -37,8 +38,7 @@ void RTX_Renderer::Run(Scene::Ptr scene, Image::Ptr img) {
 			float v = (y + Math::Rand_F()) / (float)h;
 
 			//auto ray = scene->camera->GenRay(u, v);
-			//vec3 rst = rayTracer->Trace(ray);
-			vec3 rst(u, v, (u + v) / 2);
+			vec3 rst = rayTracer->Trace(nullptr);
 
 			auto origPixel = img->GetPixel_F(x, y);
 			vec3 origColor(origPixel.r*origPixel.r, origPixel.g*origPixel.g, origPixel.b*origPixel.b);

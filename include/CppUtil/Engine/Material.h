@@ -10,7 +10,7 @@ namespace CppUtil {
 		class Material : public Component {
 			COMPONENT_SETUP(Material)
 		public:
-			Material(Basic::Ptr<SObj> sobj = nullptr, Basic::Ptr<MaterialBase> material = nullptr)
+			Material(Basic::Ptr<SObj> sobj, Basic::Ptr<MaterialBase> material)
 				: Component(sobj), material(material) { }
 
 			Basic::Ptr<MaterialBase> GetMat() const { return material; }

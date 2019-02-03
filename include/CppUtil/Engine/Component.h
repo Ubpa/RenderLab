@@ -15,7 +15,7 @@ namespace CppUtil {
 		class Component : public Basic::Element {
 			ELE_SETUP(Component)
 		public:
-			Component(Basic::Ptr<SObj> sobj = nullptr);
+			Component(Basic::Ptr<SObj> sobj);
 
 			void Detach();
 			void AttachSObj(Basic::Ptr<SObj> sobj);
