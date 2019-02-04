@@ -9,16 +9,15 @@ using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
 using namespace glm;
 
-RayIntersector::RayIntersector(CppUtil::Basic::CPtr<Ray> ray)
-	: ray(ray) {
+RayIntersector::RayIntersector() {
 	Reg<Sphere>();
 }
 
-bool RayIntersector::Visit(CppUtil::Basic::Ptr<Sphere> sphere) {
-	const vec3 dir = ray->GetDir();
-	const vec3 origin = ray->GetOrigin();
-	const vec3 center = sphere->GetCenter();
-	const float radius = sphere->GetR();
+void RayIntersector::Visit(CppUtil::Basic::Ptr<Sphere> sphere) {
+	vec3 dir = ray->GetDir();
+	vec3 origin = ray->GetOrigin();
+	vec3 center = sphere->GetCenter();
+	float radius = sphere->GetR();
 
 	vec3 oc = origin - center;
 	float a = dot(dir, dir);
@@ -28,21 +27,25 @@ bool RayIntersector::Visit(CppUtil::Basic::Ptr<Sphere> sphere) {
 
 	if (discriminant <= 0) {
 		rst.Clear();
-		return true;
+		return;
 	}
 
-	const float tMin = ray->GetTMin();
-	float t = (-b - sqrt(discriminant)) / a;
-	if (t > ray->GetTMax() || t < tMin) {
-		t = (-b + sqrt(discriminant)) / a;
-		if (t > ray->GetTMax() || t < tMin) {
+	float tMin = ray->GetTMin();
+	float tMax = ray->GetTMax();
+	float sqrt_discriminant = sqrt(discriminant);
+	float inv_a = 1.0f / a;
+
+	float t = - (b + sqrt_discriminant) * inv_a;
+	if (t > tMax || t < tMin) {
+		t = (-b + sqrt_discriminant) * inv_a;
+		if (t > tMax || t < tMin) {
 			rst.Clear();
-			return true;
+			return;
 		}
 	}
 
 	rst.isIntersect = true;
 	rst.t = t;
 
-	return true;
+	return;
 }

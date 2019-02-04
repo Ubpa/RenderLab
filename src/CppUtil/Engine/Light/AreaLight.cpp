@@ -3,9 +3,9 @@
 using namespace CppUtil::Engine;
 using namespace glm;
 
-vec3 AreaLight::Sample_L(const vec3 & p, vec3 & wi, float & distToLight, float & pd) const {
+vec3 AreaLight::Sample_L(const vec3 & p, vec3 & wi, float & distToLight, float & PD) const {
 	if (p.z >= 0) {
-		pd = 0;
+		PD = 0;
 		return vec3(0);
 	}
 
@@ -20,7 +20,7 @@ vec3 AreaLight::Sample_L(const vec3 & p, vec3 & wi, float & distToLight, float &
 	wi = d / dist;
 	distToLight = dist;
 	float area = width * height;
-	pd = sqDist / (area * cosTheta);
+	PD = sqDist / (area * cosTheta);
 	return intensity * color;
 }
 

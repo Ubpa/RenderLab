@@ -17,6 +17,8 @@ namespace CppUtil {
 			const glm::vec3 GetDir() const { return dir; }
 			float GetTMin() const { return tMin; }
 			float GetTMax() const { return tMax; }
+			void SetTMax(float tMax) { this->tMax = tMax; }
+			const glm::vec3 EndPos() const { return At(tMax); }
 
 			void Transform(const glm::mat4 & mat);
 

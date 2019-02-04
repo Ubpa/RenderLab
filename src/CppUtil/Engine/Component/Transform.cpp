@@ -27,6 +27,7 @@ void Transform::SetScale(const vec3 & scale) {
 void Transform::UpdateMat() {
 	if (dirtyMat) {
 		mat = mat4(1.0f);
+		// TRS
 		mat = translate(mat, position);
 		mat = mat * mat4_cast(rotation);
 		mat = glm::scale(mat, scale);

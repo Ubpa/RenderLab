@@ -2,6 +2,9 @@
 
 #include <CppUtil/Engine/Scene.h>
 #include <CppUtil/Engine/RayTracer.h>
+#include <CppUtil/Engine/Camera.h>
+#include <CppUtil/Engine/SObj.h>
+#include <CppUtil/Engine/Ray.h>
 
 #include <CppUtil/Basic/Image.h>
 #include <CppUtil/Basic/ImgPixelSet.h>
@@ -16,11 +19,17 @@ using namespace glm;
 RTX_Renderer::RTX_Renderer(CppUtil::Basic::Ptr<RayTracer> rayTracer)
 	: rayTracer(rayTracer), isStop(false), maxLoop(20) { }
 
-void RTX_Renderer::Run(Scene::Ptr scene, Image::Ptr img) {
+void RTX_Renderer::Run(Image::Ptr img) {
 	omp_set_num_threads(omp_get_num_procs() - 1);
 
 	int w = img->GetWidth();
 	int h = img->GetHeight();
+
+	auto scene = rayTracer->GetScene();
+	auto camera = scene->GetMainCamera();
+	camera->SetAscpectRatio(w, h);
+	auto viewMatrix = camera->GetSObj()->GetLocalToWorldMatrix();
+
 	int imgSize = w * h;
 
 	for (size_t sampleNum = 0; sampleNum < maxLoop; ++sampleNum) {
@@ -37,8 +46,9 @@ void RTX_Renderer::Run(Scene::Ptr scene, Image::Ptr img) {
 			float u = (x + Math::Rand_F()) / (float)w;
 			float v = (y + Math::Rand_F()) / (float)h;
 
-			//auto ray = scene->camera->GenRay(u, v);
-			vec3 rst = rayTracer->Trace(nullptr);
+			auto ray = camera->GenRay(u, v);
+			ray->Transform(viewMatrix);
+			vec3 rst = rayTracer->Trace(ray);
 
 			auto origPixel = img->GetPixel_F(x, y);
 			vec3 origColor(origPixel.r*origPixel.r, origPixel.g*origPixel.g, origPixel.b*origPixel.b);
@@ -55,5 +65,5 @@ void RTX_Renderer::Stop() {
 }
 
 float RTX_Renderer::ProgressRate() {
-	return (float(curLoop) + 0.5f) / float(maxLoop);
+	return clamp((float(curLoop) + 0.5f) / float(maxLoop), 0.f, 1.f);
 }

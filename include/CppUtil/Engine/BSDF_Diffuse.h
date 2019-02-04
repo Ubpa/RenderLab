@@ -19,6 +19,9 @@ namespace CppUtil {
 
 			// pd is probability density
 			// return albedo
+			// @arg0 in
+			// @arg1 out
+			// @arg2 out
 			virtual glm::vec3 Sample_f(const glm::vec3 & wo, glm::vec3 & wi, float & pd);
 
 			virtual glm::vec3 GetEmission() const { return glm::vec3(0); }

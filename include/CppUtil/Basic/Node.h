@@ -5,21 +5,16 @@
 
 #include <set>
 
-#define NODE_SETUP(CLASS) \
+#define NODE_SETUP(CLASS)\
 ELE_SETUP(CLASS)\
 public:\
-virtual bool TraverseAccept(CppUtil::Basic::EleVisitor::Ptr eleVisitor){\
-	if(!eleVisitor->Visit(This()))\
-		return false;\
-	for (auto child : GetChildren()) {\
-		if(!child->TraverseAccept(eleVisitor)) \
-			return false;\
-	}\
-	return true;\
+virtual void TraverseAccept(CppUtil::Basic::EleVisitor::Ptr eleVisitor) {\
+	eleVisitor->Visit(This());\
+	for (auto child : GetChildren())\
+		child->TraverseAccept(eleVisitor);\
 }\
-virtual void AscendAccept(CppUtil::Basic::EleVisitor::Ptr eleVisitor){\
-	if(!eleVisitor->Visit(This()))\
-		return;\
+virtual void AscendAccept(CppUtil::Basic::EleVisitor::Ptr eleVisitor) {\
+	eleVisitor->Visit(This());\
 	if(GetParent())\
 		GetParent()->AscendAccept(eleVisitor);\
 }\

@@ -3,6 +3,8 @@
 
 #include <CppUtil/Engine/Component.h>
 
+#include <glm/mat4x4.hpp>
+
 namespace CppUtil {
 	namespace Engine {
 		class LightBase;
@@ -14,6 +16,7 @@ namespace CppUtil {
 				: Component(sobj), light(light) { }
 
 			Basic::Ptr<LightBase> GetLight() const { return light; }
+			glm::mat4 GetLightToWorldMatrixWithoutScale() const;
 		private:
 			Basic::Ptr<LightBase> light;
 		};

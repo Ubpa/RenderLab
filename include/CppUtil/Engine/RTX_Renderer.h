@@ -18,7 +18,7 @@ namespace CppUtil {
 			RTX_Renderer(Basic::Ptr<RayTracer> rayTracer);
 
 		public:
-			void Run(Basic::Ptr<Scene> scene, Basic::Ptr<Basic::Image> img);
+			void Run(Basic::Ptr<Basic::Image> img);
 			void Stop();
 			float ProgressRate();
 

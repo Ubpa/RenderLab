@@ -6,7 +6,10 @@ using namespace CppUtil::Basic::Math;
 using namespace glm;
 
 vec3 BSDF_Diffuse::F(const vec3 & wo, const vec3 & wi) {
-	return albedo * (1.0f / PI);
+	if (wi.z < 0)
+		return vec3(0);
+	else
+		return albedo * (1.0f / PI);
 }
 
 vec3 BSDF_Diffuse::Sample_f(const vec3 & wo, vec3 & wi, float & pd) {

@@ -31,34 +31,37 @@ void SObj::DetachComponent(Basic::Ptr<T> component) {
 
 template<typename T>
 CppUtil::Basic::Ptr<T> SObj::GetComponentInChildren() {
-	Basic::Ptr<T> componentT = nullptr;
+	Basic::Ptr<T> componentOfT = nullptr;
 	auto visitor = ToPtr(new Basic::EleVisitor);
-	visitor->Reg<SObj>([&componentT](SObj::Ptr sobj)->bool {
+	visitor->Reg<SObj>([&componentOfT, visitor](SObj::Ptr sobj) {
 		// 因为 GetComponent<T>() 会检测 T 是否以 Component 为基类，所以不需要用 std::is_base_of 来判断
 		auto tmpComponent = sobj->GetComponent<T>();
 		if (tmpComponent) {
-			componentT = tmpComponent;
-			return false;
+			componentOfT = tmpComponent;
+			return;
 		}
-		return true;
+		
+		for (auto child : sobj->GetChildren()) {
+			child->Accept(visitor);
+			if (componentOfT != nullptr)
+				return;
+		}
 	});
-	TraverseAccept(visitor);
-	return componentT;
+	Accept(visitor);
+	return componentOfT;
 }
 
 template<typename T>
 std::vector<CppUtil::Basic::Ptr<T> > SObj::GetComponentsInChildren() {
-	std::vector<Basic::Ptr<T>> componentsT;
+	std::vector<Basic::Ptr<T>> componentsOfT;
 	auto visitor = ToPtr(new Basic::EleVisitor);
 
-	visitor->Reg<SObj>([&componentsT](SObj::Ptr sobj)->bool {
+	visitor->Reg<SObj>([&componentsOfT](SObj::Ptr sobj) {
 		// 因为 GetComponent<T>() 会检测 T 是否以 Component 为基类，所以不需要用 std::is_base_of 来判断
-		auto tmpComponent = sobj->GetComponent<T>();
-		if (tmpComponent)
-			componentsT.push_back(tmpComponent);
-
-		return true;
+		auto componentOfT = sobj->GetComponent<T>();
+		if (componentOfT)
+			componentsOfT.push_back(componentOfT);
 	});
 	TraverseAccept(visitor);
-	return componentsT;
+	return componentsOfT;
 }

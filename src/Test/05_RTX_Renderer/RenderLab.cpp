@@ -7,6 +7,9 @@
 
 #include <CppUtil/Engine/RTX_Renderer.h>
 #include <CppUtil/Engine/RayTracer.h>
+#include <CppUtil/Engine/Scene.h>
+#include <CppUtil/Engine/SObj.h>
+#include <CppUtil/Engine/Camera.h>
 
 #include <CppUtil/Basic/Image.h>
 #include <CppUtil/Basic/LambdaOp.h>
@@ -27,6 +30,8 @@ class TestRayTracer : public RayTracer {
 	HEAP_OBJ_SETUP(TestRayTracer)
 
 public:
+	using RayTracer::RayTracer;
+
 	virtual glm::vec3 Trace(CppUtil::Basic::Ptr<Ray> ray) {
 		return glm::vec3(Math::Rand_F()*Math::Rand_F(), Math::Rand_F()*Math::Rand_F(), Math::Rand_F()*Math::Rand_F());
 	}
@@ -74,7 +79,10 @@ void RenderLab::on_btn_RenderStart_clicked(){
 	auto drawImgOp = ToPtr(new LambdaOp([this, drawImgThread]() {
 		paintImgOp->SetOp(1024, 768);
 		auto img = paintImgOp->GetImg();
-		auto testRayTracer = ToPtr(new TestRayTracer);
+		auto sobj = ToPtr(new SObj(nullptr, "test_sobj"));
+		auto camera = ToPtr(new Camera(sobj));
+		auto scene = ToPtr(new Scene(sobj, "test_scene"));
+		auto testRayTracer = ToPtr(new TestRayTracer(scene));
 		auto rtxRenderer = ToPtr(new RTX_Renderer(testRayTracer));
 
 		OpThread::Ptr controller = ToPtr(new OpThread);
@@ -91,11 +99,12 @@ void RenderLab::on_btn_RenderStart_clicked(){
 		controller->SetOp(controllOp);
 		controller->start();
 
-		rtxRenderer->Run(nullptr, img);
+		rtxRenderer->Run(img);
 		controller->terminate();
-		drawImgThread->UI_Op_Run([this]() {
+		drawImgThread->UI_Op_Run([this, rtxRenderer]() {
 			ui.btn_RenderStart->setEnabled(true);
 			ui.btn_RenderStop->setEnabled(false);
+			ui.rtxProgress->setValue(rtxRenderer->ProgressRate() * ui.rtxProgress->maximum());
 		});
 	}));
 	drawImgThread->SetOp(drawImgOp);

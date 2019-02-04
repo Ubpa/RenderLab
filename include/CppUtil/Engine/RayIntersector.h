@@ -2,6 +2,7 @@
 #define _RAY_INTERSECTOR_H_
 
 #include <CppUtil/Engine/Intersector.h>
+#include <glm/vec3.hpp>
 
 namespace CppUtil {
 	namespace Engine {
@@ -14,19 +15,18 @@ namespace CppUtil {
 				Rst(bool isIntersect = false, float t = 0)
 					: Intersector::Rst(isIntersect), t(t) { }
 
+				glm::vec3 n;
 				float t;
 			};
 
 		public:
-			RayIntersector(Basic::CPtr<Ray> ray);
+			RayIntersector();
 
 		public:
+			virtual const Rst & GetRst() const { return rst; }
+			void SetRay(Basic::CPtr<Ray> ray) { this->ray = ray; }
 
-			Basic::CPtr<Ray> GetRay() const { return ray; }
-
-			virtual const Rst & GetRst() const { return &rst; }
-
-			bool Visit(Basic::Ptr<Sphere> sphere);
+			void Visit(Basic::Ptr<Sphere> sphere);
 
 		private:
 			Basic::CPtr<Ray> ray;

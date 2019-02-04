@@ -11,6 +11,7 @@ foreach(SOURCE ${ALL_SOURCES})
 	set(STR_TARGET_SOURCES "${STR_TARGET_SOURCES} ${SOURCE}")
 endforeach(SOURCE ${ALL_SOURCES})
 set(STR_TARGET_SOURCES "${STR_TARGET_SOURCES} ${CMAKE_SOURCE_DIR}/include/CppUtil/Basic/Math.h")
+set(STR_TARGET_SOURCES "${STR_TARGET_SOURCES} ${CMAKE_SOURCE_DIR}/include/CppUtil/Basic/Math.inl")
 set(STR_TARGET_SOURCES "${STR_TARGET_SOURCES} ${CMAKE_SOURCE_DIR}/include/CppUtil/Basic/Perlin.h")
 #多个库文件用 [空格] 分隔，如果为空，就输入[一个空格]
 #如：set(STR_TARGET_LIBS "lib1.lib lib2.lib")

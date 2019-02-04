@@ -12,14 +12,14 @@ using namespace glm;
 using namespace std;
 
 int main() {
-	SObj::Ptr sobj1 = ToPtr(new SObj("sobj_test"));
+	SObj::Ptr sobj1 = ToPtr(new SObj(nullptr, "sobj_test"));
 
 	cout << "new camera2, not attach" << endl;
 	Camera::Ptr camera2 = ToPtr(new Camera(nullptr));
 	cout << "camera2 have " << (camera2->GetSObj() ? "" : "not ") << "sobj." << endl;
 
 	{
-		SObj::Ptr sobj2 = ToPtr(new SObj("sobj_test"));
+		SObj::Ptr sobj2 = ToPtr(new SObj(nullptr, "sobj_test"));
 
 		cout << "enter scope" << endl << endl;
 

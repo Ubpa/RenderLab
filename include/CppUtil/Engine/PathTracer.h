@@ -5,13 +5,18 @@
 
 namespace CppUtil {
 	namespace Engine {
+		class SObj;
+
 		class PathTracer : public RayTracer {
 			HEAP_OBJ_SETUP(PathTracer)
 		public:
-			virtual glm::vec3 Trace(Basic::Ptr<Ray> ray);
+			PathTracer(Basic::Ptr<Scene> scene);
 
-		private:
-
+			virtual glm::vec3 Trace(Basic::Ptr<Ray> ray, int depth = 0);
+		
+		public:
+			int sampleNumForAreaLight;
+			int maxDepth;
 		};
 	}
 }

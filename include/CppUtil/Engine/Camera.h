@@ -10,16 +10,18 @@ namespace CppUtil {
 		class Camera : public Component {
 			COMPONENT_SETUP(Camera)
 		public:
-			Camera(Basic::Ptr<SObj> sobj, float ar = 16.f / 9.f, float fov = 60.f, float near = 0.001f, float far = 1000.f);
+			Camera(Basic::Ptr<SObj> sobj, float ar = 16.f / 9.f, float fov = 60.f, float nearClipping = 0.001f, float farClipping = 1000.f);
 
 			Basic::Ptr<Ray> GenRay(float u, float v);
+
+			void SetAscpectRatio(float w, float h) { ar = w / h; }
 		private:
 			// aspect ratio
 			float ar;
 			// field of view
 			float fov;
-			float near;
-			float far;
+			float nearClipping;
+			float farClipping;
 
 			float w;
 			float h;

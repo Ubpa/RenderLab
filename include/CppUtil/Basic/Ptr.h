@@ -53,6 +53,10 @@ namespace CppUtil {
 
 			template<typename ChildT>
 			Ptr(const Ptr<ChildT> & ptr) : std::shared_ptr<T>(std::dynamic_pointer_cast<T>(std::shared_ptr<ChildT>(ptr))) { }
+
+			operator bool() {
+				return *this != nullptr;
+			}
 		};
 
 

@@ -20,7 +20,7 @@ namespace CppUtil {
 			void Detach();
 			void AttachSObj(Basic::Ptr<SObj> sobj);
 
-			Basic::Ptr<SObj> GetSObj() { return wSObj.lock(); }
+			Basic::Ptr<SObj> GetSObj() const { return wSObj.lock(); }
 			bool IsEnabled() const { return isEnabled; }
 			void SetEnable(bool isEnabled) { this->isEnabled = isEnabled; }
 
