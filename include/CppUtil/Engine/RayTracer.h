@@ -17,7 +17,7 @@ namespace CppUtil {
 		public:
 			RayTracer(Basic::Ptr<Scene> scene);
 
-			virtual glm::vec3 Trace(Basic::Ptr<Ray> ray) = 0;
+			virtual glm::vec3 Trace(Basic::Ptr<Ray> ray, int depth = 0) = 0;
 
 			Basic::Ptr<Scene> GetScene() const { return scene; }
 
@@ -29,9 +29,8 @@ namespace CppUtil {
 			};
 
 			// ray 所处的坐标系应该是 sobj 所处的坐标系
-			void FindClosetSObj(Basic::Ptr<SObj> sobj, Basic::Ptr<Ray> ray, Rst & closestRst);
+			void FindClosetSObj(Basic::Ptr<SObj> sobj, Basic::Ptr<Ray> ray, Basic::Ptr<RayIntersector> rayIntersector, Rst & closestRst);
 
-			Basic::Ptr<RayIntersector> rayIntersector;
 			Basic::Ptr<Scene> scene;
 		};
 	}

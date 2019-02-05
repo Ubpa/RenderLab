@@ -20,9 +20,10 @@ PathTracer::PathTracer(Scene::Ptr scene)
 	: RayTracer(scene), sampleNumForAreaLight(5), maxDepth(10) { }
 
 vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
+	RayIntersector::Ptr rayIntersector = ToPtr(new RayIntersector);
 	rayIntersector->SetRay(ray);
 	Rst closestRst;
-	FindClosetSObj(scene->GetRootSObj(), ray, closestRst);
+	FindClosetSObj(scene->GetRootSObj(), ray, rayIntersector, closestRst);
 	if (!closestRst.closestSObj) {
 		float t = 0.5f * (normalize(ray->GetDir()).y + 1.0f);
 		vec3 white(1.0f, 1.0f, 1.0f);
@@ -128,16 +129,16 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 				Rst shadowRst;
 				// 应该使用一个优化过的函数
 				// 设置 ray 的 tMax，然后只要找到一个碰撞后即可返回，无需找到最近的
-				FindClosetSObj(scene->GetRootSObj(), shadowRay, shadowRst);
+				FindClosetSObj(scene->GetRootSObj(), shadowRay, rayIntersector, shadowRst);
 				if (!shadowRst.closestSObj)
 					sumLightL += (cos_theta / sumPD) * f * lightL;
 			}
 		}
 	}
 
-	// 深度，一定概率丢弃
-	float depthP = depth > maxDepth ? 0.5f : 1.0f;
-	if (Math::Rand_F() <= depthP)
+	// 深度，丢弃概率
+	float depthP = depth > maxDepth ? 0.5f : 0.f;
+	if (Math::Rand_F() < depthP)
 		return emitL + sumLightL;
 
 	// 积分方程，一定概率丢弃
@@ -170,7 +171,7 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 	Ray::Ptr matRay = ToPtr(new Ray(hitPos + Math::EPSILON * matRayDir, matRayDir));
 	const vec3 matRayColor = Trace(matRay, depth + 1);
 
-	vec3 matL = abs(cosTheta) / (sumPD*(1.f - terminateProbability)*depthP) * matF * matRayColor;
+	vec3 matL = abs(cosTheta) / (sumPD*(1.f - terminateProbability)*(1-depthP)) * matF * matRayColor;
 
 	return emitL + sumLightL + matL;
 }

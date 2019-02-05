@@ -26,7 +26,7 @@ void RayIntersector::Visit(CppUtil::Basic::Ptr<Sphere> sphere) {
 	float discriminant = b * b - a * c;
 
 	if (discriminant <= 0) {
-		rst.Clear();
+		rst.isIntersect = false;
 		return;
 	}
 
@@ -39,13 +39,14 @@ void RayIntersector::Visit(CppUtil::Basic::Ptr<Sphere> sphere) {
 	if (t > tMax || t < tMin) {
 		t = (-b + sqrt_discriminant) * inv_a;
 		if (t > tMax || t < tMin) {
-			rst.Clear();
+			rst.isIntersect = false;
 			return;
 		}
 	}
 
 	rst.isIntersect = true;
 	rst.t = t;
+	rst.n = (ray->At(t) - center) / radius;
 
 	return;
 }

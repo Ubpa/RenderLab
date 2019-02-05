@@ -17,7 +17,7 @@ using namespace CppUtil::Basic;
 using namespace glm;
 
 RTX_Renderer::RTX_Renderer(CppUtil::Basic::Ptr<RayTracer> rayTracer)
-	: rayTracer(rayTracer), isStop(false), maxLoop(20) { }
+	: rayTracer(rayTracer), isStop(false), maxLoop(40), curLoop(0) { }
 
 void RTX_Renderer::Run(Image::Ptr img) {
 	omp_set_num_threads(omp_get_num_procs() - 1);
@@ -27,16 +27,15 @@ void RTX_Renderer::Run(Image::Ptr img) {
 
 	auto scene = rayTracer->GetScene();
 	auto camera = scene->GetMainCamera();
-	camera->SetAscpectRatio(w, h);
+	camera->SetWidthHeight(w, h);
 	auto viewMatrix = camera->GetSObj()->GetLocalToWorldMatrix();
 
 	int imgSize = w * h;
 
-	for (size_t sampleNum = 0; sampleNum < maxLoop; ++sampleNum) {
-		curLoop = sampleNum;
-
+	for (curLoop = 0; curLoop < maxLoop; ++curLoop) {
 		ImgPixelSet pixSet(w, h);
 		auto randSet = pixSet.PickAll();
+
 #pragma omp parallel for schedule(dynamic, 1024)
 		for (int pixelIdx = 0; pixelIdx < imgSize; pixelIdx++) {
 			auto xy = randSet[pixelIdx];
@@ -52,9 +51,10 @@ void RTX_Renderer::Run(Image::Ptr img) {
 
 			auto origPixel = img->GetPixel_F(x, y);
 			vec3 origColor(origPixel.r*origPixel.r, origPixel.g*origPixel.g, origPixel.b*origPixel.b);
-			vec3 newColor = sqrt((float(sampleNum) * origColor + rst) / float(sampleNum + 1));
+			vec3 newColor = sqrt((float(curLoop) * origColor + rst) / float(curLoop + 1));
 			img->SetPixel(x, y, newColor);
 		}
+
 		if (isStop)
 			return;
 	}

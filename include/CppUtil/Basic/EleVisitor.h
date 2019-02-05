@@ -26,7 +26,6 @@ namespace CppUtil {
 			
 		public:
 			// 静态编译期得到 typeid
-			// 在遍历的时候，返回 true 表示继续遍历
 			template<typename T>
 			void Visit(Basic::Ptr<T> ele) {
 				auto target = visitOps.find(typeid(T));
@@ -48,6 +47,8 @@ namespace CppUtil {
 					(dynamic_cast<VisitorType*>(this)->*visitFunc)(Basic::Ptr<EleType>(pEle));
 				};
 			}
+
+			//~EleVisitor() { printf("del elevisitor\n"); }
 
 		private:
 			TypeMap< std::function< void (Basic::Ptr<Element>) > > visitOps;

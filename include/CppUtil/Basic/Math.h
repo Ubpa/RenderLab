@@ -71,6 +71,7 @@ namespace CppUtil {
 			bool IsBase2(int n);
 
 			// return object to world 3x3 matrix
+			// n 是单位向量
 			glm::mat3 GenCoordSpace(const glm::vec3 & n);
 
 			float Illum(const glm::vec3 & color);

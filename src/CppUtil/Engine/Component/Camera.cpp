@@ -11,8 +11,13 @@ using namespace glm;
 
 Camera::Camera(Basic::Ptr<SObj> sobj, float ar, float fov, float near, float far)
 	: Component(sobj), ar(ar), fov(fov), nearClipping(near), farClipping(far) {
-	w = 2 * tanf(fov / 180 / 2 * PI);
-	h = w / ar;
+	h = 2 * tanf(fov / 2 / 180  * PI);
+	w = h * ar;
+}
+
+void Camera::SetWidthHeight(int w, int h) {
+	ar = float(w) / float(h);
+	this->w = this->h * ar;
 }
 
 Ray::Ptr Camera::GenRay(float u, float v) {

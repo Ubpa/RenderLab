@@ -11,25 +11,27 @@ using namespace CppUtil::Engine;
 using namespace glm;
 
 RayTracer::RayTracer(Scene::Ptr scene)
-	: scene(scene), rayIntersector(ToPtr(new RayIntersector)) { }
+	: scene(scene) { }
 
-void RayTracer::FindClosetSObj(SObj::Ptr sobj, Ray::Ptr ray, Rst & closestRst) {
+void RayTracer::FindClosetSObj(SObj::Ptr sobj, Ray::Ptr ray, RayIntersector::Ptr rayIntersector, Rst & closestRst) {
 	auto transform = sobj->GetComponent<Transform>();
 	if (transform)
 		ray->Transform(transform->GetInv());
 
 	auto geometry = sobj->GetComponent<Geometry>();
-	geometry->GetPrimitive()->Accept(rayIntersector);
-	auto rst = rayIntersector->GetRst();
+	if (geometry) {
+		geometry->GetPrimitive()->Accept(rayIntersector);
+		auto rst = rayIntersector->GetRst();
 
-	if (rst.isIntersect) {
-		ray->SetTMax(rst.t);
-		closestRst.closestSObj = sobj;
-		closestRst.n = rst.n;
+		if (rst.isIntersect) {
+			ray->SetTMax(rst.t);
+			closestRst.closestSObj = sobj;
+			closestRst.n = rst.n;
+		}
 	}
 
 	for (auto child : sobj->GetChildren())
-		FindClosetSObj(sobj, ray, closestRst);
+		FindClosetSObj(child, ray, rayIntersector, closestRst);
 
 	if (transform)
 		ray->Transform(transform->GetMat());

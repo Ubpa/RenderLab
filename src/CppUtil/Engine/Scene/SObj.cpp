@@ -30,14 +30,15 @@ std::vector<CppUtil::Basic::Ptr<Component>> SObj::GetAllComponents() const {
 
 mat4 SObj::GetLocalToWorldMatrix() {
 	mat4 mat(1.0f);
+
 	auto getMatVisitor = ToPtr(new EleVisitor);
-	auto getMatFunc = [&mat](SObj::Ptr sobj)->bool {
+	getMatVisitor->Reg<SObj>([&mat](SObj::Ptr sobj)->bool {
 		auto transform = sobj->GetComponent<Transform>();
 		if (transform != nullptr)
 			mat = transform->GetMat() * mat;
 
 		return true;
-	};
+	});
 
 	AscendAccept(getMatVisitor);
 	return mat;

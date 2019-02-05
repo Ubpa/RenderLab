@@ -99,8 +99,8 @@ bool Math::IsBase2(int n) {
 }
 
 mat3 Math::GenCoordSpace(const vec3 & n) {
-	auto z = n;
-	auto & h = z;
+	auto & z = n;
+	auto h = z;
 	if (fabs(h.x) <= fabs(h.y) && fabs(h.x) <= fabs(h.z))
 		h.x = 1.0;
 	else if (fabs(h.y) <= fabs(h.x) && fabs(h.y) <= fabs(h.z))
@@ -108,11 +108,8 @@ mat3 Math::GenCoordSpace(const vec3 & n) {
 	else
 		h.z = 1.0;
 
-	z = normalize(z);
 	auto y = cross(h, z);
-	y = normalize(y);
 	auto x = cross(z, y);
-	x = normalize(x);
 
 	mat3 o2w;
 	o2w[0] = x;

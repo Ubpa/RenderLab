@@ -6,10 +6,8 @@
 #include <CppUtil/Qt/OpThread.h>
 
 #include <CppUtil/Engine/RTX_Renderer.h>
-#include <CppUtil/Engine/RayTracer.h>
-#include <CppUtil/Engine/Scene.h>
-#include <CppUtil/Engine/SObj.h>
-#include <CppUtil/Engine/Camera.h>
+#include <CppUtil/Engine/PathTracer.h>
+#include "GenScene.h"
 
 #include <CppUtil/Basic/Image.h>
 #include <CppUtil/Basic/LambdaOp.h>
@@ -25,17 +23,6 @@
 using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
 using namespace CppUtil::Qt;
-
-class TestRayTracer : public RayTracer {
-	HEAP_OBJ_SETUP(TestRayTracer)
-
-public:
-	using RayTracer::RayTracer;
-
-	virtual glm::vec3 Trace(CppUtil::Basic::Ptr<Ray> ray, int depth = 0) {
-		return glm::vec3(Math::Rand_F()*Math::Rand_F(), Math::Rand_F()*Math::Rand_F(), Math::Rand_F()*Math::Rand_F());
-	}
-};
 
 RenderLab::RenderLab(QWidget *parent)
 	: QMainWindow(parent)
@@ -79,11 +66,11 @@ void RenderLab::on_btn_RenderStart_clicked(){
 	auto drawImgOp = ToPtr(new LambdaOp([this, drawImgThread]() {
 		paintImgOp->SetOp(1024, 768);
 		auto img = paintImgOp->GetImg();
-		auto sobj = ToPtr(new SObj(nullptr, "test_sobj"));
-		auto camera = ToPtr(new Camera(sobj));
-		auto scene = ToPtr(new Scene(sobj, "test_scene"));
-		auto testRayTracer = ToPtr(new TestRayTracer(scene));
-		auto rtxRenderer = ToPtr(new RTX_Renderer(testRayTracer));
+
+		auto scene = GenScene();
+		auto pathTracer = ToPtr(new PathTracer(scene));
+
+		auto rtxRenderer = ToPtr(new RTX_Renderer(pathTracer));
 
 		OpThread::Ptr controller = ToPtr(new OpThread);
 		controller->UIConnect(this, &RenderLab::UI_Op);
