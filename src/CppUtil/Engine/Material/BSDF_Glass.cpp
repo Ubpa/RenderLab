@@ -14,7 +14,7 @@ vec3 BSDF_Glass::Sample_f(const vec3 & wo, vec3 & wi, float & PD) {
 
 	if (!LocalRefract(wo, wi, ior)) {
 		PD = 1.0f;
-		reflect(wo, wi);
+		wi = LocalReflect(wo);
 		return 1.0f / abs(wi.z) * reflectance;
 	}
 
@@ -26,7 +26,7 @@ vec3 BSDF_Glass::Sample_f(const vec3 & wo, vec3 & wi, float & PD) {
 
 	if (Rand_F() < Fr) {
 		PD = Fr;
-		reflect(wo, wi);
+		wi = LocalReflect(wo);
 		return Fr / abs(wi.z) * reflectance;
 	}
 

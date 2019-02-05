@@ -37,16 +37,17 @@ cmake .. -Wno-dev
   - [x] 相机
   - [x] 组件机制优化
   - [x] Material (BSDF)
-  - [ ] PathTracer ( PTX )
+  - [ ] PathTracer (PTX)
     - [x] 基本框架
     - [x] Mirror
     - [x] Glass
-    - [ ] Transform
+    - [x] Transform
+    - [ ] Sphere 取消掉冗余的 center 和 radius
+    - [ ] plane
     - [ ] 灯光
   - [ ] ...
 - [ ] 用新的架构来写实时渲染
-  - [ ] 
 
 ## 3. 其他 TODO
 
-- [ ] 将模板头文件的定义和声明分离
+- [x] 将模板头文件的定义和声明分离

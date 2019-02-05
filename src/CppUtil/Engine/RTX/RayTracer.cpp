@@ -33,6 +33,9 @@ void RayTracer::FindClosetSObj(SObj::Ptr sobj, Ray::Ptr ray, RayIntersector::Ptr
 	for (auto child : sobj->GetChildren())
 		FindClosetSObj(child, ray, rayIntersector, closestRst);
 
-	if (transform)
+	if (transform) {
 		ray->Transform(transform->GetMat());
+		if (closestRst.closestSObj)
+			closestRst.n = normalize(transform->GetNormMat()*closestRst.n);
+	}
 }

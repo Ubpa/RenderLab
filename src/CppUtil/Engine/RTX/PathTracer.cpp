@@ -45,36 +45,31 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 
 	const vec3 hitPos = ray->At(ray->GetTMax());
 
-	auto const surfaceToObject = Math::GenCoordSpace(closestRst.n);
-	auto const objectToSurface = transpose(surfaceToObject);
+	auto const surfaceToWorld = Math::GenCoordSpace(closestRst.n);
+	auto const worldToSurface = transpose(surfaceToWorld);
 
 	// w_out 处于表面坐标系
-	auto w_out = normalize(objectToSurface * (-ray->GetDir()));
+	auto w_out = normalize(worldToSurface * (-ray->GetDir()));
 
 	vec3 sumLightL(0);
 	
 	// 计算与灯光相关的数据
 	vector<LightBase::Ptr> lights;
-	vector<mat3> objectToLightVec;// 只需要旋转方向，所以使用 mat3
-	vector<mat3> lightToObjectVec;// 只需要旋转方向，所以使用 mat3
+	vector<mat3> worldToLightVec;// 只需要旋转方向，所以使用 mat3
 	vector<mat3> lightToWorldVec;// 只需要旋转方向，所以使用 mat3
 	vector<vec3> posInLightSpaceVec;
 
-	auto objectToWorld = closestRst.closestSObj->GetLocalToWorldMatrix();
-	auto worldToObject = inverse(objectToWorld);
 	vec4 hitPos4 = vec4(hitPos, 1);
-	const vec3 hitPosInWorld = objectToWorld * hitPos4;
 
 	for (auto lightComponent : scene->GetLights()) {
+		lights.push_back(lightComponent->GetLight());
+
 		mat4 lightToWorld = lightComponent->GetLightToWorldMatrixWithoutScale();
 		mat4 worldToLight = inverse(lightToWorld);
-		mat4 objectToLight = worldToLight * objectToWorld;
 
 		lightToWorldVec.push_back(lightToWorld);
-		lights.push_back(lightComponent->GetLight());
-		objectToLightVec.push_back(objectToLight);
-		lightToObjectVec.push_back(worldToObject * lightToWorld);
-		posInLightSpaceVec.push_back(objectToLight * hitPos4);
+		worldToLightVec.push_back(worldToLight);
+		posInLightSpaceVec.push_back(worldToLight * hitPos4);
 	}
 	int lightNum = lights.size();
 	
@@ -99,16 +94,17 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 				if (PD <= 0)
 					continue;
 
-				const vec3 dirInObject = lightToObjectVec[i] * dir_ToLight;
+				// dirInWorld 应该是单位向量
+				const vec3 dirInWorld = lightToWorldVec[i] * dir_ToLight;
 				// w_in 处于表面坐标系，应该是单位向量
-				const vec3 w_in = objectToSurface * dirInObject;
+				const vec3 w_in = worldToSurface * dirInWorld;
 
 				// 多重重要性采样 Multiple Importance Sampling (MIS)
 				float sumPD = bsdf->PDF(w_out, w_in) + sampleNum * PD;
 				for (int k = 0; k < lightNum;k++) {
 					if (k != i) {
 						int sampleNum = lights[k]->IsDelta() ? 1 : sampleNumForAreaLight;
-						vec3 dir = objectToLightVec[k] * dirInObject;
+						vec3 dir = worldToLightVec[k] * dirInWorld;
 						sumPD += sampleNum * lights[k]->PDF(posInLightSpaceVec[i], dir_ToLight);
 					}
 				}
@@ -119,9 +115,7 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 				// evaluate surface bsdf
 				const vec3 f = bsdf->F(w_out, w_in);
 
-				// dirInWorld 应该是单位向量
-				const vec3 dirInWorld = lightToWorldVec[i] * dir_ToLight;
-				vec3 originInWorld = hitPosInWorld + Math::EPSILON * dirInWorld;
+				vec3 originInWorld = hitPos + Math::EPSILON * dirInWorld;
 				// shadowRay 处于世界坐标
 				Ray::Ptr shadowRay = ToPtr(new Ray(originInWorld, dirInWorld));
 				shadowRay->SetTMax(dist_ToLight - Math::EPSILON);
@@ -157,18 +151,16 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 		return emitL + sumLightL;
 
 	float sumPD = matPD;
-	const vec3 matRayDirInObject = surfaceToObject * mat_w_in;
+	const vec3 matRayDirInWorld = surfaceToWorld * mat_w_in;
 	if (bsdf->IsDelta()) {
 		for (int i = 0; i < lightNum; i++) {
 			int sampleNum = lights[i]->IsDelta() ? 1 : sampleNumForAreaLight;
-			vec3 dir = objectToLightVec[i] * matRayDirInObject;
+			vec3 dir = worldToLightVec[i] * matRayDirInWorld;
 			sumPD += sampleNum * lights[i]->PDF(posInLightSpaceVec[i], dir);
 		}
 	}
 
-	const vec3 matRayDirInWorld = mat3(objectToWorld) * matRayDirInObject;
-
-	Ray::Ptr matRay = ToPtr(new Ray(hitPosInWorld + Math::EPSILON * matRayDirInWorld, matRayDirInWorld));
+	Ray::Ptr matRay = ToPtr(new Ray(hitPos + Math::EPSILON * matRayDirInWorld, matRayDirInWorld));
 	const vec3 matRayColor = Trace(matRay, depth + 1);
 
 	vec3 matL = abs_cosTheta / (sumPD * (1.f - terminateProbability) * (1.f - depthP)) * matF * matRayColor;

@@ -26,6 +26,7 @@ namespace CppUtil {
 			struct Rst {
 				Rst() : closestSObj(nullptr) { }
 				Basic::Ptr<SObj> closestSObj;
+				// 法向量所处的坐标系是世界坐标系
 				glm::vec3 n;
 			};
 
