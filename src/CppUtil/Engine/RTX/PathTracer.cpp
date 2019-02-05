@@ -7,7 +7,7 @@
 #include <CppUtil/Engine/Material.h>
 #include <CppUtil/Engine/Light.h>
 #include <CppUtil/Engine/LightBase.h>
-#include <CppUtil/Engine/BSDF_Diffuse.h>
+#include <CppUtil/Engine/BSDF.h>
 
 #include <CppUtil/Basic/Math.h>
 
@@ -38,7 +38,7 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 		return vec3(1, 0, 1);
 
 	// 现只支持 BSDF
-	BSDF_Diffuse::Ptr bsdf = material->GetMat();
+	BSDF::Ptr bsdf = material->GetMat();
 	if (bsdf == nullptr)
 		return vec3(1, 0, 1);
 
@@ -150,7 +150,8 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 	float terminateProbability = 0.f;
 	// Pareto principle : 2-8 principle
 	// 0.2 * cos(PI / 2 * 0.8) == 0.0618
-	if (!bsdf->IsDelta() && Math::Illum(matF) * abs(mat_w_in.z) < 0.0618f)
+	const float abs_cosTheta = abs(mat_w_in.z);
+	if (!bsdf->IsDelta() && Math::Illum(matF) * abs_cosTheta < 0.0618f)
 		terminateProbability = 0.8f;
 
 	if (Math::Rand_F() < terminateProbability)
@@ -166,12 +167,11 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 		}
 	}
 
-	float cosTheta = mat_w_in.z;
 
 	Ray::Ptr matRay = ToPtr(new Ray(hitPos + Math::EPSILON * matRayDir, matRayDir));
 	const vec3 matRayColor = Trace(matRay, depth + 1);
 
-	vec3 matL = abs(cosTheta) / (sumPD*(1.f - terminateProbability)*(1-depthP)) * matF * matRayColor;
+	vec3 matL = abs_cosTheta / (sumPD * (1.f - terminateProbability) * (1-depthP)) * matF * matRayColor;
 
 	return emitL + sumLightL + matL;
 }

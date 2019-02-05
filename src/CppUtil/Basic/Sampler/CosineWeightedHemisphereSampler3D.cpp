@@ -17,7 +17,7 @@ vec3 CosineWeightedHemisphereSampler3D::GetSample(float & pd) const {
 	float cosTheta = Xi1 * Xi1;
 
 	float sinTheta = sin(acos(cosTheta));
-	float phi = 2.0 * Math::PI * Xi2;
+	float phi = 2.0f * Math::PI * Xi2;
 
 	float xs = sinTheta * cos(phi);
 	float ys = sinTheta * sin(phi);

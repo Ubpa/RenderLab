@@ -28,7 +28,7 @@ void RTX_Renderer::Run(Image::Ptr img) {
 	auto scene = rayTracer->GetScene();
 	auto camera = scene->GetMainCamera();
 	camera->SetWidthHeight(w, h);
-	auto viewMatrix = camera->GetSObj()->GetLocalToWorldMatrix();
+	auto cameraMatrix = camera->GetSObj()->GetLocalToWorldMatrix();
 
 	int imgSize = w * h;
 
@@ -46,7 +46,7 @@ void RTX_Renderer::Run(Image::Ptr img) {
 			float v = (y + Math::Rand_F()) / (float)h;
 
 			auto ray = camera->GenRay(u, v);
-			ray->Transform(viewMatrix);
+			ray->Transform(cameraMatrix);
 			vec3 rst = rayTracer->Trace(ray);
 
 			auto origPixel = img->GetPixel_F(x, y);

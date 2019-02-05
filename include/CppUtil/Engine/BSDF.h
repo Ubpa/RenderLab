@@ -21,6 +21,9 @@ namespace CppUtil {
 			virtual glm::vec3 GetEmission() const = 0;
 
 			virtual bool IsDelta() const = 0;
+
+			static glm::vec3 LocalReflect(const glm::vec3 & w);
+			static bool LocalRefract(const glm::vec3& wo, glm::vec3& wi, float ior);
 		};
 	}
 }

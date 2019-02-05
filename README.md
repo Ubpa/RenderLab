@@ -39,6 +39,8 @@ cmake .. -Wno-dev
   - [x] Material (BSDF)
   - [ ] PathTracer ( PTX )
     - [x] 基本框架
+    - [x] Mirror
+    - [ ] Glass
     - [ ] Transform
     - [ ] 灯光
   - [ ] ...
