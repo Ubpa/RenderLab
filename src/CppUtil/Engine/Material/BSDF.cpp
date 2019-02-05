@@ -13,7 +13,7 @@ vec3 BSDF::LocalReflect(const vec3 & w) {
 bool BSDF::LocalRefract(const vec3& wo, vec3 & wi, float ior) {
 	float inv = wo.z >= 0 ? 1.0f / ior : ior;
 
-	double discriminant = 1 - (1 - wo.z * wo.z) * inv * inv;
+	float discriminant = 1 - (1 - wo.z * wo.z) * inv * inv;
 	if (discriminant <= 0)
 		return false;
 

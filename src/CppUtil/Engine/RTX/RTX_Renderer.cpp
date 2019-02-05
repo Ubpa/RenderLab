@@ -20,7 +20,8 @@ RTX_Renderer::RTX_Renderer(CppUtil::Basic::Ptr<RayTracer> rayTracer)
 	: rayTracer(rayTracer), isStop(false), maxLoop(40), curLoop(0) { }
 
 void RTX_Renderer::Run(Image::Ptr img) {
-	omp_set_num_threads(omp_get_num_procs() - 1);
+	//omp_set_num_threads(omp_get_num_procs() - 1);
+	omp_set_num_threads(1);
 
 	int w = img->GetWidth();
 	int h = img->GetHeight();

@@ -40,7 +40,7 @@ cmake .. -Wno-dev
   - [ ] PathTracer ( PTX )
     - [x] 基本框架
     - [x] Mirror
-    - [ ] Glass
+    - [x] Glass
     - [ ] Transform
     - [ ] 灯光
   - [ ] ...

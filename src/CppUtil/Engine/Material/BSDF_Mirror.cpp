@@ -15,5 +15,5 @@ vec3 BSDF_Mirror::Sample_f(const vec3 & wo, vec3 & wi, float & PD) {
 	// delta
 	PD = 1.0f;
 
-	return 1.0f / abs(wi.z) * albedo;
+	return 1.0f / abs(wi.z) * reflectance;
 }

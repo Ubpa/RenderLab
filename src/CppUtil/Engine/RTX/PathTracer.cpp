@@ -29,7 +29,6 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 		vec3 white(1.0f, 1.0f, 1.0f);
 		vec3 blue(0.5f, 0.7f, 1.0f);
 		return t * white + (1 - t)*blue;
-		// return vec3(0);
 	}
 
 	// 错误情况
@@ -64,6 +63,7 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 	auto objectToWorld = closestRst.closestSObj->GetLocalToWorldMatrix();
 	auto worldToObject = inverse(objectToWorld);
 	vec4 hitPos4 = vec4(hitPos, 1);
+	const vec3 hitPosInWorld = objectToWorld * hitPos4;
 
 	for (auto lightComponent : scene->GetLights()) {
 		mat4 lightToWorld = lightComponent->GetLightToWorldMatrixWithoutScale();
@@ -79,7 +79,6 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 	int lightNum = lights.size();
 	
 	if (!bsdf->IsDelta()) {
-		const vec3 hitPosInWorld = objectToWorld * vec4(hitPos, 1);
 
 		vec3 dir_ToLight; // 把变量放在这里减少初始化次数
 		for (int i = 0; i < lightNum; i++) {
@@ -158,20 +157,21 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 		return emitL + sumLightL;
 
 	float sumPD = matPD;
-	vec3 matRayDir = surfaceToObject * mat_w_in;
+	const vec3 matRayDirInObject = surfaceToObject * mat_w_in;
 	if (bsdf->IsDelta()) {
 		for (int i = 0; i < lightNum; i++) {
 			int sampleNum = lights[i]->IsDelta() ? 1 : sampleNumForAreaLight;
-			vec3 dir = objectToLightVec[i] * matRayDir;
+			vec3 dir = objectToLightVec[i] * matRayDirInObject;
 			sumPD += sampleNum * lights[i]->PDF(posInLightSpaceVec[i], dir);
 		}
 	}
 
+	const vec3 matRayDirInWorld = mat3(objectToWorld) * matRayDirInObject;
 
-	Ray::Ptr matRay = ToPtr(new Ray(hitPos + Math::EPSILON * matRayDir, matRayDir));
+	Ray::Ptr matRay = ToPtr(new Ray(hitPosInWorld + Math::EPSILON * matRayDirInWorld, matRayDirInWorld));
 	const vec3 matRayColor = Trace(matRay, depth + 1);
 
-	vec3 matL = abs_cosTheta / (sumPD * (1.f - terminateProbability) * (1-depthP)) * matF * matRayColor;
+	vec3 matL = abs_cosTheta / (sumPD * (1.f - terminateProbability) * (1.f - depthP)) * matF * matRayColor;
 
 	return emitL + sumLightL + matL;
 }

@@ -1,14 +1,15 @@
-#ifndef _BSDF_MIRROR_H_
-#define _BSDF_MIRROR_H_
+#ifndef _BSDF_GLASS_H_
+#define _BSDF_GLASS_H_
 
 #include <CppUtil/Engine/BSDF.h>
 
 namespace CppUtil {
 	namespace Engine {
-		class BSDF_Mirror : public BSDF {
-			HEAP_OBJ_SETUP(BSDF_Mirror)
+		class BSDF_Glass : public BSDF {
+			HEAP_OBJ_SETUP(BSDF_Glass)
 		public:
-			BSDF_Mirror(const glm::vec3 & reflectance = glm::vec3(1)) : reflectance(reflectance) { }
+			BSDF_Glass(float ior = 1.f, const glm::vec3 & reflectance = glm::vec3(1), const glm::vec3 & transmittance = glm::vec3(1))
+				: ior(ior), reflectance(reflectance), transmittance(transmittance) { }
 
 			virtual glm::vec3 F(const glm::vec3 & wo, const glm::vec3 & wi) { return glm::vec3(0); }
 
@@ -20,16 +21,18 @@ namespace CppUtil {
 			// @arg0 in
 			// @arg1 out
 			// @arg2 out
-			virtual glm::vec3 Sample_f(const glm::vec3 & wo, glm::vec3 & wi, float & PD);
+			virtual glm::vec3 Sample_f(const glm::vec3 & wo, glm::vec3 & wi, float & pd);
 
 			virtual glm::vec3 GetEmission() const { return glm::vec3(0); }
 
 			virtual bool IsDelta() const { return true; }
 
 		private:
+			float ior;
 			glm::vec3 reflectance;
+			glm::vec3 transmittance;
 		};
 	}
 }
 
-#endif//!_BSDF_MIRROR_H_
+#endif//!_BSDF_GLASS_H_

@@ -10,7 +10,7 @@ namespace CppUtil {
 		class Ray : public Primitive {
 			ELE_SETUP(Ray)
 		public:
-			Ray(const glm::vec3 & origin, const glm::vec3 dir, float tMin = 0.001, float tMax = FLT_MAX)
+			Ray(const glm::vec3 & origin, const glm::vec3 dir, float tMin = 0.00001f, float tMax = FLT_MAX)
 				: origin(origin), dir(dir), tMin(tMin), tMax(tMax) { }
 
 			const glm::vec3 GetOrigin() const { return origin; }
