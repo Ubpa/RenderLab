@@ -14,9 +14,9 @@ namespace CppUtil {
 			// probability density function
 			virtual float PDF(const glm::vec3 & wo, const glm::vec3 & wi) = 0;
 
-			// pd is probability density
+			// PD is probability density
 			// return albedo
-			virtual glm::vec3 Sample_f(const glm::vec3 & wo, glm::vec3 & wi, float & pd) = 0;
+			virtual glm::vec3 Sample_f(const glm::vec3 & wo, glm::vec3 & wi, float & PD) = 0;
 
 			virtual glm::vec3 GetEmission() const = 0;
 

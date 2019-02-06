@@ -2,6 +2,7 @@
 
 #include <CppUtil/Engine/Ray.h>
 #include <CppUtil/Engine/Sphere.h>
+#include <CppUtil/Engine/Plane.h>
 
 #include <glm/geometric.hpp>
 
@@ -11,6 +12,7 @@ using namespace glm;
 
 RayIntersector::RayIntersector() {
 	Reg<Sphere>();
+	Reg<Plane>();
 }
 
 void RayIntersector::Visit(CppUtil::Basic::Ptr<Sphere> sphere) {
@@ -47,6 +49,27 @@ void RayIntersector::Visit(CppUtil::Basic::Ptr<Sphere> sphere) {
 	rst.isIntersect = true;
 	rst.t = t;
 	rst.n = (ray->At(t) - center) / radius;
+}
 
-	return;
+void RayIntersector::Visit(Plane::Ptr plane) {
+	vec3 dir = ray->GetDir();
+	vec3 origin = ray->GetOrigin();
+	float tMin = ray->GetTMin();
+	float tMax = ray->GetTMax();
+
+	float t = - origin.y / dir.y;
+	if (t<tMin || t>tMax) {
+		rst.isIntersect = false;
+		return;
+	}
+
+	vec3 pos = ray->At(t);
+	if (pos.x<-0.5 || pos.x>0.5 || pos.z<-0.5 || pos.z>0.5) {
+		rst.isIntersect = false;
+		return;
+	}
+
+	rst.isIntersect = true;
+	rst.t = t;
+	rst.n = vec3(0, 1, 0);
 }

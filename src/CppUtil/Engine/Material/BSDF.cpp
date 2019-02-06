@@ -17,9 +17,9 @@ bool BSDF::LocalRefract(const vec3& wo, vec3 & wi, float ior) {
 	if (discriminant <= 0)
 		return false;
 
-	wi.x = -wo.x * inv;
-	wi.y = -wo.y * inv;
-	wi.z = (wo.z >= 0 ? -1 : 1) * sqrt(discriminant);
+	wi.x = - wo.x * inv;
+	wi.y = - wo.y * inv;
+	wi.z = - sign(wo.z) * sqrt(discriminant);
 	normalize(wi);
 
 	return true;

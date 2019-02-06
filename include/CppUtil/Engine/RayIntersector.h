@@ -27,6 +27,7 @@ namespace CppUtil {
 			void SetRay(Basic::CPtr<Ray> ray) { this->ray = ray; }
 
 			void Visit(Basic::Ptr<Sphere> sphere);
+			void Visit(Basic::Ptr<Plane> plane);
 
 		private:
 			Basic::CPtr<Ray> ray;

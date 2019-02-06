@@ -12,6 +12,7 @@
 #include <CppUtil/Engine/BSDF_Glass.h>
 #include <CppUtil/Engine/RayIntersector.h>
 #include <CppUtil/Engine/Sphere.h>
+#include <CppUtil/Engine/Plane.h>
 #include <CppUtil/Engine/Ray.h>
 
 #include <CppUtil/Engine/PathTracer.h>

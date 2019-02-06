@@ -13,6 +13,8 @@ vec3 BSDF_Glass::Sample_f(const vec3 & wo, vec3 & wi, float & PD) {
 	// PDF is delta
 
 	if (!LocalRefract(wo, wi, ior)) {
+		// È«·´Éä
+
 		PD = 1.0f;
 		wi = LocalReflect(wo);
 		return 1.0f / abs(wi.z) * reflectance;
@@ -25,6 +27,8 @@ vec3 BSDF_Glass::Sample_f(const vec3 & wo, vec3 & wi, float & PD) {
 	float Fr = R0 + (1 - R0) * pow((1 - cosTheta), 5);
 
 	if (Rand_F() < Fr) {
+		// ·ÆÄù¶û ·´Éä
+
 		PD = Fr;
 		wi = LocalReflect(wo);
 		return Fr / abs(wi.z) * reflectance;

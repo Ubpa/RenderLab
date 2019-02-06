@@ -42,10 +42,10 @@ cmake .. -Wno-dev
     - [x] Mirror
     - [x] Glass
     - [x] Transform
-    - [ ] Sphere 取消掉冗余的 center 和 radius
-    - [ ] plane
-    - [ ] 灯光
-  - [ ] ...
+    - [ ] Plane
+    - [ ] 灯光（Cornell Box）
+- [ ] 优化
+  - [ ] Sphere 取消掉冗余的 center 和 radius
 - [ ] 用新的架构来写实时渲染
 
 ## 3. 其他 TODO
