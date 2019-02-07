@@ -11,9 +11,17 @@ using namespace CppUtil::Engine;
 using namespace glm;
 
 RayTracer::RayTracer(Scene::Ptr scene)
-	: scene(scene) { }
+	: scene(scene), rayIntersector(ToPtr(new RayIntersector)) { }
 
-void RayTracer::FindClosetSObj(SObj::Ptr sobj, Ray::Ptr ray, RayIntersector::Ptr rayIntersector, Rst & closestRst) {
+// ray 所处的坐标系应该是 sobj 所处的坐标系
+RayTracer::Rst RayTracer::FindClosetSObj(SObj::Ptr sobj, Ray::Ptr ray) {
+	rayIntersector->SetRay(ray);
+	Rst rst;
+	FindClosetSObj(sobj, ray, rst);
+	return rst;
+}
+
+void RayTracer::FindClosetSObj(SObj::Ptr sobj, Ray::Ptr ray, Rst & closestRst) {
 	auto transform = sobj->GetComponent<Transform>();
 	if (transform)
 		ray->Transform(transform->GetInv());
@@ -31,11 +39,11 @@ void RayTracer::FindClosetSObj(SObj::Ptr sobj, Ray::Ptr ray, RayIntersector::Ptr
 	}
 
 	for (auto child : sobj->GetChildren())
-		FindClosetSObj(child, ray, rayIntersector, closestRst);
+		FindClosetSObj(child, ray, closestRst);
 
 	if (transform) {
 		ray->Transform(transform->GetMat());
-		if (closestRst.closestSObj)
+		if (closestRst.closestSObj == sobj)
 			closestRst.n = normalize(transform->GetNormMat()*closestRst.n);
 	}
 }

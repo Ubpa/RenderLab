@@ -31,9 +31,15 @@ namespace CppUtil {
 			};
 
 			// ray 所处的坐标系应该是 sobj 所处的坐标系
-			void FindClosetSObj(Basic::Ptr<SObj> sobj, Basic::Ptr<Ray> ray, Basic::Ptr<RayIntersector> rayIntersector, Rst & closestRst);
+			Rst FindClosetSObj(Basic::Ptr<SObj> sobj, Basic::Ptr<Ray> ray);
 
 			Basic::Ptr<Scene> scene;
+
+		private:
+			// ray 所处的坐标系应该是 sobj 所处的坐标系
+			void FindClosetSObj(Basic::Ptr<SObj> sobj, Basic::Ptr<Ray> ray, Rst & closestRst);
+
+			Basic::Ptr<RayIntersector> rayIntersector;
 		};
 	}
 }

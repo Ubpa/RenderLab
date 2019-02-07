@@ -10,6 +10,7 @@
 #include <CppUtil/Engine/BSDF.h>
 
 #include <CppUtil/Basic/Math.h>
+#include <glm/geometric.hpp>
 
 using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
@@ -20,11 +21,10 @@ PathTracer::PathTracer(Scene::Ptr scene)
 	: RayTracer(scene), sampleNumForAreaLight(5), maxDepth(10) { }
 
 vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
-	RayIntersector::Ptr rayIntersector = ToPtr(new RayIntersector);
-	rayIntersector->SetRay(ray);
-	Rst closestRst;
-	FindClosetSObj(scene->GetRootSObj(), ray, rayIntersector, closestRst);
+	Rst closestRst = FindClosetSObj(scene->GetRootSObj(), ray);
 	if (!closestRst.closestSObj) {
+		return vec3(0, 0, 0);
+
 		float t = 0.5f * (normalize(ray->GetDir()).y + 1.0f);
 		vec3 white(1.0f, 1.0f, 1.0f);
 		vec3 blue(0.5f, 0.7f, 1.0f);
@@ -41,7 +41,7 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 	if (bsdf == nullptr)
 		return vec3(1, 0, 1);
 
-	vec3 emitL = bsdf->GetEmission();
+	vec3 emitL = depth == 0 ? bsdf->GetEmission() : vec3(0);
 
 	const vec3 hitPos = ray->At(ray->GetTMax());
 
@@ -74,8 +74,8 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 	int lightNum = lights.size();
 	
 	if (!bsdf->IsDelta()) {
-
 		vec3 dir_ToLight; // 把变量放在这里减少初始化次数
+
 		for (int i = 0; i < lightNum; i++) {
 			auto const light = lights[i];
 
@@ -101,11 +101,11 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 
 				// 多重重要性采样 Multiple Importance Sampling (MIS)
 				float sumPD = bsdf->PDF(w_out, w_in) + sampleNum * PD;
-				for (int k = 0; k < lightNum;k++) {
+				for (int k = 0; k < lightNum; k++) {
 					if (k != i) {
 						int sampleNum = lights[k]->IsDelta() ? 1 : sampleNumForAreaLight;
 						vec3 dir = worldToLightVec[k] * dirInWorld;
-						sumPD += sampleNum * lights[k]->PDF(posInLightSpaceVec[i], dir_ToLight);
+						sumPD += sampleNum * lights[k]->PDF(posInLightSpaceVec[i], dir);
 					}
 				}
 
@@ -115,18 +115,32 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 				// evaluate surface bsdf
 				const vec3 f = bsdf->F(w_out, w_in);
 
-				vec3 originInWorld = hitPos + Math::EPSILON * dirInWorld;
+				vec3 originInWorld = hitPos + Math::EPSILON * closestRst.n;
 				// shadowRay 处于世界坐标
 				Ray::Ptr shadowRay = ToPtr(new Ray(originInWorld, dirInWorld));
-				shadowRay->SetTMax(dist_ToLight - Math::EPSILON);
-				Rst shadowRst;
+				shadowRay->SetTMax(dist_ToLight/length(dirInWorld) - 0.001f);
 				// 应该使用一个优化过的函数
 				// 设置 ray 的 tMax，然后只要找到一个碰撞后即可返回，无需找到最近的
-				FindClosetSObj(scene->GetRootSObj(), shadowRay, rayIntersector, shadowRst);
+				Rst shadowRst = FindClosetSObj(scene->GetRootSObj(), shadowRay);
 				if (!shadowRst.closestSObj)
 					sumLightL += (cos_theta / sumPD) * f * lightL;
 			}
 		}
+	}
+
+	// 采样 BSDF
+	vec3 mat_w_in;
+	float matPD;
+	const vec3 matF = bsdf->Sample_f(w_out, mat_w_in, matPD);
+	const vec3 matRayDirInWorld = surfaceToWorld * mat_w_in;
+	const float abs_cosTheta = abs(mat_w_in.z);
+
+	if (bsdf->IsDelta()) {
+		for (int i = 0; i < lightNum; i++) {
+			vec3 dir = worldToLightVec[i] * matRayDirInWorld;
+			sumLightL += lights[i]->GetL(posInLightSpaceVec[i], dir);
+		}
+		sumLightL *= abs_cosTheta;
 	}
 
 	// 深度，丢弃概率
@@ -134,25 +148,21 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 	if (Math::Rand_F() < depthP)
 		return emitL + sumLightL;
 
-	// 积分方程，一定概率丢弃
-	vec3 mat_w_in;
-	float matPD;
-	// matPD 一定大于 0
-	const vec3 matF = bsdf->Sample_f(w_out, mat_w_in, matPD);
 
+	if(matPD <= 0)
+		return emitL + sumLightL;
+
+	// 一定概率丢弃
 	float terminateProbability = 0.f;
-	// Pareto principle : 2-8 principle
-	// 0.2 * cos(PI / 2 * 0.8) == 0.0618
-	const float abs_cosTheta = abs(mat_w_in.z);
-	if (!bsdf->IsDelta() && Math::Illum(matF) * abs_cosTheta < 0.0618f)
+	if (!bsdf->IsDelta() && Math::Illum(matF) < 0.2f)
 		terminateProbability = 0.8f;
 
 	if (Math::Rand_F() < terminateProbability)
 		return emitL + sumLightL;
 
+	// 重要性采样
 	float sumPD = matPD;
-	const vec3 matRayDirInWorld = surfaceToWorld * mat_w_in;
-	if (bsdf->IsDelta()) {
+	if (!bsdf->IsDelta()) {
 		for (int i = 0; i < lightNum; i++) {
 			int sampleNum = lights[i]->IsDelta() ? 1 : sampleNumForAreaLight;
 			vec3 dir = worldToLightVec[i] * matRayDirInWorld;

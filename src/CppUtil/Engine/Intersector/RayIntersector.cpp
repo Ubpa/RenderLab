@@ -71,5 +71,5 @@ void RayIntersector::Visit(Plane::Ptr plane) {
 
 	rst.isIntersect = true;
 	rst.t = t;
-	rst.n = vec3(0, 1, 0);
+	rst.n = vec3(0, sign(origin.y), 0);
 }

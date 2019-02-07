@@ -37,13 +37,15 @@ cmake .. -Wno-dev
   - [x] 相机
   - [x] 组件机制优化
   - [x] Material (BSDF)
-  - [ ] PathTracer (PTX)
+  - [x] PathTracer (PTX)
     - [x] 基本框架
     - [x] Mirror
     - [x] Glass
     - [x] Transform
-    - [ ] Plane
-    - [ ] 灯光（Cornell Box）
+    - [x] Plane
+    - [x] 灯光
+    - [ ] 测试 Cornell Box
+    - [ ] BVH
 - [ ] 优化
   - [ ] Sphere 取消掉冗余的 center 和 radius
 - [ ] 用新的架构来写实时渲染

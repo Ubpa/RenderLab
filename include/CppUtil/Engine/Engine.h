@@ -5,11 +5,9 @@
 #include <CppUtil/Engine/SObj.h>
 
 #include <CppUtil/Engine/AllComponents.h>
+#include <CppUtil/Engine/AllBSDFs.h>
 
 #include <CppUtil/Engine/AreaLight.h>
-#include <CppUtil/Engine/BSDF_Diffuse.h>
-#include <CppUtil/Engine/BSDF_Mirror.h>
-#include <CppUtil/Engine/BSDF_Glass.h>
 #include <CppUtil/Engine/RayIntersector.h>
 #include <CppUtil/Engine/Sphere.h>
 #include <CppUtil/Engine/Plane.h>

@@ -19,6 +19,7 @@ Scene::Ptr GenScene() {
 	auto camera = ToPtr(new Camera(sobj_camera));
 	
 	auto sphere = ToPtr(new Sphere(vec3(0, 0.5, 0), 0.5f));
+	//auto plane = ToPtr(new Sphere(vec3(0, 0, 0), 1.f));
 	auto plane = ToPtr(new Plane);
 
 	auto sphereTransform = ToPtr(new Transform(sobj_sphere));
@@ -26,7 +27,7 @@ Scene::Ptr GenScene() {
 	sphereTransform->Rotate(radians(30.0f), vec3(0, 1, 0));
 
 	auto planeTransform = ToPtr(new Transform(sobj_ground));
-	planeTransform->SetScale(vec3(5.0f, 1, 5.0f));
+	planeTransform->SetScale(vec3(10.0f, 1.f, 10.0f));
 
 	auto g0 = ToPtr(new Geometry(sobj_sphere, sphere));
 	auto g1 = ToPtr(new Geometry(sobj_ground, plane));

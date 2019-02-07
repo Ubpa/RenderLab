@@ -20,6 +20,7 @@ vec3 BSDF_Glass::Sample_f(const vec3 & wo, vec3 & wi, float & PD) {
 		return 1.0f / abs(wi.z) * reflectance;
 	}
 
+	// 用空气中的角作为 cos theta
 	float cosTheta = wo.z >= 0 ? wo.z : wi.z;
 
 	float R0 = pow((ior - 1) / (ior + 1), 2);
