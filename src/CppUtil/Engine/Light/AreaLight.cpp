@@ -37,14 +37,18 @@ float AreaLight::PDF(const vec3 & p, const vec3 & wi) const {
 	return sqDist / (area * cosTheta);
 }
 
-vec3 AreaLight::GetL(const vec3& p, const vec3 & dirToLight) {
-	if (!Hit(p, dirToLight))
+vec3 AreaLight::GetL(const vec3 & p, const vec3 & dirToLight, float & distToLight) {
+	vec3 posOnLight;
+	if (!Hit(p, dirToLight, posOnLight))
 		return vec3(0);
+
+	vec3 d = posOnLight - p;
+	distToLight = length(d);
 
 	return intensity * color;
 }
 
-bool AreaLight::Hit(const glm::vec3& p, const glm::vec3 & dirToLight) const {
+bool AreaLight::Hit(const glm::vec3 & p, const glm::vec3 & dirToLight) const {
 	if (p.y >= 0 || dirToLight.y < 0)
 		return false;
 

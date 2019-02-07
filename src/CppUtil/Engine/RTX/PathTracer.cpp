@@ -44,6 +44,7 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 	vec3 emitL = depth == 0 ? bsdf->GetEmission() : vec3(0);
 
 	const vec3 hitPos = ray->At(ray->GetTMax());
+	const vec3 shadowOrigin = hitPos + Math::EPSILON * closestRst.n;
 
 	auto const surfaceToWorld = Math::GenCoordSpace(closestRst.n);
 	auto const worldToSurface = transpose(surfaceToWorld);
@@ -115,9 +116,8 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 				// evaluate surface bsdf
 				const vec3 f = bsdf->F(w_out, w_in);
 
-				vec3 originInWorld = hitPos + Math::EPSILON * closestRst.n;
 				// shadowRay 处于世界坐标
-				Ray::Ptr shadowRay = ToPtr(new Ray(originInWorld, dirInWorld));
+				Ray::Ptr shadowRay = ToPtr(new Ray(shadowOrigin, dirInWorld));
 				shadowRay->SetTMax(dist_ToLight/length(dirInWorld) - 0.001f);
 				// 应该使用一个优化过的函数
 				// 设置 ray 的 tMax，然后只要找到一个碰撞后即可返回，无需找到最近的
@@ -134,11 +134,21 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 	const vec3 matF = bsdf->Sample_f(w_out, mat_w_in, matPD);
 	const vec3 matRayDirInWorld = surfaceToWorld * mat_w_in;
 	const float abs_cosTheta = abs(mat_w_in.z);
-
+	
 	if (bsdf->IsDelta()) {
 		for (int i = 0; i < lightNum; i++) {
 			vec3 dir = worldToLightVec[i] * matRayDirInWorld;
-			sumLightL += lights[i]->GetL(posInLightSpaceVec[i], dir);
+			float dist;
+			vec3 lightL = lights[i]->GetL(posInLightSpaceVec[i], dir, dist);
+			if (lightL != vec3(0)) {
+				Ray::Ptr shadowRay = ToPtr(new Ray(shadowOrigin, matRayDirInWorld));
+				shadowRay->SetTMax(dist / length(matRayDirInWorld) - 0.001f);
+				// 应该使用一个优化过的函数
+				// 设置 ray 的 tMax，然后只要找到一个碰撞后即可返回，无需找到最近的
+				Rst shadowRst = FindClosetSObj(scene->GetRootSObj(), shadowRay);
+				if (!shadowRst.closestSObj)
+					sumLightL += lightL;
+			}
 		}
 		sumLightL *= abs_cosTheta;
 	}

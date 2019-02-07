@@ -17,11 +17,10 @@ using namespace CppUtil::Basic;
 using namespace glm;
 
 RTX_Renderer::RTX_Renderer(CppUtil::Basic::Ptr<RayTracer> rayTracer)
-	: rayTracer(rayTracer), isStop(false), maxLoop(40), curLoop(0) { }
+	: rayTracer(rayTracer), isStop(false), maxLoop(100), curLoop(0) { }
 
 void RTX_Renderer::Run(Image::Ptr img) {
-	//omp_set_num_threads(omp_get_num_procs() - 1);
-	omp_set_num_threads(1);
+	omp_set_num_threads(omp_get_num_procs() - 1);
 
 	int w = img->GetWidth();
 	int h = img->GetHeight();
@@ -37,7 +36,7 @@ void RTX_Renderer::Run(Image::Ptr img) {
 		ImgPixelSet pixSet(w, h);
 		auto randSet = pixSet.PickAll();
 
-#pragma omp parallel for schedule(dynamic, 1024)
+#pragma omp parallel for schedule(dynamic, 256)
 		for (int pixelIdx = 0; pixelIdx < imgSize; pixelIdx++) {
 			auto xy = randSet[pixelIdx];
 			int x = xy.x;

@@ -9,8 +9,8 @@ namespace CppUtil {
 		class AreaLight : public LightBase {
 			ELE_SETUP(AreaLight)
 		public:
-			AreaLight(const glm::vec3 &color = glm::vec3(1), float width = 1, float height = 1, float intensity = 1)
-				: color(color), width(width), height(height), intensity(intensity) { }
+			AreaLight(const glm::vec3 &color = glm::vec3(1), float intensity = 1, float width = 1, float height = 1)
+				: color(color), intensity(intensity), width(width), height(height) { }
 
 			// 采样 L 函数
 			// !!! p，wi 处于灯的坐标空间中
@@ -22,7 +22,7 @@ namespace CppUtil {
 
 			// 获取 L
 			// 如果不能击中光源，则返回 vec3(0)
-			virtual glm::vec3 GetL(const glm::vec3& p, const glm::vec3 & dirToLight);
+			virtual glm::vec3 GetL(const glm::vec3& p, const glm::vec3 & dirToLight, float & distToLight);
 
 			// 概率密度函数
 			// !!! p，wi 处于灯的坐标空间中
@@ -31,10 +31,10 @@ namespace CppUtil {
 			virtual bool IsDelta() const { return false; }
 
 		public:
-			float width;
-			float height;
 			glm::vec3 color;
 			float intensity;
+			float width;
+			float height;
 
 		private:
 			bool Hit(const glm::vec3& p, const glm::vec3 & dirToLight) const;

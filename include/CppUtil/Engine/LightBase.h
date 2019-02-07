@@ -21,7 +21,7 @@ namespace CppUtil {
 
 			// 获取 L
 			// 如果不能击中光源，则返回 vec3(0)
-			virtual glm::vec3 GetL(const glm::vec3& p, const glm::vec3 & dirToLight) = 0;
+			virtual glm::vec3 GetL(const glm::vec3& p, const glm::vec3 & dirToLight, float & distToLight) = 0;
 
 			// 概率密度函数
 			// !!! p，wi 处于灯的坐标空间中

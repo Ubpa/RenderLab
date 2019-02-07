@@ -24,7 +24,7 @@ Scene::Ptr GenScene() {
 	auto sphere = ToPtr(new Sphere(vec3(0), 0.5f));
 	auto plane = ToPtr(new Plane);
 	auto lightPlane = ToPtr(new Plane);
-	auto areaLight = ToPtr(new AreaLight(vec3(1), 1, 1, 10));
+	auto areaLight = ToPtr(new AreaLight(vec3(1), 10));
 
 	auto skySphereTransform = ToPtr(new Transform(sobj_skySphere));
 	skySphereTransform->SetScale(vec3(1, 1, 1));

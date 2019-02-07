@@ -44,8 +44,10 @@ cmake .. -Wno-dev
     - [x] Transform
     - [x] Plane
     - [x] 灯光
-    - [ ] 测试 Cornell Box
+    - [x] 测试 Cornell Box
+    - [ ] 相交性测试
     - [ ] BVH
+    - [ ] TriMesh
 - [ ] 优化
   - [ ] Sphere 取消掉冗余的 center 和 radius
 - [ ] 用新的架构来写实时渲染
