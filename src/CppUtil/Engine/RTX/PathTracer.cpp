@@ -18,13 +18,11 @@ using namespace glm;
 using namespace std;
 
 PathTracer::PathTracer(Scene::Ptr scene)
-	: RayTracer(scene), sampleNumForAreaLight(5), maxDepth(10) { }
+	: RayTracer(scene), sampleNumForAreaLight(2), maxDepth(6) { }
 
 vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
-	Rst closestRst = FindClosetSObj(scene->GetRootSObj(), ray);
+	Rst closestRst = FindClosetSObj(ray);
 	if (!closestRst.closestSObj) {
-		return vec3(0, 0, 0);
-
 		float t = 0.5f * (normalize(ray->GetDir()).y + 1.0f);
 		vec3 white(1.0f, 1.0f, 1.0f);
 		vec3 blue(0.5f, 0.7f, 1.0f);
@@ -121,7 +119,7 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 				shadowRay->SetTMax(dist_ToLight/length(dirInWorld) - 0.001f);
 				// 应该使用一个优化过的函数
 				// 设置 ray 的 tMax，然后只要找到一个碰撞后即可返回，无需找到最近的
-				Rst shadowRst = FindClosetSObj(scene->GetRootSObj(), shadowRay);
+				Rst shadowRst = FindClosetSObj(shadowRay);
 				if (!shadowRst.closestSObj)
 					sumLightL += (cos_theta / sumPD) * f * lightL;
 			}

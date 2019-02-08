@@ -12,7 +12,7 @@ Volume::Volume(Hitable::CPtr boundary, float density, CppUtil::Basic::CPtr<Mater
 	: Hitable(material), density(density), boundary(boundary) { }
 
 HitRst Volume::RayIn(CppUtil::Basic::Ptr<Ray> & ray) const {
-	if (boundary == NULL)
+	if (boundary == nullptr)
 		return HitRst::InValid;
 
 	float originTMax = ray->GetTMax();

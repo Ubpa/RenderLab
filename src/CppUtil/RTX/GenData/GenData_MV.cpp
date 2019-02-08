@@ -21,7 +21,7 @@ const float MatT_Light      = 3.0f;
 const float MatT_Isotropic  = 4.0f;
 
 void GenData_MV::Visit(Lambertian::CPtr lambertian) {
-	if (lambertian == NULL)
+	if (lambertian == nullptr)
 		return;
 
 	auto targetPair = mat2idx.find(lambertian);
@@ -38,7 +38,7 @@ void GenData_MV::Visit(Lambertian::CPtr lambertian) {
 }
 
 void GenData_MV::Visit(Metal::CPtr metal) {
-	if (metal == NULL)
+	if (metal == nullptr)
 		return;
 
 	auto targetPair = mat2idx.find(metal);
@@ -57,7 +57,7 @@ void GenData_MV::Visit(Metal::CPtr metal) {
 }
 
 void GenData_MV::Visit(Dielectric::CPtr dielectric) {
-	if (dielectric == NULL)
+	if (dielectric == nullptr)
 		return;
 
 	auto targetPair = mat2idx.find(dielectric);
@@ -72,7 +72,7 @@ void GenData_MV::Visit(Dielectric::CPtr dielectric) {
 }
 
 void GenData_MV::Visit(Light::CPtr light) {
-	if (light == NULL)
+	if (light == nullptr)
 		return;
 
 	auto targetPair = mat2idx.find(light);
@@ -91,7 +91,7 @@ void GenData_MV::Visit(Light::CPtr light) {
 }
 
 void GenData_MV::Visit(Isotropic::CPtr isotropic) {
-	if (isotropic == NULL)
+	if (isotropic == nullptr)
 		return;
 
 	auto targetPair = mat2idx.find(isotropic);

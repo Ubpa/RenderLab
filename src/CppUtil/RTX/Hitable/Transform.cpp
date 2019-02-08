@@ -17,7 +17,7 @@ Transform::Transform(const mat4 & transform, Hitable::CPtr hitable, CppUtil::Bas
 	normalTransform(transpose(inverse(mat3(transform)))),
 	hitable(hitable),
 	Hitable(material) {
-	if (hitable == NULL) {
+	if (hitable == nullptr) {
 		box = AABB::InValid;
 		return;
 	}
@@ -43,7 +43,7 @@ Transform::Transform(const mat4 & transform, Hitable::CPtr hitable, CppUtil::Bas
 }
 
 HitRst Transform::RayIn(Ray::Ptr & ray) const {
-	if (hitable == NULL)
+	if (hitable == nullptr)
 		return HitRst::InValid;
 
 	ray->Transform(inverseTransform);
@@ -51,7 +51,7 @@ HitRst Transform::RayIn(Ray::Ptr & ray) const {
 	auto hitRst = hitable->RayIn(ray);
 
 	if (hitRst.hit) {
-		if (hitRst.isMatCoverable && GetMat() != NULL) {
+		if (hitRst.isMatCoverable && GetMat() != nullptr) {
 			hitRst.material = GetMat();
 			hitRst.isMatCoverable = IsMatCoverable();
 		}

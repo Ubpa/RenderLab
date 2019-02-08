@@ -249,7 +249,7 @@ RasterOpCreator::SceneOp::Ptr RasterOpCreator::GenScenePaintOp_1() {
 
 		//------------ 模型 . P3N3T2_Cube
 		vector<VAO::VBO_DataPatch> P3N3T2_Cube_Vec_VBO_Data_Patch = {
-			{cube.GetVertexArr(), cube.GetVertexArrSize(), 3},
+			{cube.GetPosArr(), cube.GetPosArrSize(), 3},
 			{cube.GetNormalArr(), cube.GetNormalArrSize(), 3},
 			{cube.GetTexCoordsArr(), cube.GetTexCoordsArrSize(), 2},
 		};
@@ -259,7 +259,7 @@ RasterOpCreator::SceneOp::Ptr RasterOpCreator::GenScenePaintOp_1() {
 
 		//------------ 模型 . P3T2_Cube
 		vector<VAO::VBO_DataPatch> P3T2_Cube_Vec_VBO_Data_Patch = {
-			{cube.GetVertexArr(), cube.GetVertexArrSize(), 3},
+			{cube.GetPosArr(), cube.GetPosArrSize(), 3},
 			{cube.GetTexCoordsArr(), cube.GetTexCoordsArrSize(), 2},
 		};
 		VAO VAO_P3T2_Cube(P3T2_Cube_Vec_VBO_Data_Patch, cube.GetIndexArr(), cube.GetIndexArrSize());

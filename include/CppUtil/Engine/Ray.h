@@ -11,10 +11,11 @@ namespace CppUtil {
 			ELE_SETUP(Ray)
 		public:
 			Ray(const glm::vec3 & origin, const glm::vec3 dir, float tMin = 0.00001f, float tMax = FLT_MAX)
-				: origin(origin), dir(dir), tMin(tMin), tMax(tMax) { }
+				: origin(origin), dir(dir), invDir(1.0f/dir.x, 1.0f/dir.y, 1.0f/dir.z), tMin(tMin), tMax(tMax) { }
 
 			const glm::vec3 GetOrigin() const { return origin; }
 			const glm::vec3 GetDir() const { return dir; }
+			const glm::vec3 GetInvDir() const { return invDir; }
 			float GetTMin() const { return tMin; }
 			float GetTMax() const { return tMax; }
 			void SetTMax(float tMax) { this->tMax = tMax; }
@@ -26,6 +27,7 @@ namespace CppUtil {
 		private:
 			glm::vec3 origin;
 			glm::vec3 dir;
+			glm::vec3 invDir;
 			float tMin;
 			float tMax;
 		};

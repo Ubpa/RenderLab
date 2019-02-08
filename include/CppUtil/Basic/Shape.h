@@ -9,15 +9,16 @@ namespace CppUtil {
 		public:
 			Shape(size_t vertexNum, size_t triNum = 0);
 			virtual ~Shape();
-			float * GetVertexArr();
-			size_t GetTriNum();
-			size_t GetVertexArrSize();
+			float * GetPosArr();
+			size_t GetVertexNum() { return vertexNum; }
+			size_t GetTriNum() { return triNum; }
+			size_t GetPosArrSize();
 		protected:
 			static const float PI;
 			//------------
-			Array2D<float> * vertexArr;
-			size_t triNum;
+			Array2D<float> * posArr;
 			size_t vertexNum;
+			size_t triNum;
 		};
 	}
 }

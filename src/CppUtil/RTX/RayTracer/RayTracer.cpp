@@ -20,7 +20,7 @@ vec3 RayTracer::Trace(Ray::Ptr & ray, int depth) {
 
 	auto hitRst = scene->RayIn(ray);
 	if (hitRst.hit) {
-		if (hitRst.material == NULL)
+		if (hitRst.material == nullptr)
 			return vec3(1, 0, 1);
 
 		if (hitRst.material->Scatter(hitRst.record))

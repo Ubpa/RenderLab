@@ -18,7 +18,7 @@ HitRst Group::RayIn(CppUtil::Basic::Ptr<Ray> & ray) const {
 
 	}
 
-	if (finalHitRst.hit && finalHitRst.isMatCoverable && GetMat() != NULL) {
+	if (finalHitRst.hit && finalHitRst.isMatCoverable && GetMat() != nullptr) {
 		finalHitRst.material = GetMat();
 		finalHitRst.isMatCoverable = IsMatCoverable();
 	}
@@ -27,7 +27,7 @@ HitRst Group::RayIn(CppUtil::Basic::Ptr<Ray> & ray) const {
 }
 
 Group & Group::operator <<(Hitable::CPtr hitable) {
-	if (hitable != NULL) {
+	if (hitable != nullptr) {
 		children.push_back(hitable);
 		box += hitable->GetBoundingBox();
 	}

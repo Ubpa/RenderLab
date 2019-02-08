@@ -128,8 +128,8 @@ void BVH_Node::Build(const vector<Hitable::CPtr>::const_iterator begin, const ve
 
 HitRst BVH_Node::RayIn(Ray::Ptr & ray) const {
 	float t1, t2, t3, t4;
-	bool leftBoxHit = left != NULL ? left->GetBoundingBox().Hit(ray, t1, t2) : false;
-	bool rightBoxHit = right != NULL ? right->GetBoundingBox().Hit(ray, t3, t4) : false;
+	bool leftBoxHit = left != nullptr ? left->GetBoundingBox().Hit(ray, t1, t2) : false;
+	bool rightBoxHit = right != nullptr ? right->GetBoundingBox().Hit(ray, t3, t4) : false;
 
 	HitRst hitRst;
 	if (leftBoxHit) {
@@ -151,7 +151,7 @@ HitRst BVH_Node::RayIn(Ray::Ptr & ray) const {
 	else
 		return HitRst::InValid;
 
-	if (GetMat() != NULL && hitRst.isMatCoverable) {
+	if (GetMat() != nullptr && hitRst.isMatCoverable) {
 		hitRst.material = GetMat();
 		hitRst.isMatCoverable = IsMatCoverable();
 	}

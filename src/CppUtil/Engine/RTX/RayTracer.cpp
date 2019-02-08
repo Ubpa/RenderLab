@@ -13,6 +13,10 @@ using namespace glm;
 RayTracer::RayTracer(Scene::Ptr scene)
 	: scene(scene) { }
 
+RayTracer::Rst RayTracer::FindClosetSObj(Ray::Ptr ray) {
+	return FindClosetSObj(scene->GetRootSObj(), ray);
+}
+
 // ray 所处的坐标系应该是 sobj 所处的坐标系
 RayTracer::Rst RayTracer::FindClosetSObj(SObj::Ptr sobj, Ray::Ptr ray) {
 	auto rayIntersector = ToPtr(new RayIntersector);
@@ -33,7 +37,6 @@ void RayTracer::FindClosetSObj(SObj::Ptr sobj, Ray::Ptr ray, RayIntersector::Ptr
 		auto rst = rayIntersector->GetRst();
 
 		if (rst.isIntersect) {
-			ray->SetTMax(rst.t);
 			closestRst.closestSObj = sobj;
 			closestRst.n = rst.n;
 		}

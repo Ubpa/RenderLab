@@ -45,7 +45,7 @@ Cube::Cube()
 	indexArr = new Array2D<size_t>(triNum, 3);
 	//----------
 	for (size_t i = 0; i < vertexNum; i++) {
-		vertexArr->Copy(i, 0, 3, &(cubeData[8 * i]));
+		posArr->Copy(i, 0, 3, &(cubeData[8 * i]));
 		normalArr->Copy(i, 0, 3, &(cubeData[8 * i + 3]));
 		texCoordsArr->Copy(i, 0, 2, &(cubeData[8 * i + 6]));
 	}

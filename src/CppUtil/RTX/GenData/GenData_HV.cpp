@@ -30,7 +30,7 @@ GenData_HV::GenData_HV(vector<float> & packData)
 	: packData(packData) { }
 
 void GenData_HV::Visit(Hitable::CPtr hitable) {
-	if (hitable == NULL)
+	if (hitable == nullptr)
 		return;
 
 	if(hitable->GetMat())
@@ -41,7 +41,7 @@ void GenData_HV::Visit(Hitable::CPtr hitable) {
 }
 
 void GenData_HV::Visit(Sphere::CPtr sphere) {
-	if (sphere == NULL)
+	if (sphere == nullptr)
 		return;
 
 	auto targetPair = hitable2idx.find(sphere);
@@ -64,7 +64,7 @@ void GenData_HV::Visit(Sphere::CPtr sphere) {
 }
 
 void GenData_HV::Visit(Group::CPtr group) {
-	if (group == NULL)
+	if (group == nullptr)
 		return;
 
 	auto targetPair = hitable2idx.find(group);
@@ -88,7 +88,7 @@ void GenData_HV::Visit(Group::CPtr group) {
 	sceneData.push_back(-float(hitable2idx[group]));
 
 	for (auto const & child : group->GetChildren()) {
-		if (child == NULL)
+		if (child == nullptr)
 			continue;
 
 		auto targetHitableIdx = hitable2idx.find(child);
@@ -103,7 +103,7 @@ void GenData_HV::Visit(Group::CPtr group) {
 }
 
 void GenData_HV::Visit(BVH_Node::CPtr bvhNode) {
-	if (bvhNode == NULL)
+	if (bvhNode == nullptr)
 		return;
 
 	auto targetPair = hitable2idx.find(bvhNode);
@@ -160,7 +160,7 @@ void GenData_HV::Visit(BVH_Node::CPtr bvhNode) {
 }
 
 void GenData_HV::Visit(Triangle::CPtr triangle) {
-	if (triangle == NULL)
+	if (triangle == nullptr)
 		return;
 
 	auto targetPair = hitable2idx.find(triangle);
@@ -188,7 +188,7 @@ void GenData_HV::Visit(Triangle::CPtr triangle) {
 }
 
 void GenData_HV::Visit(TriMesh::CPtr triMesh) {
-	if (triMesh == NULL)
+	if (triMesh == nullptr)
 		return;
 
 	auto targetPair = hitable2idx.find(triMesh);
@@ -200,7 +200,7 @@ void GenData_HV::Visit(TriMesh::CPtr triMesh) {
 }
 
 void GenData_HV::Visit(Transform::CPtr transform) {
-	if (transform == NULL)
+	if (transform == nullptr)
 		return;
 
 	auto targetPair = hitable2idx.find(transform);
@@ -237,7 +237,7 @@ void GenData_HV::Visit(Transform::CPtr transform) {
 		packData.push_back(0);
 	}
 
-	if (transform->GetChild() == NULL) {
+	if (transform->GetChild() == nullptr) {
 		sceneData.push_back(-float(hitable2idx[transform]));
 		return;
 	}
@@ -256,7 +256,7 @@ void GenData_HV::Visit(Transform::CPtr transform) {
 }
 
 void GenData_HV::Visit(Volume::CPtr volume) {
-	if (volume == NULL)
+	if (volume == nullptr)
 		return;
 
 	auto targetPair = hitable2idx.find(volume);
@@ -271,7 +271,7 @@ void GenData_HV::Visit(Volume::CPtr volume) {
 
 	sceneData.push_back(volume->GetDensity());
 
-	if (volume->GetBoundary() == NULL) {
+	if (volume->GetBoundary() == nullptr) {
 		sceneData.push_back(-float(hitable2idx[volume]));
 		return;
 	}
@@ -290,7 +290,7 @@ void GenData_HV::Visit(Volume::CPtr volume) {
 }
 
 void GenData_HV::Visit(Sky::CPtr sky) {
-	if (sky == NULL)
+	if (sky == nullptr)
 		return;
 
 	auto targetPair = hitable2idx.find(sky);

@@ -45,11 +45,11 @@ cmake .. -Wno-dev
     - [x] Plane
     - [x] 灯光
     - [x] 测试 Cornell Box
-    - [ ] 相交性测试
-    - [ ] BVH
-    - [ ] TriMesh
-- [ ] 优化
-  - [ ] Sphere 取消掉冗余的 center 和 radius
+    - [x] 网格
+      - [x] Triangle
+      - [x] TriMesh
+      - [x] BVH
+    - [ ] 相交性测试（不需要找到最近，只要相交就退出）
 - [ ] 用新的架构来写实时渲染
 
 ## 3. 其他 TODO

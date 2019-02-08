@@ -7,7 +7,7 @@ using namespace CppUtil::Basic;
 Sphere::Sphere(size_t n)
 	: Shape((n + 1)*(n + 1), 2 * n*n) {
 	// normal 和 pos 的值相同
-	normalArr = vertexArr;
+	normalArr = posArr;
 	texCoordsArr = new Array2D<float>(vertexNum, 2);
 	indexArr = new Array2D<size_t>(triNum, 3);
 	//----------
@@ -19,9 +19,9 @@ Sphere::Sphere(size_t n)
 			float theta = PI * (1-u);
 			float phi = 2 * PI * v;
 			// 右手系: 上y, 右x, 垂直屏幕外为 z
-			vertexArr->At(i*(n + 1) + j, 0) = sinf(theta) * sinf(phi);
-			vertexArr->At(i*(n + 1) + j, 1) = cosf(theta);
-			vertexArr->At(i*(n + 1) + j, 2) = sinf(theta) * cosf(phi);
+			posArr->At(i*(n + 1) + j, 0) = sinf(theta) * sinf(phi);
+			posArr->At(i*(n + 1) + j, 1) = cosf(theta);
+			posArr->At(i*(n + 1) + j, 2) = sinf(theta) * cosf(phi);
 			// u 对应纵轴所以应该是纹理坐标的 t
 			// v 对应横轴所以应该是纹理坐标的 s
 			texCoordsArr->At(i*(n + 1) + j, 0) = v;
@@ -44,7 +44,7 @@ Sphere::Sphere(size_t n)
 }
 
 Sphere::~Sphere() {
-	// normalArr 和 vertexArr 相同, 故无需释放normalArr
+	// normalArr 和 posArr 相同, 故无需释放normalArr
 	normalArr = nullptr;
 	delete texCoordsArr;
 	texCoordsArr = nullptr;

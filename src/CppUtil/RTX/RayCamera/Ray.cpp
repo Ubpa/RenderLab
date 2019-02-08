@@ -3,7 +3,7 @@
 using namespace glm;
 using namespace RTX;
 
-const float Ray::tMin = 10e-4;
+const float Ray::tMin = 10e-4f;
 
 Ray::Ray(const vec3 & origin, const vec3 & dir){
 	Init(origin, dir);

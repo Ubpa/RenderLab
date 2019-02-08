@@ -8,6 +8,7 @@ namespace CppUtil {
 		// list out all primitives
 		class Sphere;
 		class Plane;
+		class TriMesh;
 
 		class Intersector : public Basic::EleVisitor {
 			ELEVISITOR_SETUP(Intersector)

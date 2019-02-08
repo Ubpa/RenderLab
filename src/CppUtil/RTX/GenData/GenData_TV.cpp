@@ -19,7 +19,7 @@ GenData_TV::GenData_TV(std::vector<float> & packData)
 	: packData(packData) { }
 
 void GenData_TV::Visit(ConstTexture::CPtr constTexture) {
-	if (constTexture == NULL)
+	if (constTexture == nullptr)
 		return;
 
 	auto targetPair = tex2idx.find(constTexture);
@@ -39,7 +39,7 @@ void GenData_TV::Visit(ConstTexture::CPtr constTexture) {
 }
 
 void GenData_TV::Visit(ImgTexture::CPtr imgTexture) {
-	if (imgTexture == NULL)
+	if (imgTexture == nullptr)
 		return;
 
 	auto targetTexIdx = tex2idx.find(imgTexture);
@@ -50,7 +50,7 @@ void GenData_TV::Visit(ImgTexture::CPtr imgTexture) {
 
 	texData.push_back(TexT_ImgTexture);
 
-	if (imgTexture->GetImg() == NULL) {
+	if (imgTexture->GetImg() == nullptr) {
 		texData.push_back(-1);
 		return;
 	}
@@ -65,7 +65,7 @@ void GenData_TV::Visit(ImgTexture::CPtr imgTexture) {
 }
 
 void GenData_TV::Visit(Skybox::CPtr skybox) {
-	if (skybox == NULL || !skybox->IsValid())
+	if (skybox == nullptr || !skybox->IsValid())
 		return;
 
 	auto targetTexIdx = tex2idx.find(skybox);

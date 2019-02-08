@@ -12,6 +12,7 @@
 #include <CppUtil/Engine/Sphere.h>
 #include <CppUtil/Engine/Plane.h>
 #include <CppUtil/Engine/Ray.h>
+#include <CppUtil/Engine/TriMesh.h>
 
 #include <CppUtil/Engine/PathTracer.h>
 #include <CppUtil/Engine/RTX_Renderer.h>

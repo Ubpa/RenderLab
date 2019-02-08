@@ -20,7 +20,7 @@ MoveSphere::MoveSphere(float t0, float t1, const vec3 & center0, const vec3 & ce
 HitRst MoveSphere::RayIn(Ray::Ptr & ray) const {
 	TRay::Ptr tRay = std::dynamic_pointer_cast<TRay>(ray);
 	vec3 center;
-	if (tRay != NULL)
+	if (tRay != nullptr)
 		center = mix(center0, center1, tRay->GetTime());
 	else
 		center = center0;

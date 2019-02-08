@@ -5,7 +5,6 @@
 #include <CppUtil/Basic/TypeMap.h>
 
 #include <functional>
-#include <vector>
 
 #define ELEVISITOR_SETUP(CLASS) \
 HEAP_OBJ_SETUP(CLASS)\
@@ -47,8 +46,6 @@ namespace CppUtil {
 					(dynamic_cast<VisitorType*>(this)->*visitFunc)(Basic::Ptr<EleType>(pEle));
 				};
 			}
-
-			//~EleVisitor() { printf("del elevisitor\n"); }
 
 		private:
 			TypeMap< std::function< void (Basic::Ptr<Element>) > > visitOps;
