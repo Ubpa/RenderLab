@@ -10,12 +10,12 @@ namespace CppUtil {
 		
 		class GS{
 		private:
-			template<typename T>
-			class _GStorage final : public Singleton<_GStorage<T>>, public LStorage<std::string, T> {
-				friend class Singleton<_GStorage<T>>;
+			template<typename ID_Type, typename T>
+			class _GStorage final : public Singleton<_GStorage<ID_Type, T>>, public LStorage<ID_Type, T> {
+				friend class Singleton<_GStorage<ID_Type, T>>;
 			public:
-				static _GStorage<T> * GetInstance() {
-					return Singleton<_GStorage<T>>::GetInstance();
+				static _GStorage<ID_Type, T> * GetInstance() {
+					return Singleton<_GStorage<ID_Type, T>>::GetInstance();
 				}
 			private:
 				_GStorage() = default;
@@ -25,20 +25,37 @@ namespace CppUtil {
 		private:
 			GS() = default;
 
+			template<typename ID_Type, typename T, bool toStr>
+			struct Wrapper;
+			
+			template<typename ID_Type, typename T>
+			struct Wrapper<ID_Type, T, false> {
+				static bool Reg(const ID_Type & uniqueID, const T & item) {
+					return _GStorage<ID_Type, T>::GetInstance()->Reg(uniqueID, item);
+				}
+			};
+
+			template<typename ID_Type, typename T>
+			struct Wrapper<ID_Type, T, true> {
+				static bool Reg(const std::string & uniqueID, const T & item) {
+					return _GStorage<std::string, T>::GetInstance()->Reg(uniqueID, item);
+				}
+			};
+
 		public:
-			template<typename T>
-			static bool Reg(const std::string & uniqueID, const T & item) {
-				return _GStorage<T>::GetInstance()->Reg(uniqueID, item);
+			template<typename ID_Type, typename T>
+			static bool Reg(const ID_Type & uniqueID, const T & item) {
+				return Wrapper<ID_Type, T, std::is_convertible<ID_Type, std::string>::value>::Reg(uniqueID, item);
 			}
 
-			template<typename T>
-			static void GetP(const std::string & uniqueID, T * & p) {
-				p = _GStorage<T>::GetInstance()->GetP(uniqueID);
+			template<typename ID_Type, typename T>
+			static void GetP(const ID_Type & uniqueID, T * & p) {
+				p = _GStorage<ID_Type, T>::GetInstance()->GetP(uniqueID);
 			}
 
-			template<typename T>
-			static bool GetV(const std::string & uniqueID, T & val) {
-				auto p = _GStorage<T>::GetInstance()->GetP(uniqueID);
+			template<typename ID_Type, typename T>
+			static bool GetV(const ID_Type & uniqueID, T & val) {
+				auto p = _GStorage<ID_Type, T>::GetInstance()->GetP(uniqueID);
 				if (p == nullptr)
 					return false;
 
