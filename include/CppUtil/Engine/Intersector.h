@@ -5,7 +5,7 @@
 
 namespace CppUtil {
 	namespace Engine {
-		// list out all primitives
+		class SObj;
 		class Sphere;
 		class Plane;
 		class TriMesh;
@@ -17,6 +17,7 @@ namespace CppUtil {
 				Rst(bool isIntersect = false)
 					: isIntersect(false) { }
 
+			protected:
 				bool isIntersect;
 			};
 

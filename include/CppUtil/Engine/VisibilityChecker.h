@@ -1,36 +1,29 @@
-#ifndef _RAY_INTERSECTOR_H_
-#define _RAY_INTERSECTOR_H_
+#ifndef _ENGINE_VISIBILITY_CHECKER_H_
+#define _ENGINE_VISIBILITY_CHECKER_H_
 
 #include <CppUtil/Engine/Intersector.h>
 #include <CppUtil/Engine/BVHNode.h>
-#include <glm/vec3.hpp>
 
 namespace CppUtil {
 	namespace Engine {
 		class Ray;
 		class Triangle;
 
-		// 寻找最近的交点
-		class RayIntersector : public Intersector {
-			ELEVISITOR_SETUP(RayIntersector)
+		class VisibilityChecker : public Intersector {
+			ELEVISITOR_SETUP(VisibilityChecker)
 		public:
-			// isIntersect 用于判断与 Primitive 是否相交
-			// closestSObj 用于记录最近的SObj
-			// n 用于记录最近的相交处的法向
 			struct Rst : public Intersector::Rst {
-				friend class RayIntersector;
+				friend class VisibilityChecker;
 
 				Rst(bool isIntersect = false)
-					: Intersector::Rst(isIntersect), closestSObj(nullptr), n(0) { }
+					: Intersector::Rst(isIntersect) { }
 
-				Basic::Ptr<SObj> closestSObj;
-				glm::vec3 n;
+				bool IsVisible() const { return isIntersect; }
 			};
 
 		public:
-			RayIntersector(Basic::Ptr<Ray> ray);
+			VisibilityChecker(Basic::Ptr<Ray> ray, float tMax);
 
-		public:
 			virtual const Rst & GetRst() const { return rst; }
 
 			void Visit(Basic::Ptr<SObj> sobj);
@@ -53,4 +46,4 @@ namespace CppUtil {
 	}
 }
 
-#endif//!_RAY_INTERSECTOR_H_
+#endif//!_ENGINE_VISIBILITY_CHECKER_H_

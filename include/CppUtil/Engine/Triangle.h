@@ -8,6 +8,8 @@ namespace CppUtil {
 	namespace Engine {
 		class TriMesh;
 
+		// 因为 Triangle 依赖于 Mesh，而且 Mesh 又可以取代 Triangle
+		// 所以不把 Triangle 当作 Primitive，只让 Mesh 当作 Primitive
 		class Triangle : public Basic::HeapObj {
 			HEAP_OBJ_SETUP(Triangle)
 			friend class TriMesh;

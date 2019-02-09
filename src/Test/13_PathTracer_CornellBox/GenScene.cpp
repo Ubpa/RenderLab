@@ -116,6 +116,13 @@ Scene::Ptr GenScene() {
 		transform->SetScale(scaleArr[i]);
 	}
 
+	// sky sphere
+	auto sobj_skySphere = ToPtr(new SObj(sobj_Root, "sky"));
+	auto skySphere = ToPtr(new Sphere(vec3(0), 100.0f));
+	auto geoSky = ToPtr(new Geometry(sobj_skySphere, skySphere));
+	auto dark = ToPtr(new BSDF_Diffuse(vec3(0)));
+	auto materialSky = ToPtr(new Material(sobj_skySphere, dark));
+
 	auto scene = ToPtr(new Scene(sobj_Root));
 	return scene;
 }

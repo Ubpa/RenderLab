@@ -1,53 +1,62 @@
-#include <CppUtil/Engine/RayIntersector.h>
+#include <CppUtil/Engine/VisibilityChecker.h>
 
 #include <CppUtil/Engine/Ray.h>
 
 #include <CppUtil/Engine/SObj.h>
-#include <CppUtil/Engine/AllComponents.h>
+#include <CppUtil/Engine/Geometry.h>
+#include <CppUtil/Engine/Transform.h>
 #include <CppUtil/Engine/Sphere.h>
 #include <CppUtil/Engine/Plane.h>
 #include <CppUtil/Engine/TriMesh.h>
 #include <CppUtil/Engine/BBox.h>
 #include <CppUtil/Engine/Triangle.h>
 
-#include <glm/geometric.hpp>
 
 using namespace CppUtil::Engine;
-using namespace CppUtil::Basic;
 using namespace glm;
 
-RayIntersector::RayIntersector(Ray::Ptr ray)
+VisibilityChecker::VisibilityChecker(Ray::Ptr ray, float tMax)
 	: ray(ray) {
+	ray->SetTMax(tMax);
+
 	Reg<SObj>();
 	Reg<Sphere>();
 	Reg<Plane>();
 	Reg<TriMesh>();
 }
 
-void RayIntersector::Visit(SObj::Ptr sobj) {
+
+void VisibilityChecker::Visit(SObj::Ptr sobj) {
+	rst.isIntersect = false;
 	auto transform = sobj->GetComponent<Transform>();
+	auto geometry = sobj->GetComponent<Geometry>();
+	auto children = sobj->GetChildren();
+
+	// 这种情况下不需要 transform
+	if (geometry == nullptr && children.size() == 0)
+		return;
+
 	if (transform)
 		ray->Transform(transform->GetInv());
 
-	auto geometry = sobj->GetComponent<Geometry>();
 	if (geometry) {
 		geometry->GetPrimitive()->Accept(This());
 
-		if (rst.isIntersect)
-			rst.closestSObj = sobj;
+		if (rst.IsVisible())
+			return;
 	}
 
-	for (auto child : sobj->GetChildren())
+	for (auto child : children) {
 		child->Accept(This());
-
-	if (transform) {
-		ray->Transform(transform->GetMat());
-		if (rst.closestSObj == sobj)
-			rst.n = normalize(transform->GetNormMat() * rst.n);
+		if (rst.IsVisible())
+			return;
 	}
+
+	if (transform)
+		ray->Transform(transform->GetMat());
 }
 
-void RayIntersector::Visit(CppUtil::Basic::Ptr<Sphere> sphere) {
+void VisibilityChecker::Visit(Sphere::Ptr sphere) {
 	vec3 dir = ray->GetDir();
 	vec3 origin = ray->GetOrigin();
 	vec3 center = sphere->GetCenter();
@@ -59,56 +68,43 @@ void RayIntersector::Visit(CppUtil::Basic::Ptr<Sphere> sphere) {
 	float c = dot(oc, oc) - radius * radius;
 	float discriminant = b * b - a * c;
 
-	if (discriminant <= 0) {
-		rst.isIntersect = false;
+	if (discriminant <= 0)
 		return;
-	}
 
 	float tMin = ray->GetTMin();
 	float tMax = ray->GetTMax();
 	float sqrt_discriminant = sqrt(discriminant);
 	float inv_a = 1.0f / a;
 
-	float t = - (b + sqrt_discriminant) * inv_a;
+	float t = -(b + sqrt_discriminant) * inv_a;
 	if (t > tMax || t < tMin) {
 		t = (-b + sqrt_discriminant) * inv_a;
-		if (t > tMax || t < tMin) {
-			rst.isIntersect = false;
+		if (t > tMax || t < tMin)
 			return;
-		}
 	}
 
 	rst.isIntersect = true;
-	ray->SetTMax(t);
-	rst.n = (ray->At(t) - center) / radius;
 }
 
-void RayIntersector::Visit(Plane::Ptr plane) {
+void VisibilityChecker::Visit(Plane::Ptr plane) {
 	vec3 dir = ray->GetDir();
 	vec3 origin = ray->GetOrigin();
 	float tMin = ray->GetTMin();
 	float tMax = ray->GetTMax();
 
-	float t = - origin.y / dir.y;
-	if (t<tMin || t>tMax) {
-		rst.isIntersect = false;
+	float t = -origin.y / dir.y;
+	if (t<tMin || t>tMax)
 		return;
-	}
 
 	vec3 pos = ray->At(t);
-	if (pos.x<-0.5 || pos.x>0.5 || pos.z<-0.5 || pos.z>0.5) {
-		rst.isIntersect = false;
+	if (pos.x<-0.5 || pos.x>0.5 || pos.z<-0.5 || pos.z>0.5)
 		return;
-	}
 
 	rst.isIntersect = true;
-	ray->SetTMax(t);
-	rst.n = vec3(0, sign(origin.y), 0);
 }
 
-void RayIntersector::Visit(TriMesh::Ptr mesh) {
+void VisibilityChecker::Visit(TriMesh::Ptr mesh) {
 	auto root = mesh->GetBVHRoot();
-	rst.isIntersect = false;
 
 	if (!Intersect(root->GetBBox()))
 		return;
@@ -116,12 +112,12 @@ void RayIntersector::Visit(TriMesh::Ptr mesh) {
 	Intersect(root);
 }
 
-bool RayIntersector::Intersect(const BBox & bbox) {
+bool VisibilityChecker::Intersect(const BBox & bbox) {
 	float t0, t1;
 	return Intersect(bbox, t0, t1);
 }
 
-bool RayIntersector::Intersect(const BBox & bbox, float & t0, float & t1) {
+bool VisibilityChecker::Intersect(const BBox & bbox, float & t0, float & t1) {
 	const vec3 origin = ray->GetOrigin();
 	const vec3 dir = ray->GetDir();
 	const vec3 invDir = ray->GetInvDir();
@@ -147,10 +143,13 @@ bool RayIntersector::Intersect(const BBox & bbox, float & t0, float & t1) {
 	return true;
 }
 
-void RayIntersector::Intersect(BVHNode<Triangle>::Ptr bvhNode) {
+void VisibilityChecker::Intersect(BVHNode<Triangle>::Ptr bvhNode) {
 	if (bvhNode->IsLeaf()) {
-		for (size_t i = 0; i < bvhNode->GetRange(); i++)
+		for (size_t i = 0; i < bvhNode->GetRange(); i++) {
 			Intersect(bvhNode->GetBoxObjs()[i + bvhNode->GetStart()]);
+			if (rst.isIntersect)
+				return;
+		}
 	}
 	else {
 		auto l = bvhNode->GetL();
@@ -164,20 +163,31 @@ void RayIntersector::Intersect(BVHNode<Triangle>::Ptr bvhNode) {
 				auto first = (t1 <= t3) ? l : r;
 				auto second = (t1 <= t3) ? r : l;
 				Intersect(first);
-				if (t3 < ray->GetTMax())
+				if (rst.isIntersect)
+					return;
+				if (t3 < ray->GetTMax()) {
 					Intersect(second);
+					if (rst.isIntersect)
+						return;
+				}
 			}
-			else
+			else {
 				Intersect(l);
+				if (rst.isIntersect)
+					return;
+			}
 		}
-		else if (rightBoxHit)
+		else if (rightBoxHit) {
 			Intersect(r);
+			if (rst.isIntersect)
+				return;
+		}
 		else
 			return;
 	}
 }
 
-void RayIntersector::Intersect(Triangle::Ptr triangle) {
+void VisibilityChecker::Intersect(Triangle::Ptr triangle) {
 	auto positions = triangle->GetMesh()->GetPositions();
 	vec3 p1 = positions[triangle->idx[0]];
 	vec3 p2 = positions[triangle->idx[1]];
@@ -218,16 +228,5 @@ void RayIntersector::Intersect(Triangle::Ptr triangle) {
 	if (t < tMin || t > tMax)
 		return;
 
-	ray->SetTMax(t);
-
-	float w = 1 - u_plus_v;
-
-	auto normals = triangle->GetMesh()->GetNormals();
-	vec3 n1 = normals[triangle->idx[0]];
-	vec3 n2 = normals[triangle->idx[1]];
-	vec3 n3 = normals[triangle->idx[2]];
-	vec3 n = u * n1 + v * n2 + w * n3;
-
 	rst.isIntersect = true;
-	rst.n = dot(n, dir) < 0 ? n : -n;
 }
