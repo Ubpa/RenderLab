@@ -10,6 +10,14 @@ namespace CppUtil {
 	namespace Basic {
 		class Operation;
 	}
+	namespace Engine {
+		class Scene;
+		class Viewer;
+	}
+}
+
+namespace Ui {
+	class Hierarchy;
 }
 
 class RenderLab : public QMainWindow
@@ -18,6 +26,9 @@ class RenderLab : public QMainWindow
 
 public:
 	RenderLab(QWidget *parent = Q_NULLPTR);
+
+public:
+	CppUtil::Basic::Ptr<CppUtil::Engine::Scene> GetScene()const { return scene; }
 
 private slots:
 	void on_btn_RenderStart_clicked();
@@ -29,4 +40,7 @@ private slots:
 private:
 	Ui::RenderLabClass ui;
 	CppUtil::Basic::Ptr<CppUtil::Qt::PaintImgOpCreator::PaintImgOp> paintImgOp;
+	CppUtil::Basic::Ptr<CppUtil::Engine::Scene> scene;
+	CppUtil::Basic::Ptr<CppUtil::Engine::Viewer> viewer;
+	CppUtil::Basic::Ptr<Ui::Hierarchy> hierarchy;
 };

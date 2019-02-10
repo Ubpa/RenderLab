@@ -1,26 +1,30 @@
 #include "RenderLab.h"
 
 #include <CppUtil/Qt/PaintImgOpCreator.h>
-#include <CppUtil/Qt/RasterOpCreator.h>
-#include <CppUtil/Qt/RawAPI_Define.h>
 #include <CppUtil/Qt/OpThread.h>
 
-#include <CppUtil/RTX/SceneCreator.h>
-#include <CppUtil/RTX/RTX_Renderer.h>
+#include <CppUtil/Engine/RTX_Renderer.h>
+#include <CppUtil/Engine/PathTracer.h>
+#include <CppUtil/Engine/Viewer.h>
+#include <UI/Hierarchy.h>
+#include "GenScene.h"
 
 #include <CppUtil/Basic/Image.h>
-
 #include <CppUtil/Basic/LambdaOp.h>
+#include <CppUtil/Basic/GStorage.h>
+#include <CppUtil/Basic/Math.h>
 
 #include <qdebug.h>
 #include <qtimer.h>
 #include <qfiledialog.h>
 
-#include <thread>
+#include <synchapi.h>
 
-using namespace RTX;
+using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
 using namespace CppUtil::Qt;
+using namespace std;
+using namespace Ui;
 
 RenderLab::RenderLab(QWidget *parent)
 	: QMainWindow(parent)
@@ -43,14 +47,16 @@ RenderLab::RenderLab(QWidget *parent)
 	const size_t fps = 60;
 	timer->start(1000 / fps);
 
-	// raster
-	RasterOpCreator roc(ui.OGLW_Raster);
-	auto rasterSceneOp = roc.GenScenePaintOp(1);
-	rasterSceneOp->SetOp();
+	scene = GenScene();
+
+	// viewer
+	viewer = ToPtr(new Viewer(ui.OGLW_Raster, scene));
 
 	// raytracer
 	PaintImgOpCreator pioc(ui.OGLW_RayTracer);
 	paintImgOp = pioc.GenScenePaintOp();
+
+	hierarchy = ToPtr(new Hierarchy(scene, ui.tree_Hierarchy));
 }
 
 void RenderLab::on_btn_RenderStart_clicked(){
@@ -64,28 +70,31 @@ void RenderLab::on_btn_RenderStart_clicked(){
 	auto drawImgOp = ToPtr(new LambdaOp([this, drawImgThread]() {
 		paintImgOp->SetOp(1024, 768);
 		auto img = paintImgOp->GetImg();
-		auto scene = SceneCreator::Gen(RTX::SceneCreator::LOTS_OF_BALLS, 1024, 768);
-		RTX_Renderer rtxRenderer(scene, img);
+
+		auto pathTracer = ToPtr(new PathTracer(this->GetScene()));
+
+		auto rtxRenderer = ToPtr(new RTX_Renderer(pathTracer));
 
 		OpThread::Ptr controller = ToPtr(new OpThread);
 		controller->UIConnect(this, &RenderLab::UI_Op);
-		auto controllOp = ToPtr(new LambdaOp([this, drawImgThread, controller, &rtxRenderer]() {
+		auto controllOp = ToPtr(new LambdaOp([this, drawImgThread, controller, rtxRenderer]() {
 			while (!drawImgThread->IsStop()) {
 				controller->UI_Op_Run([&, this]() {
-					ui.rtxProgress->setValue(rtxRenderer.ProgressRate() * ui.rtxProgress->maximum());
+					ui.rtxProgress->setValue(rtxRenderer->ProgressRate() * ui.rtxProgress->maximum());
 				});
 				Sleep(100);
 			}
-			rtxRenderer.Stop();
+			rtxRenderer->Stop();
 		}));
 		controller->SetOp(controllOp);
 		controller->start();
 
-		rtxRenderer.Run();
+		rtxRenderer->Run(img);
 		controller->terminate();
-		drawImgThread->UI_Op_Run([this]() {
+		drawImgThread->UI_Op_Run([this, rtxRenderer]() {
 			ui.btn_RenderStart->setEnabled(true);
 			ui.btn_RenderStop->setEnabled(false);
+			ui.rtxProgress->setValue(rtxRenderer->ProgressRate() * ui.rtxProgress->maximum());
 		});
 	}));
 	drawImgThread->SetOp(drawImgOp);

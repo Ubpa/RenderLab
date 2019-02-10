@@ -64,8 +64,8 @@
    </property>
    <property name="minimumSize">
     <size>
-     <width>250</width>
-     <height>38</height>
+     <width>274</width>
+     <height>232</height>
     </size>
    </property>
    <property name="features">
@@ -80,13 +80,28 @@
    <attribute name="dockWidgetArea">
     <number>1</number>
    </attribute>
-   <widget class="QWidget" name="dc_Hierarchy"/>
+   <widget class="QWidget" name="dc_Hierarchy">
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QTreeWidget" name="tree_Hierarchy">
+       <attribute name="headerVisible">
+        <bool>false</bool>
+       </attribute>
+       <column>
+        <property name="text">
+         <string>SObj</string>
+        </property>
+       </column>
+      </widget>
+     </item>
+    </layout>
+   </widget>
   </widget>
   <widget class="QDockWidget" name="dock_Setting">
    <property name="minimumSize">
     <size>
      <width>250</width>
-     <height>38</height>
+     <height>113</height>
     </size>
    </property>
    <property name="features">
@@ -101,7 +116,13 @@
    <attribute name="dockWidgetArea">
     <number>1</number>
    </attribute>
-   <widget class="QWidget" name="dc_Setting"/>
+   <widget class="QWidget" name="dc_Setting">
+    <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <item>
+      <widget class="QListView" name="listView"/>
+     </item>
+    </layout>
+   </widget>
   </widget>
   <widget class="QDockWidget" name="dock_Attribute">
    <property name="minimumSize">

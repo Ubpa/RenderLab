@@ -55,7 +55,7 @@ cmake .. -Wno-dev
   - [x] Raster
   - [x] Roamer（把 View 中的相机相关部分抽出）
 - [ ] 实装UI功能（查看，编辑）
-  - [ ] 层次面板
+  - [x] 层次面板
   - [ ] 选择器
   - [ ] 属性面板（展示 component）
 
