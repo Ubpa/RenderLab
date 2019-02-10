@@ -6,7 +6,7 @@
 namespace CppUtil {
 	namespace Engine {
 		class BSDF_Emission : public BSDF {
-			HEAP_OBJ_SETUP(BSDF_Emission)
+			ELE_SETUP(BSDF_Emission)
 		public:
 			BSDF_Emission(const glm::vec3 & color = glm::vec3(1), float intensity = 1.0f)
 				: color(color), intensity(intensity) { }

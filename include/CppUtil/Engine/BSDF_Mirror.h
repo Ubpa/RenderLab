@@ -6,7 +6,7 @@
 namespace CppUtil {
 	namespace Engine {
 		class BSDF_Mirror : public BSDF {
-			HEAP_OBJ_SETUP(BSDF_Mirror)
+			ELE_SETUP(BSDF_Mirror)
 		public:
 			BSDF_Mirror(const glm::vec3 & reflectance = glm::vec3(1)) : reflectance(reflectance) { }
 
@@ -25,6 +25,8 @@ namespace CppUtil {
 			virtual glm::vec3 GetEmission() const { return glm::vec3(0); }
 
 			virtual bool IsDelta() const { return true; }
+
+			glm::vec3 GetReflectance() const { return reflectance; }
 
 		private:
 			glm::vec3 reflectance;

@@ -8,7 +8,7 @@
 namespace CppUtil {
 	namespace Engine {
 		class BSDF_Diffuse : public BSDF {
-			HEAP_OBJ_SETUP(BSDF_Diffuse)
+			ELE_SETUP(BSDF_Diffuse)
 		public:
 			BSDF_Diffuse(const glm::vec3 & albedo = glm::vec3(1)) :albedo(albedo) { }
 
@@ -27,6 +27,8 @@ namespace CppUtil {
 			virtual glm::vec3 GetEmission() const { return glm::vec3(0); }
 
 			virtual bool IsDelta() const { return false; }
+
+			glm::vec3 GetAlbedo()const { return albedo; }
 
 		private:
 			glm::vec3 albedo;

@@ -46,7 +46,6 @@ namespace CppUtil {
 				static T * GetP(const std::string & uniqueID) {
 					return _GStorage<std::string, T>::GetInstance()->GetP(uniqueID);
 				}
-
 			};
 
 		public:

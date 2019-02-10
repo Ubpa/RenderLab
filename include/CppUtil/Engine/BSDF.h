@@ -7,7 +7,7 @@
 namespace CppUtil {
 	namespace Engine {
 		class BSDF : public MaterialBase {
-			HEAP_OBJ_SETUP(BSDF)
+			ELE_SETUP(BSDF)
 		public:
 			virtual glm::vec3 F(const glm::vec3 & wo, const glm::vec3 & wi) = 0;
 

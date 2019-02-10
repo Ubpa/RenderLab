@@ -69,6 +69,20 @@ macro(INSTALL_SHADERS)
 endmacro(INSTALL_SHADERS)
 #---------------------------------------
 
+macro(QT_BEGIN)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTORCC ON)
+endmacro(QT_BEGIN)
+
+macro(QT_END)
+set(CMAKE_AUTOMOC OFF)
+set(CMAKE_AUTOUIC OFF)
+set(CMAKE_AUTORCC OFF)
+endmacro(QT_END)
+
+#---------------------------------------
+
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 cmake_minimum_required(VERSION 3.1.0 FATAL_ERROR)

@@ -28,13 +28,14 @@ VisibilityChecker::VisibilityChecker(Ray::Ptr ray, float tMax)
 
 void VisibilityChecker::Visit(SObj::Ptr sobj) {
 	rst.isIntersect = false;
-	auto transform = sobj->GetComponent<Transform>();
+
 	auto geometry = sobj->GetComponent<Geometry>();
 	auto children = sobj->GetChildren();
-
 	// 这种情况下不需要 transform
 	if (geometry == nullptr && children.size() == 0)
 		return;
+
+	auto transform = sobj->GetComponent<Transform>();
 
 	if (transform)
 		ray->Transform(transform->GetInv());

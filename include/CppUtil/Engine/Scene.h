@@ -21,6 +21,7 @@ namespace CppUtil {
 			Basic::Ptr<SObj> GetRootSObj() const { return rootSObj; }
 			Basic::Ptr<Camera> GetMainCamera() const { return mainCamera; }
 			const std::vector<Basic::Ptr<Light>> & GetLights() const { return lights; }
+			const std::vector<Basic::Ptr<SObj>> & GetGeoSObjs() const { return geoSObjs; }
 
 		public:
 			std::string name;
@@ -29,6 +30,7 @@ namespace CppUtil {
 			Basic::Ptr<SObj> rootSObj;
 			Basic::Ptr<Camera> mainCamera;
 			std::vector<Basic::Ptr<Light>> lights;
+			std::vector<Basic::Ptr<SObj>> geoSObjs;
 		};
 	}
 }

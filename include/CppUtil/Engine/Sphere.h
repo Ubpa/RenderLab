@@ -1,5 +1,5 @@
-#ifndef _SPHERE_H_
-#define _SPHERE_H_
+#ifndef _ENGINE_PRIMITIVE_SPHERE_H_
+#define _ENGINE_PRIMITIVE_SPHERE_H_
 
 #include <CppUtil/Engine/Primitive.h>
 #include <glm/vec3.hpp>
@@ -23,4 +23,4 @@ namespace CppUtil {
 	}
 }
 
-#endif//!_SPHERE_H_
+#endif//!_ENGINE_PRIMITIVE_SPHERE_H_

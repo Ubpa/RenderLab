@@ -43,6 +43,9 @@ namespace CppUtil {
 				Init<T>::Func(p);
 			}
 
+			// T ²»ÊÇ HeapObj
+			explicit Ptr(T * p) : std::shared_ptr<T>(p) { }
+
 			template<typename BaseT>
 			Ptr(T * p, void(*delFunc)(const BaseT *)) : std::shared_ptr<T>(p, delFunc) {
 				Init<T>::Func(p);

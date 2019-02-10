@@ -25,11 +25,16 @@ RayIntersector::RayIntersector(Ray::Ptr ray)
 }
 
 void RayIntersector::Visit(SObj::Ptr sobj) {
+	auto geometry = sobj->GetComponent<Geometry>();
+	auto children = sobj->GetChildren();
+	// 这种情况下不需要 transform
+	if (geometry == nullptr && children.size() == 0)
+		return;
+
 	auto transform = sobj->GetComponent<Transform>();
 	if (transform)
 		ray->Transform(transform->GetInv());
 
-	auto geometry = sobj->GetComponent<Geometry>();
 	if (geometry) {
 		geometry->GetPrimitive()->Accept(This());
 
@@ -37,7 +42,7 @@ void RayIntersector::Visit(SObj::Ptr sobj) {
 			rst.closestSObj = sobj;
 	}
 
-	for (auto child : sobj->GetChildren())
+	for (auto child : children)
 		child->Accept(This());
 
 	if (transform) {

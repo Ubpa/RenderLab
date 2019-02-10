@@ -1,14 +1,14 @@
-#ifndef _BASIC_SHAPE_SPHERE_H_
-#define _BASIC_SHAPE_SPHERE_H_
+#ifndef _BASIC_SHAPE_PLANE_H_
+#define _BASIC_SHAPE_PLANE_H_
 
 #include <CppUtil/Basic/Shape.h>
 
 namespace CppUtil {
 	namespace Basic {
-		class Sphere : public Shape {
-		public:
-			Sphere(size_t n);
-			virtual ~Sphere();
+		class Plane : public Shape {
+		public: 
+			Plane();
+			virtual ~Plane();
 			float * GetNormalArr();
 			float * GetTexCoordsArr();
 			size_t * GetIndexArr();
@@ -23,4 +23,4 @@ namespace CppUtil {
 	}
 }
 
-#endif // !_BASIC_SHAPE_SPHERE_H_
+#endif//!_BASIC_SHAPE_PLANE_H_

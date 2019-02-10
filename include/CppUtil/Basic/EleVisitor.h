@@ -16,6 +16,16 @@ void Reg(EleType * useless_paramater = nullptr) {\
 	EleVisitor::Reg<CLASS, EleType>(visitFunc);\
 }
 
+#define ELEVISITOR_SETUP_FUNCNAME(CLASS, FUNCNAME) \
+HEAP_OBJ_SETUP(CLASS)\
+private:\
+/*参数不需要填写，只需给出 EleType 即可*/\
+template<typename EleType>\
+void Reg(EleType * useless_paramater = nullptr) {\
+	void (CLASS::*visitFunc)(CppUtil::Basic::Ptr<EleType>) = &CLASS::FUNCNAME;\
+	EleVisitor::Reg<CLASS, EleType>(visitFunc);\
+}
+
 namespace CppUtil {
 	namespace Basic {
 		class Element;

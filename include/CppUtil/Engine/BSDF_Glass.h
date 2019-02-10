@@ -6,7 +6,7 @@
 namespace CppUtil {
 	namespace Engine {
 		class BSDF_Glass : public BSDF {
-			HEAP_OBJ_SETUP(BSDF_Glass)
+			ELE_SETUP(BSDF_Glass)
 		public:
 			BSDF_Glass(float ior = 1.f, const glm::vec3 & reflectance = glm::vec3(1), const glm::vec3 & transmittance = glm::vec3(1))
 				: ior(ior), reflectance(reflectance), transmittance(transmittance) { }
@@ -26,6 +26,9 @@ namespace CppUtil {
 			virtual glm::vec3 GetEmission() const { return glm::vec3(0); }
 
 			virtual bool IsDelta() const { return true; }
+
+			glm::vec3 GetReflectance() const { return reflectance; }
+			glm::vec3 GetTransmittance() const { return transmittance; }
 
 		private:
 			float ior;

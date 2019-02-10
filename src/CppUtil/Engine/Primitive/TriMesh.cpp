@@ -9,12 +9,13 @@ TriMesh::TriMesh(const std::vector<size_t> & indice,
 	const std::vector<glm::vec3> & positions,
 	const std::vector<glm::vec3> & normals,
 	const std::vector<glm::vec3> & texcoords)
-:	positions(positions),
+:	indice(indice),
+	positions(positions),
 	normals(normals),
 	texcoords(texcoords),
 	bvhRoot(nullptr)
 {
-	assert(indice.size() % 3 == 0);
+	assert(indice.size() > 0 && indice.size() % 3 == 0);
 	assert(positions.size() > 0);
 	assert(normals.size() == positions.size());
 	assert(texcoords.size() == 0 || texcoords.size() == positions.size());
@@ -44,8 +45,13 @@ TriMesh::TriMesh(size_t triNum, size_t vertexNum,
 
 	// traingel 的 mesh 在 init 的时候设置
 	// 因为现在还没有生成 share_ptr
-	for (size_t i = 0; i < triNum; i++)
+	for (size_t i = 0; i < triNum; i++) {
+		this->indice.push_back(indice[3 * i]);
+		this->indice.push_back(indice[3 * i + 1]);
+		this->indice.push_back(indice[3 * i + 2]);
+
 		triangles.push_back(ToPtr(new Triangle(indice[3 * i], indice[3 * i + 1], indice[3 * i + 2])));
+	}
 }
 
 void TriMesh::InitAfterGenSharePtr() {
