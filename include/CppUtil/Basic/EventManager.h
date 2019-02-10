@@ -1,5 +1,5 @@
-#ifndef _EVENT_MANAGER_H_
-#define _EVENT_MANAGER_H_
+#ifndef _BASIC_EVENT_MANAGER_EVENT_MANAGER_H_
+#define _BASIC_EVENT_MANAGER_EVENT_MANAGER_H_
 
 #include <CppUtil/Basic/Ptr.h>
 #include <CppUtil/Basic/Singleton.h>
@@ -56,4 +56,4 @@ namespace CppUtil {
 		};
 	}
 }
-#endif // !_EVENT_MANAGER_H_
+#endif // !_BASIC_EVENT_MANAGER_EVENT_MANAGER_H_

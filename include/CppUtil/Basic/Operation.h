@@ -1,5 +1,5 @@
-#ifndef _OPERATION_H_
-#define _OPERATION_H_
+#ifndef _BASIC_OPERATION_OPERATION_H_
+#define _BASIC_OPERATION_OPERATION_H_
 
 #include <string>
 #include <CppUtil/Basic/HeapObj.h>
@@ -25,4 +25,4 @@ namespace CppUtil {
 	}
 }
 
-#endif//! _FILE_H_
+#endif//! _BASIC_OPERATION_OPERATION_H_

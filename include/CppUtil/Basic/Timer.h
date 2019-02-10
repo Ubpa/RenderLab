@@ -1,5 +1,5 @@
-#ifndef _TIMER_H_
-#define _TIMER_H_
+#ifndef _BASIC_TIMER_TIMER_H_
+#define _BASIC_TIMER_TIMER_H_
 
 #include <deque>
 #include <iostream>

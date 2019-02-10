@@ -1,5 +1,5 @@
-#ifndef _TYPE_MAP_H_
-#define _TYPE_MAP_H_
+#ifndef _BASIC_HEADER_TYPE_MAP_H_
+#define _BASIC_HEADER_TYPE_MAP_H_
 
 #include <typeinfo>
 #include <unordered_map>
@@ -27,4 +27,4 @@ namespace CppUtil {
 	}
 }
 
-#endif//!_TYPE_MAP_H_
+#endif//!_BASIC_HEADER_TYPE_MAP_H_

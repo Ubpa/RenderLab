@@ -1,5 +1,5 @@
-#ifndef _RTX_RENDERER_H_
-#define _RTX_RENDERER_H_
+#ifndef _RTX_RTX_RENDERER_RTX_RENDERER_H_
+#define _RTX_RTX_RENDERER_RTX_RENDERER_H_
 
 #include <CppUtil/Basic/Ptr.h>
 
@@ -30,4 +30,4 @@ namespace RTX {
 }
 
 
-#endif // !_RTX_RENDERER_H_
+#endif // !_RTX_RTX_RENDERER_RTX_RENDERER_H_

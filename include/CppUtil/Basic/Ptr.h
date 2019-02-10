@@ -1,5 +1,5 @@
-#ifndef _PTR_H_
-#define _PTR_H_
+#ifndef _BASIC_HEADER_PTR_H_
+#define _BASIC_HEADER_PTR_H_
 
 #include <memory>
 
@@ -78,4 +78,4 @@ namespace CppUtil {
 	}
 }
 
-#endif // !_PTR_H_
+#endif // !_BASIC_HEADER_PTR_H_

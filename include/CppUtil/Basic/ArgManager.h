@@ -1,5 +1,5 @@
-#ifndef _ARG_MANAGER_H_
-#define _ARG_MANAGER_H_
+#ifndef _BASIC_ARG_MANAGER_ARG_MANAGER_H_
+#define _BASIC_ARG_MANAGER_ARG_MANAGER_H_
 
 #include <string>
 #include <vector>
@@ -17,4 +17,4 @@ namespace CppUtil {
 		};
 	};
 }
-#endif//! _ARG_MANAGER_H_
+#endif//! _BASIC_ARG_MANAGER_ARG_MANAGER_H_

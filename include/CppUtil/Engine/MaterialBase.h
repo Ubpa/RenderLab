@@ -1,5 +1,5 @@
-#ifndef _MATERIAL_BASE_
-#define _MATERIAL_BASE_
+#ifndef _ENGINE_MATERIAL_MATERIAL_BASE_
+#define _ENGINE_MATERIAL_MATERIAL_BASE_
 
 #include <CppUtil/Basic/Element.h>
 
@@ -13,4 +13,4 @@ namespace CppUtil {
 	}
 }
 
-#endif//!_MATERIAL_BASE_
+#endif//!_ENGINE_MATERIAL_MATERIAL_BASE_

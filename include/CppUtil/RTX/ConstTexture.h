@@ -1,5 +1,5 @@
-#ifndef _CONST_TEXTURE_H_
-#define _CONST_TEXTURE_H_
+#ifndef _RTX_RT_TEXTURE_CONST_TEXTURE_H_
+#define _RTX_RT_TEXTURE_CONST_TEXTURE_H_
 
 #include <CppUtil/RTX/Texture.h>
 
@@ -15,4 +15,4 @@ namespace RTX {
 	};
 }
 
-#endif // !_CONST_TEXTURE_H_
+#endif // !_RTX_RT_TEXTURE_CONST_TEXTURE_H_

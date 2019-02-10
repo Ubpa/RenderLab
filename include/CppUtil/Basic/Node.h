@@ -1,5 +1,5 @@
-#ifndef _NODE_H_
-#define _NODE_H_
+#ifndef _BASIC_NODE_NODE_H_
+#define _BASIC_NODE_NODE_H_
 
 #include <CppUtil/Basic/Element.h>
 
@@ -45,4 +45,4 @@ namespace CppUtil {
 	}
 }
 
-#endif // !_NODE_H_
+#endif // !_BASIC_NODE_NODE_H_

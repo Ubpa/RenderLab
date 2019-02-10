@@ -1,5 +1,5 @@
-#ifndef _MODEL_H_
-#define _MODEL_H_
+#ifndef _OPENGL_MODEL_MODEL_H_
+#define _OPENGL_MODEL_MODEL_H_
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -43,4 +43,4 @@ namespace CppUtil {
 	}
 }
 
-#endif// !_MODEL_H_
+#endif// !_OPENGL_MODEL_MODEL_H_

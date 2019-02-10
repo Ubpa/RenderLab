@@ -1,5 +1,5 @@
-#ifndef _ARRAY2D_H_
-#define _ARRAY2D_H_
+#ifndef _BASIC_HEADER_ARRAY_2D_H_
+#define _BASIC_HEADER_ARRAY_2D_H_
 
 namespace CppUtil {
 	namespace Basic {
@@ -84,4 +84,4 @@ namespace CppUtil {
 	}
 }
 
-#endif // !_MATRIX_H_
+#endif // !_BASIC_HEADER_ARRAY_2D_H_

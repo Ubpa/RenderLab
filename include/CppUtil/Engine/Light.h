@@ -1,5 +1,5 @@
-#ifndef _ENGINE_LIGHT_H_
-#define _ENGINE_LIGHT_H_
+#ifndef _ENGINE_COMPONENT_LIGHT_H_
+#define _ENGINE_COMPONENT_LIGHT_H_
 
 #include <CppUtil/Engine/Component.h>
 
@@ -23,4 +23,4 @@ namespace CppUtil {
 	}
 }
 
-#endif//!_ENGINE_LIGHT_H_
+#endif//!_ENGINE_COMPONENT_LIGHT_H_

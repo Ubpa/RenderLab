@@ -1,5 +1,5 @@
-#ifndef _TRANSFORM_H_
-#define _TRANSFORM_H_
+#ifndef _RTX_HITABLE_TRANSFORM_H_
+#define _RTX_HITABLE_TRANSFORM_H_
 
 #include <CppUtil/RTX/Hitable.h>
 
@@ -27,4 +27,4 @@ namespace RTX {
 	};
 }
 
-#endif // !_TRANSFORM_H_
+#endif // !_RTX_HITABLE_TRANSFORM_H_

@@ -1,5 +1,5 @@
-#ifndef _BSDF_MIRROR_H_
-#define _BSDF_MIRROR_H_
+#ifndef _ENGINE_MATERIAL_BSDF_MIRROR_H_
+#define _ENGINE_MATERIAL_BSDF_MIRROR_H_
 
 #include <CppUtil/Engine/BSDF.h>
 
@@ -34,4 +34,4 @@ namespace CppUtil {
 	}
 }
 
-#endif//!_BSDF_MIRROR_H_
+#endif//!_ENGINE_MATERIAL_BSDF_MIRROR_H_

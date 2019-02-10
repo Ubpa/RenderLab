@@ -1,5 +1,5 @@
-#ifndef _ELEMENT_H_
-#define _ELEMENT_H_
+#ifndef _BASIC_NODE_ELEMENT_H_
+#define _BASIC_NODE_ELEMENT_H_
 
 #include <CppUtil/Basic/HeapObj.h>
 #include <CppUtil/Basic/EleVisitor.h>
@@ -26,4 +26,4 @@ namespace CppUtil {
 	}
 }
 
-#endif // !_ELEMENT_H_
+#endif // !_BASIC_NODE_ELEMENT_H_

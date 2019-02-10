@@ -1,5 +1,5 @@
-#ifndef _MOVE_SPHERE_H_
-#define _MOVE_SPHERE_H_
+#ifndef _RTX_HITABLE_MOVE_SPHERE_H_
+#define _RTX_HITABLE_MOVE_SPHERE_H_
 
 #include <CppUtil/RTX/Sphere.h>
 
@@ -22,4 +22,4 @@ namespace RTX {
 	};
 }
 
-#endif // !_MOVE_SPHERE_H_
+#endif // !_RTX_HITABLE_MOVE_SPHERE_H_

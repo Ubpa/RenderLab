@@ -1,5 +1,5 @@
-#ifndef _VAO_H_
-#define _VAO_H_
+#ifndef _OPENGL_VAO_VAO_H_
+#define _OPENGL_VAO_VAO_H_
 
 #include <vector>
 
@@ -38,4 +38,4 @@ namespace CppUtil {
 	}
 }
 
-#endif // !_VAO_H_
+#endif // !_OPENGL_VAO_VAO_H_

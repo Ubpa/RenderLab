@@ -1,5 +1,5 @@
-#ifndef _GROUP_H_
-#define _GROUP_H_
+#ifndef _RTX_HITABLE_GROUP_H_
+#define _RTX_HITABLE_GROUP_H_
 
 #include <CppUtil/RTX/Hitable.h>
 #include <vector>
@@ -22,5 +22,5 @@ namespace RTX {
 		AABB box;
 	};
 }
-#endif //!_GROUP_H_
+#endif //!_RTX_HITABLE_GROUP_H_
 

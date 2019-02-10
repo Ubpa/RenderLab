@@ -1,5 +1,5 @@
-#ifndef _GEOMETRY_H_
-#define _GEOMETRY_H_
+#ifndef _ENGINE_COMPONENT_GEOMETRY_H_
+#define _ENGINE_COMPONENT_GEOMETRY_H_
 
 #include <CppUtil/Engine/Component.h>
 
@@ -22,4 +22,4 @@ namespace CppUtil {
 	}
 }
 
-#endif//!_GEOMETRY_H_
+#endif//!_ENGINE_COMPONENT_GEOMETRY_H_

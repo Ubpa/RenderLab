@@ -1,5 +1,5 @@
-#ifndef _GEN_FS_HV_H_
-#define _GEN_FS_HV_H_
+#ifndef _RTX_GEN_DATA_GEN_DATA_HV_H_
+#define _RTX_GEN_DATA_GEN_DATA_HV_H_
 
 #include <CppUtil/RTX/HitableVisitor.h>
 
@@ -44,4 +44,4 @@ namespace RTX {
 	};
 }
 
-#endif // !_GEN_FS_HV_H_
+#endif // !_RTX_GEN_DATA_GEN_DATA_HV_H_

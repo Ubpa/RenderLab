@@ -1,5 +1,5 @@
-#ifndef _HITABLE_H_
-#define _HITABLE_H_ 
+#ifndef _RTX_HITABLE_HITABLE_H_
+#define _RTX_HITABLE_HITABLE_H_ 
 
 #include <CppUtil/RTX/AABB.h>
 

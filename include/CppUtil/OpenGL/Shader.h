@@ -1,5 +1,5 @@
-#ifndef SHADER_H_
-#define SHADER_H_
+#ifndef _OPENGL_SHADER_SHADER_H_
+#define _OPENGL_SHADER_SHADER_H_
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -47,4 +47,4 @@ namespace CppUtil {
 	}
 }
 
-#endif // !SHADER_H_
+#endif // !_OPENGL_SHADER_SHADER_H_

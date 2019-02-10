@@ -1,5 +1,5 @@
-#ifndef _OPNODE_H_
-#define _OPNODE_H_
+#ifndef _BASIC_OPERATION_OP_NODE_H_
+#define _BASIC_OPERATION_OP_NODE_H_
 
 #include <CppUtil/Basic/OpQueue.h>
 #include <CppUtil/Basic/LambdaOp.h>
@@ -27,4 +27,4 @@ namespace CppUtil {
 	}
 }
 
-#endif // !_OPNODE_H_
+#endif // !_BASIC_OPERATION_OP_NODE_H_

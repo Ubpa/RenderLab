@@ -1,5 +1,5 @@
-#ifndef _ELE_VISITOR_H_
-#define _ELE_VISITOR_H_
+#ifndef _BASIC_NODE_ELE_VISITOR_H_
+#define _BASIC_NODE_ELE_VISITOR_H_
 
 #include <CppUtil/Basic/HeapObj.h>
 #include <CppUtil/Basic/TypeMap.h>
@@ -63,4 +63,4 @@ namespace CppUtil {
 	}
 }
 
-#endif // !_NODE_VISITOR_H_
+#endif // !_BASIC_NODE_ELE_VISITOR_H_

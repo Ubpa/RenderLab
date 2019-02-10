@@ -1,5 +1,5 @@
-#ifndef _ENGINE_RAY_TRACER_H_
-#define _ENGINE_RAY_TRACER_H_
+#ifndef _ENGINE_RTX_RAY_TRACER_H_
+#define _ENGINE_RTX_RAY_TRACER_H_
 
 #include <CppUtil/Basic/HeapObj.h>
 
@@ -27,4 +27,4 @@ namespace CppUtil {
 	}
 }
 
-#endif//!_ENGINE_RAY_TRACER_H_
+#endif//!_ENGINE_RTX_RAY_TRACER_H_

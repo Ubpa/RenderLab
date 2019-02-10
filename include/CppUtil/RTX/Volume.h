@@ -1,5 +1,5 @@
-#ifndef _VOLUME_H_
-#define _VOLUME_H_
+#ifndef _RTX_HITABLE_VOLUME_H_
+#define _RTX_HITABLE_VOLUME_H_
 
 #include <CppUtil/RTX/Hitable.h>
 
@@ -19,4 +19,4 @@ namespace RTX {
 	};
 }
 
-#endif // !_VOLUME_H_
+#endif // !_RTX_HITABLE_VOLUME_H_

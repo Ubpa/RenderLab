@@ -1,5 +1,5 @@
-#ifndef _TRI_MESH_H_
-#define _TRI_MESH_H_
+#ifndef _RTX_HITABLE_TRI_MESH_H_
+#define _RTX_HITABLE_TRI_MESH_H_
 
 #include <CppUtil/RTX/BVH_Node.h>
 
@@ -15,4 +15,4 @@ namespace RTX {
 	};
 }
 
-#endif // !_TRI_MESH_H_
+#endif // !_RTX_HITABLE_TRI_MESH_H_

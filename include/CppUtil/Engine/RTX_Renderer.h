@@ -1,5 +1,5 @@
-#ifndef _ENGINE_RTX_RENDERER_H_
-#define _ENGINE_RTX_RENDERER_H_
+#ifndef _ENGINE_RTX_RTX_RENDERER_H_
+#define _ENGINE_RTX_RTX_RENDERER_H_
 
 #include <CppUtil/Basic/HeapObj.h>
 
@@ -32,4 +32,4 @@ namespace CppUtil {
 	}
 }
 
-#endif//!_ENGINE_RTX_RENDERER_H_
+#endif//!_ENGINE_RTX_RTX_RENDERER_H_

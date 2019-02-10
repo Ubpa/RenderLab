@@ -1,5 +1,5 @@
-#ifndef _LAMBERTIAN_H_
-#define _LAMBERTIAN_H_
+#ifndef _RTX_RT_MATERIAL_LAMBERTIAN_H_
+#define _RTX_RT_MATERIAL_LAMBERTIAN_H_
 
 #include <CppUtil/RTX/Material.h>
 
@@ -25,4 +25,4 @@ namespace RTX {
 	};
 }
 
-#endif // !_LAMBERTIAN_H_
+#endif // !_RTX_RT_MATERIAL_LAMBERTIAN_H_

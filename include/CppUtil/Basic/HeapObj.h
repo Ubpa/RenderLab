@@ -1,5 +1,5 @@
-#ifndef _HEAP_OBJ_H_
-#define _HEAP_OBJ_H_
+#ifndef _BASIC_HEAP_OBJ_HEAP_OBJ_H_
+#define _BASIC_HEAP_OBJ_HEAP_OBJ_H_
 
 #include <CppUtil/Basic/Ptr.h>
 
@@ -58,4 +58,4 @@ namespace CppUtil {
 	}
 }
 
-#endif // !_HEAP_OBJ_H_
+#endif // !_BASIC_HEAP_OBJ_HEAP_OBJ_H_

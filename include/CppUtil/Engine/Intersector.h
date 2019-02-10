@@ -1,5 +1,5 @@
-#ifndef _INTERSECTOR_H_
-#define _INTERSECTOR_H_
+#ifndef _ENGINE_INTERSECTOR_INTERSECTOR_H_
+#define _ENGINE_INTERSECTOR_INTERSECTOR_H_
 
 #include <CppUtil/Basic/EleVisitor.h>
 
@@ -27,4 +27,4 @@ namespace CppUtil {
 	}
 }
 
-#endif//!_INTERSECTOR_H_
+#endif//!_ENGINE_INTERSECTOR_INTERSECTOR_H_

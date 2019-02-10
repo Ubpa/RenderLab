@@ -1,5 +1,5 @@
-#ifndef _GEN_FS_TV_H_
-#define _GEN_FS_TV_H_
+#ifndef _RTX_GEN_DATA_GEN_DATA_TV_H_
+#define _RTX_GEN_DATA_GEN_DATA_TV_H_
 
 #include <CppUtil/RTX/TexVisitor.h>
 
@@ -42,4 +42,4 @@ namespace RTX {
 	};
 }
 
-#endif // !_GEN_FS_TV_H_
+#endif // !_RTX_GEN_DATA_GEN_DATA_TV_H_

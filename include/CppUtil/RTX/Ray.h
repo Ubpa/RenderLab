@@ -1,5 +1,5 @@
-#ifndef _RAY_H_
-#define _RAY_H_
+#ifndef _RTX_RAY_CAMERA_RAY_H_
+#define _RTX_RAY_CAMERA_RAY_H_
 
 #include <CppUtil/Basic/HeapObj.h>
 #include <glm/glm.hpp>
@@ -36,4 +36,4 @@ namespace RTX {
 		float tMax;
 	};
 }
-#endif //!_RAY_H_
+#endif //!_RTX_RAY_CAMERA_RAY_H_

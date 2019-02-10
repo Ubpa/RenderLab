@@ -1,5 +1,5 @@
-#ifndef _METAL_H_
-#define _METAL_H_
+#ifndef _RTX_RT_MATERIAL_METAL_H_
+#define _RTX_RT_MATERIAL_METAL_H_
 
 #include <CppUtil/RTX/Material.h>
 #include <glm/vec3.hpp>
@@ -26,4 +26,4 @@ namespace RTX {
 	};
 }
 
-#endif // !_METAL_H_
+#endif // !_RTX_RT_MATERIAL_METAL_H_

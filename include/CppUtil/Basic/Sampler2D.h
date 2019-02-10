@@ -1,5 +1,5 @@
-#ifndef _SAMPLER_2D_H_
-#define _SAMPLER_2D_H_
+#ifndef _BASIC_SAMPLER_SAMPLER_2D_H_
+#define _BASIC_SAMPLER_SAMPLER_2D_H_
 
 #include <glm/vec2.hpp>
 
@@ -13,4 +13,4 @@ namespace CppUtil {
 	}
 }
 
-#endif//!_SAMPLER_2D_H_
+#endif//!_BASIC_SAMPLER_SAMPLER_2D_H_

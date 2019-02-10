@@ -1,5 +1,5 @@
-#ifndef _HIT_RECORD_H_
-#define _HIT_RECORD_H_
+#ifndef _RTX_RT_MATERIAL_HIT_RECORD_H_
+#define _RTX_RT_MATERIAL_HIT_RECORD_H_
 
 #include <CppUtil/Basic/Ptr.h>
 #include <glm/vec3.hpp>
@@ -29,4 +29,4 @@ namespace RTX {
 	};
 }
 
-#endif // !_HIT_RECORD_H_
+#endif // !_RTX_RT_MATERIAL_HIT_RECORD_H_

@@ -1,5 +1,5 @@
-#ifndef _TEX_VISITOR_H_
-#define _TEX_VISITOR_H_
+#ifndef _RTX_RT_TEXTURE_TEX_VISITOR_H_
+#define _RTX_RT_TEXTURE_TEX_VISITOR_H_
 
 #include <CppUtil/Basic/HeapObj.h>
 
@@ -22,4 +22,4 @@ namespace RTX {
 	};
 }
 
-#endif // !_TEX_VISITOR_H_
+#endif // !_RTX_RT_TEXTURE_TEX_VISITOR_H_

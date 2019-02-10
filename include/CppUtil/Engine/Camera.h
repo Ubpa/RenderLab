@@ -1,5 +1,5 @@
-#ifndef _COMPONENT_CAMERA_H_
-#define _COMPONENT_CAMERA_H_
+#ifndef _ENGINE_COMPONENT_CAMERA_H_
+#define _ENGINE_COMPONENT_CAMERA_H_
 
 #include <CppUtil/Engine/Component.h>
 
@@ -30,4 +30,4 @@ namespace CppUtil {
 	}
 }
 
-#endif//!_COMPONENT_CAMERA_H_
+#endif//!_ENGINE_COMPONENT_CAMERA_H_

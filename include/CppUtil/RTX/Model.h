@@ -1,5 +1,5 @@
-#ifndef _MODEL_H_
-#define _MODEL_H_
+#ifndef _RTX_HITABLE_MODEL_H_
+#define _RTX_HITABLE_MODEL_H_
 
 #include <CppUtil/RTX/TriMesh.h>
 
@@ -20,4 +20,4 @@ namespace RTX{
 	};
 }
 
-#endif // !_MODEL_H_
+#endif // !_RTX_HITABLE_MODEL_H_

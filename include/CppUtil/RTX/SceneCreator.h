@@ -1,5 +1,5 @@
-#ifndef _SCENE_CREATOR_H_
-#define _SCENE_CREATOR_H_
+#ifndef _RTX_SCENE_CREATOR_SCENE_CREATOR_H_
+#define _RTX_SCENE_CREATOR_SCENE_CREATOR_H_
 
 #include <CppUtil/Basic/Ptr.h>
 
@@ -19,4 +19,4 @@ namespace RTX {
 	};
 }
 
-#endif // !_SCENE_CREATOR_H_
+#endif // !_RTX_SCENE_CREATOR_SCENE_CREATOR_H_

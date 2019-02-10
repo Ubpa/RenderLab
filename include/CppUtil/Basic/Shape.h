@@ -1,5 +1,5 @@
-#ifndef _SHAPE_H_
-#define _SHAPE_H_
+#ifndef _BASIC_SHAPE_SHAPE_H_
+#define _BASIC_SHAPE_SHAPE_H_
 
 #include <CppUtil/Basic/Array2D.h>
 
@@ -23,4 +23,4 @@ namespace CppUtil {
 	}
 }
 
-#endif // !_SHAPE_H_
+#endif // !_BASIC_SHAPE_SHAPE_H_

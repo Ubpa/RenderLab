@@ -1,5 +1,5 @@
-#ifndef _LIGHT_H_
-#define _LIGHT_H_
+#ifndef _RTX_RT_MATERIAL_LIGHT_H_
+#define _RTX_RT_MATERIAL_LIGHT_H_
 
 #include <CppUtil/RTX/Material.h>
 #include <glm/vec3.hpp>
@@ -26,4 +26,4 @@ namespace RTX {
 	};
 }
 
-#endif // !_LIGHT_H_
+#endif // !_RTX_RT_MATERIAL_LIGHT_H_

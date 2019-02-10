@@ -1,5 +1,5 @@
-#ifndef _FBO_H_
-#define _FBO_H_
+#ifndef _OPENGL_FBO_FBO_H_
+#define _OPENGL_FBO_FBO_H_
 
 #include <CppUtil/OpenGL/Texture.h>
 
@@ -68,4 +68,4 @@ namespace CppUtil {
 		};
 	}
 }
-#endif // !_FBO_H_
+#endif // !_OPENGL_FBO_FBO_H_

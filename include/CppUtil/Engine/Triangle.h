@@ -1,5 +1,5 @@
-#ifndef _ENGINE_TRIANGLE_H_
-#define _ENGINE_TRIANGLE_H_
+#ifndef _ENGINE_PRIMITIVE_TRIANGLE_H_
+#define _ENGINE_PRIMITIVE_TRIANGLE_H_
 
 #include <CppUtil/Basic/HeapObj.h>
 #include <CppUtil/Engine/BBox.h>
@@ -28,4 +28,4 @@ namespace CppUtil {
 	}
 }
 
-#endif//!_ENGINE_TRIANGLE_H_
+#endif//!_ENGINE_PRIMITIVE_TRIANGLE_H_

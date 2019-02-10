@@ -1,5 +1,5 @@
-#ifndef _UNIFORM_GRID_SAMPLER_2D_H_
-#define _UNIFORM_GRID_SAMPLER_2D_H_
+#ifndef _BASIC_SAMPLER_UNIFORM_GRID_SAMPLER_2D_H_
+#define _BASIC_SAMPLER_UNIFORM_GRID_SAMPLER_2D_H_
 
 #include <CppUtil/Basic/Sampler2D.h>
 
@@ -12,4 +12,4 @@ namespace CppUtil {
 	}
 }
 
-#endif//!_UNIFORM_GRID_SAMPLER_2D_H_
+#endif//!_BASIC_SAMPLER_UNIFORM_GRID_SAMPLER_2D_H_

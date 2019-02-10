@@ -1,5 +1,5 @@
-#ifndef _MATERIAL_H_
-#define _MATERIAL_H_
+#ifndef _RTX_RT_MATERIAL_MATERIAL_H_
+#define _RTX_RT_MATERIAL_MATERIAL_H_
 
 #include <CppUtil/RTX/MatVisitor.h>
 #include <CppUtil/Basic/HeapObj.h>
@@ -25,4 +25,4 @@ namespace RTX {
 	};
 }
 
-#endif // !_MATERIAL_H_
+#endif // !_RTX_RT_MATERIAL_MATERIAL_H_

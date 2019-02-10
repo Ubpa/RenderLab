@@ -1,5 +1,5 @@
-#ifndef _SKYBOX_H_
-#define _SKY_BOX_H_
+#ifndef _RTX_RT_TEXTURE_SKY_BOX_H_
+#define _RTX_RT_TEXTURE_SKY_BOX_H_
 
 #include <CppUtil/RTX/Texture.h>
 
@@ -29,4 +29,4 @@ namespace RTX {
 	};
 }
 
-#endif // !_SKYBOX_H_
+#endif // !_RTX_RT_TEXTURE_SKY_BOX_H_

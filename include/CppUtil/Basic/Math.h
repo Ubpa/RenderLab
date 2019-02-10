@@ -1,5 +1,5 @@
-#ifndef _MATH_H_
-#define _MATH_H_
+#ifndef _BASIC_MATH_MATH_H_
+#define _BASIC_MATH_MATH_H_
 
 #include <glm/glm.hpp>
 #include <vector>
@@ -81,4 +81,4 @@ namespace CppUtil {
 	}
 }
 
-#endif // !_MATH_H_
+#endif // !_BASIC_MATH_MATH_H_

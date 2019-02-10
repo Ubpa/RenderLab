@@ -1,5 +1,5 @@
-#ifndef _ENGINE_BBOX_H_
-#define _ENGINE_BBOX_H_
+#ifndef _ENGINE_PRIMITIVE_BBOX_H_
+#define _ENGINE_PRIMITIVE_BBOX_H_
 
 #include <glm/vec3.hpp>
 #include <glm/geometric.hpp>
@@ -43,4 +43,4 @@ namespace CppUtil {
 	}
 }
 
-#endif//!_ENGINE_BBOX_H_
+#endif//!_ENGINE_PRIMITIVE_BBOX_H_

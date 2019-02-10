@@ -1,5 +1,5 @@
-#ifndef _RAND_SET_
-#define _RAND_SET_
+#ifndef _BASIC_HEADER_RAND_SET_
+#define _BASIC_HEADER_RAND_SET_
 
 #include <random>
 #include <vector>
@@ -65,4 +65,4 @@ namespace CppUtil {
 	}
 }
 
-#endif // !_RAND_SET_
+#endif // !_BASIC_HEADER_RAND_SET_

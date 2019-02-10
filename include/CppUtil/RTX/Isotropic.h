@@ -1,5 +1,5 @@
-#ifndef _ISOTROPIC_H_
-#define _ISOTROPIC_H_
+#ifndef _RTX_RT_MATERIAL_ISOTROPIC_H_
+#define _RTX_RT_MATERIAL_ISOTROPIC_H_
 
 #include <CppUtil/RTX/Material.h>
 #include <glm/vec3.hpp>
@@ -21,4 +21,4 @@ namespace RTX {
 	};
 }
 
-#endif // !_ISOTROPIC_H_
+#endif // !_RTX_RT_MATERIAL_ISOTROPIC_H_

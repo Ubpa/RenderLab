@@ -1,5 +1,5 @@
-#ifndef _BVH_NODE_H_
-#define _BVH_NODE_H_
+#ifndef _RTX_HITABLE_BVH_NODE_H_
+#define _RTX_HITABLE_BVH_NODE_H_
 
 #include <CppUtil/RTX/Hitable.h>
 #include <vector>
@@ -25,4 +25,4 @@ namespace RTX {
 	};
 }
 
-#endif // !_BVH_NODE_H_
+#endif // !_RTX_HITABLE_BVH_NODE_H_

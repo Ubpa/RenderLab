@@ -1,5 +1,5 @@
-#ifndef _ENGINE_PATH_TRACER_H_
-#define _ENGINE_PATH_TRACER_H_
+#ifndef _ENGINE_RTX_PATH_TRACER_H_
+#define _ENGINE_RTX_PATH_TRACER_H_
 
 #include <CppUtil/Engine/RayTracer.h>
 

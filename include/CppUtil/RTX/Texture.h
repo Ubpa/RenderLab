@@ -1,5 +1,5 @@
-#ifndef _RT_TEXTURE_H_
-#define _RT_TEXTURE_H_
+#ifndef _RTX_RT_TEXTURE_TEXTURE_H_
+#define _RTX_RT_TEXTURE_TEXTURE_H_
 
 #include <CppUtil/Basic/HeapObj.h>
 
@@ -23,4 +23,4 @@ namespace RTX {
 	};
 }
 
-#endif // !_RT_TEXTURE_H_
+#endif // !_RTX_RT_TEXTURE_TEXTURE_H_

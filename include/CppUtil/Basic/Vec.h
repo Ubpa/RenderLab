@@ -1,5 +1,5 @@
-#ifndef _VEC_H_
-#define _VEC_H_
+#ifndef _BASIC_HEADER_VEC_H_
+#define _BASIC_HEADER_VEC_H_
 
 #include <CppUtil/Basic/Vec3.h>
 #include <CppUtil/Basic/Vec4.h>
@@ -14,4 +14,4 @@ namespace CppUtil {
 	}
 }
 
-#endif // !_VEC_H_
+#endif // !_BASIC_HEADER_VEC_H_

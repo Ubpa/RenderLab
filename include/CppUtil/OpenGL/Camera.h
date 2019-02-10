@@ -1,5 +1,5 @@
-#ifndef _CAMERA_H_
-#define _CAMERA_H_
+#ifndef _OPENGL_CAMERA_CAMERA_H_
+#define _OPENGL_CAMERA_CAMERA_H_
 
 #include <glm/glm.hpp>
 
@@ -66,4 +66,4 @@ namespace CppUtil {
 		};
 	}
 }
-#endif//! _CAMERA_H_
+#endif//! _OPENGL_CAMERA_CAMERA_H_

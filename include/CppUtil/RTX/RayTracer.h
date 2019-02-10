@@ -1,5 +1,5 @@
-#ifndef _RAY_TRACER_H_
-#define _RAY_TRACER_H_
+#ifndef _RTX_RAY_TRACER_RAY_TRACER_H_
+#define _RTX_RAY_TRACER_RAY_TRACER_H_
 
 #include <CppUtil/Basic/Ptr.h>
 #include <glm/glm.hpp>
@@ -19,4 +19,4 @@ namespace RTX {
 	};
 }
 
-#endif // !_RAY_TRACER_H_
+#endif // !_RTX_RAY_TRACER_RAY_TRACER_H_

@@ -1,5 +1,5 @@
-#ifndef _TRIANGLE_H_
-#define _TRIANGLE_H_
+#ifndef _RTX_HITABLE_TRIANGLE_H_
+#define _RTX_HITABLE_TRIANGLE_H_
 
 #include <CppUtil/RTX/Hitable.h>
 
@@ -20,4 +20,4 @@ namespace RTX {
 	};
 }
 
-#endif // !_TRIANGLE_H_
+#endif // !_RTX_HITABLE_TRIANGLE_H_

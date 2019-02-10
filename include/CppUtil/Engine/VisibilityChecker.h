@@ -1,5 +1,5 @@
-#ifndef _ENGINE_VISIBILITY_CHECKER_H_
-#define _ENGINE_VISIBILITY_CHECKER_H_
+#ifndef _ENGINE_INTERSECTOR_VISIBILITY_CHECKER_H_
+#define _ENGINE_INTERSECTOR_VISIBILITY_CHECKER_H_
 
 #include <CppUtil/Engine/Intersector.h>
 #include <CppUtil/Engine/BVHNode.h>
@@ -46,4 +46,4 @@ namespace CppUtil {
 	}
 }
 
-#endif//!_ENGINE_VISIBILITY_CHECKER_H_
+#endif//!_ENGINE_INTERSECTOR_VISIBILITY_CHECKER_H_

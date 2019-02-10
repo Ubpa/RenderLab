@@ -1,5 +1,5 @@
-#ifndef _PRIMITIVE_RAY_H_
-#define _PRIMITIVE_RAY_H_
+#ifndef _ENGINE_PRIMITIVE_RAY_H_
+#define _ENGINE_PRIMITIVE_RAY_H_
 
 #include <CppUtil/Engine/Primitive.h>
 #include <glm/vec3.hpp>
@@ -34,4 +34,4 @@ namespace CppUtil {
 	}
 }
 
-#endif//!_PRIMITIVE_RAY_H_
+#endif//!_ENGINE_PRIMITIVE_RAY_H_

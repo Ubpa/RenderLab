@@ -1,5 +1,5 @@
-#ifndef _HITABLE_VISITOR_H_
-#define _HITABLE_VISITOR_H_
+#ifndef _RTX_HITABLE_HITABLE_VISITOR_H_
+#define _RTX_HITABLE_HITABLE_VISITOR_H_
 
 #include <CppUtil/Basic/HeapObj.h>
 
@@ -33,4 +33,4 @@ namespace RTX {
 	};
 }
 
-#endif // !_HITABLE_VISITOR_H_
+#endif // !_RTX_HITABLE_HITABLE_VISITOR_H_

@@ -1,5 +1,5 @@
-#ifndef _STORAGE_H_
-#define _STORAGE_H_
+#ifndef _BASIC_HEADER_GSTORAGE_H_
+#define _BASIC_HEADER_GSTORAGE_H_
 
 #include <CppUtil/Basic/Singleton.h>
 #include <CppUtil/Basic/LStorage.h>
@@ -72,4 +72,4 @@ namespace CppUtil {
 	}
 }
 
-#endif
+#endif//!_BASIC_HEADER_GSTORAGE_H_

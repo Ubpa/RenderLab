@@ -1,5 +1,5 @@
-#ifndef _OP_MATERIAL_H_
-#define _OP_MATERIAL_H_
+#ifndef _RTX_RT_MATERIAL_OP_MATERIAL_H_
+#define _RTX_RT_MATERIAL_OP_MATERIAL_H_
 
 #include <CppUtil/RTX/Material.h>
 

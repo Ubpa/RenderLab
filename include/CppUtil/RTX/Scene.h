@@ -1,5 +1,5 @@
-#ifndef _SCENE_H_
-#define _SCENE_H_
+#ifndef _RTX_RT_SCENE_SCENE_H_
+#define _RTX_RT_SCENE_SCENE_H_
 
 #include <CppUtil/Basic/HeapObj.h>
 
@@ -17,4 +17,4 @@ namespace RTX {
 	};
 }
 
-#endif // !_SCENE_H_
+#endif // !_RTX_RT_SCENE_SCENE_H_

@@ -1,5 +1,5 @@
-#ifndef _AABB_H_
-#define _AABB_H_
+#ifndef _RTX_HITABLE_AABB_H_
+#define _RTX_HITABLE_AABB_H_
 
 #include <CppUtil/Basic/Ptr.h>
 
@@ -39,5 +39,5 @@ namespace RTX {
 	};
 }
 
-#endif // !_AABB_H_
+#endif // !_RTX_HITABLE_AABB_H_
 

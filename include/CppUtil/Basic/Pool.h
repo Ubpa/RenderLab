@@ -1,5 +1,5 @@
-#ifndef _POOL_H_
-#define _POOL_H_
+#ifndef _BASIC_HEADER_POOL_H_
+#define _BASIC_HEADER_POOL_H_
 
 #include <vector>
 #include <map>
@@ -57,4 +57,4 @@ namespace CppUtil {
 	}
 }
 
-#endif // !_POOL_H_
+#endif // !_BASIC_HEADER_POOL_H_

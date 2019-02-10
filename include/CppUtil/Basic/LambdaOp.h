@@ -1,5 +1,5 @@
-#ifndef _LAMBDA_OP_H_
-#define _LAMBDA_OP_H_
+#ifndef _BASIC_OPERATION_LAMBDA_OP_H_
+#define _BASIC_OPERATION_LAMBDA_OP_H_
 
 #include <CppUtil/Basic/Operation.h>
 #include <functional>
@@ -22,4 +22,4 @@ namespace CppUtil {
 	}
 }
 
-#endif // !_LAMBDA_OP_H_
+#endif // !_BASIC_OPERATION_LAMBDA_OP_H_

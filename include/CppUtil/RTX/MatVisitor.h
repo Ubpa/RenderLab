@@ -1,5 +1,5 @@
-#ifndef _MAT_VISITOR_H_
-#define _MAT_VISITOR_H_
+#ifndef _RTX_RT_MATERIAL_MAT_VISITOR_H_
+#define _RTX_RT_MATERIAL_MAT_VISITOR_H_
 
 #include <CppUtil/Basic/HeapObj.h>
 
@@ -25,4 +25,4 @@ namespace RTX {
 	};
 }
 
-#endif // !_MAT_VISITOR_H_
+#endif // !_RTX_RT_MATERIAL_MAT_VISITOR_H_

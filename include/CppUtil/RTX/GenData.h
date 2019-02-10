@@ -1,5 +1,5 @@
-#ifndef _FS_GENERATOR_H_
-#define _FS_GENERATOR_H_
+#ifndef _RTX_GEN_DATA_GEN_DATA_H_
+#define _RTX_GEN_DATA_GEN_DATA_H_
 
 #include <CppUtil/Basic/Ptr.h>
 
@@ -44,4 +44,4 @@ namespace RTX {
 	};
 }
 
-#endif // !_SHADER_GENERATOR_H_
+#endif // !_RTX_GEN_DATA_GEN_DATA_H_

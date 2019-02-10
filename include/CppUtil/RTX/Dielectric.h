@@ -1,5 +1,5 @@
-#ifndef _DIELETRIC_H_
-#define _DIELETRIC_H_
+#ifndef _RTX_RT_MATERIAL_DIELETRIC_H_
+#define _RTX_RT_MATERIAL_DIELETRIC_H_
 
 #include <CppUtil/RTX/Material.h>
 #include <glm/vec3.hpp>
@@ -20,4 +20,4 @@ namespace RTX {
 	};
 }
 
-#endif // !_DIELETRIC_H_
+#endif // !_RTX_RT_MATERIAL_DIELETRIC_H_

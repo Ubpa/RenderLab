@@ -1,5 +1,5 @@
-#ifndef _ENGINE_TRIMESH_H_
-#define _ENGINE_TRIMESH_H_
+#ifndef _ENGINE_PRIMITIVE_TRIMESH_H_
+#define _ENGINE_PRIMITIVE_TRIMESH_H_
 
 #include <CppUtil/Engine/Primitive.h>
 #include <CppUtil/Engine/Triangle.h>
@@ -47,4 +47,4 @@ namespace CppUtil {
 	}
 }
 
-#endif//!_ENGINE_TRIMESH_H_
+#endif//!_ENGINE_PRIMITIVE_TRIMESH_H_

@@ -1,5 +1,5 @@
-#ifndef _CONFIG_H_
-#define _CONFIG_H_
+#ifndef _BASIC_CONFIG_CONFIG_H_
+#define _BASIC_CONFIG_CONFIG_H_
 
 #include <CppUtil/Basic/File.h>
 #include <CppUtil/Basic/LStorage.h>
@@ -31,4 +31,4 @@ namespace CppUtil {
 		};
 	}
 }
-#endif // !_CONFIG_H_
+#endif // !_BASIC_CONFIG_CONFIG_H_

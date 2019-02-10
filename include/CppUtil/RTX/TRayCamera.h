@@ -1,5 +1,5 @@
-#ifndef _T_RAY_CAMERA_H_
-#define _T_RAY_CAMERA_H_
+#ifndef _RTX_RAY_CAMERA_T_RAY_CAMERA_H_
+#define _RTX_RAY_CAMERA_T_RAY_CAMERA_H_
 
 #include <glm/glm.hpp>
 #include <CppUtil/RTX/RayCamera.h>
@@ -22,4 +22,4 @@ namespace RTX {
 	};
 }
 
-#endif // !_RAY_CAMERA_H_
+#endif // !_RTX_RAY_CAMERA_T_RAY_CAMERA_H_

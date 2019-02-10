@@ -1,5 +1,5 @@
-#ifndef _LSTORAGE_H_
-#define _LSTORAGE_H_
+#ifndef _BASIC_HEADER_LSTORAGE_H_
+#define _BASIC_HEADER_LSTORAGE_H_
 
 #include <map>
 
@@ -78,4 +78,4 @@ namespace CppUtil {
 	}
 }
 
-#endif // !_LSTORAGE_H_
+#endif // !_BASIC_HEADER_LSTORAGE_H_

@@ -1,5 +1,5 @@
-#ifndef _SPHERE_H_
-#define _SPHERE_H_
+#ifndef _RTX_HITABLE_SPHERE_H_
+#define _RTX_HITABLE_SPHERE_H_
 
 #include <CppUtil/RTX/Hitable.h>
 
@@ -22,4 +22,4 @@ namespace RTX {
 	};
 }
 
-#endif // !_SPHERE_H_
+#endif // !_RTX_HITABLE_SPHERE_H_

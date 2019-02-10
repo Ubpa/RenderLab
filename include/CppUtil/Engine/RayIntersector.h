@@ -1,5 +1,5 @@
-#ifndef _RAY_INTERSECTOR_H_
-#define _RAY_INTERSECTOR_H_
+#ifndef _ENGINE_INTERSECTOR_RAY_INTERSECTOR_H_
+#define _ENGINE_INTERSECTOR_RAY_INTERSECTOR_H_
 
 #include <CppUtil/Engine/Intersector.h>
 #include <CppUtil/Engine/BVHNode.h>
@@ -53,4 +53,4 @@ namespace CppUtil {
 	}
 }
 
-#endif//!_RAY_INTERSECTOR_H_
+#endif//!_ENGINE_INTERSECTOR_RAY_INTERSECTOR_H_

@@ -1,5 +1,5 @@
-#ifndef _OP_QUEUE_H_
-#define _OP_QUEUE_H_
+#ifndef _BASIC_OPERATION_OP_QUEUE_H_
+#define _BASIC_OPERATION_OP_QUEUE_H_
 
 #include <CppUtil/Basic/Operation.h>
 #include <list>
@@ -25,4 +25,4 @@ namespace CppUtil {
 	}
 }
 
-#endif // !_OP_QUEUE_H_
+#endif // !_BASIC_OPERATION_OP_QUEUE_H_

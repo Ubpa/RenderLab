@@ -1,5 +1,5 @@
-#ifndef _TRAY_H_
-#define _TRAY_H_
+#ifndef _RTX_RAY_CAMERA_TRAY_H_
+#define _RTX_RAY_CAMERA_TRAY_H_
 
 #include <CppUtil/RTX/Ray.h>
 
@@ -19,4 +19,4 @@ namespace RTX {
 		float time;
 	};
 }
-#endif //!_TRAY_H_
+#endif //!_RTX_RAY_CAMERA_TRAY_H_

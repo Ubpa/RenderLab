@@ -1,5 +1,5 @@
-#ifndef _PERLIN_H_
-#define _PERLIN_H_
+#ifndef _BASIC_MATH_PERLIN_H_
+#define _BASIC_MATH_PERLIN_H_
 
 #include <glm/glm.hpp>
 #include <vector>
@@ -27,8 +27,4 @@ namespace CppUtil {
 	}
 }
 
-#endif
-
-
-
-
+#endif//!_BASIC_MATH_PERLIN_H_

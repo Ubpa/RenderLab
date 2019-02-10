@@ -1,5 +1,5 @@
-#ifndef _ENGINE_SCENE_H_
-#define _ENGINE_SCENE_H_
+#ifndef _ENGINE_SCENE_SCENE_H_
+#define _ENGINE_SCENE_SCENE_H_
 
 #include <CppUtil/Basic/HeapObj.h>
 
@@ -35,4 +35,4 @@ namespace CppUtil {
 	}
 }
 
-#endif//!_ENGINE_SCENE_H_
+#endif//!_ENGINE_SCENE_SCENE_H_

@@ -1,5 +1,5 @@
-#ifndef _ENGINE_LIGHT_BASE_H_
-#define _ENGINE_LIGHT_BASE_H_
+#ifndef _ENGINE_LIGHT_LIGHT_BASE_H_
+#define _ENGINE_LIGHT_LIGHT_BASE_H_
 
 #include <CppUtil/Basic/Element.h>
 
@@ -32,4 +32,4 @@ namespace CppUtil {
 	}
 }
 
-#endif//!_ENGINE_LIGHT_BASE_H_
+#endif//!_ENGINE_LIGHT_LIGHT_BASE_H_

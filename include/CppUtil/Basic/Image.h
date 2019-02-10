@@ -1,5 +1,5 @@
-#ifndef _IMAGE_H_
-#define _IMAGE_H_
+#ifndef _BASIC_IMAGE_IMAGE_H_
+#define _BASIC_IMAGE_IMAGE_H_
 
 #include <string>
 #include <CppUtil/Basic/HeapObj.h>

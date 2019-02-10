@@ -1,5 +1,5 @@
-#ifndef _RAW_API_DEFINE_H_
-#define _RAW_API_DEFINE_H_
+#ifndef _QT_RAW_API_OGLW_RAW_API_DEFINE_H_
+#define _QT_RAW_API_OGLW_RAW_API_DEFINE_H_
 
 #include <qopenglfunctions_3_3_core.h>
 #include <qopenglcontext.h>
@@ -1297,4 +1297,4 @@
 #define glWaitSync _OPENGL_API_PREFIX_->glWaitSync
 
 
-#endif // !_RAW_API_DEFINE_H_
+#endif // !_QT_RAW_API_OGLW_RAW_API_DEFINE_H_

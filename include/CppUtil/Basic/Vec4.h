@@ -1,5 +1,5 @@
-#ifndef _Vec4_H_
-#define _Vec4_H_
+#ifndef _BASIC_HEADER_Vec4_H_
+#define _BASIC_HEADER_Vec4_H_
 
 namespace CppUtil {
 	namespace Basic {
@@ -120,4 +120,4 @@ namespace CppUtil {
 	}
 }
 
-#endif // !_Vec4_H_
+#endif // !_BASIC_HEADER_Vec4_H_

@@ -1,5 +1,5 @@
-#ifndef _RAW_API_OGLW_H_
-#define _RAW_API_OGLW_H_
+#ifndef _QT_RAW_API_OGLW_RAW_API_OGLW_H_
+#define _QT_RAW_API_OGLW_RAW_API_OGLW_H_
 
 #include <CppUtil/Basic/Operation.h>
 
@@ -76,4 +76,4 @@ namespace CppUtil {
 	}
 }
 
-#endif // !_RAW_API_OGLW_H_
+#endif // !_QT_RAW_API_OGLW_RAW_API_OGLW_H_

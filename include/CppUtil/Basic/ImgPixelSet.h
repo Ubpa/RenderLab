@@ -1,5 +1,5 @@
-#ifndef _IMG_PIXEL_SET_H_
-#define _IMG_PIXEL_SET_H_
+#ifndef _BASIC_IMAGE_IMG_PIXEL_SET_H_
+#define _BASIC_IMAGE_IMG_PIXEL_SET_H_
 
 #include <CppUtil/Basic/RandSet.h>
 

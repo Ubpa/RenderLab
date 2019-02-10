@@ -1,5 +1,5 @@
-#ifndef _FILE_H_
-#define _FILE_H_
+#ifndef _BASIC_FILE_FILE_H_
+#define _BASIC_FILE_FILE_H_
 
 #include <string>
 #include <cstdio>
@@ -41,4 +41,4 @@ namespace CppUtil {
 		};
 	};
 }
-#endif//! _FILE_H_
+#endif//! _BASIC_FILE_FILE_H_
