@@ -39,8 +39,8 @@ using namespace std;
 
 const string rootPath = ROOT_PATH;
 
-Impl_Raster::Impl_Raster(RawAPI_OGLW * pOGLW, Scene::Ptr scene)
-	: pOGLW(pOGLW), scene(scene) {
+Impl_Raster::Impl_Raster(Scene::Ptr scene)
+	: scene(scene) {
 	Reg<SObj>();
 
 	// primitive

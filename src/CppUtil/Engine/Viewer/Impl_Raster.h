@@ -36,7 +36,7 @@ namespace CppUtil {
 		class Impl_Raster : public Basic::EleVisitor {
 			ELEVISITOR_SETUP_FUNCNAME(Impl_Raster, Draw)
 		public:
-			Impl_Raster(Qt::RawAPI_OGLW * pOGLW, Basic::Ptr<Scene> scene);
+			Impl_Raster(Basic::Ptr<Scene> scene);
 
 			void Draw();
 			void Init();
@@ -57,10 +57,8 @@ namespace CppUtil {
 		private:
 			std::vector<glm::mat4> modelVec;
 
-		public:
+		private:
 			Basic::Ptr<Scene> scene;
-			Qt::RawAPI_OGLW * pOGLW;
-
 			OpenGL::VAO VAO_P3_Sphere;
 			OpenGL::VAO VAO_P3_Plane;
 			OpenGL::Shader shader_basic;

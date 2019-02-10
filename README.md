@@ -1,6 +1,6 @@
-RenderLab
+# RenderLab
 
-渲染实验室
+> 渲染实验室
 
 ## 1. 编译
 
@@ -50,12 +50,13 @@ cmake .. -Wno-dev
       - [x] TriMesh
       - [x] BVH
     - [x] 相交性测试（不需要找到最近，只要相交就退出）
-- [ ] 用新的架构来写实时渲染
+- [x] 用新的架构来写实时渲染
   - [x] Viewer
   - [x] Raster
-  - [ ] Roamer（把 View 中的相机相关部分抽出）
+  - [x] Roamer（把 View 中的相机相关部分抽出）
 - [ ] 实装UI功能（查看，编辑）
   - [ ] 层次面板
+  - [ ] 选择器
   - [ ] 属性面板（展示 component）
 
 ## 3. 其他 TODO

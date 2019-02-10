@@ -18,8 +18,7 @@ namespace CppUtil {
 		// 通过 Impl 隐藏私有成员
 		class Raster : public Basic::HeapObj {
 		public:
-			Raster(Qt::RawAPI_OGLW * pOGLW, Basic::Ptr<Scene> scene);
-			OpenGL::Shader & GetShader() const;
+			Raster(Basic::Ptr<Scene> scene);
 
 			void Draw();
 			void Init();

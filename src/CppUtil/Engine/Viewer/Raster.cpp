@@ -6,12 +6,8 @@ using namespace CppUtil::Engine;
 using namespace CppUtil::Qt;
 using namespace CppUtil::OpenGL;
 
-Raster::Raster(RawAPI_OGLW * pOGLW, CppUtil::Basic::Ptr<Scene> scene)
-	: pImpl(ToPtr(new Impl_Raster(pOGLW, scene))) { }
-
-Shader & Raster::GetShader() const {
-	return pImpl->shader_basic;
-}
+Raster::Raster(CppUtil::Basic::Ptr<Scene> scene)
+	: pImpl(ToPtr(new Impl_Raster(scene))) { }
 
 void Raster::Draw() {
 	pImpl->Draw();

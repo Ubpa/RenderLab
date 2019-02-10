@@ -2,13 +2,8 @@
 #define _ENGINE_VIEWER_VIEWER_H_
 
 #include <CppUtil/Basic/HeapObj.h>
-#include <CppUtil/Basic/Operation.h>
 
 namespace CppUtil {
-	namespace OpenGL {
-		class Camera;
-	}
-
 	namespace Qt {
 		class RawAPI_OGLW;
 	}
@@ -16,6 +11,7 @@ namespace CppUtil {
 	namespace Engine {
 		class Scene;
 		class Raster;
+		class Roamer;
 
 		class Viewer : public Basic::HeapObj {
 			HEAP_OBJ_SETUP(Viewer)
@@ -25,19 +21,14 @@ namespace CppUtil {
 		public:
 			Qt::RawAPI_OGLW * GetOGLW() const { return pOGLW; }
 			Basic::Ptr<Scene> GetScene() const { return scene; }
-
-		public:
-			void ListenerInit();
-			Basic::Ptr<OpenGL::Camera> GetCamera() const { return camera; }
 			Basic::Ptr<Raster> GetRaster() const { return raster; }
-			size_t GetCamUBO() const { return cameraMatrixsUBO; }
+			Basic::Ptr<Roamer> GetRoamer() const { return roamer; }
 
 		private:
 			Qt::RawAPI_OGLW * pOGLW;
 			Basic::Ptr<Scene> scene;
 			Basic::Ptr<Raster> raster;
-			Basic::Ptr<OpenGL::Camera> camera;
-			size_t cameraMatrixsUBO;
+			Basic::Ptr<Roamer> roamer;
 		};
 	}
 }
