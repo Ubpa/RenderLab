@@ -18,6 +18,7 @@ namespace CppUtil {
 
 namespace Ui {
 	class Hierarchy;
+	class Attribute;
 }
 
 class RenderLab : public QMainWindow
@@ -35,6 +36,9 @@ private slots:
 	void on_btn_RenderStop_clicked();
 	void on_btn_SaveRasterImg_clicked();
 	void on_btn_SaveRayTracerImg_clicked();
+
+	void on_tree_Hierarchy_itemClicked(QTreeWidgetItem *item, int column);
+
 	void UI_Op(CppUtil::Basic::Ptr<CppUtil::Basic::Operation> op);
 
 private:
@@ -43,4 +47,5 @@ private:
 	CppUtil::Basic::Ptr<CppUtil::Engine::Scene> scene;
 	CppUtil::Basic::Ptr<CppUtil::Engine::Viewer> viewer;
 	CppUtil::Basic::Ptr<Ui::Hierarchy> hierarchy;
+	CppUtil::Basic::Ptr<Ui::Attribute> attr;
 };

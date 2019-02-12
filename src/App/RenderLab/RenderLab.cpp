@@ -1,13 +1,17 @@
 #include "RenderLab.h"
 
+#include <UI/Hierarchy.h>
+#include <UI/Attribute.h>
+
 #include <CppUtil/Qt/PaintImgOpCreator.h>
 #include <CppUtil/Qt/OpThread.h>
 
 #include <CppUtil/Engine/RTX_Renderer.h>
 #include <CppUtil/Engine/PathTracer.h>
 #include <CppUtil/Engine/Viewer.h>
-#include <UI/Hierarchy.h>
 #include "GenScene.h"
+#include <CppUtil/Engine/Scene.h>
+#include <CppUtil/Engine/SObj.h>
 
 #include <CppUtil/Basic/Image.h>
 #include <CppUtil/Basic/LambdaOp.h>
@@ -57,6 +61,7 @@ RenderLab::RenderLab(QWidget *parent)
 	paintImgOp = pioc.GenScenePaintOp();
 
 	hierarchy = ToPtr(new Hierarchy(scene, ui.tree_Hierarchy));
+	attr = ToPtr(new Attribute(ui.tbox_Attribute));
 }
 
 void RenderLab::on_btn_RenderStart_clicked(){
@@ -138,4 +143,8 @@ void RenderLab::on_btn_SaveRasterImg_clicked() {
 
 void RenderLab::UI_Op(Operation::Ptr op) {
 	op->Run();
+}
+
+void RenderLab::on_tree_Hierarchy_itemClicked(QTreeWidgetItem *item, int column) {
+	attr->SetSObj(hierarchy->GetSObj(item));
 }

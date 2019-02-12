@@ -22,6 +22,14 @@ namespace Ui {
 
 		void Init();
 
+		CppUtil::Basic::Ptr<CppUtil::Engine::SObj> GetSObj(QTreeWidgetItem * item) {
+			return item2sobj[item];
+		}
+
+		QTreeWidgetItem * GetItem(CppUtil::Basic::Ptr<CppUtil::Engine::SObj> sobj) {
+			return sobj2item[sobj];
+		}
+
 	private:
 		class InitHierarchyVisitor;
 		friend class InitHierarchyVisitor;

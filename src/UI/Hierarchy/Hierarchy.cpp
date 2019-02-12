@@ -1,5 +1,7 @@
 #include <UI/Hierarchy.h>
 
+#include <UI/Attribute.h>
+
 #include <CppUtil/Engine/Scene.h>
 #include <CppUtil/Engine/SObj.h>
 

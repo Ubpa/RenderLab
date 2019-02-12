@@ -17,6 +17,8 @@ namespace CppUtil {
 			const glm::vec3 & GetPosition() const { return position; }
 			const glm::quat & GetRotation() const { return rotation; }
 			const glm::vec3 & GetScale() const { return scale; }
+			// radian
+			glm::vec3 GetEulerRoatation() const;
 			const glm::mat4 & GetMat() {
 				UpdateMat();
 				return mat;
@@ -30,8 +32,11 @@ namespace CppUtil {
 				return normMat;
 			}
 
+			// radian
 			void SetPosition(const glm::vec3 & position);
 			void SetRotation(const glm::quat & rotation);
+			// yzx
+			void SetRotation(const glm::vec3 & eulerAngle);
 			void SetScale(const glm::vec3 & scale);
 
 			void Rotate(float radian, const glm::vec3 & axis);

@@ -1,6 +1,8 @@
 #include <CppUtil/Engine/Transform.h>
 
 #include <glm/gtc/matrix_transform.hpp>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/euler_angles.hpp>
 
 using namespace CppUtil;
 using namespace CppUtil::Engine;
@@ -54,9 +56,20 @@ void Transform::UpdateNormMat() {
 void Transform::Rotate(float radian, const glm::vec3 & axis) {
 	SetDirty();
 	rotation = rotate(rotation, radian, axis);
+	
 }
 
 void Transform::Translate(const glm::vec3 & translation) {
 	SetDirty();
 	position += translation;
+}
+
+vec3 Transform::GetEulerRoatation() const {
+	vec3 euler;
+	extractEulerAngleYZX(mat4_cast(rotation), euler.y, euler.z, euler.x);
+	return euler;
+}
+
+void Transform::SetRotation(const glm::vec3 & eulerAngle) {
+	SetRotation(quat_cast(mat3(eulerAngleYZX(eulerAngle.y, eulerAngle.z, eulerAngle.x))));
 }
