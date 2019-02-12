@@ -56,14 +56,13 @@ cmake .. -Wno-dev
   - [x] Roamer（把 View 中的相机相关部分抽出）
 - [ ] 实装UI功能（查看，编辑）
   - [x] 层次面板
-  - [ ] 属性面板（展示 component）
+  - [x] 属性面板（展示 component）
     - [x] 基础框架
     - [x] Transform
-    - [ ] Material
-    - [ ] Light
-    - [ ] Geometry
+    - [x] Geometry
+    - [x] Material
+    - [x] Light
   - [ ] 选择器
-
-## 3. 其他 TODO
-
-- [x] 将模板头文件的定义和声明分离
+  - [ ] 设置面板
+- [ ] 优化实现
+- [ ] 降噪

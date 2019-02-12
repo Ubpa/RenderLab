@@ -27,10 +27,7 @@ namespace CppUtil {
 
 			virtual bool IsDelta() const { return true; }
 
-			glm::vec3 GetReflectance() const { return reflectance; }
-			glm::vec3 GetTransmittance() const { return transmittance; }
-
-		private:
+		public:
 			float ior;
 			glm::vec3 reflectance;
 			glm::vec3 transmittance;

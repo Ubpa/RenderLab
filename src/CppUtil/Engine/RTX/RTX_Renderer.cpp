@@ -27,7 +27,7 @@ void RTX_Renderer::Run(Image::Ptr img) {
 
 	auto scene = rayTracer->GetScene();
 	auto camera = scene->GetMainCamera();
-	camera->SetWidthHeight(w, h);
+	camera->SetAspectRatio(w, h);
 	auto cameraMatrix = camera->GetSObj()->GetLocalToWorldMatrix();
 
 	int imgSize = w * h;

@@ -28,10 +28,13 @@ namespace CppUtil {
 
 			virtual bool IsDelta() const { return false; }
 
-			glm::vec3 GetAlbedo()const { return albedo; }
+			//glm::vec3 GetAlbedo() const { return albedo; }
+			//void SetAlbedo(const glm::vec3 & albedo) { this->albedo = albedo; }
+
+		public:
+			glm::vec3 albedo;
 
 		private:
-			glm::vec3 albedo;
 			Basic::CosineWeightedHemisphereSampler3D sampler;
 		};
 	}

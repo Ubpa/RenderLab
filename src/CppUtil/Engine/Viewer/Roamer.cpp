@@ -36,6 +36,7 @@ void Roamer::Init() {
 void Roamer::SetWH(int w, int h) {
 	glViewport(0, 0, w, h);
 	camera->SetRatioWH(w, h);
+	UpdateCamera();
 }
 
 void Roamer::ListenerInit() {

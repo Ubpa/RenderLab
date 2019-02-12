@@ -26,9 +26,7 @@ namespace CppUtil {
 
 			virtual bool IsDelta() const { return true; }
 
-			glm::vec3 GetReflectance() const { return reflectance; }
-
-		private:
+		public:
 			glm::vec3 reflectance;
 		};
 	}

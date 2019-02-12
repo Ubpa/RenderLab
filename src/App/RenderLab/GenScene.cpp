@@ -40,9 +40,6 @@ Scene::Ptr GenScene() {
 	auto bsdfEmission = ToPtr(new BSDF_Emission(vec3(1)));
 	auto materailEmission = ToPtr(new Material(sobj_AreaLight, bsdfEmission));
 
-	// sphere
-	auto sphere = ToPtr(new Sphere);
-
 	// mirror sphere
 	auto bsdfMirror = ToPtr(new BSDF_Mirror);
 	auto materialMirror = ToPtr(new Material(sobj_MirrorSphere, bsdfMirror));
@@ -51,7 +48,7 @@ Scene::Ptr GenScene() {
 	mirrorSphereTransform->SetPosition(vec3(-0.4f, 0.3f, -0.3f));
 	mirrorSphereTransform->SetScale(vec3(0.3f));
 
-	auto geoMetalSphere = ToPtr(new Geometry(sobj_MirrorSphere, sphere));
+	auto geoMetalSphere = ToPtr(new Geometry(sobj_MirrorSphere, ToPtr(new Sphere)));
 
 	// glass sphere
 	auto bsdfGlass = ToPtr(new BSDF_Glass(1.45f));
@@ -61,7 +58,18 @@ Scene::Ptr GenScene() {
 	glassSphereTransform->SetPosition(vec3(0.4f, 0.3f, 0.3f));
 	glassSphereTransform->SetScale(vec3(0.3f));
 
-	auto geoGlassSphere = ToPtr(new Geometry(sobj_GlassSphere, sphere));
+	auto geoGlassSphere = ToPtr(new Geometry(sobj_GlassSphere, ToPtr(new Sphere)));
+
+	// mesh . cube 
+	auto sobj_Cube = ToPtr(new SObj(sobj_Root, "cube"));
+	Cube cube;
+	auto cubeMesh = ToPtr(new TriMesh(cube.GetTriNum(), cube.GetVertexNum(),
+		cube.GetIndexArr(), cube.GetPosArr(), cube.GetNormalArr()));
+	auto cubeG = ToPtr(new Geometry(sobj_Cube, cubeMesh));
+	auto blue = ToPtr(new BSDF_Diffuse(vec3(0.f, 0.794f, 0.916f)));
+	auto materialCube = ToPtr(new Material(sobj_Cube, blue));
+	auto cubeTransform = ToPtr(new Transform(sobj_Cube));
+	cubeTransform->SetScale(vec3(0.2f));
 
 	// wall
 	vec3 posArr[wallNum] = {

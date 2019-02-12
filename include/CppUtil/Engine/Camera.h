@@ -12,15 +12,20 @@ namespace CppUtil {
 		public:
 			Camera(Basic::Ptr<SObj> sobj, float ar = 16.f / 9.f, float fov = 60.f, float nearClipping = 0.001f, float farClipping = 1000.f);
 
-			void SetWidthHeight(int w, int h);
+			float GetAspectRatio() const { return ar; }
+			void SetAspectRatio(float ar);
+			void SetAspectRatio(float w, float h) { SetAspectRatio(w / h); }
 
 			Basic::Ptr<Ray> GenRay(float u, float v);
-		private:
-			// aspect ratio
-			float ar;
+
+
+		public:
 			// field of view
 			float fov;
 
+		private:
+			// aspect ratio
+			float ar;
 			float nearClipping;
 			float farClipping;
 

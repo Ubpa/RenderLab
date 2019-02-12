@@ -27,7 +27,7 @@ namespace CppUtil {
 
 			virtual bool IsDelta() const { return false; }
 
-		private:
+		public:
 			glm::vec3 color;
 			float intensity;
 		};

@@ -15,9 +15,9 @@ Camera::Camera(Basic::Ptr<SObj> sobj, float ar, float fov, float near, float far
 	w = h * ar;
 }
 
-void Camera::SetWidthHeight(int w, int h) {
-	ar = float(w) / float(h);
-	this->w = this->h * ar;
+void Camera::SetAspectRatio(float ar) {
+	this->ar = ar;
+	w = h * ar;
 }
 
 Ray::Ptr Camera::GenRay(float u, float v) {

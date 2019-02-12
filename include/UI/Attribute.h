@@ -2,6 +2,7 @@
 #define _UI_ATTRIBUTE_H_
 
 #include <CppUtil/Basic/HeapObj.h>
+#include <CppUtil/Basic/TypeMap.h>
 
 #include <qobject.h>
 #include <qtoolbox.h>
@@ -31,6 +32,7 @@ namespace Ui {
 
 		std::map<CppUtil::Basic::Ptr<CppUtil::Engine::Component>, QWidget *> component2item;
 		std::map<QWidget *, CppUtil::Basic::Ptr<CppUtil::Engine::Component>> item2component;
+		CppUtil::Basic::TypeMap<QWidget *> componentType2item;
 
 		CppUtil::Basic::Ptr<ComponentVisitor> visitor;
 	};

@@ -162,15 +162,15 @@ void Impl_Raster::Draw(TriMesh::Ptr mesh) {
 }
 
 void Impl_Raster::Draw(BSDF_Diffuse::Ptr bsdf) {
-	shader_basic.SetVec3f("color", bsdf->GetAlbedo());
+	shader_basic.SetVec3f("color", bsdf->albedo);
 }
 
 void Impl_Raster::Draw(BSDF_Glass::Ptr bsdf) {
-	shader_basic.SetVec3f("color", bsdf->GetReflectance());
+	shader_basic.SetVec3f("color", bsdf->transmittance);
 }
 
 void Impl_Raster::Draw(BSDF_Mirror::Ptr bsdf) {
-	shader_basic.SetVec3f("color", bsdf->GetReflectance());
+	shader_basic.SetVec3f("color", bsdf->reflectance);
 }
 
 void Impl_Raster::Draw(BSDF_Emission::Ptr bsdf) {

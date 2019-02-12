@@ -4,6 +4,8 @@
 #include <qgridlayout.h>
 #include <QtWidgets/QDoubleSpinBox>
 
+#include <glm/vec3.hpp>
+
 #include <functional>
 
 namespace Ui {
@@ -13,7 +15,22 @@ namespace Ui {
 			:page(page), gridLayout(gridLayout) { }
 
 		void AddTitle(const QString & title);
-		QDoubleSpinBox * AddLine(const QString & text, double val, double singleStep, const std::function<void(double)> & slot);
+
+		// spinbox
+		void AddEditVal(const QString & text, double val, double singleStep, const std::function<void(double)> & slot);
+		template <typename numT>
+		void AddEditVal(const QString & text, numT & val, double singleStep) {
+			AddEditVal(text, val, singleStep, [&val](double v) {val = v; });
+		}
+
+		// textlabel
+		void AddShowText(const QString & left, const QString & right);
+		
+		template <typename numT>
+		void AddShowVal(const QString & text, numT val) { AddShowText(text, QString::number(val)); }
+
+		// color : [0, 1] x 3
+		void AddEditColor(const QString & text, glm::vec3 & color);
 
 	private:
 		QWidget * page;
