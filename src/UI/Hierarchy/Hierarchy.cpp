@@ -23,10 +23,8 @@ private:
 	void Visit(SObj::Ptr sobj) {
 		QTreeWidgetItem * item;
 
-		if (sobj == hierarchy->scene->GetRootSObj()) {
-			hierarchy->tree->clear();
+		if (sobj == hierarchy->scene->GetRootSObj())
 			item = new QTreeWidgetItem(hierarchy->tree);
-		}
 		else
 			item = new QTreeWidgetItem(hierarchy->sobj2item[sobj->GetParent()]);
 
@@ -40,12 +38,24 @@ private:
 	Hierarchy * hierarchy;
 };
 
-Hierarchy::Hierarchy(Scene::Ptr scene, QTreeWidget * tree)
-	: scene(scene), tree(tree) {
-	Init();
+Hierarchy::Hierarchy()
+	: scene(nullptr), tree(nullptr) {
 }
 
-void Hierarchy::Init() {
+void Hierarchy::SetScene(CppUtil::Basic::Ptr<CppUtil::Engine::Scene> scene) {
+	if (!tree)
+		return;
+
+	tree->clear();
+	this->scene = scene;
+	item2sobj.clear();
+	item2sobj.clear();
+
 	auto visitor = ToPtr(new InitHierarchyVisitor(this));
 	scene->GetRootSObj()->TraverseAccept(visitor);
+}
+
+void Hierarchy::Init(Scene::Ptr scene, QTreeWidget * tree) {
+	this->tree = tree;
+	SetScene(scene);
 }

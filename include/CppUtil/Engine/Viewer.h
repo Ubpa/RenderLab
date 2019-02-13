@@ -12,6 +12,7 @@ namespace CppUtil {
 		class Scene;
 		class Raster;
 		class Roamer;
+		class Picker;
 
 		class Viewer : public Basic::HeapObj {
 			HEAP_OBJ_SETUP(Viewer)
@@ -23,9 +24,11 @@ namespace CppUtil {
 			Basic::Ptr<Scene> GetScene() const { return scene; }
 			Basic::Ptr<Raster> GetRaster() const { return raster; }
 			Basic::Ptr<Roamer> GetRoamer() const { return roamer; }
+			Basic::Ptr<Picker> GetPicker() const { return picker; }
 
 		private:
 			Qt::RawAPI_OGLW * pOGLW;
+			Basic::Ptr<Picker> picker;
 			Basic::Ptr<Scene> scene;
 			Basic::Ptr<Raster> raster;
 			Basic::Ptr<Roamer> roamer;

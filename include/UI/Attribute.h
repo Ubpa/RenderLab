@@ -18,9 +18,16 @@ namespace CppUtil {
 namespace Ui {
 	class Attribute : public CppUtil::Basic::HeapObj {
 		HEAP_OBJ_SETUP(Attribute)
+	private:
+		Attribute();
 	public:
-		Attribute(QToolBox * tbox);
+		static Attribute * GetInstance() {
+			static Attribute * instance = new Attribute;
+			return instance;
+		}
 
+	public:
+		void Init(QToolBox * tbox);
 		void SetSObj(CppUtil::Basic::Ptr<CppUtil::Engine::SObj> sobj);
 
 	private:

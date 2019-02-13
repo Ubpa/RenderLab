@@ -274,12 +274,19 @@ void Attribute::ComponentVisitor::Visit(AreaLight::Ptr light) {
 
 // -------------- Attribute --------------
 
-Attribute::Attribute(QToolBox * tbox)
-	: tbox(tbox), sobj(nullptr), visitor(ToPtr(new ComponentVisitor(this))){
+Attribute::Attribute()
+	: tbox(nullptr), sobj(nullptr), visitor(ToPtr(new ComponentVisitor(this))){
+}
+
+void Attribute::Init(QToolBox * tbox) {
+	this->tbox = tbox;
 	SetSObj(nullptr);
 }
 
 void Attribute::SetSObj(SObj::Ptr sobj) {
+	if (!tbox)
+		return;
+
 	this->sobj = sobj;
 
 	// clear

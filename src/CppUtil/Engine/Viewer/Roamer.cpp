@@ -47,10 +47,8 @@ void Roamer::ListenerInit() {
 		pOGWL->setMouseTracking(true);
 
 		pOGWL->Reg("lock", true);
-		int x;
-		int y;
-		pOGWL->GetV(RawAPI_OGLW::str_x, x);
-		pOGWL->GetV(RawAPI_OGLW::str_y, y);
+		int x = pOGWL->x;
+		int y = pOGWL->y;
 
 		pOGWL->Reg("lockX", x);
 		pOGWL->Reg("lockY", y);
@@ -68,10 +66,8 @@ void Roamer::ListenerInit() {
 		if (lock == nullptr || *lock == false)
 			return;
 
-		int x;
-		int y;
-		pOGWL->GetV(RawAPI_OGLW::str_x, x);
-		pOGWL->GetV(RawAPI_OGLW::str_y, y);
+		int x = pOGWL->x;
+		int y = pOGWL->y;
 
 		int lockX;
 		int lockY;
@@ -104,8 +100,7 @@ void Roamer::ListenerInit() {
 	auto wheelOp = ToPtr(new LambdaOp([this]() {
 		auto pOGWL = this->GetOGLW();
 
-		int angle;
-		pOGWL->GetV(RawAPI_OGLW::str_angle, angle);
+		int angle = pOGWL->angle;
 
 		this->GetCamera()->ProcessMouseScroll(angle*0.1f);
 		UpdateCamera();

@@ -16,11 +16,6 @@ namespace CppUtil {
 	}
 }
 
-namespace Ui {
-	class Hierarchy;
-	class Attribute;
-}
-
 class RenderLab : public QMainWindow
 {
 	Q_OBJECT
@@ -46,6 +41,4 @@ private:
 	CppUtil::Basic::Ptr<CppUtil::Qt::PaintImgOpCreator::PaintImgOp> paintImgOp;
 	CppUtil::Basic::Ptr<CppUtil::Engine::Scene> scene;
 	CppUtil::Basic::Ptr<CppUtil::Engine::Viewer> viewer;
-	CppUtil::Basic::Ptr<Ui::Hierarchy> hierarchy;
-	CppUtil::Basic::Ptr<Ui::Attribute> attr;
 };

@@ -56,15 +56,9 @@ Operation::Ptr RasterOpCreator::SceneOp::GetDefaultResizeOp() {
 	auto defaultResizeOp = ToPtr(new LambdaOp([this](){
 		auto pOGLW = this->GetOGLW();
 
-		int * w;
-		int * h;
-		pOGLW->GetP(RawAPI_OGLW::str_w, w);
-		pOGLW->GetP(RawAPI_OGLW::str_h, h);
-		if (!w || !h) {
-			qDebug() << "get w or h fail\n";
-			return;
-		}
-		glViewport(0, 0, *w, *h);
+		int w = pOGLW->w;
+		int h = pOGLW->h;
+		glViewport(0, 0, w, h);
 	}));
 	return defaultResizeOp;
 }
@@ -78,10 +72,8 @@ CppUtil::Basic::Operation::Ptr RasterOpCreator::SceneOp::GetDefaultListenerInitO
 			pOGWL->setMouseTracking(true);
 
 			pOGWL->Reg("lock", true);
-			int x;
-			int y;
-			pOGWL->GetV(RawAPI_OGLW::str_x, x);
-			pOGWL->GetV(RawAPI_OGLW::str_y, y);
+			int x = pOGWL->x;
+			int y = pOGWL->y;
 
 			pOGWL->Reg("lockX", x);
 			pOGWL->Reg("lockY", y);
@@ -99,10 +91,8 @@ CppUtil::Basic::Operation::Ptr RasterOpCreator::SceneOp::GetDefaultListenerInitO
 			if (lock == nullptr || *lock == false)
 				return;
 
-			int x;
-			int y;
-			pOGWL->GetV(RawAPI_OGLW::str_x, x);
-			pOGWL->GetV(RawAPI_OGLW::str_y, y);
+			int x = pOGWL->x;
+			int y = pOGWL->y;
 
 			int lockX;
 			int lockY;
@@ -137,8 +127,7 @@ CppUtil::Basic::Operation::Ptr RasterOpCreator::SceneOp::GetDefaultListenerInitO
 		auto wheelOp = ToPtr(new LambdaOp([this]() {
 			auto pOGWL = this->GetOGLW();
 
-			int angle;
-			pOGWL->GetV(RawAPI_OGLW::str_angle, angle);
+			int angle = pOGWL->angle;
 
 			Camera * mainCamera;
 			pOGLW->GetP("mainCamera", mainCamera);
@@ -566,15 +555,10 @@ RasterOpCreator::SceneOp::Ptr RasterOpCreator::GenScenePaintOp_1() {
 	auto resizeOp = ToPtr(new LambdaOp([sceneOp]() {
 		auto pOGLW = sceneOp->GetOGLW();
 
-		int * w;
-		int * h;
-		pOGLW->GetP(RawAPI_OGLW::str_w, w);
-		pOGLW->GetP(RawAPI_OGLW::str_h, h);
-		if (!w || !h) {
-			qDebug() << "get w or h fail\n";
-			return;
-		}
-		glViewport(0, 0, *w, *h);
+		int w = pOGLW->w;
+		int h = pOGLW->h;
+
+		glViewport(0, 0, w, h);
 		
 		Camera * mainCamera;
 		pOGLW->GetP("mainCamera", mainCamera);
@@ -582,7 +566,7 @@ RasterOpCreator::SceneOp::Ptr RasterOpCreator::GenScenePaintOp_1() {
 			qDebug() << "get mainCamera fail\n";
 			return;
 		}
-		mainCamera->SetRatioWH(*w, *h);
+		mainCamera->SetRatioWH(w, h);
 	}));
 
 	// listenerInitOp

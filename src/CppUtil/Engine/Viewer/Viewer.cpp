@@ -2,6 +2,7 @@
 
 #include <CppUtil/Engine/Raster.h>
 #include <CppUtil/Engine/Roamer.h>
+#include <CppUtil/Engine/Picker.h>
 
 #include <CppUtil/Qt/RawAPI_OGLW.h>
 
@@ -16,10 +17,11 @@ using namespace CppUtil::Basic;
 using namespace CppUtil;
 
 Viewer::Viewer(RawAPI_OGLW * pOGLW, Basic::Ptr<Scene> scene)
-	: pOGLW(pOGLW), scene(scene), raster(ToPtr(new Raster(scene))), roamer(ToPtr(new Roamer(pOGLW))) {
+	: pOGLW(pOGLW), scene(scene), raster(ToPtr(new Raster(scene))), roamer(ToPtr(new Roamer(pOGLW))), picker(ToPtr(new Picker(this))) {
 	pOGLW->SetInitOp(ToPtr(new LambdaOp([this]() {
 		this->GetRoamer()->Init();
 		this->GetRaster()->Init();
+		this->GetPicker()->Init();
 	})));
 
 	pOGLW->SetPaintOp(ToPtr(new LambdaOp([this]() {
@@ -29,14 +31,9 @@ Viewer::Viewer(RawAPI_OGLW * pOGLW, Basic::Ptr<Scene> scene)
 	pOGLW->SetResizeOp(ToPtr(new LambdaOp([this]() {
 		auto pOGLW = this->GetOGLW();
 
-		int * w;
-		int * h;
-		pOGLW->GetP(RawAPI_OGLW::str_w, w);
-		pOGLW->GetP(RawAPI_OGLW::str_h, h);
-		if (!w || !h) {
-			qDebug() << "get w or h fail\n";
-			return;
-		}
-		this->GetRoamer()->SetWH(*w, *h);
+		int w = pOGLW->w;
+		int h = pOGLW->h;
+
+		this->GetRoamer()->SetWH(w, h);
 	})));
 }

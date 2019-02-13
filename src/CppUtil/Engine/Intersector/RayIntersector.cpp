@@ -31,6 +31,7 @@ void RayIntersector::Visit(SObj::Ptr sobj) {
 	if (geometry == nullptr && children.size() == 0)
 		return;
 
+	auto origSObj = rst.closestSObj;
 	auto transform = sobj->GetComponent<Transform>();
 	if (transform)
 		ray->Transform(transform->GetInv());
@@ -47,7 +48,7 @@ void RayIntersector::Visit(SObj::Ptr sobj) {
 
 	if (transform) {
 		ray->Transform(transform->GetMat());
-		if (rst.closestSObj == sobj)
+		if (rst.closestSObj != origSObj)
 			rst.n = normalize(transform->GetNormMat() * rst.n);
 	}
 }

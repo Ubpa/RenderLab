@@ -107,17 +107,12 @@ PaintImgOpCreator::PaintImgOp::Ptr PaintImgOpCreator::GenScenePaintOp() {
 		int imgW = img->GetWidth();
 		int imgH = img->GetHeight();
 
-		int * w;
-		int * h;
-		pOGLW->GetP(RawAPI_OGLW::str_w, w);
-		pOGLW->GetP(RawAPI_OGLW::str_h, h);
-		if (!w || !h) {
-			qDebug() << "get w or h fail\n";
-			return;
-		}
-		glViewport(0, 0, *w, *h);
+		int w = pOGLW->w;
+		int h = pOGLW->h;
 
-		ptr<VAO> imgVAO = GenImgVAO(imgW, imgH, *w, *h);
+		glViewport(0, 0, w, h);
+
+		ptr<VAO> imgVAO = GenImgVAO(imgW, imgH, w, h);
 		pOGLW->Reg("imgVAO", imgVAO);
 	}));
 

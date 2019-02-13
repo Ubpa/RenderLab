@@ -60,8 +60,8 @@ RenderLab::RenderLab(QWidget *parent)
 	PaintImgOpCreator pioc(ui.OGLW_RayTracer);
 	paintImgOp = pioc.GenScenePaintOp();
 
-	hierarchy = ToPtr(new Hierarchy(scene, ui.tree_Hierarchy));
-	attr = ToPtr(new Attribute(ui.tbox_Attribute));
+	Hierarchy::GetInstance()->Init(scene, ui.tree_Hierarchy);
+	Attribute::GetInstance()->Init(ui.tbox_Attribute);
 }
 
 void RenderLab::on_btn_RenderStart_clicked(){
@@ -146,5 +146,6 @@ void RenderLab::UI_Op(Operation::Ptr op) {
 }
 
 void RenderLab::on_tree_Hierarchy_itemClicked(QTreeWidgetItem *item, int column) {
-	attr->SetSObj(hierarchy->GetSObj(item));
+	auto sobj = Hierarchy::GetInstance()->GetSObj(item);
+	Attribute::GetInstance()->SetSObj(sobj);
 }

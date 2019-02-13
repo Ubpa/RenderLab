@@ -43,11 +43,11 @@ namespace CppUtil {
 			virtual void wheelEvent(QWheelEvent *event);
 
 		public:
-			static std::string str_w;
-			static std::string str_h;
-			static std::string str_x;
-			static std::string str_y;
-			static std::string str_angle;
+			int w;
+			int h;
+			int x;
+			int y;
+			int angle;
 
 		private:
 			Basic::Operation::Ptr initOp;

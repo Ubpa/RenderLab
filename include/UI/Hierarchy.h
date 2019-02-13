@@ -15,12 +15,19 @@ namespace CppUtil {
 }
 
 namespace Ui {
-	class Hierarchy : public CppUtil::Basic::HeapObj {
-		HEAP_OBJ_SETUP(Hierarchy)
-	public:
-		Hierarchy(CppUtil::Basic::Ptr<CppUtil::Engine::Scene> scene, QTreeWidget * tree);
+	class Hierarchy {
+	private:
+		Hierarchy();
 
-		void Init();
+	public:
+		static Hierarchy * GetInstance() {
+			static Hierarchy * instance = new Hierarchy;
+			return instance;
+		}
+
+	public:
+		void Init(CppUtil::Basic::Ptr<CppUtil::Engine::Scene> scene, QTreeWidget * tree);
+		void SetScene(CppUtil::Basic::Ptr<CppUtil::Engine::Scene> scene);
 
 		CppUtil::Basic::Ptr<CppUtil::Engine::SObj> GetSObj(QTreeWidgetItem * item) {
 			return item2sobj[item];
