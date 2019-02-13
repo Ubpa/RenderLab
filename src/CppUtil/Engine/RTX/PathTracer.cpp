@@ -19,7 +19,25 @@ using namespace glm;
 using namespace std;
 
 PathTracer::PathTracer(Scene::Ptr scene)
-	: RayTracer(scene), sampleNumForAreaLight(2), maxDepth(6) { }
+	: RayTracer(scene), sampleNumForAreaLight(1), maxDepth(10) { }
+
+void PathTracer::Init() {
+	lights.clear();
+	worldToLightVec.clear();
+	dir_lightToWorldVec.clear();
+	dir_worldToLightVec.clear();
+
+	for (auto lightComponent : scene->GetLights()) {
+		lights.push_back(lightComponent->GetLight());
+
+		mat4 lightToWorld = lightComponent->GetLightToWorldMatrixWithoutScale();
+		mat4 worldToLight = inverse(lightToWorld);
+
+		worldToLightVec.push_back(worldToLight);
+		dir_lightToWorldVec.push_back(lightToWorld);
+		dir_worldToLightVec.push_back(worldToLight);
+	}
+}
 
 vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 	auto rayIntersector = ToPtr(new RayIntersector(ray));
@@ -42,41 +60,29 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 	if (bsdf == nullptr)
 		return vec3(1, 0, 1);
 
-	vec3 emitL = depth == 0 ? bsdf->GetEmission() : vec3(0);
+	vec3 emitL = bsdf->GetEmission();
 
 	const vec3 hitPos = ray->At(ray->GetTMax());
-	const vec3 shadowOrigin = hitPos + Math::EPSILON * closestRst.n;
 
 	auto const surfaceToWorld = Math::GenCoordSpace(closestRst.n);
 	auto const worldToSurface = transpose(surfaceToWorld);
 
-	// w_out 处于表面坐标系
+	// w_out 处于表面坐标系，向外
 	auto w_out = normalize(worldToSurface * (-ray->GetDir()));
 
 	vec3 sumLightL(0);
 	
-	// 计算与灯光相关的数据
-	vector<LightBase::Ptr> lights;
-	vector<mat3> worldToLightVec;// 只需要旋转方向，所以使用 mat3
-	vector<mat3> lightToWorldVec;// 只需要旋转方向，所以使用 mat3
+	// 计算碰撞点在灯光空间的位置
 	vector<vec3> posInLightSpaceVec;
 
 	vec4 hitPos4 = vec4(hitPos, 1);
-
-	for (auto lightComponent : scene->GetLights()) {
-		lights.push_back(lightComponent->GetLight());
-
-		mat4 lightToWorld = lightComponent->GetLightToWorldMatrixWithoutScale();
-		mat4 worldToLight = inverse(lightToWorld);
-
-		lightToWorldVec.push_back(lightToWorld);
-		worldToLightVec.push_back(worldToLight);
-		posInLightSpaceVec.push_back(worldToLight * hitPos4);
-	}
 	int lightNum = lights.size();
+	for (int i = 0; i < lightNum; i++)
+		posInLightSpaceVec.push_back(worldToLightVec[i] * hitPos4);
 	
 	if (!bsdf->IsDelta()) {
 		vec3 dir_ToLight; // 把变量放在这里减少初始化次数
+		const vec3 shadowOrigin = hitPos;
 
 		for (int i = 0; i < lightNum; i++) {
 			auto const light = lights[i];
@@ -92,12 +98,12 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 				// 在 MIT 15-462 中为 if (w_in.z < 0) continue;
 				// 理由就是在 BSDF 不为 Delta 的情况下，不应该出现 w_in 到表面下边的情况
 				// 觉得可能有些材质还是允许这种情况发生的
-				// 所以更合理的是 PD <= 0
+				// 所以目前认为更合理的是 PD <= 0
 				if (PD <= 0)
 					continue;
 
 				// dirInWorld 应该是单位向量
-				const vec3 dirInWorld = lightToWorldVec[i] * dir_ToLight;
+				const vec3 dirInWorld = dir_lightToWorldVec[i] * dir_ToLight;
 				// w_in 处于表面坐标系，应该是单位向量
 				const vec3 w_in = worldToSurface * dirInWorld;
 
@@ -106,13 +112,13 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 				for (int k = 0; k < lightNum; k++) {
 					if (k != i) {
 						int sampleNum = lights[k]->IsDelta() ? 1 : sampleNumForAreaLight;
-						vec3 dir = worldToLightVec[k] * dirInWorld;
+						vec3 dir = dir_worldToLightVec[k] * dirInWorld;
 						sumPD += sampleNum * lights[k]->PDF(posInLightSpaceVec[i], dir);
 					}
 				}
 
 				// 在碰撞表面的坐标系计算 dot(n, w_in) 很简单，因为 n = (0, 0, 1)
-				const float cos_theta = w_in.z;
+				const float abs_cos_theta = abs(w_in.z);
 
 				// evaluate surface bsdf
 				const vec3 f = bsdf->F(w_out, w_in);
@@ -124,10 +130,14 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 				scene->GetRootSObj()->Accept(checker);
 				auto shadowRst = checker->GetRst();
 				if (!shadowRst.IsVisible())
-					sumLightL += (cos_theta / sumPD) * f * lightL;
+					sumLightL += (abs_cos_theta / sumPD) * f * lightL;
 			}
 		}
 	}
+	// 深度，丢弃概率
+	float depthP = pow(depth/maxDepth, 2);
+	if (Math::Rand_F() < depthP)
+		return emitL + sumLightL;
 
 	// 采样 BSDF
 	vec3 mat_w_in;
@@ -135,37 +145,14 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 	const vec3 matF = bsdf->Sample_f(w_out, mat_w_in, matPD);
 	const vec3 matRayDirInWorld = surfaceToWorld * mat_w_in;
 	const float abs_cosTheta = abs(mat_w_in.z);
-	
-	if (bsdf->IsDelta()) {
-		for (int i = 0; i < lightNum; i++) {
-			vec3 dir = worldToLightVec[i] * matRayDirInWorld;
-			float dist;
-			vec3 lightL = lights[i]->GetL(posInLightSpaceVec[i], dir, dist);
-			if (lightL != vec3(0)) {
-				Ray::Ptr shadowRay = ToPtr(new Ray(shadowOrigin, matRayDirInWorld));
-				float tMax = dist / length(matRayDirInWorld) - 0.001f;
-				auto checker = ToPtr(new VisibilityChecker(shadowRay, tMax));
-				scene->GetRootSObj()->Accept(checker);
-				auto shadowRst = checker->GetRst();
-				if (!shadowRst.IsVisible())
-					sumLightL += lightL;
-			}
-		}
-		sumLightL *= abs_cosTheta;
-	}
 
-	// 深度，丢弃概率
-	float depthP = depth > maxDepth ? 0.5f : 0.f;
-	if (Math::Rand_F() < depthP)
-		return emitL + sumLightL;
-
-
-	if(matPD <= 0)
+	if (matPD <= 0)
 		return emitL + sumLightL;
 
 	// 一定概率丢弃
 	float terminateProbability = 0.f;
-	if (!bsdf->IsDelta() && Math::Illum(matF) < 0.2f)
+	// 这里一定要是 illumination * cos(theta)
+	if (!bsdf->IsDelta() && Math::Illum(matF) * abs_cosTheta < 0.0618f)
 		terminateProbability = 0.8f;
 
 	if (Math::Rand_F() < terminateProbability)
@@ -176,7 +163,7 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 	if (!bsdf->IsDelta()) {
 		for (int i = 0; i < lightNum; i++) {
 			int sampleNum = lights[i]->IsDelta() ? 1 : sampleNumForAreaLight;
-			vec3 dir = worldToLightVec[i] * matRayDirInWorld;
+			vec3 dir = dir_worldToLightVec[i] * matRayDirInWorld;
 			sumPD += sampleNum * lights[i]->PDF(posInLightSpaceVec[i], dir);
 		}
 	}

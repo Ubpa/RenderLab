@@ -60,8 +60,8 @@ void VisibilityChecker::Visit(SObj::Ptr sobj) {
 void VisibilityChecker::Visit(Sphere::Ptr sphere) {
 	vec3 dir = ray->GetDir();
 	vec3 origin = ray->GetOrigin();
-	vec3 center = sphere->GetCenter();
-	float radius = sphere->GetR();
+	const vec3 & center = sphere->center;
+	const float & radius = sphere->r;
 
 	vec3 oc = origin - center;
 	float a = dot(dir, dir);
@@ -69,7 +69,7 @@ void VisibilityChecker::Visit(Sphere::Ptr sphere) {
 	float c = dot(oc, oc) - radius * radius;
 	float discriminant = b * b - a * c;
 
-	if (discriminant <= 0)
+	if (discriminant < 0)
 		return;
 
 	float tMin = ray->GetTMin();

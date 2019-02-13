@@ -56,8 +56,8 @@ void RayIntersector::Visit(SObj::Ptr sobj) {
 void RayIntersector::Visit(CppUtil::Basic::Ptr<Sphere> sphere) {
 	vec3 dir = ray->GetDir();
 	vec3 origin = ray->GetOrigin();
-	vec3 center = sphere->GetCenter();
-	float radius = sphere->GetR();
+	const vec3 & center = sphere->center;
+	const float & radius = sphere->r;
 
 	vec3 oc = origin - center;
 	float a = dot(dir, dir);
@@ -65,7 +65,7 @@ void RayIntersector::Visit(CppUtil::Basic::Ptr<Sphere> sphere) {
 	float c = dot(oc, oc) - radius * radius;
 	float discriminant = b * b - a * c;
 
-	if (discriminant <= 0) {
+	if (discriminant < 0) {
 		rst.isIntersect = false;
 		return;
 	}
@@ -232,8 +232,7 @@ void RayIntersector::Intersect(Triangle::Ptr triangle) {
 	vec3 n1 = normals[triangle->idx[0]];
 	vec3 n2 = normals[triangle->idx[1]];
 	vec3 n3 = normals[triangle->idx[2]];
-	vec3 n = u * n1 + v * n2 + w * n3;
 
+	rst.n = u * n1 + v * n2 + w * n3;
 	rst.isIntersect = true;
-	rst.n = dot(n, dir) < 0 ? n : -n;
 }

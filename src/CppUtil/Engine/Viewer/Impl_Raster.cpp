@@ -131,8 +131,8 @@ void Impl_Raster::Draw(SObj::Ptr sobj) {
 
 void Impl_Raster::Draw(Engine::Sphere::Ptr sphere) {
 	mat4 model = modelVec.back();
-	model = translate(model, sphere->GetCenter());
-	model = scale(model, vec3(sphere->GetR()));
+	model = translate(model, sphere->center);
+	model = scale(model, vec3(sphere->r));
 
 	shader_basic.SetMat4f("model", model);
 	

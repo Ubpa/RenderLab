@@ -12,11 +12,7 @@ namespace CppUtil {
 			Sphere(const glm::vec3 & center = glm::vec3(0), float r = 1.0f)
 				: center(center), r(r) { }
 
-			const glm::vec3 & GetCenter() const { return center; }
-			float GetR() const { return r; }
-			void SetCenter(const glm::vec3 & center) { this->center = center; }
-			void SetR(float r) { this->r = r; }
-		private:
+		public:
 			glm::vec3 center;
 			float r;
 		};

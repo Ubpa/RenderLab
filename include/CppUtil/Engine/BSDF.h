@@ -23,7 +23,9 @@ namespace CppUtil {
 			virtual bool IsDelta() const = 0;
 
 		public:
-			static glm::vec3 LocalReflect(const glm::vec3 & w);
+			static glm::vec3 LocalReflect(const glm::vec3 & w) {
+				return glm::vec3(-w.x, -w.y, w.z);
+			}
 			static bool LocalRefract(const glm::vec3& wo, glm::vec3& wi, float ior);
 		};
 	}

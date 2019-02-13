@@ -17,11 +17,15 @@ namespace CppUtil {
 				: scene(scene) { }
 
 			// ray 处于世界坐标系
-			virtual glm::vec3 Trace(Basic::Ptr<Ray> ray, int depth = 0) = 0;
+			glm::vec3 Trace(Basic::Ptr<Ray> ray) { return Trace(ray, 0); }
+			virtual void Init() { }
 
 			Basic::Ptr<Scene> GetScene() const { return scene; }
 
 		protected:
+			// ray 处于世界坐标系
+			virtual glm::vec3 Trace(Basic::Ptr<Ray> ray, int depth) = 0;
+
 			Basic::Ptr<Scene> scene;
 		};
 	}

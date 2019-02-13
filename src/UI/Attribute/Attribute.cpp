@@ -180,31 +180,17 @@ void Attribute::ComponentVisitor::Visit(Geometry::Ptr geo) {
 
 void Attribute::ComponentVisitor::Visit(Sphere::Ptr sphere) {
 	auto grid = GenGrid(attr->componentType2item[typeid(Geometry)]);
-	auto center = sphere->GetCenter();
-	auto r = sphere->GetR();
+	auto & center = sphere->center;
+	auto & r = sphere->r;
 
 	grid.AddTitle("[ Sphere ]");
 
 	grid.AddTitle("- center");
-	grid.AddEditVal("x", center.x, 0.1, [sphere](double val) {
-		auto center = sphere->GetCenter();
-		center.x = val;
-		sphere->SetCenter(center);
-	});
-	grid.AddEditVal("y", center.y, 0.1, [sphere](double val) {
-		auto center = sphere->GetCenter();
-		center.y = val;
-		sphere->SetCenter(center);
-	});
-	grid.AddEditVal("z", center.z, 0.1, [sphere](double val) {
-		auto center = sphere->GetCenter();
-		center.z = val;
-		sphere->SetCenter(center);
-	});
+	grid.AddEditVal("x", center.x, 0.1);
+	grid.AddEditVal("y", center.y, 0.1);
+	grid.AddEditVal("z", center.z, 0.1);
 
-	grid.AddEditVal("- radius", r, 0.1, [sphere](double val) {
-		sphere->SetR(val);
-	});
+	grid.AddEditVal("- radius", r, 0.1);
 }
 
 void Attribute::ComponentVisitor::Visit(Plane::Ptr plane) {

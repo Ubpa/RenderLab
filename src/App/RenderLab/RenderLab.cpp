@@ -51,7 +51,7 @@ RenderLab::RenderLab(QWidget *parent)
 	const size_t fps = 60;
 	timer->start(1000 / fps);
 
-	scene = GenScene();
+	scene = GenScene(0);
 
 	// viewer
 	viewer = ToPtr(new Viewer(ui.OGLW_Raster, scene));

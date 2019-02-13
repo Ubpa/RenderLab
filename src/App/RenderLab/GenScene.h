@@ -9,6 +9,6 @@ namespace CppUtil {
 	}
 }
 
-CppUtil::Basic::Ptr<CppUtil::Engine::Scene> GenScene();
+CppUtil::Basic::Ptr<CppUtil::Engine::Scene> GenScene(int n);
 
 #endif//!_GEN_SCENE_H_
