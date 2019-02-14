@@ -19,7 +19,7 @@ using namespace glm;
 using namespace std;
 
 PathTracer::PathTracer(Scene::Ptr scene)
-	: RayTracer(scene), sampleNumForAreaLight(1), maxDepth(200) { }
+	: RayTracer(scene), sampleNumForAreaLight(8), maxDepth(10) { }
 
 void PathTracer::Init() {
 	lights.clear();

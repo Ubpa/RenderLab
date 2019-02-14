@@ -27,6 +27,9 @@ namespace CppUtil {
 			BVHNode::Ptr GetL() const { return l; }
 			BVHNode::Ptr GetR() const { return r; }
 
+			// 通过 模板特化 给出函数的定义
+			static const BBox GetBBox(Basic::Ptr<T> obj);
+
 		private:
 			// 要先设置好 start, range 和 triangles
 			// 调整 triangles 的元素顺序，设置 l, r 和 bb

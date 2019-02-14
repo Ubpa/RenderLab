@@ -2,13 +2,9 @@
 #define _ENGINE_INTERSECTOR_VISIBILITY_CHECKER_H_
 
 #include <CppUtil/Engine/Intersector.h>
-#include <CppUtil/Engine/BVHNode.h>
 
 namespace CppUtil {
 	namespace Engine {
-		class Ray;
-		class Triangle;
-
 		class VisibilityChecker : public Intersector {
 			ELEVISITOR_SETUP(VisibilityChecker)
 		public:
@@ -35,7 +31,8 @@ namespace CppUtil {
 		private:
 			bool Intersect(const BBox & bbox);
 			bool Intersect(const BBox & bbox, float & t0, float & t1);
-			void Intersect(BVHNode<Triangle>::Ptr bvhNode);
+			template<typename T>
+			void Intersect(typename BVHNode<T>::Ptr bvhNode);
 			// 如果相交，则会设置 rst，修改 ray.tMax
 			void Intersect(Basic::Ptr<Triangle> triangle);
 

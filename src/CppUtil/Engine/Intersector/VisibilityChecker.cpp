@@ -2,6 +2,7 @@
 
 #include <CppUtil/Engine/Ray.h>
 
+#include <CppUtil/Engine/BVHNode.h>
 #include <CppUtil/Engine/SObj.h>
 #include <CppUtil/Engine/Geometry.h>
 #include <CppUtil/Engine/Transform.h>
@@ -116,7 +117,7 @@ void VisibilityChecker::Visit(TriMesh::Ptr mesh) {
 	if (!Intersect(root->GetBBox()))
 		return;
 
-	Intersect(root);
+	Intersect<Triangle>(root);
 }
 
 bool VisibilityChecker::Intersect(const BBox & bbox) {
@@ -150,7 +151,8 @@ bool VisibilityChecker::Intersect(const BBox & bbox, float & t0, float & t1) {
 	return true;
 }
 
-void VisibilityChecker::Intersect(BVHNode<Triangle>::Ptr bvhNode) {
+template<typename T>
+void VisibilityChecker::Intersect(typename BVHNode<T>::Ptr bvhNode) {
 	if (bvhNode->IsLeaf()) {
 		for (size_t i = 0; i < bvhNode->GetRange(); i++) {
 			Intersect(bvhNode->GetBoxObjs()[i + bvhNode->GetStart()]);
@@ -169,23 +171,23 @@ void VisibilityChecker::Intersect(BVHNode<Triangle>::Ptr bvhNode) {
 			if (rightBoxHit) {
 				auto first = (t1 <= t3) ? l : r;
 				auto second = (t1 <= t3) ? r : l;
-				Intersect(first);
+				Intersect<T>(first);
 				if (rst.isIntersect)
 					return;
 				if (t3 < ray->GetTMax()) {
-					Intersect(second);
+					Intersect<T>(second);
 					if (rst.isIntersect)
 						return;
 				}
 			}
 			else {
-				Intersect(l);
+				Intersect<T>(l);
 				if (rst.isIntersect)
 					return;
 			}
 		}
 		else if (rightBoxHit) {
-			Intersect(r);
+			Intersect<T>(r);
 			if (rst.isIntersect)
 				return;
 		}

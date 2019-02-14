@@ -36,6 +36,23 @@ namespace CppUtil {
 		template <typename T>
 		struct Init : public InitWrapper<T, Has_InitAfterGenSharePtr<T>::value> { };
 
+		template <typename T1, typename T2, bool castable>
+		struct CastWrapper;
+		template <typename T1, typename T2>
+		struct CastWrapper<T1, T2, true> {
+			static std::shared_ptr<T1> call(std::shared_ptr<T2> ptr) {
+				return std::dynamic_pointer_cast<T1>(ptr);
+			}
+		};
+		template <typename T1, typename T2>
+		struct CastWrapper<T1, T2, false> {
+			static std::shared_ptr<T1> call(std::shared_ptr<T2> ptr) {
+				return ERROR_T1_is_not_base_of_T2_or_T2_is_not_base_of_T1();
+			}
+		};
+		template <typename T1, typename T2>
+		struct Cast : public CastWrapper<T1, T2, std::is_base_of<T1, T2>::value || std::is_base_of<T2, T1>::value> { };
+
 		template<typename T>
 		class Ptr : public std::shared_ptr<T> {
 		public:
@@ -54,8 +71,9 @@ namespace CppUtil {
 			Ptr(const std::shared_ptr<T> & p) : std::shared_ptr<T>(p) { }
 			Ptr(const std::shared_ptr<T> && p) : std::shared_ptr<T>(p) { }
 
-			template<typename ChildT>
-			Ptr(const Ptr<ChildT> & ptr) : std::shared_ptr<T>(std::dynamic_pointer_cast<T>(std::shared_ptr<ChildT>(ptr))) { }
+			// T1 is base of T2 or T2 is base of T1
+			template<typename T2>
+			Ptr(const Ptr<T2> & ptr) : std::shared_ptr<T>(Cast<T, T2>::call(std::shared_ptr<T2>(ptr))) { }
 
 			operator bool() const{
 				return *this != nullptr;

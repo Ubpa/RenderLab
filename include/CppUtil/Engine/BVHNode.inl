@@ -5,7 +5,7 @@ void CppUtil::Engine::BVHNode<T>::Build(size_t maxLeafSize) {
 	constexpr size_t bucketNum = 8;
 
 	for (size_t i = start; i < start + range; i++)
-		bb.Expand(boxObjs[i]->GetBBox());
+		bb.Expand(GetBBox(boxObjs[i]));
 
 	if (range < maxLeafSize) {
 		l = nullptr;
@@ -23,7 +23,7 @@ void CppUtil::Engine::BVHNode<T>::Build(size_t maxLeafSize) {
 		vector<vector<Triangle::Ptr>> buckets(bucketNum);
 		vector<BBox> boxesOfBuckets(bucketNum);
 		for (size_t i = 0; i < range; i++) {
-			BBox box = boxObjs[i + start]->GetBBox();
+			BBox box = GetBBox(boxObjs[i + start]);
 			double center = box.GetCenter()[dim];
 			size_t bucketID = min(static_cast<size_t>((center - left) / bucketLen), bucketNum - 1);
 			buckets[bucketID].push_back(boxObjs[i + start]);

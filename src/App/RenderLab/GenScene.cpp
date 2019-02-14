@@ -31,14 +31,14 @@ Scene::Ptr GenScene0() {
 	camera->fov = 50;
 
 	// light
-	auto areaLight = ToPtr(new AreaLight(vec3(1), 10, 0.8f, 0.6f));
+	auto areaLight = ToPtr(new AreaLight(vec3(1), 15, 0.8f, 0.6f));
 	auto light = ToPtr(new Light(sobj_AreaLight, areaLight));
 	auto lightTransform = ToPtr(new Transform(sobj_AreaLight));
 	lightTransform->SetPosition(vec3(0, 1.49f, 0));
 	lightTransform->SetScale(vec3(0.8f, 1.0f, 0.6f));
 	auto lightPlane = ToPtr(new Plane);
 	auto lightGeo = ToPtr(new Geometry(sobj_AreaLight, lightPlane));
-	auto bsdfEmission = ToPtr(new BSDF_Emission(vec3(1)));
+	auto bsdfEmission = ToPtr(new BSDF_Emission(vec3(2)));
 	auto materailEmission = ToPtr(new Material(sobj_AreaLight, bsdfEmission));
 
 	// mirror sphere

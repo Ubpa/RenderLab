@@ -2,6 +2,7 @@
 
 #include <CppUtil/Engine/Ray.h>
 
+#include <CppUtil/Engine/BVHNode.h>
 #include <CppUtil/Engine/SObj.h>
 #include <CppUtil/Engine/AllComponents.h>
 #include <CppUtil/Engine/Sphere.h>
@@ -119,7 +120,7 @@ void RayIntersector::Visit(TriMesh::Ptr mesh) {
 	if (!Intersect(root->GetBBox()))
 		return;
 
-	Intersect(root);
+	Intersect<Triangle>(root);
 }
 
 bool RayIntersector::Intersect(const BBox & bbox) {
@@ -153,7 +154,8 @@ bool RayIntersector::Intersect(const BBox & bbox, float & t0, float & t1) {
 	return true;
 }
 
-void RayIntersector::Intersect(BVHNode<Triangle>::Ptr bvhNode) {
+template<typename T>
+void RayIntersector::Intersect(typename BVHNode<T>::Ptr bvhNode) {
 	if (bvhNode->IsLeaf()) {
 		for (size_t i = 0; i < bvhNode->GetRange(); i++)
 			Intersect(bvhNode->GetBoxObjs()[i + bvhNode->GetStart()]);
@@ -169,15 +171,15 @@ void RayIntersector::Intersect(BVHNode<Triangle>::Ptr bvhNode) {
 			if (rightBoxHit) {
 				auto first = (t1 <= t3) ? l : r;
 				auto second = (t1 <= t3) ? r : l;
-				Intersect(first);
+				Intersect<T>(first);
 				if (t3 < ray->GetTMax())
-					Intersect(second);
+					Intersect<T>(second);
 			}
 			else
-				Intersect(l);
+				Intersect<T>(l);
 		}
 		else if (rightBoxHit)
-			Intersect(r);
+			Intersect<T>(r);
 		else
 			return;
 	}

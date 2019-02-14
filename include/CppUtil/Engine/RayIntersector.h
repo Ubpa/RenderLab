@@ -2,13 +2,10 @@
 #define _ENGINE_INTERSECTOR_RAY_INTERSECTOR_H_
 
 #include <CppUtil/Engine/Intersector.h>
-#include <CppUtil/Engine/BVHNode.h>
 #include <glm/vec3.hpp>
 
 namespace CppUtil {
 	namespace Engine {
-		class Ray;
-		class Triangle;
 
 		// 寻找最近的交点
 		class RayIntersector : public Intersector {
@@ -42,7 +39,8 @@ namespace CppUtil {
 		private:
 			bool Intersect(const BBox & bbox);
 			bool Intersect(const BBox & bbox, float & t0, float & t1);
-			void Intersect(BVHNode<Triangle>::Ptr bvhNode);
+			template<typename T>
+			void Intersect(typename BVHNode<T>::Ptr bvhNode);
 			// 如果相交，则会设置 rst，修改 ray.tMax
 			void Intersect(Basic::Ptr<Triangle> triangle);
 
