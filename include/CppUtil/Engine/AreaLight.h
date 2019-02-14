@@ -37,7 +37,7 @@ namespace CppUtil {
 			float height;
 
 		private:
-			bool Hit(const glm::vec3& p, const glm::vec3 & dirToLight) const;
+			// dirToLight 不必是 单位向量
 			bool Hit(const glm::vec3& p, const glm::vec3 & dirToLight, glm::vec3 & hitPos) const;
 
 			Basic::UniformGridSampler2D sampler;

@@ -19,7 +19,7 @@ using namespace glm;
 using namespace std;
 
 PathTracer::PathTracer(Scene::Ptr scene)
-	: RayTracer(scene), sampleNumForAreaLight(1), maxDepth(10) { }
+	: RayTracer(scene), sampleNumForAreaLight(1), maxDepth(200) { }
 
 void PathTracer::Init() {
 	lights.clear();
@@ -44,10 +44,13 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 	scene->GetRootSObj()->Accept(rayIntersector);
 	auto closestRst = rayIntersector->GetRst();
 	if (!closestRst.closestSObj) {
+		return vec3(0);
+		/*
 		float t = 0.5f * (normalize(ray->GetDir()).y + 1.0f);
 		vec3 white(1.0f, 1.0f, 1.0f);
 		vec3 blue(0.5f, 0.7f, 1.0f);
 		return t * white + (1 - t)*blue;
+		*/
 	}
 
 	// 错误情况
@@ -105,15 +108,15 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 				// dirInWorld 应该是单位向量
 				const vec3 dirInWorld = dir_lightToWorldVec[i] * dir_ToLight;
 				// w_in 处于表面坐标系，应该是单位向量
-				const vec3 w_in = worldToSurface * dirInWorld;
+				const vec3 w_in = normalize(worldToSurface * dirInWorld);
 
 				// 多重重要性采样 Multiple Importance Sampling (MIS)
 				float sumPD = bsdf->PDF(w_out, w_in) + sampleNum * PD;
 				for (int k = 0; k < lightNum; k++) {
 					if (k != i) {
 						int sampleNum = lights[k]->IsDelta() ? 1 : sampleNumForAreaLight;
-						vec3 dir = dir_worldToLightVec[k] * dirInWorld;
-						sumPD += sampleNum * lights[k]->PDF(posInLightSpaceVec[i], dir);
+						vec3 dirInLight = dir_worldToLightVec[k] * dirInWorld;
+						sumPD += sampleNum * lights[k]->PDF(posInLightSpaceVec[i], dirInLight);
 					}
 				}
 
@@ -129,13 +132,13 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 				auto checker = ToPtr(new VisibilityChecker(shadowRay, tMax));
 				scene->GetRootSObj()->Accept(checker);
 				auto shadowRst = checker->GetRst();
-				if (!shadowRst.IsVisible())
+				if (!shadowRst.IsIntersect())
 					sumLightL += (abs_cos_theta / sumPD) * f * lightL;
 			}
 		}
 	}
 	// 深度，丢弃概率
-	float depthP = pow(depth/maxDepth, 2);
+	float depthP = depth < maxDepth ? 0.f : 0.5f;
 	if (Math::Rand_F() < depthP)
 		return emitL + sumLightL;
 
@@ -163,12 +166,12 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 	if (!bsdf->IsDelta()) {
 		for (int i = 0; i < lightNum; i++) {
 			int sampleNum = lights[i]->IsDelta() ? 1 : sampleNumForAreaLight;
-			vec3 dir = dir_worldToLightVec[i] * matRayDirInWorld;
-			sumPD += sampleNum * lights[i]->PDF(posInLightSpaceVec[i], dir);
+			vec3 dirInLight = dir_worldToLightVec[i] * matRayDirInWorld;
+			sumPD += sampleNum * lights[i]->PDF(posInLightSpaceVec[i], dirInLight);
 		}
 	}
 
-	Ray::Ptr matRay = ToPtr(new Ray(hitPos + Math::EPSILON * matRayDirInWorld, matRayDirInWorld));
+	Ray::Ptr matRay = ToPtr(new Ray(hitPos, matRayDirInWorld));
 	const vec3 matRayColor = Trace(matRay, depth + 1);
 
 	vec3 matL = abs_cosTheta / (sumPD * (1.f - terminateProbability) * (1.f - depthP)) * matF * matRayColor;

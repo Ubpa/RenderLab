@@ -27,8 +27,6 @@ VisibilityChecker::VisibilityChecker(Ray::Ptr ray, float tMax)
 
 
 void VisibilityChecker::Visit(SObj::Ptr sobj) {
-	rst.isIntersect = false;
-
 	auto geometry = sobj->GetComponent<Geometry>();
 	auto children = sobj->GetChildren();
 	// 这种情况下不需要 transform
@@ -43,13 +41,13 @@ void VisibilityChecker::Visit(SObj::Ptr sobj) {
 	if (geometry) {
 		geometry->GetPrimitive()->Accept(This());
 
-		if (rst.IsVisible())
+		if (rst.isIntersect)
 			return;
 	}
 
 	for (auto child : children) {
 		child->Accept(This());
-		if (rst.IsVisible())
+		if (rst.isIntersect)
 			return;
 	}
 
@@ -69,8 +67,10 @@ void VisibilityChecker::Visit(Sphere::Ptr sphere) {
 	float c = dot(oc, oc) - radius * radius;
 	float discriminant = b * b - a * c;
 
-	if (discriminant < 0)
+	if (discriminant < 0) {
+		rst.isIntersect = false;
 		return;
+	}
 
 	float tMin = ray->GetTMin();
 	float tMax = ray->GetTMax();
@@ -80,8 +80,10 @@ void VisibilityChecker::Visit(Sphere::Ptr sphere) {
 	float t = -(b + sqrt_discriminant) * inv_a;
 	if (t > tMax || t < tMin) {
 		t = (-b + sqrt_discriminant) * inv_a;
-		if (t > tMax || t < tMin)
+		if (t > tMax || t < tMin) {
+			rst.isIntersect = false;
 			return;
+		}
 	}
 
 	rst.isIntersect = true;
@@ -94,12 +96,16 @@ void VisibilityChecker::Visit(Plane::Ptr plane) {
 	float tMax = ray->GetTMax();
 
 	float t = -origin.y / dir.y;
-	if (t<tMin || t>tMax)
+	if (t<tMin || t>tMax) {
+		rst.isIntersect = false;
 		return;
+	}
 
 	vec3 pos = ray->At(t);
-	if (pos.x<-0.5 || pos.x>0.5 || pos.z<-0.5 || pos.z>0.5)
+	if (pos.x<-0.5 || pos.x>0.5 || pos.z<-0.5 || pos.z>0.5) {
+		rst.isIntersect = false;
 		return;
+	}
 
 	rst.isIntersect = true;
 }
@@ -205,8 +211,10 @@ void VisibilityChecker::Intersect(Triangle::Ptr triangle) {
 	vec3 e1_x_d = cross(e1, dir);
 	float denominator = dot(e1_x_d, e2);
 
-	if (denominator == 0)
+	if (denominator == 0) {
+		rst.isIntersect = false;
 		return;
+	}
 
 	float inv_denominator = 1.0f / denominator;
 
@@ -215,19 +223,25 @@ void VisibilityChecker::Intersect(Triangle::Ptr triangle) {
 	vec3 e2_x_s = cross(e2, s);
 	float r1 = dot(e2_x_s, dir);
 	float u = r1 * inv_denominator;
-	if (u < 0 || u > 1)
+	if (u < 0 || u > 1) {
+		rst.isIntersect = false;
 		return;
+	}
 
 	float r2 = dot(e1_x_d, s);
 	float v = r2 * inv_denominator;
 	float u_plus_v = u + v;
-	if (v < 0 || v > 1 || u_plus_v > 1)
+	if (v < 0 || v > 1 || u_plus_v > 1) {
+		rst.isIntersect = false;
 		return;
+	}
 
 	float r3 = dot(e2_x_s, e1);
 	float t = r3 * inv_denominator;
-	if (t < tMin || t > tMax)
+	if (t < tMin || t > tMax) {
+		rst.isIntersect = false;
 		return;
+	}
 
 	rst.isIntersect = true;
 }

@@ -32,6 +32,12 @@ void RTX_Renderer::Run(Image::Ptr img) {
 	auto cameraMatrix = camera->GetSObj()->GetLocalToWorldMatrix();
 
 	int imgSize = w * h;
+	std::vector<std::vector<vec3>> fimg;
+	for (int i = 0; i < w; i++) {
+		fimg.push_back(std::vector<vec3>());
+		for (int j = 0; j < w; j++)
+			fimg[i].push_back(vec3(0));
+	}
 
 	for (curLoop = 0; curLoop < maxLoop; ++curLoop) {
 		ImgPixelSet pixSet(w, h);
@@ -49,11 +55,8 @@ void RTX_Renderer::Run(Image::Ptr img) {
 			auto ray = camera->GenRay(u, v);
 			ray->Transform(cameraMatrix);
 			vec3 rst = rayTracer->Trace(ray);
-
-			auto origPixel = img->GetPixel_F(x, y);
-			vec3 origColor(origPixel.r*origPixel.r, origPixel.g*origPixel.g, origPixel.b*origPixel.b);
-			vec3 newColor = sqrt((float(curLoop) * origColor + rst) / float(curLoop + 1));
-			img->SetPixel(x, y, newColor);
+			fimg[x][y] += rst;
+			img->SetPixel(x, y, sqrt(fimg[x][y] / float(curLoop + 1)));
 		}
 
 		if (isStop)

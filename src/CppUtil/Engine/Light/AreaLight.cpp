@@ -15,12 +15,12 @@ vec3 AreaLight::Sample_L(const vec3 & p, vec3 & wi, float & distToLight, float &
 	vec3 d = posOnLight - p;
 	float sqDist = dot(d, d);
 	float dist = sqrt(sqDist);
-	float cosTheta = d.y / dist;
 
 	wi = d / dist;
 	distToLight = dist;
 	float area = width * height;
-	PD = sqDist / (area * cosTheta);
+	// float cosTheta = wi.y;
+	PD = sqDist / (area * wi.y);
 	return intensity * color;
 }
 
@@ -48,32 +48,16 @@ vec3 AreaLight::GetL(const vec3 & p, const vec3 & dirToLight, float & distToLigh
 	return intensity * color;
 }
 
-bool AreaLight::Hit(const glm::vec3 & p, const glm::vec3 & dirToLight) const {
-	if (p.y >= 0 || dirToLight.y < 0)
-		return false;
-
-	float yStep = p.y / dirToLight.y;
-	float x = p.x - dirToLight.x * yStep;
-	if (x >= width / 2 || x <= -width / 2)
-		return false;
-
-	float z = p.z - dirToLight.z * yStep;
-	if (z >= height / 2 || z <= -height / 2)
-		return false;
-
-	return true;
-}
-
 bool AreaLight::Hit(const vec3& p, const vec3 & dirToLight, vec3 & hitPos) const {
 	if (p.y >= 0 || dirToLight.y < 0)
 		return false;
 
-	float yStep = p.y / dirToLight.y;
-	float x = p.x - dirToLight.x * yStep;
+	float t = - p.y / dirToLight.y;
+	float x = p.x + dirToLight.x * t;
 	if (x >= width / 2 || x <= -width / 2)
 		return false;
 
-	float z = p.z - dirToLight.z * yStep;
+	float z = p.z + dirToLight.z * t;
 	if (z >= height / 2 || z <= -height / 2)
 		return false;
 

@@ -18,7 +18,7 @@ namespace CppUtil {
 				Rst(bool isIntersect = false)
 					: Intersector::Rst(isIntersect) { }
 
-				bool IsVisible() const { return isIntersect; }
+				bool IsIntersect() const { return isIntersect; }
 			};
 
 		public:

@@ -18,5 +18,5 @@ vec3 BSDF_Diffuse::Sample_f(const vec3 & wo, vec3 & wi, float & PD) {
 }
 
 float BSDF_Diffuse::PDF(const vec3 & wo, const vec3 & wi) {
-	return wi.z / PI;
+	return abs(wi.z) / PI;
 }
