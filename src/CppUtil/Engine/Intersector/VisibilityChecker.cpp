@@ -1,59 +1,114 @@
 #include <CppUtil/Engine/VisibilityChecker.h>
 
+#include <CppUtil/Engine/RayIntersector.h>
+
+#include <CppUtil/Engine/SObj.h>
 #include <CppUtil/Engine/Ray.h>
 
+#include <CppUtil/Engine/PathTracer.h>
 #include <CppUtil/Engine/BVHNode.h>
-#include <CppUtil/Engine/SObj.h>
-#include <CppUtil/Engine/Geometry.h>
-#include <CppUtil/Engine/Transform.h>
 #include <CppUtil/Engine/Sphere.h>
 #include <CppUtil/Engine/Plane.h>
-#include <CppUtil/Engine/TriMesh.h>
-#include <CppUtil/Engine/BBox.h>
 #include <CppUtil/Engine/Triangle.h>
+#include <CppUtil/Engine/TriMesh.h>
 
+#include <glm/geometric.hpp>
 
 using namespace CppUtil::Engine;
+using namespace CppUtil::Basic;
 using namespace glm;
 
 VisibilityChecker::VisibilityChecker(Ray::Ptr ray, float tMax)
-	: ray(ray) {
+	: ray(ray), rst(false) {
 	ray->SetTMax(tMax);
 
-	Reg<SObj>();
+	Reg<BVHNode<Element, PathTracer>>();
 	Reg<Sphere>();
 	Reg<Plane>();
-	Reg<TriMesh>();
+	Reg<Triangle>();
 }
 
+bool VisibilityChecker::Intersect(const BBox & bbox) {
+	float t0, t1;
+	return Intersect(bbox, t0, t1);
+}
 
-void VisibilityChecker::Visit(SObj::Ptr sobj) {
-	auto geometry = sobj->GetComponent<Geometry>();
-	auto children = sobj->GetChildren();
-	// 这种情况下不需要 transform
-	if (geometry == nullptr && children.size() == 0)
-		return;
+bool VisibilityChecker::Intersect(const BBox & bbox, float & t0, float & t1) {
+	const vec3 origin = ray->GetOrigin();
+	const vec3 dir = ray->GetDir();
+	const vec3 invDir = ray->GetInvDir();
+	float tMin = ray->GetTMin();
+	float tMax = ray->GetTMax();
 
-	auto transform = sobj->GetComponent<Transform>();
+	for (size_t i = 0; i < 3; i++) {
+		float invD = invDir[i];
+		float t0 = (bbox.minP[i] - origin[i]) * invD;
+		float t1 = (bbox.maxP[i] - origin[i]) * invD;
+		if (invD < 0.0f)
+			std::swap(t0, t1);
 
-	if (transform)
-		ray->Transform(transform->GetInv());
-
-	if (geometry) {
-		geometry->GetPrimitive()->Accept(This());
-
-		if (rst.isIntersect)
-			return;
+		tMin = max(t0, tMin);
+		tMax = min(t1, tMax);
+		if (tMax <= tMin)
+			return false;
 	}
 
-	for (auto child : children) {
-		child->Accept(This());
-		if (rst.isIntersect)
+	t0 = tMin;
+	t1 = tMax;
+
+	return true;
+}
+
+void VisibilityChecker::Visit(BVHNode<Element, PathTracer>::Ptr bvhNode) {
+	if (bvhNode->IsLeaf()) {
+		const vec3 origin = ray->GetOrigin();
+		const vec3 dir = ray->GetDir();
+		for (size_t i = 0; i < bvhNode->GetRange(); i++) {
+			auto ele = bvhNode->GetObjs()[i + bvhNode->GetStart()];
+			const mat4 & mat = bvhNode->GetHolder()->GetEleW2LMat(ele);
+			ray->Transform(mat);
+			ele->Accept(This());
+			if (rst.isIntersect)
+				return;
+
+			ray->SetOrigin(origin);
+			ray->SetDir(dir);
+		}
+	}
+	else {
+		auto l = bvhNode->GetL();
+		auto r = bvhNode->GetR();
+
+		float t1, t2, t3, t4;
+		bool leftBoxHit = Intersect(l->GetBBox(), t1, t2);
+		bool rightBoxHit = Intersect(r->GetBBox(), t3, t4);
+		if (leftBoxHit) {
+			if (rightBoxHit) {
+				auto first = (t1 <= t3) ? l : r;
+				auto second = (t1 <= t3) ? r : l;
+				Visit(first);
+				if (rst.isIntersect)
+					return;
+				if (t3 < ray->GetTMax()) {
+					Visit(second);
+					if (rst.isIntersect)
+						return;
+				}
+			}
+			else {
+				Visit(l);
+				if (rst.isIntersect)
+					return;
+			}
+		}
+		else if (rightBoxHit) {
+			Visit(r);
+			if (rst.isIntersect)
+				return;
+		}
+		else
 			return;
 	}
-
-	if (transform)
-		ray->Transform(transform->GetMat());
 }
 
 void VisibilityChecker::Visit(Sphere::Ptr sphere) {
@@ -111,92 +166,7 @@ void VisibilityChecker::Visit(Plane::Ptr plane) {
 	rst.isIntersect = true;
 }
 
-void VisibilityChecker::Visit(TriMesh::Ptr mesh) {
-	auto root = mesh->GetBVHRoot();
-
-	if (!Intersect(root->GetBBox()))
-		return;
-
-	Intersect<Triangle>(root);
-}
-
-bool VisibilityChecker::Intersect(const BBox & bbox) {
-	float t0, t1;
-	return Intersect(bbox, t0, t1);
-}
-
-bool VisibilityChecker::Intersect(const BBox & bbox, float & t0, float & t1) {
-	const vec3 origin = ray->GetOrigin();
-	const vec3 dir = ray->GetDir();
-	const vec3 invDir = ray->GetInvDir();
-	float tMin = ray->GetTMin();
-	float tMax = ray->GetTMax();
-
-	for (size_t i = 0; i < 3; i++) {
-		float invD = invDir[i];
-		float t0 = (bbox.minP[i] - origin[i]) * invD;
-		float t1 = (bbox.maxP[i] - origin[i]) * invD;
-		if (invD < 0.0f)
-			std::swap(t0, t1);
-
-		tMin = max(t0, tMin);
-		tMax = min(t1, tMax);
-		if (tMax <= tMin)
-			return false;
-	}
-
-	t0 = tMin;
-	t1 = tMax;
-
-	return true;
-}
-
-template<typename T>
-void VisibilityChecker::Intersect(typename BVHNode<T>::Ptr bvhNode) {
-	if (bvhNode->IsLeaf()) {
-		for (size_t i = 0; i < bvhNode->GetRange(); i++) {
-			Intersect(bvhNode->GetBoxObjs()[i + bvhNode->GetStart()]);
-			if (rst.isIntersect)
-				return;
-		}
-	}
-	else {
-		auto l = bvhNode->GetL();
-		auto r = bvhNode->GetR();
-
-		float t1, t2, t3, t4;
-		bool leftBoxHit = Intersect(l->GetBBox(), t1, t2);
-		bool rightBoxHit = Intersect(r->GetBBox(), t3, t4);
-		if (leftBoxHit) {
-			if (rightBoxHit) {
-				auto first = (t1 <= t3) ? l : r;
-				auto second = (t1 <= t3) ? r : l;
-				Intersect<T>(first);
-				if (rst.isIntersect)
-					return;
-				if (t3 < ray->GetTMax()) {
-					Intersect<T>(second);
-					if (rst.isIntersect)
-						return;
-				}
-			}
-			else {
-				Intersect<T>(l);
-				if (rst.isIntersect)
-					return;
-			}
-		}
-		else if (rightBoxHit) {
-			Intersect<T>(r);
-			if (rst.isIntersect)
-				return;
-		}
-		else
-			return;
-	}
-}
-
-void VisibilityChecker::Intersect(Triangle::Ptr triangle) {
+void VisibilityChecker::Visit(Triangle::Ptr triangle) {
 	auto positions = triangle->GetMesh()->GetPositions();
 	vec3 p1 = positions[triangle->idx[0]];
 	vec3 p2 = positions[triangle->idx[1]];

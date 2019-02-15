@@ -1,10 +1,11 @@
 #include <CppUtil/Engine/Triangle.h>
+
 #include <CppUtil/Engine/TriMesh.h>
 
 using namespace CppUtil::Engine;
 using namespace glm;
 
-BBox Triangle::GetBBox() const {
+const BBox Triangle::GetBBox() const {
 	auto positions = mesh.lock()->GetPositions();
 
 	vec3 pArr[3] = {
@@ -18,8 +19,8 @@ BBox Triangle::GetBBox() const {
 
 	for (size_t dim = 0; dim < 3; dim++) {
 		if (minP[dim] == maxP[dim]) {
-			minP[dim] -= 0.000001;
-			maxP[dim] += 0.000001;
+			minP[dim] -= 0.000001f;
+			maxP[dim] += 0.000001f;
 		}
 	}
 

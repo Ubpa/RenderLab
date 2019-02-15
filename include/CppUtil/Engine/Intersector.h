@@ -5,17 +5,6 @@
 
 namespace CppUtil {
 	namespace Engine {
-		class SObj;
-		class Sphere;
-		class Plane;
-		class TriMesh;
-
-		class Ray;
-		class Triangle;
-		class BBox;
-		template <typename T>
-		class BVHNode;
-
 		class Intersector : public Basic::EleVisitor {
 			ELEVISITOR_SETUP(Intersector)
 		public:

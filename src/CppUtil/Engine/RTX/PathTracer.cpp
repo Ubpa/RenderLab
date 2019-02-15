@@ -1,5 +1,7 @@
 #include <CppUtil/Engine/PathTracer.h>
 
+#include <CppUtil/Engine/BVHNode.h>
+
 #include <CppUtil/Engine/Scene.h>
 #include <CppUtil/Engine/SObj.h>
 #include <CppUtil/Engine/RayIntersector.h>
@@ -10,6 +12,11 @@
 #include <CppUtil/Engine/LightBase.h>
 #include <CppUtil/Engine/BSDF.h>
 
+#include <CppUtil/Engine/Geometry.h>
+#include <CppUtil/Engine/Sphere.h>
+#include <CppUtil/Engine/Plane.h>
+#include <CppUtil/Engine/TriMesh.h>
+
 #include <CppUtil/Basic/Math.h>
 #include <glm/geometric.hpp>
 
@@ -18,8 +25,83 @@ using namespace CppUtil::Basic;
 using namespace glm;
 using namespace std;
 
+// ------------ BVHInitVisitor ------------
+
+class PathTracer::BVHInitVisitor : public EleVisitor {
+	ELEVISITOR_SETUP(BVHInitVisitor)
+public:
+	BVHInitVisitor(PathTracer * ptx)
+		: ptx(ptx) {
+		Reg<Geometry>();
+		Reg<Sphere>();
+		Reg<Plane>();
+		Reg<TriMesh>();
+	}
+private:
+	void Visit(Geometry::Ptr geo) {
+		auto primitive = geo->GetPrimitive();
+		if (!primitive)
+			return;
+
+		auto w2l = geo->GetSObj()->GetWorldToLocalMatrix();
+		auto l2w = inverse(w2l);
+		ptx->worldToLocalMatrixes[primitive] = w2l;
+		ptx->localToWorldMatrixes[primitive] = l2w;
+		ptx->norm_localToWorld[geo->GetSObj()] = transpose(inverse(mat3(l2w)));
+
+		ptx->primitive2sobj[geo->GetPrimitive()] = geo->GetSObj();
+		geo->GetPrimitive()->Accept(This());
+	}
+
+	void Visit(Sphere::Ptr sphere) {
+		auto matrix = ptx->localToWorldMatrixes[sphere];
+		ptx->elements.push_back(sphere);
+		ptx->ele2bbox[sphere] = sphere->GetBBox().Transform(matrix);
+	}
+
+	void Visit(Plane::Ptr plane) {
+		auto matrix = ptx->localToWorldMatrixes[plane];
+		ptx->elements.push_back(plane);
+		ptx->ele2bbox[plane] = plane->GetBBox().Transform(matrix);
+	}
+
+	void Visit(TriMesh::Ptr mesh) {
+		auto matrix = ptx->localToWorldMatrixes[mesh];
+		auto triangles = mesh->GetTriangles();
+		for (auto triangle : triangles) {
+			ptx->elements.push_back(triangle);
+			ptx->ele2bbox[triangle] = triangle->GetBBox().Transform(matrix);
+		}
+	}
+
+private:
+	PathTracer * ptx;
+};
+
+// ------------ GetPrimitiveVisitor ------------
+
+class PathTracer::GetPrimitiveVisitor : public EleVisitor {
+	ELEVISITOR_SETUP(GetPrimitiveVisitor)
+public:
+	GetPrimitiveVisitor() {
+		Reg<Triangle>();
+		Reg<Sphere>();
+		Reg<Plane>();
+		Reg<TriMesh>();
+	}
+private:
+	void Visit(Triangle::Ptr obj) { primitive = obj->GetMesh(); }
+	void Visit(Sphere::Ptr obj) { primitive = obj; }
+	void Visit(Plane::Ptr obj) { primitive = obj; }
+	void Visit(TriMesh::Ptr obj) { primitive = obj; }
+public:
+	Primitive::Ptr primitive;
+};
+
+// ------------ PathTracer ------------
+
 PathTracer::PathTracer(Scene::Ptr scene)
-	: RayTracer(scene), sampleNumForAreaLight(8), maxDepth(10) { }
+	: RayTracer(scene), sampleNumForAreaLight(2), maxDepth(20) { }
 
 void PathTracer::Init() {
 	lights.clear();
@@ -37,21 +119,48 @@ void PathTracer::Init() {
 		dir_lightToWorldVec.push_back(lightToWorld);
 		dir_worldToLightVec.push_back(worldToLight);
 	}
+
+	//bvh
+	auto geos = scene->GetRoot()->GetComponentsInChildren<Geometry>();
+	auto initVisitor = ToPtr(new BVHInitVisitor(this));
+	for (auto geo : geos)
+		geo->Accept(initVisitor);
+	bvhRoot = ToPtr(new BVHNode<Element, PathTracer>(this, elements, 0, elements.size()));
+}
+
+const mat4 & PathTracer::GetEleW2LMat(Element::Ptr element) {
+	auto visitor = ToPtr(new GetPrimitiveVisitor);
+	element->Accept(visitor);
+	return worldToLocalMatrixes[visitor->primitive];
+}
+
+const mat4 & PathTracer::GetEleL2WMat(Element::Ptr element) {
+	auto visitor = ToPtr(new GetPrimitiveVisitor);
+	element->Accept(visitor);
+	return localToWorldMatrixes[visitor->primitive];
+}
+
+const SObj::Ptr PathTracer::GetSObj(Element::Ptr element) {
+	auto visitor = ToPtr(new GetPrimitiveVisitor);
+	element->Accept(visitor);
+	return primitive2sobj[visitor->primitive];
 }
 
 vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 	auto rayIntersector = ToPtr(new RayIntersector(ray));
-	scene->GetRootSObj()->Accept(rayIntersector);
-	auto closestRst = rayIntersector->GetRst();
+	bvhRoot->Accept(rayIntersector);
+	auto & closestRst = rayIntersector->GetRst();
 	if (!closestRst.closestSObj) {
-		return vec3(0);
-		/*
+		//return vec3(0);
+		
 		float t = 0.5f * (normalize(ray->GetDir()).y + 1.0f);
 		vec3 white(1.0f, 1.0f, 1.0f);
 		vec3 blue(0.5f, 0.7f, 1.0f);
 		return t * white + (1 - t)*blue;
-		*/
+		
 	}
+	const vec3 worldNorm = normalize(norm_localToWorld[closestRst.closestSObj] * closestRst.n);
+	//return abs(worldNorm);
 
 	// 错误情况
 	auto material = closestRst.closestSObj->GetComponent<Material>();
@@ -67,7 +176,7 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 
 	const vec3 hitPos = ray->At(ray->GetTMax());
 
-	auto const surfaceToWorld = Math::GenCoordSpace(closestRst.n);
+	auto const surfaceToWorld = Math::GenCoordSpace(worldNorm);
 	auto const worldToSurface = transpose(surfaceToWorld);
 
 	// w_out 处于表面坐标系，向外
@@ -130,7 +239,7 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 				Ray::Ptr shadowRay = ToPtr(new Ray(shadowOrigin, dirInWorld));
 				float tMax = dist_ToLight / length(dirInWorld) - 0.001f;
 				auto checker = ToPtr(new VisibilityChecker(shadowRay, tMax));
-				scene->GetRootSObj()->Accept(checker);
+				bvhRoot->Accept(checker);
 				auto shadowRst = checker->GetRst();
 				if (!shadowRst.IsIntersect())
 					sumLightL += (abs_cos_theta / sumPD) * f * lightL;

@@ -1,11 +1,11 @@
-template<typename T>
-void CppUtil::Engine::BVHNode<T>::Build(size_t maxLeafSize) {
+template<typename T, typename HolderT>
+void CppUtil::Engine::BVHNode<T, HolderT>::Build(size_t maxLeafSize) {
 	// Build bvh form start to start + range
 
 	constexpr size_t bucketNum = 8;
 
 	for (size_t i = start; i < start + range; i++)
-		bb.Expand(GetBBox(boxObjs[i]));
+		bb.Expand(GetBBox(objs[i]));
 
 	if (range < maxLeafSize) {
 		l = nullptr;
@@ -14,19 +14,19 @@ void CppUtil::Engine::BVHNode<T>::Build(size_t maxLeafSize) {
 	}
 
 	// get best partition
-	vector<Triangle::Ptr> bestPartition[2];
+	vector<T::Ptr> bestPartition[2];
 	double minCost = DBL_MAX;
 	for (size_t dim = 0; dim < 3; dim++) {
 		// 1. compute buckets
 		double bucketLen = bb.GetExtent()[dim] / bucketNum;
 		double left = bb.minP[dim];
-		vector<vector<Triangle::Ptr>> buckets(bucketNum);
+		vector<vector<T::Ptr>> buckets(bucketNum);
 		vector<BBox> boxesOfBuckets(bucketNum);
 		for (size_t i = 0; i < range; i++) {
-			BBox box = GetBBox(boxObjs[i + start]);
+			BBox box = GetBBox(objs[i + start]);
 			double center = box.GetCenter()[dim];
 			size_t bucketID = min(static_cast<size_t>((center - left) / bucketLen), bucketNum - 1);
-			buckets[bucketID].push_back(boxObjs[i + start]);
+			buckets[bucketID].push_back(objs[i + start]);
 			boxesOfBuckets[bucketID].Expand(box);
 		}
 
@@ -80,16 +80,16 @@ void CppUtil::Engine::BVHNode<T>::Build(size_t maxLeafSize) {
 	// recursion
 	if (bestPartition[0].size() == range || bestPartition[1].size() == range) {
 		size_t leftNum = range / 2;
-		l = ToPtr(new BVHNode(boxObjs, maxLeafSize, start, leftNum));
-		r = ToPtr(new BVHNode(boxObjs, maxLeafSize, start + leftNum, range - leftNum));
+		l = ToPtr(new BVHNode(holder, objs, start, leftNum, maxLeafSize));
+		r = ToPtr(new BVHNode(holder, objs, start + leftNum, range - leftNum, maxLeafSize));
 	}
 	else {
 		for (size_t i = 0; i < bestPartition[0].size(); i++)
-			boxObjs[i + start] = bestPartition[0][i];
+			objs[i + start] = bestPartition[0][i];
 		for (size_t i = 0; i < bestPartition[1].size(); i++)
-			boxObjs[i + start + bestPartition[0].size()] = bestPartition[1][i];
+			objs[i + start + bestPartition[0].size()] = bestPartition[1][i];
 
-		l = ToPtr(new BVHNode(boxObjs, maxLeafSize, start, bestPartition[0].size()));
-		r = ToPtr(new BVHNode(boxObjs, maxLeafSize, start + bestPartition[0].size(), bestPartition[1].size()));
+		l = ToPtr(new BVHNode(holder, objs, start, bestPartition[0].size(), maxLeafSize));
+		r = ToPtr(new BVHNode(holder, objs, start + bestPartition[0].size(), bestPartition[1].size(), maxLeafSize));
 	}
 }

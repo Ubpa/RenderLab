@@ -2,6 +2,7 @@
 #define _ENGINE_PRIMITIVE_BBOX_H_
 
 #include <glm/vec3.hpp>
+#include <glm/mat4x4.hpp>
 #include <glm/geometric.hpp>
 
 namespace CppUtil {
@@ -35,6 +36,8 @@ namespace CppUtil {
 				maxP = glm::max(maxP, rhs.maxP);
 				return *this;
 			}
+
+			const BBox Transform(const glm::mat4 & matrix) const;
 
 		public:
 			glm::vec3 minP;

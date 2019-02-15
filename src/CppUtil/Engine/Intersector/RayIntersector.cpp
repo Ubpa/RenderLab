@@ -1,15 +1,14 @@
 #include <CppUtil/Engine/RayIntersector.h>
 
+#include <CppUtil/Engine/SObj.h>
 #include <CppUtil/Engine/Ray.h>
 
+#include <CppUtil/Engine/PathTracer.h>
 #include <CppUtil/Engine/BVHNode.h>
-#include <CppUtil/Engine/SObj.h>
-#include <CppUtil/Engine/AllComponents.h>
 #include <CppUtil/Engine/Sphere.h>
 #include <CppUtil/Engine/Plane.h>
-#include <CppUtil/Engine/TriMesh.h>
-#include <CppUtil/Engine/BBox.h>
 #include <CppUtil/Engine/Triangle.h>
+#include <CppUtil/Engine/TriMesh.h>
 
 #include <glm/geometric.hpp>
 
@@ -19,42 +18,85 @@ using namespace glm;
 
 RayIntersector::RayIntersector(Ray::Ptr ray)
 	: ray(ray) {
-	Reg<SObj>();
+	Reg<BVHNode<Element, PathTracer>>();
 	Reg<Sphere>();
 	Reg<Plane>();
-	Reg<TriMesh>();
+	Reg<Triangle>();
 }
 
-void RayIntersector::Visit(SObj::Ptr sobj) {
-	auto geometry = sobj->GetComponent<Geometry>();
-	auto children = sobj->GetChildren();
-	// 这种情况下不需要 transform
-	if (geometry == nullptr && children.size() == 0)
-		return;
+bool RayIntersector::Intersect(const BBox & bbox) {
+	float t0, t1;
+	return Intersect(bbox, t0, t1);
+}
 
-	auto origSObj = rst.closestSObj;
-	auto transform = sobj->GetComponent<Transform>();
-	if (transform)
-		ray->Transform(transform->GetInv());
+bool RayIntersector::Intersect(const BBox & bbox, float & t0, float & t1) {
+	const vec3 origin = ray->GetOrigin();
+	const vec3 dir = ray->GetDir();
+	const vec3 invDir = ray->GetInvDir();
+	float tMin = ray->GetTMin();
+	float tMax = ray->GetTMax();
 
-	if (geometry) {
-		geometry->GetPrimitive()->Accept(This());
+	for (size_t i = 0; i < 3; i++) {
+		float invD = invDir[i];
+		float t0 = (bbox.minP[i] - origin[i]) * invD;
+		float t1 = (bbox.maxP[i] - origin[i]) * invD;
+		if (invD < 0.0f)
+			std::swap(t0, t1);
 
-		if (rst.isIntersect)
-			rst.closestSObj = sobj;
+		tMin = max(t0, tMin);
+		tMax = min(t1, tMax);
+		if (tMax <= tMin)
+			return false;
 	}
 
-	for (auto child : children)
-		child->Accept(This());
+	t0 = tMin;
+	t1 = tMax;
 
-	if (transform) {
-		ray->Transform(transform->GetMat());
-		if (rst.closestSObj != origSObj)
-			rst.n = normalize(transform->GetNormMat() * rst.n);
+	return true;
+}
+
+void RayIntersector::Visit(BVHNode<Element, PathTracer>::Ptr bvhNode) {
+	if (bvhNode->IsLeaf()) {
+		const vec3 origin = ray->GetOrigin();
+		const vec3 dir = ray->GetDir();
+		for (size_t i = 0; i < bvhNode->GetRange(); i++) {
+			auto ele = bvhNode->GetObjs()[i + bvhNode->GetStart()];
+			const mat4 & mat = bvhNode->GetHolder()->GetEleW2LMat(ele);
+			ray->Transform(mat);
+			ele->Accept(This());
+			if (rst.isIntersect)
+				rst.closestSObj = bvhNode->GetHolder()->GetSObj(ele);
+
+			ray->SetOrigin(origin);
+			ray->SetDir(dir);
+		}
+	}
+	else {
+		auto l = bvhNode->GetL();
+		auto r = bvhNode->GetR();
+
+		float t1, t2, t3, t4;
+		bool leftBoxHit = Intersect(l->GetBBox(), t1, t2);
+		bool rightBoxHit = Intersect(r->GetBBox(), t3, t4);
+		if (leftBoxHit) {
+			if (rightBoxHit) {
+				auto first = (t1 <= t3) ? l : r;
+				auto second = (t1 <= t3) ? r : l;
+				Visit(first);
+				if (t3 < ray->GetTMax())
+					Visit(second);
+			}
+			else
+				Visit(l);
+		}
+		else if (rightBoxHit)
+			Visit(r);
+		else
+			return;
 	}
 }
 
-void RayIntersector::Visit(CppUtil::Basic::Ptr<Sphere> sphere) {
+void RayIntersector::Visit(Sphere::Ptr sphere) {
 	vec3 dir = ray->GetDir();
 	vec3 origin = ray->GetOrigin();
 	const vec3 & center = sphere->center;
@@ -113,79 +155,7 @@ void RayIntersector::Visit(Plane::Ptr plane) {
 	rst.n = vec3(0, sign(origin.y), 0);
 }
 
-void RayIntersector::Visit(TriMesh::Ptr mesh) {
-	auto root = mesh->GetBVHRoot();
-	rst.isIntersect = false;
-
-	if (!Intersect(root->GetBBox()))
-		return;
-
-	Intersect<Triangle>(root);
-}
-
-bool RayIntersector::Intersect(const BBox & bbox) {
-	float t0, t1;
-	return Intersect(bbox, t0, t1);
-}
-
-bool RayIntersector::Intersect(const BBox & bbox, float & t0, float & t1) {
-	const vec3 origin = ray->GetOrigin();
-	const vec3 dir = ray->GetDir();
-	const vec3 invDir = ray->GetInvDir();
-	float tMin = ray->GetTMin();
-	float tMax = ray->GetTMax();
-
-	for (size_t i = 0; i < 3; i++) {
-		float invD = invDir[i];
-		float t0 = (bbox.minP[i] - origin[i]) * invD;
-		float t1 = (bbox.maxP[i] - origin[i]) * invD;
-		if (invD < 0.0f)
-			std::swap(t0, t1);
-
-		tMin = max(t0, tMin);
-		tMax = min(t1, tMax);
-		if (tMax <= tMin)
-			return false;
-	}
-
-	t0 = tMin;
-	t1 = tMax;
-
-	return true;
-}
-
-template<typename T>
-void RayIntersector::Intersect(typename BVHNode<T>::Ptr bvhNode) {
-	if (bvhNode->IsLeaf()) {
-		for (size_t i = 0; i < bvhNode->GetRange(); i++)
-			Intersect(bvhNode->GetBoxObjs()[i + bvhNode->GetStart()]);
-	}
-	else {
-		auto l = bvhNode->GetL();
-		auto r = bvhNode->GetR();
-
-		float t1, t2, t3, t4;
-		bool leftBoxHit = Intersect(l->GetBBox(), t1, t2);
-		bool rightBoxHit = Intersect(r->GetBBox(), t3, t4);
-		if (leftBoxHit) {
-			if (rightBoxHit) {
-				auto first = (t1 <= t3) ? l : r;
-				auto second = (t1 <= t3) ? r : l;
-				Intersect<T>(first);
-				if (t3 < ray->GetTMax())
-					Intersect<T>(second);
-			}
-			else
-				Intersect<T>(l);
-		}
-		else if (rightBoxHit)
-			Intersect<T>(r);
-		else
-			return;
-	}
-}
-
-void RayIntersector::Intersect(Triangle::Ptr triangle) {
+void RayIntersector::Visit(Triangle::Ptr triangle) {
 	auto positions = triangle->GetMesh()->GetPositions();
 	vec3 p1 = positions[triangle->idx[0]];
 	vec3 p2 = positions[triangle->idx[1]];
@@ -212,19 +182,25 @@ void RayIntersector::Intersect(Triangle::Ptr triangle) {
 	vec3 e2_x_s = cross(e2, s);
 	float r1 = dot(e2_x_s, dir);
 	float u = r1 * inv_denominator;
-	if (u < 0 || u > 1)
+	if (u < 0 || u > 1) {
+		rst.isIntersect = false;
 		return;
+	}
 
 	float r2 = dot(e1_x_d, s);
 	float v = r2 * inv_denominator;
 	float u_plus_v = u + v;
-	if (v < 0 || v > 1 || u_plus_v > 1)
+	if (v < 0 || v > 1 || u_plus_v > 1) {
+		rst.isIntersect = false;
 		return;
+	}
 
 	float r3 = dot(e2_x_s, e1);
 	float t = r3 * inv_denominator;
-	if (t < tMin || t > tMax)
+	if (t < tMin || t > tMax) {
+		rst.isIntersect = false;
 		return;
+	}
 
 	ray->SetTMax(t);
 

@@ -75,7 +75,7 @@ void Impl_Raster::Init() {
 	shader_basic = Shader(rootPath + str_Basic_P3_vs, rootPath + str_Basic_fs);
 	shader_basic.UniformBlockBind("CameraMatrixs", 0);
 
-	auto geos = scene->GetRootSObj()->GetComponentsInChildren<Geometry>();
+	auto geos = scene->GetRoot()->GetComponentsInChildren<Geometry>();
 	for (auto geo : geos) {
 		TriMesh::Ptr mesh = geo->GetPrimitive();
 		if (mesh == nullptr)
@@ -98,7 +98,7 @@ void Impl_Raster::Draw() {
 
 	modelVec.clear();
 	modelVec.push_back(mat4(1.0f));
-	scene->GetRootSObj()->Accept(This());
+	scene->GetRoot()->Accept(This());
 }
 
 void Impl_Raster::Draw(SObj::Ptr sobj) {

@@ -1,34 +1,37 @@
 #ifndef _ENGINE_PRIMITIVE_BVH_NODE_H_
 #define _ENGINE_PRIMITIVE_BVH_NODE_H_
 
-#include <CppUtil/Basic/HeapObj.h>
+#include <CppUtil/Basic/Element.h>
 #include <CppUtil/Engine/BBox.h>
 
 #include <vector>
 
 namespace CppUtil {
 	namespace Engine {
-		// T 应该要有 GetBBox 函数
-		template<typename T>
-		class BVHNode : public Basic::HeapObj {
-			HEAP_OBJ_SETUP(BVHNode<T>)
+
+		template<typename T, typename HolderT>
+		class BVHNode : public Basic::Element {
+			ELE_SETUP(BVHNode)
 		public:
-			BVHNode(std::vector<Basic::Ptr<T>> & boxObjs, size_t maxLeafSize, size_t start, size_t range)
-				: boxObjs(boxObjs), start(start), range(range) {
+			BVHNode(HolderT * holder, std::vector<Basic::Ptr<T>> & objs, size_t start, size_t range, size_t maxLeafSize = 4)
+				: holder(holder), objs(objs), start(start), range(range) {
 				Build(maxLeafSize);
 			}
 
 			bool IsLeaf() const { return l == nullptr && r == nullptr; }
 
-			const std::vector<Basic::Ptr<T>> & GetBoxObjs() const { return boxObjs; }
+			HolderT * GetHolder()const { return holder; }
+			const std::vector<Basic::Ptr<T>> & GetObjs() const { return objs; }
 			const BBox & GetBBox() const { return bb; }
 			size_t GetStart() const { return start; }
 			size_t GetRange() const { return range; }
 			BVHNode::Ptr GetL() const { return l; }
 			BVHNode::Ptr GetR() const { return r; }
 
-			// 通过 模板特化 给出函数的定义
-			static const BBox GetBBox(Basic::Ptr<T> obj);
+			// 可通过 模板实例化 来自行定义
+			const BBox GetBBox(Basic::Ptr<T> obj) const {
+				return holder->GetBBox(obj);
+			}
 
 		private:
 			// 要先设置好 start, range 和 triangles
@@ -36,7 +39,8 @@ namespace CppUtil {
 			void Build(size_t maxLeafSize);
 
 		private:
-			std::vector<Basic::Ptr<T>> & boxObjs;
+			HolderT * holder;
+			std::vector<Basic::Ptr<T>> & objs;
 			BBox bb;       // bounding box of the node
 			size_t start;  // start index into the primitive list
 			size_t range;  // range of index into the primitive list

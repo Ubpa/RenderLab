@@ -168,6 +168,11 @@ void Attribute::ComponentVisitor::Visit(Transform::Ptr transform) {
 
 void Attribute::ComponentVisitor::Visit(Camera::Ptr camera) {
 	auto item = GenItem(camera, "Camera");
+	auto grid = GenGrid(item);
+	
+	grid.AddEditVal("- Field of View", camera->GetFOV(), 1, [camera](double fov) {
+		camera->SetFOV(fov);
+	});
 }
 
 // -------------- Geometry --------------

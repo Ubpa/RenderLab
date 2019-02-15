@@ -1,5 +1,8 @@
 #include <CppUtil/Engine/TriMesh.h>
 
+#include <CppUtil/Engine/Triangle.h>
+#include <CppUtil/Engine/BVHNode.h>
+
 using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
 using namespace glm;
@@ -12,8 +15,7 @@ TriMesh::TriMesh(const std::vector<size_t> & indice,
 :	indice(indice),
 	positions(positions),
 	normals(normals),
-	texcoords(texcoords),
-	bvhRoot(nullptr)
+	texcoords(texcoords)
 {
 	assert(indice.size() > 0 && indice.size() % 3 == 0);
 	assert(positions.size() > 0);
@@ -57,6 +59,4 @@ TriMesh::TriMesh(size_t triNum, size_t vertexNum,
 void TriMesh::InitAfterGenSharePtr() {
 	for (auto triangle : triangles)
 		triangle->mesh = This();
-
-	bvhRoot = ToPtr(new BVHNode<Triangle>(triangles, 4, 0, triangles.size()));
 }

@@ -1,36 +1,39 @@
 #ifndef _ENGINE_SCENE_SCENE_H_
 #define _ENGINE_SCENE_SCENE_H_
 
-#include <CppUtil/Basic/HeapObj.h>
+#include <CppUtil/Basic/Element.h>
+
+#include <glm/glm.hpp>
 
 #include <string>
 #include <vector>
 
 namespace CppUtil {
 	namespace Engine {
+		class SObj;
+
 		class Camera;
 		class Light;
 
-		class SObj;
-
-		class Scene : public Basic::HeapObj {
-			HEAP_OBJ_SETUP(Scene)
+		class Scene : public Basic::Element {
+			ELE_SETUP(Scene)
 		public:
-			Scene(Basic::Ptr<SObj> rootSObj, const std::string & name = "");
+			Scene(Basic::Ptr<SObj> root, const std::string & name = "");
 
-			Basic::Ptr<SObj> GetRootSObj() const { return rootSObj; }
+			Basic::Ptr<SObj> GetRoot() const { return root; }
+
 			Basic::Ptr<Camera> GetMainCamera() const { return mainCamera; }
 			const std::vector<Basic::Ptr<Light>> & GetLights() const { return lights; }
-			const std::vector<Basic::Ptr<SObj>> & GetGeoSObjs() const { return geoSObjs; }
+
+			void Init();
 
 		public:
 			std::string name;
 
 		private:
-			Basic::Ptr<SObj> rootSObj;
+			Basic::Ptr<SObj> root;
 			Basic::Ptr<Camera> mainCamera;
 			std::vector<Basic::Ptr<Light>> lights;
-			std::vector<Basic::Ptr<SObj>> geoSObjs;
 		};
 	}
 }

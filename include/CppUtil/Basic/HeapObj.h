@@ -8,16 +8,18 @@ public:\
 	typedef CppUtil::Basic::Ptr<CLASS> Ptr;\
 	typedef CppUtil::Basic::WPtr<CLASS> WPtr;\
 	typedef CppUtil::Basic::CPtr<CLASS> CPtr;\
-	Ptr This(){ return std::dynamic_pointer_cast<CLASS>(HeapObj::This()); }\
-	CPtr CThis() const { return std::dynamic_pointer_cast<const CLASS>(HeapObj::CThis()); }\
 protected:\
-	virtual ~CLASS() = default;
+	virtual ~CLASS() = default;\
+private:\
+	Ptr This(){ return std::dynamic_pointer_cast<CLASS>(HeapObj::This()); }\
+	CPtr CThis() const { return std::dynamic_pointer_cast<const CLASS>(HeapObj::CThis()); }
 
 #define HEAP_OBJ_SETUP_SELF_DEL(CLASS) \
 public:\
 	typedef CppUtil::Basic::Ptr<CLASS> Ptr;\
 	typedef CppUtil::Basic::WPtr<CLASS> WPtr;\
 	typedef CppUtil::Basic::CPtr<CLASS> CPtr;\
+private:\
 	Ptr This(){ return std::dynamic_pointer_cast<CLASS>(HeapObj::This()); }\
 	CPtr CThis() const { return std::dynamic_pointer_cast<const CLASS>(HeapObj::CThis()); }
 

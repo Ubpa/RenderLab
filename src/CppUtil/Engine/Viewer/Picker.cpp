@@ -44,7 +44,7 @@ void Picker::Init() {
 		vec3 dir = posInWorld - camera->GetPos();
 		auto ray = ToPtr(new Ray(camera->GetPos(), dir));
 		auto rayIntersector = ToPtr(new RayIntersector(ray));
-		viewer->GetScene()->GetRootSObj()->Accept(rayIntersector);
+		viewer->GetScene()->GetRoot()->Accept(rayIntersector);
 		auto closestRst = rayIntersector->GetRst();
 		if (closestRst.closestSObj)
 			Ui::Attribute::GetInstance()->SetSObj(closestRst.closestSObj);

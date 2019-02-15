@@ -14,11 +14,10 @@ namespace CppUtil {
 	}
 }
 
-Scene::Scene(SObj::Ptr rootSObj, const string & name)
-	: rootSObj(rootSObj), name(name), mainCamera(nullptr) {
+Scene::Scene(SObj::Ptr root, const string & name)
+	: root(root), name(name), mainCamera(nullptr) { }
 
-	if (rootSObj) {
-		mainCamera = rootSObj->GetComponentInChildren<Camera>();
-		lights = rootSObj->GetComponentsInChildren<Light>();
-	}
+void Scene::Init() {
+	mainCamera = root->GetComponentInChildren<Camera>();
+	lights = root->GetComponentsInChildren<Light>();
 }

@@ -32,15 +32,13 @@ namespace CppUtil {
 			const std::vector<glm::vec3> & GetNormals() const { return normals; }
 			const std::vector<glm::vec3> & GetTexcoords() const { return texcoords; }
 			const std::vector<size_t> & GetIndice() const { return indice; }
-			BVHNode<Triangle>::Ptr GetBVHRoot() const { return bvhRoot; }
+			const std::vector<Triangle::Ptr> & GetTriangles() const { return triangles; }
 
 		private:
 			std::vector<size_t> indice;
 			std::vector<glm::vec3> positions;
 			std::vector<glm::vec3> normals;
 			std::vector<glm::vec3> texcoords;
-
-			BVHNode<Triangle>::Ptr bvhRoot;
 
 			std::vector<Triangle::Ptr> triangles;
 		};

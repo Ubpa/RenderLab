@@ -15,7 +15,6 @@ namespace CppUtil {
 
 			Basic::Ptr<Primitive> GetPrimitive() { return primitive; }
 			void SetPrimitive(Basic::Ptr<Primitive> primitive) { this->primitive = primitive; }
-
 		private:
 			Basic::Ptr<Primitive> primitive;
 		};

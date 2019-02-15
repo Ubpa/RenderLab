@@ -1,6 +1,7 @@
 #include <CppUtil/Engine/RTX_Renderer.h>
 
 #include <CppUtil/Engine/Scene.h>
+#include <CppUtil/Engine/SObj.h>
 #include <CppUtil/Engine/RayTracer.h>
 #include <CppUtil/Engine/Camera.h>
 #include <CppUtil/Engine/SObj.h>
@@ -20,16 +21,20 @@ RTX_Renderer::RTX_Renderer(CppUtil::Basic::Ptr<RayTracer> rayTracer)
 	: rayTracer(rayTracer), isStop(false), maxLoop(200), curLoop(0) { }
 
 void RTX_Renderer::Run(Image::Ptr img) {
+#ifdef NDEBUG
 	omp_set_num_threads(omp_get_num_procs() - 1);
+#else
+	omp_set_num_threads(1);
+#endif //  NDEBUG
 
 	int w = img->GetWidth();
 	int h = img->GetHeight();
 
+	rayTracer->GetScene()->Init();
 	rayTracer->Init();
-	auto scene = rayTracer->GetScene();
-	auto camera = scene->GetMainCamera();
+	auto camera = rayTracer->GetScene()->GetMainCamera();
 	camera->SetAspectRatio(w, h);
-	auto cameraMatrix = camera->GetSObj()->GetLocalToWorldMatrix();
+	auto cam2world = camera->GetSObj()->GetLocalToWorldMatrix();
 
 	int imgSize = w * h;
 	std::vector<std::vector<vec3>> fimg;
@@ -53,7 +58,7 @@ void RTX_Renderer::Run(Image::Ptr img) {
 			float v = (y + Math::Rand_F()) / (float)h;
 
 			auto ray = camera->GenRay(u, v);
-			ray->Transform(cameraMatrix);
+			ray->Transform(cam2world);
 			vec3 rst = rayTracer->Trace(ray);
 			fimg[x][y] += rst;
 			img->SetPixel(x, y, sqrt(fimg[x][y] / float(curLoop + 1)));

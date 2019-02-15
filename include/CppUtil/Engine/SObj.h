@@ -15,11 +15,12 @@ namespace CppUtil {
 	namespace Engine {
 		class Component;
 
-		class SObj : public Basic::Node {
+		// 组件式编程，不要再派生子类了，就是用 component 来表达语义
+		class SObj final : public Basic::Node {
 			NODE_SETUP(SObj)
 		public:
-			SObj(Node::Ptr sobj = nullptr, const std::string & name = "")
-				: Node(sobj), name(name) { }
+			SObj(Node::Ptr parent = nullptr, const std::string & name = "")
+				: Node(parent), name(name) { }
 
 		public:
 			void AttachComponent(Basic::Ptr<Component> component);
@@ -43,7 +44,11 @@ namespace CppUtil {
 
 
 		public:
+			// 即时计算
 			glm::mat4 GetLocalToWorldMatrix();
+			glm::mat4 GetWorldToLocalMatrix() {
+				return glm::inverse(GetLocalToWorldMatrix());
+			}
 
 		public:
 			std::string name;

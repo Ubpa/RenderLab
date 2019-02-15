@@ -53,13 +53,13 @@ void Transform::UpdateNormMat() {
 	}
 }
 
-void Transform::Rotate(float radian, const glm::vec3 & axis) {
+void Transform::Rotate(float radian, const vec3 & axis) {
 	SetDirty();
 	rotation = rotate(rotation, radian, axis);
 	
 }
 
-void Transform::Translate(const glm::vec3 & translation) {
+void Transform::Translate(const vec3 & translation) {
 	SetDirty();
 	position += translation;
 }
@@ -70,6 +70,16 @@ vec3 Transform::GetEulerRoatation() const {
 	return euler;
 }
 
-void Transform::SetRotation(const glm::vec3 & eulerAngle) {
+void Transform::SetRotation(const vec3 & eulerAngle) {
 	SetRotation(quat_cast(mat3(eulerAngleYZX(eulerAngle.y, eulerAngle.z, eulerAngle.x))));
+}
+
+void Transform::LookAt(const vec3 & eye, const vec3 & center, const vec3 & up) {
+	mat = inverse(lookAt(eye, center, up));
+	dirtyMat = false;
+	dirtyInv = true;
+
+	position = eye;
+	scale = vec3(1, 1, 1);
+	rotation = quat_cast(mat);
 }

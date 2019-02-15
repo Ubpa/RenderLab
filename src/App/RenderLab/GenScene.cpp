@@ -8,6 +8,7 @@
 using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
 using namespace glm;
+using namespace std;
 
 Scene::Ptr GenScene0() {
 	auto sobj_Root = ToPtr(new SObj(nullptr, "root"));
@@ -25,10 +26,9 @@ Scene::Ptr GenScene0() {
 	};
 
 	// camera
-	auto camera = ToPtr(new Camera(sobj_Camera));
+	auto camera = ToPtr(new Camera(sobj_Camera, 50.0f));
 	auto cameraTransform = ToPtr(new Transform(sobj_Camera));
 	cameraTransform->SetPosition(vec3(0, 0.75f, 2.4f));
-	camera->fov = 50;
 
 	// light
 	auto areaLight = ToPtr(new AreaLight(vec3(1), 15, 0.8f, 0.6f));
@@ -323,10 +323,72 @@ Scene::Ptr GenScene6() {
 	return scene;
 }
 
+Scene::Ptr GenScene7() {
+	auto sobjRoot = ToPtr(new SObj(nullptr, "root"));
+
+	auto sobj_Camera = ToPtr(new SObj(sobjRoot, "camera"));
+	auto camera = ToPtr(new Camera(sobj_Camera, 20.0f));
+	auto cameraTransform = ToPtr(new Transform(sobj_Camera));
+	cameraTransform->LookAt(vec3(13, 2, 3), vec3(0));
+
+	auto balls = ToPtr(new SObj(sobjRoot, "balls"));
+	for (int a = -11, id = 0; a < 11; a++) {
+		for (int b = -11; b < 11; b++, id++) {
+			auto ball = ToPtr(new SObj(balls, "ball " + to_string(id)));
+			vec3 center(a + 0.9*Math::Rand_F(), 0.2, b + 0.9*Math::Rand_F());
+			auto sphere = ToPtr(new Sphere(center, 0.2f));
+			auto geo = ToPtr(new Geometry(ball, sphere));
+
+			BSDF::Ptr bsdf;
+			float choose_mat = Math::Rand_F();
+			if (choose_mat < 0.8) {  // diffuse
+				vec3 color(Math::Rand_F()*Math::Rand_F(), Math::Rand_F()*Math::Rand_F(), Math::Rand_F()*Math::Rand_F());
+				bsdf = ToPtr(new BSDF_Diffuse(color));
+			}
+			else if (choose_mat < 0.95) { // metal
+				vec3 color(0.5f*(1 + Math::Rand_F()), 0.5f*(1 + Math::Rand_F()), 0.5f*(1 + Math::Rand_F()));
+				bsdf = ToPtr(new BSDF_Mirror(color));
+			}
+			else {  // glass
+				bsdf = ToPtr(new BSDF_Glass(1.2f + Math::Rand_F()*0.5f));
+			}
+
+			auto material = ToPtr(new Material(ball, bsdf));
+		}
+	}
+
+
+	vec3 center[6] = {
+		vec3(0, -1000, 0),
+		vec3(6, 1, 0),
+		vec3(2, 1, 0),
+		vec3(2, 1, 0),
+		vec3(-2, 1, 0),
+		vec3(-6, 1, 0),
+	};
+	float radius[6] = { 1000,1,1,-0.8,1,1 };
+	BSDF::Ptr bsdf[6] = {
+		ToPtr(new BSDF_Diffuse(vec3(0.5f))),
+		ToPtr(new BSDF_Mirror(vec3(0.7f, 0.6f, 0.5f))),
+		ToPtr(new BSDF_Glass(1.5f)),
+		ToPtr(new BSDF_Glass(1.5f)),
+		ToPtr(new BSDF_Diffuse(vec3(0.4f,0.2f,0.1f))),
+		ToPtr(new BSDF_Glass(2.5f)),
+	};
+	for (int i = 0; i < 6; i++) {
+		auto sobj = ToPtr(new SObj(sobjRoot, "sphere" + to_string(i)));
+		auto sphere = ToPtr(new Sphere(center[i], radius[i]));
+		auto geo = ToPtr(new Geometry(sobj, sphere));
+		auto material = ToPtr(new Material(sobj, bsdf[i]));
+	}
+
+	return ToPtr(new Scene(sobjRoot, "bvh_test"));
+}
+
 Scene::Ptr GenScene(int n) {
-	const int num = 7;
+	const int num = 8;
 	Scene::Ptr(*f[num])() = {
-		&GenScene0, &GenScene1, &GenScene2, &GenScene3, &GenScene4, &GenScene5, &GenScene6
+		&GenScene0, &GenScene1, &GenScene2, &GenScene3, &GenScene4, &GenScene5, &GenScene6, &GenScene7
 	};
 
 	if (n < num)

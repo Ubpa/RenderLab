@@ -4,7 +4,22 @@
 #include <CppUtil/Engine/Intersector.h>
 
 namespace CppUtil {
+	namespace Basic {
+		class Element;
+	}
+
 	namespace Engine {
+		class SObj;
+		class Ray;
+
+		class BBox;
+		class Sphere;
+		class Plane;
+		class Triangle;
+		class PathTracer;
+		template <typename T, typename HolderT>
+		class BVHNode;
+
 		class VisibilityChecker : public Intersector {
 			ELEVISITOR_SETUP(VisibilityChecker)
 		public:
@@ -22,19 +37,16 @@ namespace CppUtil {
 
 			virtual const Rst & GetRst() const { return rst; }
 
-			void Visit(Basic::Ptr<SObj> sobj);
+		private:
 			// 设置 rst，如果相交，则会修改 ray.tMax
+			void Visit(Basic::Ptr<BVHNode<Basic::Element, PathTracer>> bvhNode);
 			void Visit(Basic::Ptr<Sphere> sphere);
 			void Visit(Basic::Ptr<Plane> plane);
-			void Visit(Basic::Ptr<TriMesh> mesh);
+			void Visit(Basic::Ptr<Triangle> triangle);
 
 		private:
 			bool Intersect(const BBox & bbox);
 			bool Intersect(const BBox & bbox, float & t0, float & t1);
-			template<typename T>
-			void Intersect(typename BVHNode<T>::Ptr bvhNode);
-			// 如果相交，则会设置 rst，修改 ray.tMax
-			void Intersect(Basic::Ptr<Triangle> triangle);
 
 		private:
 			Basic::Ptr<Ray> ray;
