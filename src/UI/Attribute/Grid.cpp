@@ -55,6 +55,9 @@ void Grid::AddEditColor(const QString & text, glm::vec3 & color) {
 
 	page->connect(button, &QPushButton::clicked, [&color, button]() {
 		const QColor qcolor = QColorDialog::getColor(QColor(255 * color.r, 255 * color.g, 255 * color.b));
+		if (!qcolor.isValid())
+			return;
+
 		color.r = qcolor.red() / 255.0f;
 		color.g = qcolor.green() / 255.0f;
 		color.b = qcolor.blue() / 255.0f;

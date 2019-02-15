@@ -100,7 +100,7 @@ void Attribute::ComponentVisitor::Visit(Transform::Ptr transform) {
 	auto grid = GenGrid(item);
 
 	// position
-	grid.AddTitle("Position");
+	grid.AddTitle("- Position");
 	auto pos = transform->GetPosition();
 	grid.AddEditVal("x", pos.x, 0.1, [transform](double x) {
 		auto pos = transform->GetPosition();
@@ -121,7 +121,7 @@ void Attribute::ComponentVisitor::Visit(Transform::Ptr transform) {
 	});
 
 	// rotation
-	grid.AddTitle("Rotation");
+	grid.AddTitle("- Rotation");
 	auto rotation = degrees(transform->GetEulerRoatation());
 	grid.AddEditVal("x", rotation.x, 1.0, [transform](double x) {
 		auto rotation = transform->GetEulerRoatation();
@@ -142,7 +142,7 @@ void Attribute::ComponentVisitor::Visit(Transform::Ptr transform) {
 	});
 
 	// scale
-	grid.AddTitle("Scale");
+	grid.AddTitle("- Scale");
 	auto scale = transform->GetScale();
 	grid.AddEditVal("x", scale.x, 0.1, [transform](double x) {
 		auto scale = transform->GetScale();

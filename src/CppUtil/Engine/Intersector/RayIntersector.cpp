@@ -2,8 +2,11 @@
 
 #include <CppUtil/Engine/SObj.h>
 #include <CppUtil/Engine/Ray.h>
+#include <CppUtil/Engine/BVHAccel.h>
 
-#include <CppUtil/Engine/PathTracer.h>
+#include <CppUtil/Engine/Geometry.h>
+#include <CppUtil/Engine/Transform.h>
+
 #include <CppUtil/Engine/BVHNode.h>
 #include <CppUtil/Engine/Sphere.h>
 #include <CppUtil/Engine/Plane.h>
@@ -18,7 +21,9 @@ using namespace glm;
 
 RayIntersector::RayIntersector(Ray::Ptr ray)
 	: ray(ray) {
-	Reg<BVHNode<Element, PathTracer>>();
+	Reg<BVHAccel>();
+	Reg<BVHNode<Element, BVHAccel>>();
+	Reg<SObj>();
 	Reg<Sphere>();
 	Reg<Plane>();
 	Reg<Triangle>();
@@ -55,7 +60,14 @@ bool RayIntersector::Intersect(const BBox & bbox, float & t0, float & t1) {
 	return true;
 }
 
-void RayIntersector::Visit(BVHNode<Element, PathTracer>::Ptr bvhNode) {
+void RayIntersector::Visit(BVHAccel::Ptr bvhAccel) {
+	rst.closestSObj = nullptr;
+	bvhAccel->GetBVHRoot()->Accept(This());
+	if (rst.closestSObj)
+		rst.n = bvhAccel->GetNormL2WMat(rst.closestSObj) * rst.n;
+}
+
+void RayIntersector::Visit(BVHNode<Element, BVHAccel>::Ptr bvhNode) {
 	if (bvhNode->IsLeaf()) {
 		const vec3 origin = ray->GetOrigin();
 		const vec3 dir = ray->GetDir();
@@ -93,6 +105,33 @@ void RayIntersector::Visit(BVHNode<Element, PathTracer>::Ptr bvhNode) {
 			Visit(r);
 		else
 			return;
+	}
+}
+
+void RayIntersector::Visit(SObj::Ptr sobj) {
+	auto geometry = sobj->GetComponent<Geometry>();
+	auto children = sobj->GetChildren();
+	if (geometry == nullptr && children.size() == 0)
+		return;
+
+	auto origSObj = rst.closestSObj;
+	auto transform = sobj->GetComponent<Transform>();
+	if (transform)
+		ray->Transform(transform->GetInv());
+
+	if (geometry) {
+		geometry->GetPrimitive()->Accept(This());
+		if (rst.isIntersect)
+			rst.closestSObj = sobj;
+	}
+
+	for (auto child : children)
+		child->Accept(This());
+
+	if (transform) {
+		ray->Transform(transform->GetMat());
+		if (rst.closestSObj != origSObj)
+			rst.n = normalize(transform->GetNormMat() * rst.n);
 	}
 }
 

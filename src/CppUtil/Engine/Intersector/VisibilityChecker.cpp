@@ -1,11 +1,9 @@
 #include <CppUtil/Engine/VisibilityChecker.h>
 
-#include <CppUtil/Engine/RayIntersector.h>
-
 #include <CppUtil/Engine/SObj.h>
 #include <CppUtil/Engine/Ray.h>
 
-#include <CppUtil/Engine/PathTracer.h>
+#include <CppUtil/Engine/BVHAccel.h>
 #include <CppUtil/Engine/BVHNode.h>
 #include <CppUtil/Engine/Sphere.h>
 #include <CppUtil/Engine/Plane.h>
@@ -21,8 +19,9 @@ using namespace glm;
 VisibilityChecker::VisibilityChecker(Ray::Ptr ray, float tMax)
 	: ray(ray), rst(false) {
 	ray->SetTMax(tMax);
-
-	Reg<BVHNode<Element, PathTracer>>();
+	
+	Reg<BVHAccel>();
+	Reg<BVHNode<Element, BVHAccel>>();
 	Reg<Sphere>();
 	Reg<Plane>();
 	Reg<Triangle>();
@@ -59,7 +58,11 @@ bool VisibilityChecker::Intersect(const BBox & bbox, float & t0, float & t1) {
 	return true;
 }
 
-void VisibilityChecker::Visit(BVHNode<Element, PathTracer>::Ptr bvhNode) {
+void VisibilityChecker::Visit(BVHAccel::Ptr bvhAccel) {
+	bvhAccel->GetBVHRoot()->Accept(This());
+}
+
+void VisibilityChecker::Visit(BVHNode<Element, BVHAccel>::Ptr bvhNode) {
 	if (bvhNode->IsLeaf()) {
 		const vec3 origin = ray->GetOrigin();
 		const vec3 dir = ray->GetDir();

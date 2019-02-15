@@ -2,24 +2,16 @@
 #define _ENGINE_RTX_PATH_TRACER_H_
 
 #include <CppUtil/Engine/RayTracer.h>
-#include <CppUtil/Engine/BBox.h>
 
+#include <glm/mat4x4.hpp>
 #include <glm/mat3x3.hpp>
 
 #include <vector>
-#include <map>
 
 namespace CppUtil {
-	namespace Basic {
-		class Element;
-	}
-
 	namespace Engine {
-		class SObj;
 		class LightBase;
-		class Primitive;
-		template <typename T, typename HolderT>
-		class BVHNode;
+		class BVHAccel;
 
 		class PathTracer : public RayTracer {
 			HEAP_OBJ_SETUP(PathTracer)
@@ -27,12 +19,6 @@ namespace CppUtil {
 			PathTracer(Basic::Ptr<Scene> scene);
 
 			virtual void Init();
-
-			Basic::Ptr<BVHNode<Basic::Element, PathTracer>> GetBVHRoot() const { return bvhRoot; }
-			const glm::mat4 & GetEleW2LMat(Basic::Ptr<Basic::Element> element);
-			const glm::mat4 & GetEleL2WMat(Basic::Ptr<Basic::Element> element);
-			const BBox & GetBBox(Basic::Ptr<Basic::Element> ele) { return ele2bbox[ele]; }
-			const Basic::Ptr<SObj> GetSObj(Basic::Ptr<Basic::Element> ele);
 
 		protected:
 			// ray 处于世界坐标系
@@ -48,21 +34,7 @@ namespace CppUtil {
 			std::vector<glm::mat3> dir_worldToLightVec;// 只需要旋转方向，所以使用 mat3
 			std::vector<glm::mat3> dir_lightToWorldVec;// 只需要旋转方向，所以使用 mat3
 
-			std::map<Basic::Ptr<SObj>, glm::mat3> norm_localToWorld;
-
-			// bvh
-			Basic::Ptr<BVHNode<Basic::Element, PathTracer>> bvhRoot;
-			// triangle 要通过 mesh 在这里取得 matrix
-			class GetPrimitiveVisitor;
-			std::map<Basic::Ptr<Primitive>, glm::mat4> worldToLocalMatrixes;
-			std::map<Basic::Ptr<Primitive>, glm::mat4> localToWorldMatrixes;
-			std::map<Basic::Ptr<Primitive>, Basic::Ptr<SObj>> primitive2sobj;
-
-			// obj and box
-			class BVHInitVisitor;
-			friend class BVHInitVisitor;
-			std::vector<Basic::Ptr<Basic::Element>> elements;
-			std::map<Basic::Ptr<Basic::Element>, BBox> ele2bbox;
+			Basic::Ptr<BVHAccel> bvhAccel;
 		};
 	}
 }
