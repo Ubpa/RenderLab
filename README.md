@@ -37,6 +37,9 @@ cmake .. -Wno-dev
   - [x] 相机
   - [x] 组件机制优化
   - [x] Material (BSDF)
+    - [x] Diffuse
+    - [x] Mirror
+    - [x] Glass
   - [x] PathTracer (PTX)
     - [x] 基本框架
     - [x] Mirror
@@ -70,6 +73,8 @@ cmake .. -Wno-dev
   - [x] 场景BVH（因为在编辑时场景是动态的，所以在光线追踪任务开始时才建立 BVH）
   - [ ] 块化渲染
   - [ ] 线程化（不要用OpenMP）
-- [ ] 场景编辑
+- [ ] 光线追踪新增功能
+  - [ ] Microfacet BRDF
 - [ ] json 场景文件
+- [ ] 场景编辑
 - [ ] 优化实时渲染

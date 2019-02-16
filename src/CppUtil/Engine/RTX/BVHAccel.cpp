@@ -94,21 +94,27 @@ public:
 };
 
 const mat4 & BVHAccel::GetEleW2LMat(Element::Ptr element) {
-	auto visitor = ToPtr(new GetPrimitiveVisitor);
-	element->Accept(visitor);
-	return worldToLocalMatrixes[visitor->primitive];
+	auto triangle = Triangle::Ptr(element);
+	if(triangle)
+		return worldToLocalMatrixes[triangle->GetMesh()];
+	else
+		return worldToLocalMatrixes[element];
 }
 
 const mat4 & BVHAccel::GetEleL2WMat(Element::Ptr element) {
-	auto visitor = ToPtr(new GetPrimitiveVisitor);
-	element->Accept(visitor);
-	return localToWorldMatrixes[visitor->primitive];
+	auto triangle = Triangle::Ptr(element);
+	if (triangle)
+		return localToWorldMatrixes[triangle->GetMesh()];
+	else
+		return localToWorldMatrixes[element];
 }
 
 const SObj::Ptr BVHAccel::GetSObj(Element::Ptr element) {
-	auto visitor = ToPtr(new GetPrimitiveVisitor);
-	element->Accept(visitor);
-	return primitive2sobj[visitor->primitive];
+	auto triangle = Triangle::Ptr(element);
+	if (triangle)
+		return primitive2sobj[triangle->GetMesh()];
+	else
+		return primitive2sobj[element];
 }
 
 void BVHAccel::Init(SObj::Ptr root) {

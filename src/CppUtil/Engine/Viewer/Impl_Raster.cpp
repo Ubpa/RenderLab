@@ -53,6 +53,7 @@ Impl_Raster::Impl_Raster(Scene::Ptr scene)
 	Reg<BSDF_Emission>();
 	Reg<BSDF_Glass>();
 	Reg<BSDF_Mirror>();
+	Reg<BSDF_CookTorrance>();
 }
 
 void Impl_Raster::Init() {
@@ -175,4 +176,8 @@ void Impl_Raster::Draw(BSDF_Mirror::Ptr bsdf) {
 
 void Impl_Raster::Draw(BSDF_Emission::Ptr bsdf) {
 	shader_basic.SetVec3f("color", bsdf->GetEmission());
+}
+
+void Impl_Raster::Draw(BSDF_CookTorrance::Ptr bsdf) {
+	shader_basic.SetVec3f("color", bsdf->refletance);
 }
