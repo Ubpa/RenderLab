@@ -98,9 +98,19 @@ set (${PROJECT_NAME}_VERSION_MINOR 0)
 # Find includes in corresponding build directories
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+set(CMAKE_MODULE_PATH
+  "${CMAKE_SOURCE_DIR}/CMake"
+  ${CMAKE_MODULE_PATH}
+)
+
 # Find the QtWidgets library
 set(USE_QT_OPENGL_API ON)
 find_package(Qt5 REQUIRED Widgets OpenGL)
+
+set(OptiX_ROOT CACHE PATH "optix root")
+set(CUDA_ROOT CACHE PATH "cuda root")
+#find_package(OptiX REQUIRED)
+#find_package(CUDA 5.0 REQUIRED)
 
 set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR})
 
@@ -112,6 +122,8 @@ configure_file(config/ROOT_PATH.h.in config/ROOT_PATH.h)
 include_directories (
 	${PROJECT_SOURCE_DIR}/include
 	${CMAKE_BINARY_DIR}/config
+	${OptiX_ROOT}/include
+	${CUDA_ROOT}/include
 	# $ENV{XXX_INCLUDE_PATH}
 	# ...
 )
@@ -120,6 +132,8 @@ link_directories (
 	${PROJECT_SOURCE_DIR}/lib/CppUtil/Basic
 	${PROJECT_SOURCE_DIR}/lib/CppUtil/OpenGL
 	${PROJECT_SOURCE_DIR}/lib/CppUtil/RTX
+	${OptiX_ROOT}/lib64
+	#${CUDA_TOOLKIT_ROOT_DIR}/lib/X64
 	# $ENV{XXX_LIB_PATH}
 	# ...
 )

@@ -202,7 +202,7 @@ void Image::Free() {
 
 bool Image::SaveAsPNG(const string & fileName, bool flip) const{
 	stbi_flip_vertically_on_write(flip);
-	return stbi_write_png(fileName.c_str(), width, height, channel, data, width * 3);
+	return stbi_write_png(fileName.c_str(), width, height, channel, data, width * channel);
 }
 
 Image & Image::operator =(const Image & img) {

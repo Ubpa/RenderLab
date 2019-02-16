@@ -10,6 +10,12 @@ Visual Studio: 2017
 
 Qt: 5.12.0
 
+CUDA: 9.0
+
+Optix: 6.0
+
+驱动：418.81 or later is required.
+
 ```bash
 mkdir build
 cd build
@@ -69,12 +75,14 @@ cmake .. -Wno-dev
   - [ ] 设置面板
 - [ ] 优化光线追踪
   - [x] 噪点异常
-  - [ ] 降噪
+  - [x] 降噪
   - [x] 场景BVH（因为在编辑时场景是动态的，所以在光线追踪任务开始时才建立 BVH）
   - [ ] 块化渲染
   - [ ] 线程化（不要用OpenMP）
 - [ ] 光线追踪新增功能
-  - [ ] Microfacet BRDF
+  - [x] Cook Torrance BRDF
+  - [ ] 
 - [ ] json 场景文件
 - [ ] 场景编辑
 - [ ] 优化实时渲染
+
