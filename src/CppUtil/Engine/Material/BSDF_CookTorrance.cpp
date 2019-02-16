@@ -41,7 +41,9 @@ float BSDF_CookTorrance::G(const vec3 & wo, const vec3 & wi, const vec3 & h){
 
 vec3 BSDF_CookTorrance::F(const vec3 & wo, const vec3 & wi) {
 	vec3 h = normalize(wo + wi);
-	return NDF(h) * Fr(wi, h) * G(wo, wi, h) / (4 * wi.z * wo.z) * refletance;
+	float fr = Fr(wi, h);
+	float kd = 1 - fr;
+	return kd * albedo / Math::PI + NDF(h) * fr * G(wo, wi, h) / (4 * wo.z *wi.z) * refletance;
 }
 
 float BSDF_CookTorrance::PDF(const vec3 & wo, const vec3 & wi) {
@@ -79,6 +81,7 @@ vec3 BSDF_CookTorrance::Sample_f(const vec3 & wo, vec3 & wi, float & pd) {
 	vec3 h = normalize(wo + wi);
 
 	pd = 1.0f / (2.0f * Math::PI);
-
-	return NDF(h) * Fr(wi, h) * G(wo, wi, h) / (4 * wo.z *wi.z) * refletance;
+	float fr = Fr(wi, h);
+	float kd = 1 - fr;
+	return kd*albedo/Math::PI + NDF(h) * fr * G(wo, wi, h) / (4 * wo.z *wi.z) * refletance;
 }

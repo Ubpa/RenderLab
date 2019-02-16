@@ -252,6 +252,7 @@ void Attribute::ComponentVisitor::Visit(BSDF_CookTorrance::Ptr bsdf) {
 	auto grid = GenGrid(attr->componentType2item[typeid(Material)]);
 	grid.AddTitle("[ BSDF -- Cook Torrance ]");
 	grid.AddEditColor("- Reflectance", bsdf->refletance);
+	grid.AddEditColor("- Albedo", bsdf->albedo);
 	grid.AddEditVal("- Index of Refract", bsdf->ior, 0.01);
 	grid.AddEditVal("- Roughness", bsdf->m, 0.01);
 }

@@ -473,7 +473,7 @@ Scene::Ptr GenScene8() {
 	// cook torrance sphere
 	auto sobj_CTSphere = ToPtr(new SObj(sobj_Root, "cook torrance sphere"));
 
-	auto bsdfCookTorrance = ToPtr(new BSDF_CookTorrance(0.f, 0.4f, vec3(0.1f)));
+	auto bsdfCookTorrance = ToPtr(new BSDF_CookTorrance(10.f, 0.4f, vec3(0.1f), vec3(1.0f,0.3f,0.5f)));
 	auto materialCookTorrance = ToPtr(new Material(sobj_CTSphere, bsdfCookTorrance));
 
 	auto CTSphereTransform = ToPtr(new Transform(sobj_CTSphere));

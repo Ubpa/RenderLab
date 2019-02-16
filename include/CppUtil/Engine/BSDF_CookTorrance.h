@@ -8,7 +8,8 @@ namespace CppUtil {
 		class BSDF_CookTorrance : public BSDF {
 			ELE_SETUP(BSDF_CookTorrance)
 		public:
-			BSDF_CookTorrance(float ior, float m, glm::vec3 refletance=glm::vec3(1) ) : ior(ior), m(m), refletance(refletance) { }
+			BSDF_CookTorrance(float ior, float m, glm::vec3 refletance=glm::vec3(1), glm::vec3 albedo = glm::vec3(1))
+				: ior(ior), m(m), refletance(refletance) , albedo(albedo){ }
 
 			virtual glm::vec3 F(const glm::vec3 & wo, const glm::vec3 & wi);
 
@@ -34,6 +35,7 @@ namespace CppUtil {
 			float ior;
 			float m;
 			glm::vec3 refletance;
+			glm::vec3 albedo;
 		};
 	}
 }
