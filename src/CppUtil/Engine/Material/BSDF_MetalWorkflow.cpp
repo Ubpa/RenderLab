@@ -12,19 +12,34 @@ vec3 BSDF_MetalWorkflow::F(const vec3 & wo, const vec3 & wi) {
 }
 
 float BSDF_MetalWorkflow::PDF(const vec3 & wo, const vec3 & wi) {
-	return 1.0f / (2.0f * Math::PI);
+	vec3 h = normalize(wo + wi);
+	return NDF(h) / 4.0f;
+	//return 1.0f / (2.0f * Math::PI);
 }
 
 vec3 BSDF_MetalWorkflow::Sample_f(const vec3 & wo, vec3 & wi, float & pd) {
-	// 均匀采样
 	float Xi1 = Math::Rand_F();
 	float Xi2 = Math::Rand_F();
+
+	// 根据 NDF 采样
+	float alpha = roughness * roughness;
+	float cosTheta2 = (1 - Xi1) / (Xi1*(alpha*alpha - 1) + 1);
+	float cosTheta = sqrt(cosTheta2);
+	float sinTheta = sqrt(1 - cosTheta2);
+	float phi = 2 * Math::PI*Xi2;
+	vec3 h(sinTheta*cos(phi), sinTheta*sin(phi), cosTheta);
+	wi = reflect(-wo, h);
+	pd = NDF(h) / 4.0f;
+
+	/*
+	// 均匀采样
 	float cosTheta = Xi1;
 	float sinTheta = sqrt(1 - cosTheta * cosTheta);
 	float phi = 2 * Math::PI * Xi2;
 	wi = vec3(sinTheta*cos(phi), sinTheta*sin(phi), cosTheta);
 	vec3 h = normalize(wo + wi);
 	pd = 1.0f / (2.0f * Math::PI);
+	*/
 
 	auto diffuse = albedo / Math::PI;
 	return (1 - metallic)*diffuse + MS_BRDF(wo, wi);
