@@ -9,45 +9,8 @@
 #include <CppUtil/Basic/File.h>
 
 using namespace CppUtil::Basic;
+using namespace glm;
 using namespace std;
-
-Image::Pixel<uByte> Image::Pixel_F2UB(const Pixel<float> & pixel) {
-	Image::Pixel<uByte> rst(pixel.channel);
-	for (size_t i = 0; i < pixel.channel; i++) {
-		float mappedVal = 255.99f * pixel[i];
-		rst[i] = static_cast<uByte>(mappedVal >= 256.0f ? 255 : static_cast<uByte>(mappedVal));
-	}
-
-	return rst;
-}
-
-Image::Pixel<uByte> Image::Pixel_D2UB(const Pixel<double> & pixel) {
-	Image::Pixel<uByte> rst(pixel.channel);
-	for (size_t i = 0; i < pixel.channel; i++) {
-		double mappedVal = 255.99 * pixel[i];
-		rst[i] = static_cast<uByte>(mappedVal >= 256.0 ? 255 : static_cast<uByte>(mappedVal));
-	}
-
-	return rst;
-}
-
-Image::Pixel<float> Image::Pixel_UB2F(const Pixel<uByte> & pixel) {
-	Image::Pixel<float> rst(pixel.channel);
-	for (size_t i = 0; i < pixel.channel; i++)
-		rst[i] = 1.0f / 255.0f * pixel[i];
-
-	return rst;
-}
-
-Image::Pixel<double> Image::Pixel_UB2D(const Pixel<uByte> & pixel) {
-	Image::Pixel<double> rst(pixel.channel);
-	for (size_t i = 0; i < pixel.channel; i++)
-		rst[i] = 1.0 / 255.0 * pixel[i];
-
-	return rst;
-}
-
-//------------
 
 Image::Image()
 	:data(NULL), width(0), height(0), channel(0), type(ENUM_SRC_TYPE_INVALID){ }
@@ -108,41 +71,60 @@ const uByte & Image::At(size_t x, size_t y, size_t channel) const {
 	return data[(y*width + x)*this->channel + channel];
 }
 
-bool Image::SetPixel(size_t x, size_t y, const Pixel<uByte> & pixel) {
-	if (pixel.channel != this->channel)
-		return false;
+vec4 Image::Sample(float u, float v, bool blend) const {
+	// bilinear filtering
 
-	for (size_t i = 0; i < channel; i++)
-		At(x, y, i) = pixel[i];
+	assert(type != ENUM_SRC_TYPE_INVALID);
 
-	return true;
+	float xf = clamp<float>(u, 0, 0.999999f) * width;
+	float yf = clamp<float>(v, 0, 0.999999f) * height;
+
+	int x0 = static_cast<int>(xf);
+	int x1 = clamp<int>(x0 + ((xf - x0) < 0.5 ? -1 : 1), 0, width - 1);
+	int y0 = static_cast<int>(yf);
+	int y1 = clamp<int>(y0 + ((yf - y0) < 0.5 ? -1 : 1), 0, height - 1);
+
+	vec4 colors[4] = {
+		GetPixel_F(x0,y0),
+		GetPixel_F(x1,y0),
+		GetPixel_F(x0,y1),
+		GetPixel_F(x1,y1),
+	};
+
+	if (blend) {
+		assert(channel == 4);
+		for (int i = 0; i < 4; i++) {
+			colors[i].r *= colors[i].a;
+			colors[i].g *= colors[i].a;
+			colors[i].b *= colors[i].a;
+		}
+	}
+
+	float tx = abs(xf - (x0 + 0.5f));
+	float ty = abs(yf - (y0 + 0.5f));
+	vec4 mixColor = (1 - ty)*((1 - tx)*colors[0] + tx * colors[1]) + ty * ((1 - tx)*colors[2] + tx * colors[3]);
+
+	if (blend && mixColor.a != 0) {
+		mixColor.r /= mixColor.a;
+		mixColor.g /= mixColor.a;
+		mixColor.b /= mixColor.a;
+	}
+	return mixColor;
 }
 
-bool Image::SetPixel(size_t x, size_t y, const Image::Pixel<float> & pixel) {
-	return SetPixel(x, y, Pixel_F2UB(pixel));
-}
-
-bool Image::SetPixel(size_t x, size_t y, const glm::vec3 & pixel) {
-	return SetPixel(x, y, Pixel_F2UB(Image::Pixel<float>(pixel.r, pixel.g, pixel.b)));
-}
-
-bool Image::SetPixel(size_t x, size_t y, const Image::Pixel<double> & pixel) {
-	return SetPixel(x, y, Pixel_D2UB(pixel));
-}
-
-Image::Pixel<uByte> Image::GetPixel_UB(size_t x, size_t y) const {
-	Pixel<uByte> rst(channel);
+vec<4,uByte> Image::GetPixel_UB(size_t x, size_t y) const {
+	vec<4,uByte> rst(0);
 	for (size_t i = 0; i < channel; i++)
 		rst[i] = At(x, y, i);
 
 	return rst;
 }
 
-Image::Pixel<float> Image::GetPixel_F(size_t x, size_t y) const {
+vec4 Image::GetPixel_F(size_t x, size_t y) const {
 	return Pixel_UB2F(GetPixel_UB(x, y));
 }
 
-Image::Pixel<double> Image::GetPixel_D(size_t x, size_t y) const {
+dvec4 Image::GetPixel_D(size_t x, size_t y) const {
 	return Pixel_UB2D(GetPixel_UB(x, y));
 }
 
