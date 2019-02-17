@@ -4,17 +4,17 @@
 
 using namespace CppUtil::Basic;
 
-Sphere::Sphere(size_t n)
+Sphere::Sphere(uint n)
 	: Shape((n + 1)*(n + 1), 2 * n*n) {
 	// normal 和 pos 的值相同
 	normalArr = posArr;
 	texCoordsArr = new Array2D<float>(vertexNum, 2);
-	indexArr = new Array2D<size_t>(triNum, 3);
+	indexArr = new Array2D<uint>(triNum, 3);
 	//----------
 	float inc = 1.0f / n;
-	for (size_t i = 0; i <= n; i++) {
+	for (uint i = 0; i <= n; i++) {
 		float u = inc * i;
-		for (size_t j = 0; j <= n; j++) {
+		for (uint j = 0; j <= n; j++) {
 			float v = inc * j;
 			float theta = PI * (1-u);
 			float phi = 2 * PI * v;
@@ -29,8 +29,8 @@ Sphere::Sphere(size_t n)
 		}
 	}
 	//------------
-	for (size_t i = 0; i < n; i++) {
-		for (size_t j = 0; j < n; j++) {
+	for (uint i = 0; i < n; i++) {
+		for (uint j = 0; j < n; j++) {
 			// 左下 右下 左上
 			indexArr->At(2 * (i*n + j), 0) = i * (n + 1) + j;
 			indexArr->At(2 * (i*n + j), 1) = i * (n + 1) + j + 1;
@@ -66,21 +66,21 @@ float * Sphere::GetTexCoordsArr() {
 	return texCoordsArr->GetData();
 }
 
-size_t * Sphere::GetIndexArr() {
+uint * Sphere::GetIndexArr() {
 	if (indexArr == nullptr)
 		return nullptr;
 
 	return indexArr->GetData();
 }
 
-size_t Sphere::GetNormalArrSize() {
+uint Sphere::GetNormalArrSize() {
 	return normalArr->GetMemSize();
 }
 
-size_t Sphere::GetTexCoordsArrSize() {
+uint Sphere::GetTexCoordsArrSize() {
 	return texCoordsArr->GetMemSize();
 }
 
-size_t Sphere::GetIndexArrSize() {
+uint Sphere::GetIndexArrSize() {
 	return indexArr->GetMemSize();
 }

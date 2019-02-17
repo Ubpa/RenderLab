@@ -47,6 +47,7 @@ public:
 		Reg<BSDF_Mirror>();
 		Reg<BSDF_Emission>();
 		Reg<BSDF_CookTorrance>();
+		Reg<BSDF_MetalWorkflow>();
 
 		Reg<Transform>();
 	}
@@ -68,6 +69,8 @@ private:
 	void Visit(BSDF_Glass::Ptr bsdf);
 	void Visit(BSDF_Mirror::Ptr bsdf);
 	void Visit(BSDF_CookTorrance::Ptr bsdf);
+	void Visit(BSDF_MetalWorkflow::Ptr bsdf);
+
 
 	void Visit(Transform::Ptr transform);
 
@@ -255,6 +258,14 @@ void Attribute::ComponentVisitor::Visit(BSDF_CookTorrance::Ptr bsdf) {
 	grid.AddEditColor("- Albedo", bsdf->albedo);
 	grid.AddEditVal("- Index of Refract", bsdf->ior, 0.01);
 	grid.AddEditVal("- Roughness", bsdf->m, 0.01);
+}
+
+void Attribute::ComponentVisitor::Visit(BSDF_MetalWorkflow::Ptr bsdf) {
+	auto grid = GenGrid(attr->componentType2item[typeid(Material)]);
+	grid.AddTitle("[ BSDF -- Metal Workflow ]");
+	grid.AddEditColor("- Albedo", bsdf->albedo);
+	grid.AddEditVal("- Metallic", bsdf->metallic, 0.01);
+	grid.AddEditVal("- Roughness", bsdf->roughness, 0.01);
 }
 
 // -------------- Light --------------

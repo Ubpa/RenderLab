@@ -14,7 +14,7 @@ using namespace CppUtil::OpenGL;
 using namespace std;
 
 // constructor
-Mesh::Mesh(const vector<Vertex> & vertices, const vector<size_t> & indices, const vector<TextureInfo> & textureInfos)
+Mesh::Mesh(const vector<Vertex> & vertices, const vector<uint> & indices, const vector<TextureInfo> & textureInfos)
 {
 	this->vertices = vertices;
 	this->indices = indices;
@@ -41,7 +41,7 @@ void Mesh::SetupMesh()
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(size_t), &indices[0], GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(uint), &indices[0], GL_STATIC_DRAW);
 
 	// set the vertex attribute pointers
 	// vertex Positions
@@ -67,11 +67,11 @@ void Mesh::SetupMesh()
 void Mesh::Draw(const Shader & shader, const string & materialPrefix)
 {
 	// bind appropriate textures
-	size_t diffuseNr = 1;
-	size_t specularNr = 1;
-	size_t normalNr = 1;
-	size_t heightNr = 1;
-	for (size_t i = 0; i < textureInfos.size(); i++)
+	uint diffuseNr = 1;
+	uint specularNr = 1;
+	uint normalNr = 1;
+	uint heightNr = 1;
+	for (uint i = 0; i < textureInfos.size(); i++)
 	{
 		glActiveTexture(GL_TEXTURE0 + i); // active proper texture unit before binding
 		// retrieve texture number (the N in diffuse_textureN)
@@ -80,11 +80,11 @@ void Mesh::Draw(const Shader & shader, const string & materialPrefix)
 		if (name == "texture_diffuse")
 			number = std::to_string(diffuseNr++);
 		else if (name == "texture_specular")
-			number = std::to_string(specularNr++); // transfer size_t to stream
+			number = std::to_string(specularNr++); // transfer uint to stream
 		else if (name == "texture_normal")
-			number = std::to_string(normalNr++); // transfer size_t to stream
+			number = std::to_string(normalNr++); // transfer uint to stream
 		else if (name == "texture_height")
-			number = std::to_string(heightNr++); // transfer size_t to stream
+			number = std::to_string(heightNr++); // transfer uint to stream
 
 												 // now set the sampler to the correct texture unit
 		shader.SetInt(materialPrefix + name + number, i);

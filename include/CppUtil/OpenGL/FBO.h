@@ -1,6 +1,8 @@
 #ifndef _OPENGL_FBO_FBO_H_
 #define _OPENGL_FBO_FBO_H_
 
+typedef unsigned int uint;
+
 #include <CppUtil/OpenGL/Texture.h>
 
 #include <vector>
@@ -32,38 +34,38 @@ namespace CppUtil {
 			};
 
 			FBO();
-			FBO(size_t width, size_t height, ENUM_TYPE type = ENUM_TYPE_BASIC);
+			FBO(uint width, uint height, ENUM_TYPE type = ENUM_TYPE_BASIC);
 			bool PassTo(const FBO & fbo, ENUM_PASS_TYPE passType = ENUM_PASS_COLOR) const;
-			bool PassTo(size_t fboID, size_t width, size_t height, ENUM_PASS_TYPE passType = ENUM_PASS_COLOR) const;
+			bool PassTo(uint fboID, uint width, uint height, ENUM_PASS_TYPE passType = ENUM_PASS_COLOR) const;
 
 			bool Use() const;
 			static void UseDefault();
-			static size_t DefaultBuffer;
-			size_t GetID() const;
-			const Texture & GetColorTexture(size_t idx = 0) const;
+			static uint DefaultBuffer;
+			uint GetID() const;
+			const Texture & GetColorTexture(uint idx = 0) const;
 			const Texture & GetDepthTexture() const;
 			bool IsValid() const;
 		private:
-			bool GenFBO_BASIC(size_t width, size_t height);
-			bool GenFBO_RGBF_DEPTH(size_t width, size_t height, size_t colorBufferNum = 1);
-			bool GenFBO_MSAA(size_t width, size_t height);
-			bool GenFBO_COLOR(size_t width, size_t height, bool isFloat = false);
-			bool GenFBO_RED(size_t width, size_t height);
-			bool GenFBO_DEPTH(size_t width, size_t height);
-			bool GenFBO_CUBE_DEPTH(size_t width, size_t height);
-			bool GenFBO_GBUFFER(size_t width, size_t height);
-			bool GenFBO_RAYTRACING(size_t width, size_t height);
-			bool GenFBO_RTX(size_t width, size_t height);
+			bool GenFBO_BASIC(uint width, uint height);
+			bool GenFBO_RGBF_DEPTH(uint width, uint height, uint colorBufferNum = 1);
+			bool GenFBO_MSAA(uint width, uint height);
+			bool GenFBO_COLOR(uint width, uint height, bool isFloat = false);
+			bool GenFBO_RED(uint width, uint height);
+			bool GenFBO_DEPTH(uint width, uint height);
+			bool GenFBO_CUBE_DEPTH(uint width, uint height);
+			bool GenFBO_GBUFFER(uint width, uint height);
+			bool GenFBO_RAYTRACING(uint width, uint height);
+			bool GenFBO_RTX(uint width, uint height);
 
 			bool IsComplete() const;
-			static size_t PassType2GL(ENUM_PASS_TYPE passType);
+			static uint PassType2GL(ENUM_PASS_TYPE passType);
 
 			ENUM_TYPE type;
-			size_t ID;
+			uint ID;
 			std::vector<Texture> colorTextures;
 			Texture depthTexture;
-			size_t width;
-			size_t height;
+			uint width;
+			uint height;
 			bool isValid;
 		};
 	}

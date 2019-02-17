@@ -1,24 +1,26 @@
 #ifndef _BASIC_SHAPE_SHAPE_H_
 #define _BASIC_SHAPE_SHAPE_H_
 
+typedef unsigned int uint;
+
 #include <CppUtil/Basic/Array2D.h>
 
 namespace CppUtil {
 	namespace Basic {
 		class Shape {
 		public:
-			Shape(size_t vertexNum, size_t triNum = 0);
+			Shape(uint vertexNum, uint triNum = 0);
 			virtual ~Shape();
 			float * GetPosArr();
-			size_t GetVertexNum() { return vertexNum; }
-			size_t GetTriNum() { return triNum; }
-			size_t GetPosArrSize();
+			uint GetVertexNum() { return vertexNum; }
+			uint GetTriNum() { return triNum; }
+			uint GetPosArrSize();
 		protected:
 			static const float PI;
 			//------------
 			Array2D<float> * posArr;
-			size_t vertexNum;
-			size_t triNum;
+			uint vertexNum;
+			uint triNum;
 		};
 	}
 }

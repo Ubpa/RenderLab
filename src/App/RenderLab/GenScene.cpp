@@ -10,6 +10,96 @@ using namespace CppUtil::Basic;
 using namespace glm;
 using namespace std;
 
+SObj::Ptr GenBox() {
+	auto sobj_Box = ToPtr(new SObj(nullptr, "Cornell Box"));
+
+	// wall
+	const int wallNum = 5;
+	SObj::Ptr sobj_walls[wallNum] = {
+		ToPtr(new SObj(sobj_Box, "wall ceil")),
+		ToPtr(new SObj(sobj_Box, "wall down")),
+		ToPtr(new SObj(sobj_Box, "wall left")),
+		ToPtr(new SObj(sobj_Box, "wall right")),
+		ToPtr(new SObj(sobj_Box, "wall back"))
+	};
+
+	vec3 posArr[wallNum] = {
+		vec3(0, 1.5f, 0),
+		vec3(0, 0, 0),
+		vec3(-1, 0.75f, 0),
+		vec3(1, 0.75f, 0),
+		vec3(0, 0.75f, -1),
+	};
+
+	vec3 axisArr[wallNum] = {
+		vec3(0, 1, 0),
+		vec3(0, 1, 0),
+		vec3(0, 0, 1),
+		vec3(0, 0, 1),
+		vec3(1, 0, 0),
+	};
+
+	float degreeArr[wallNum] = {
+		0,
+		0,
+		90,
+		90,
+		90,
+	};
+
+	vec3 scaleArr[wallNum] = {
+		vec3(2, 1, 2),
+		vec3(2, 1, 2),
+		vec3(1.5f, 1, 2),
+		vec3(1.5f, 1, 2),
+		vec3(2, 1, 1.5f),
+	};
+
+	vec3 colorArr[wallNum] = {
+		vec3(0.6f),
+		vec3(0.6f),
+		vec3(0.6f, 0.2f, 0.2f),
+		vec3(0.2f, 0.2f, 0.6f),
+		vec3(0.6f),
+	};
+
+	for (int i = 0; i < wallNum; i++) {
+		auto bsdfDiffuse = ToPtr(new BSDF_Diffuse(colorArr[i]));
+		auto materialDiffuse = ToPtr(new Material(sobj_walls[i], bsdfDiffuse));
+
+		auto plane = ToPtr(new Plane);
+		auto geo = ToPtr(new Geometry(sobj_walls[i], plane));
+
+		auto transform = ToPtr(new Transform(sobj_walls[i]));
+		transform->SetPosition(posArr[i]);
+		transform->Rotate(radians(degreeArr[i]), axisArr[i]);
+		transform->SetScale(scaleArr[i]);
+	}
+
+	// light
+	auto sobj_AreaLight = ToPtr(new SObj(sobj_Box, "area light"));
+	auto areaLight = ToPtr(new AreaLight(vec3(1), 15, 0.8f, 0.6f));
+	auto light = ToPtr(new Light(sobj_AreaLight, areaLight));
+	auto lightTransform = ToPtr(new Transform(sobj_AreaLight));
+	lightTransform->SetPosition(vec3(0, 1.49f, 0));
+	lightTransform->SetScale(vec3(0.8f, 1.0f, 0.6f));
+	auto lightPlane = ToPtr(new Plane);
+	auto lightGeo = ToPtr(new Geometry(sobj_AreaLight, lightPlane));
+	auto bsdfEmission = ToPtr(new BSDF_Emission(vec3(2)));
+	auto materailEmission = ToPtr(new Material(sobj_AreaLight, bsdfEmission));
+
+	return sobj_Box;
+}
+
+SObj::Ptr GenGound() {
+	auto sobj_ground = ToPtr(new SObj(nullptr, "ground"));
+	auto material = ToPtr(new Material(sobj_ground, ToPtr(new BSDF_Diffuse)));
+	auto plane = ToPtr(new Geometry(sobj_ground, ToPtr(new Plane)));
+	auto transform = ToPtr(new Transform(sobj_ground));
+	transform->SetScale(vec3(100, 1, 100));
+	return sobj_ground;
+}
+
 Scene::Ptr GenScene0() {
 	auto sobj_Root = ToPtr(new SObj(nullptr, "root"));
 	auto sobj_Camera = ToPtr(new SObj(sobj_Root, "camera"));
@@ -489,14 +579,53 @@ Scene::Ptr GenScene8() {
 	auto dark = ToPtr(new BSDF_Diffuse(vec3(0)));
 	auto materialSky = ToPtr(new Material(sobj_skySphere, dark));
 
-	auto scene = ToPtr(new Scene(sobj_Root));
-	return scene;
-
 	return ToPtr(new Scene(sobj_Root, "scene 8"));
 }
 
+Scene::Ptr GenScene9() {
+	auto sobj_Root = ToPtr(new SObj(nullptr, "root"));
+
+	// metal workflow sphere
+	auto sobj_MWSphere = ToPtr(new SObj(sobj_Root, "metal workflow sphere"));
+
+	vec3 gold(1.00, 0.71, 0.29);
+	auto bsdfGold = ToPtr(new BSDF_MetalWorkflow(gold, 1.0f, 0.2f));
+	auto materialGold = ToPtr(new Material(sobj_MWSphere, bsdfGold));
+
+	auto MWSphereTransform = ToPtr(new Transform(sobj_MWSphere));
+	MWSphereTransform->SetPosition(vec3(0, 1.0f, 0));
+
+	auto geoMWSphere = ToPtr(new Geometry(sobj_MWSphere, ToPtr(new Sphere)));
+
+	// cornell box
+	// auto box = GenBox();
+	// auto boxTransform = ToPtr(new Transform(box));
+	// box->SetParent(sobj_Root);
+
+	// ground
+	auto ground = GenGound();
+	ground->SetParent(sobj_Root);
+
+	// plane
+
+	// camera
+	auto sobj_Camera = ToPtr(new SObj(sobj_Root, "camera"));
+	auto camera = ToPtr(new Camera(sobj_Camera, 50.0f));
+	auto cameraTransform = ToPtr(new Transform(sobj_Camera));
+	cameraTransform->SetPosition(vec3(0, 1.0f, 4.0f));
+
+	// sky sphere
+	//auto sobj_skySphere = ToPtr(new SObj(sobj_Root, "sky"));
+	//auto skySphere = ToPtr(new Sphere(vec3(0), 100.0f));
+	//auto geoSky = ToPtr(new Geometry(sobj_skySphere, skySphere));
+	//auto dark = ToPtr(new BSDF_Diffuse(vec3(0)));
+	//auto materialSky = ToPtr(new Material(sobj_skySphere, dark));
+
+	return ToPtr(new Scene(sobj_Root, "scene 9"));
+}
+
 Scene::Ptr GenScene(int n) {
-	const int num = 9;
+	const int num = 10;
 	Scene::Ptr(*f[num])() = {
 		&GenScene0,
 		&GenScene1,
@@ -507,6 +636,7 @@ Scene::Ptr GenScene(int n) {
 		&GenScene6,
 		&GenScene7,
 		&GenScene8,
+		&GenScene9,
 	};
 
 	if (n < num)

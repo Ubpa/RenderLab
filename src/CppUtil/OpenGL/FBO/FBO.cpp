@@ -19,7 +19,7 @@ using namespace std;
 FBO::FBO()
 	: type(ENUM_TYPE_INVALID), isValid(false) { }
 
-FBO::FBO(size_t width, size_t height, ENUM_TYPE type)
+FBO::FBO(uint width, uint height, ENUM_TYPE type)
 	: type(type), width(width), height(height) {
 	switch (type)
 	{
@@ -78,11 +78,11 @@ FBO::FBO(size_t width, size_t height, ENUM_TYPE type)
 	}
 }
 
-bool FBO::GenFBO_BASIC(size_t width, size_t height) {
+bool FBO::GenFBO_BASIC(uint width, uint height) {
 	glGenFramebuffers(1, &ID);
 	glBindFramebuffer(GL_FRAMEBUFFER, ID);
 
-	size_t colorBufferID;
+	uint colorBufferID;
 	glGenTextures(1, &colorBufferID);
 	glBindTexture(GL_TEXTURE_2D, colorBufferID);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
@@ -90,7 +90,7 @@ bool FBO::GenFBO_BASIC(size_t width, size_t height) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorBufferID, 0);
 
-	size_t RBO;
+	uint RBO;
 	glGenRenderbuffers(1, &RBO);
 	glBindRenderbuffer(GL_RENDERBUFFER, RBO);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
@@ -108,12 +108,12 @@ bool FBO::GenFBO_BASIC(size_t width, size_t height) {
 	return true;
 }
 
-bool FBO::GenFBO_RGBF_DEPTH(size_t width, size_t height, size_t colorBufferNum) {
+bool FBO::GenFBO_RGBF_DEPTH(uint width, uint height, uint colorBufferNum) {
 	glGenFramebuffers(1, &ID);
 	glBindFramebuffer(GL_FRAMEBUFFER, ID);
 
-	for (size_t i = 0; i < colorBufferNum; i++) {
-		size_t colorBufferID;
+	for (uint i = 0; i < colorBufferNum; i++) {
+		uint colorBufferID;
 		glGenTextures(1, &colorBufferID);
 		glBindTexture(GL_TEXTURE_2D, colorBufferID);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, NULL);
@@ -126,14 +126,14 @@ bool FBO::GenFBO_RGBF_DEPTH(size_t width, size_t height, size_t colorBufferNum) 
 	}
 
 	if (colorBufferNum > 1) {
-		size_t * attachments = new size_t[colorBufferNum];
-		for (size_t i = 0; i < colorBufferNum; i++)
+		uint * attachments = new uint[colorBufferNum];
+		for (uint i = 0; i < colorBufferNum; i++)
 			attachments[i] = GL_COLOR_ATTACHMENT0 + i;
 		glDrawBuffers(colorBufferNum, attachments);
 		delete [] attachments;
 	}
 
-	size_t RBO;
+	uint RBO;
 	glGenRenderbuffers(1, &RBO);
 	glBindRenderbuffer(GL_RENDERBUFFER, RBO);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
@@ -152,12 +152,12 @@ bool FBO::GenFBO_RGBF_DEPTH(size_t width, size_t height, size_t colorBufferNum) 
 	return true;
 }
 
-bool FBO::GenFBO_MSAA(size_t width, size_t height) {
-	const size_t samples = 4;
+bool FBO::GenFBO_MSAA(uint width, uint height) {
+	const uint samples = 4;
 	glGenFramebuffers(1, &ID);
 	glBindFramebuffer(GL_FRAMEBUFFER, ID);
 
-	size_t colorBufferID;
+	uint colorBufferID;
 	glGenTextures(1, &colorBufferID);
 	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, colorBufferID);
 	glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, GL_RGB, width, height, GL_TRUE);
@@ -165,7 +165,7 @@ bool FBO::GenFBO_MSAA(size_t width, size_t height) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, colorBufferID, 0);
 
-	size_t RBO;
+	uint RBO;
 	glGenRenderbuffers(1, &RBO);
 	glBindRenderbuffer(GL_RENDERBUFFER, RBO);
 	glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, GL_DEPTH24_STENCIL8, width, height);
@@ -183,11 +183,11 @@ bool FBO::GenFBO_MSAA(size_t width, size_t height) {
 	return true;
 }
 
-bool FBO::GenFBO_COLOR(size_t width, size_t height, bool isFloat) {
+bool FBO::GenFBO_COLOR(uint width, uint height, bool isFloat) {
 	glGenFramebuffers(1, &ID);
 	glBindFramebuffer(GL_FRAMEBUFFER, ID);
 	// create a color attachment texture
-	size_t colorBufferID;
+	uint colorBufferID;
 	glGenTextures(1, &colorBufferID);
 	glBindTexture(GL_TEXTURE_2D, colorBufferID);
 	glTexImage2D(GL_TEXTURE_2D, 0, isFloat ? GL_RGB16F : GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
@@ -213,11 +213,11 @@ bool FBO::GenFBO_COLOR(size_t width, size_t height, bool isFloat) {
 	return true;
 }
 
-bool FBO::GenFBO_RTX(size_t width, size_t height) {
+bool FBO::GenFBO_RTX(uint width, uint height) {
 	glGenFramebuffers(1, &ID);
 	glBindFramebuffer(GL_FRAMEBUFFER, ID);
 	// create a color attachment texture
-	size_t colorBufferID;
+	uint colorBufferID;
 	glGenTextures(1, &colorBufferID);
 	glBindTexture(GL_TEXTURE_2D, colorBufferID);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
@@ -239,11 +239,11 @@ bool FBO::GenFBO_RTX(size_t width, size_t height) {
 	return true;
 }
 
-bool FBO::GenFBO_RED(size_t width, size_t height) {
+bool FBO::GenFBO_RED(uint width, uint height) {
 	glGenFramebuffers(1, &ID);
 	glBindFramebuffer(GL_FRAMEBUFFER, ID);
 	// create a color attachment texture
-	size_t colorBufferID;
+	uint colorBufferID;
 	glGenTextures(1, &colorBufferID);
 	glBindTexture(GL_TEXTURE_2D, colorBufferID);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RGB, GL_FLOAT, NULL);
@@ -263,10 +263,10 @@ bool FBO::GenFBO_RED(size_t width, size_t height) {
 	return true;
 }
 
-bool FBO::GenFBO_DEPTH(size_t width, size_t height) {
+bool FBO::GenFBO_DEPTH(uint width, uint height) {
 	glGenFramebuffers(1, &ID);
 	// create depth texture
-	size_t depthBufferID;
+	uint depthBufferID;
 	glGenTextures(1, &depthBufferID);
 	glBindTexture(GL_TEXTURE_2D, depthBufferID);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
@@ -294,10 +294,10 @@ bool FBO::GenFBO_DEPTH(size_t width, size_t height) {
 	return true;
 }
 
-bool FBO::GenFBO_CUBE_DEPTH(size_t width, size_t height) {
+bool FBO::GenFBO_CUBE_DEPTH(uint width, uint height) {
 	glGenFramebuffers(1, &ID);
 
-	size_t depthBufferID;
+	uint depthBufferID;
 	glGenTextures(1, &depthBufferID);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, depthBufferID);
 	for (GLuint i = 0; i < 6; ++i)
@@ -327,10 +327,10 @@ bool FBO::GenFBO_CUBE_DEPTH(size_t width, size_t height) {
 	return true;
 }
 
-bool FBO::GenFBO_GBUFFER(size_t width, size_t height) {
+bool FBO::GenFBO_GBUFFER(uint width, uint height) {
 	glGenFramebuffers(1, &ID);
 	glBindFramebuffer(GL_FRAMEBUFFER, ID);
-	size_t gPosition, gNormal, gAlbedoSpec;
+	uint gPosition, gNormal, gAlbedoSpec;
 
 	// position color buffer
 	glGenTextures(1, &gPosition);
@@ -359,11 +359,11 @@ bool FBO::GenFBO_GBUFFER(size_t width, size_t height) {
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gAlbedoSpec, 0);
 
 	// tell OpenGL which color attachments we'll use (of this framebuffer) for rendering 
-	size_t attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
+	uint attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
 	glDrawBuffers(3, attachments);
 
 	// create and attach depth buffer (renderbuffer)
-	size_t rboDepth;
+	uint rboDepth;
 	glGenRenderbuffers(1, &rboDepth);
 	glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
@@ -383,13 +383,13 @@ bool FBO::GenFBO_GBUFFER(size_t width, size_t height) {
 	return true;
 }
 
-bool FBO::GenFBO_RAYTRACING(size_t width, size_t height) {
+bool FBO::GenFBO_RAYTRACING(uint width, uint height) {
 	glGenFramebuffers(1, &ID);
 	glBindFramebuffer(GL_FRAMEBUFFER, ID);
 
-	const size_t colorBufferNum = 4;
-	for (size_t i = 0; i < colorBufferNum - 1; i++) {
-		size_t colorBufferID;
+	const uint colorBufferNum = 4;
+	for (uint i = 0; i < colorBufferNum - 1; i++) {
+		uint colorBufferID;
 		glGenTextures(1, &colorBufferID);
 		glBindTexture(GL_TEXTURE_2D, colorBufferID);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, NULL);
@@ -401,7 +401,7 @@ bool FBO::GenFBO_RAYTRACING(size_t width, size_t height) {
 		colorTextures.push_back(Texture(colorBufferID));
 	}
 	{
-		size_t colorBufferID;
+		uint colorBufferID;
 		glGenTextures(1, &colorBufferID);
 		glBindTexture(GL_TEXTURE_2D, colorBufferID);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, NULL);
@@ -413,7 +413,7 @@ bool FBO::GenFBO_RAYTRACING(size_t width, size_t height) {
 		colorTextures.push_back(Texture(colorBufferID));
 	}
 
-	size_t attachments[colorBufferNum] = {
+	uint attachments[colorBufferNum] = {
 		GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3
 	};
 	glDrawBuffers(colorBufferNum, attachments);
@@ -430,7 +430,7 @@ bool FBO::GenFBO_RAYTRACING(size_t width, size_t height) {
 	return true;
 }
 
-size_t FBO::GetID() const {
+uint FBO::GetID() const {
 	if (!isValid)
 		return 0;
 	
@@ -454,7 +454,7 @@ bool FBO::IsComplete() const {
 	return true;
 }
 
-size_t FBO::PassType2GL(ENUM_PASS_TYPE passType) {
+uint FBO::PassType2GL(ENUM_PASS_TYPE passType) {
 	switch (passType)
 	{
 	case OpenGL::FBO::ENUM_PASS_COLOR:
@@ -477,7 +477,7 @@ bool FBO::PassTo(const FBO & fbo, ENUM_PASS_TYPE passType) const {
 	return PassTo(fbo.ID, fbo.width, fbo.height, passType);
 }
 
-bool FBO::PassTo(size_t fboID, size_t width, size_t height, ENUM_PASS_TYPE passType) const {
+bool FBO::PassTo(uint fboID, uint width, uint height, ENUM_PASS_TYPE passType) const {
 	if (!isValid)
 		return false;
 
@@ -487,7 +487,7 @@ bool FBO::PassTo(size_t fboID, size_t width, size_t height, ENUM_PASS_TYPE passT
 	return true;
 }
 
-const Texture & FBO::GetColorTexture(size_t idx) const {
+const Texture & FBO::GetColorTexture(uint idx) const {
 	if (!isValid || idx > colorTextures.size())
 		return Texture::InValid;
 

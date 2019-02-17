@@ -17,13 +17,13 @@ using namespace std;
 
 const Texture Texture::InValid(0, ENUM_TYPE_NOT_VALID);
 
-Texture::Texture(size_t ID, ENUM_TYPE type)
+Texture::Texture(uint ID, ENUM_TYPE type)
 	: ID(ID), type(type) { }
 
 Texture::Texture(ENUM_TYPE type)
 	: Texture(0, type) { }
 
-Texture::Texture(size_t width, size_t height, const float * data, size_t dataType, size_t srcFormat, size_t internalFormat) {
+Texture::Texture(uint width, uint height, const float * data, uint dataType, uint srcFormat, uint internalFormat) {
 	glGenTextures(1, &ID);
 	glBindTexture(GL_TEXTURE_2D, ID);
 	glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, srcFormat, dataType, data);
@@ -45,7 +45,7 @@ Texture::Texture(const vector<string> & skybox) {
 	Load(skybox);
 }
 
-size_t Texture::GetID() const{
+uint Texture::GetID() const{
 	return ID;
 }
 
@@ -72,7 +72,7 @@ bool Texture::Load(const std::vector<std::string> & skybox) {
 	// +Z (front) 
 	// -Z (back)
 	// -------------------------------------------------------
-	for (size_t i = 0; i < skybox.size(); i++)
+	for (uint i = 0; i < skybox.size(); i++)
 	{
 		auto img = ToPtr(new Image(skybox[i].c_str()));
 		if (!img->IsValid()) {
@@ -106,7 +106,7 @@ Texture::Texture(const vector<CPtr<Image>> & skyboxImgs) {
 	glGenTextures(1, &ID);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, ID);
 
-	for (size_t i = 0; i < 6; i++)
+	for (uint i = 0; i < 6; i++)
 	{
 		if (!skyboxImgs[i]->IsValid()) {
 			printf("Cubemap texture load fail\n");
@@ -216,7 +216,7 @@ bool Texture::SetImg(const Image & img) {
 	return true;
 }
 
-bool Texture::Use(size_t id) const{
+bool Texture::Use(uint id) const{
 	if (!IsValid())
 		return false;
 
@@ -225,7 +225,7 @@ bool Texture::Use(size_t id) const{
 	return true;
 }
 
-size_t Texture::Type2GL(ENUM_TYPE type) {
+uint Texture::Type2GL(ENUM_TYPE type) {
 	switch (type)
 	{
 	case ENUM_TYPE_NOT_VALID:

@@ -34,7 +34,7 @@ Shader::Shader(const string & vertexPath, const string & fragmentPath, const str
 	const char * fsCStr = fsStr.c_str();
 
 	// vertex shader
-	size_t glvs = glCreateShader(GL_VERTEX_SHADER);
+	uint glvs = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(glvs, 1, &vsCStr, NULL);
 	glCompileShader(glvs);
 	if (!CheckCompileErrors(glvs, "VERTEX")) {
@@ -44,7 +44,7 @@ Shader::Shader(const string & vertexPath, const string & fragmentPath, const str
 	}
 
 	// fragment Shader
-	size_t glfs = glCreateShader(GL_FRAGMENT_SHADER);
+	uint glfs = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(glfs, 1, &fsCStr, NULL);
 	glCompileShader(glfs);
 	if(!CheckCompileErrors(glfs, "FRAGMENT")) {
@@ -54,7 +54,7 @@ Shader::Shader(const string & vertexPath, const string & fragmentPath, const str
 	}
 
 	// geometry Sahder
-	size_t glgs = 0;
+	uint glgs = 0;
 	if (hasGS) {
 		File gsF(geometryPath, File::Mode::READ);
 		string gsStr = gsF.ReadAll();
@@ -96,7 +96,7 @@ Shader::Shader(const string & vertexPath, const string & fragmentPath, const str
 	glDeleteShader(glgs);
 }
 
-size_t Shader::GetID() const { return ID; }
+uint Shader::GetID() const { return ID; }
 bool Shader::IsValid() const { return valid; }
 
 bool Shader::Use() const{
@@ -121,7 +121,7 @@ void Shader::SetFloat(const string &name, float value) const{
 	glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
 }
 
-void Shader::SetFloats(const string &name, size_t n, const float * values) const {
+void Shader::SetFloats(const string &name, uint n, const float * values) const {
 	Use();
 	glUniform1fv(glGetUniformLocation(ID, name.c_str()), n, values);
 }
@@ -145,7 +145,7 @@ void Shader::SetVec3f(const string &name, const glm::vec3 & v) const {
 	SetVec3f(name, v.x, v.y, v.z);
 }
 
-void Shader::SetVec3fs(const std::string &name, size_t n, const float * data) const {
+void Shader::SetVec3fs(const std::string &name, uint n, const float * data) const {
 	Use();
 	glUniform3fv(glGetUniformLocation(ID, name.c_str()), 4, data);
 }
@@ -168,11 +168,11 @@ void Shader::SetMat4f(const string &name, const glm::mat4 mat4) const{
 	SetMat4f(name, glm::value_ptr(mat4));
 }
 
-void Shader::UniformBlockBind(const string &name, size_t bindPoint) {
+void Shader::UniformBlockBind(const string &name, uint bindPoint) {
 	glUniformBlockBinding(ID, glGetUniformBlockIndex(ID, name.c_str()), bindPoint);
 }
 
-int Shader::CheckCompileErrors(size_t shader, string type){
+int Shader::CheckCompileErrors(uint shader, string type){
 	int success;
 	char infoLog[1024];
 	if (type != "PROGRAM"){

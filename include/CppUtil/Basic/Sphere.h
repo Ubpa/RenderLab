@@ -7,18 +7,18 @@ namespace CppUtil {
 	namespace Basic {
 		class Sphere : public Shape {
 		public:
-			Sphere(size_t n);
+			Sphere(uint n);
 			virtual ~Sphere();
 			float * GetNormalArr();
 			float * GetTexCoordsArr();
-			size_t * GetIndexArr();
-			size_t GetNormalArrSize();
-			size_t GetTexCoordsArrSize();
-			size_t GetIndexArrSize();
+			uint * GetIndexArr();
+			uint GetNormalArrSize();
+			uint GetTexCoordsArrSize();
+			uint GetIndexArrSize();
 		protected:
 			Array2D<float> * normalArr;
 			Array2D<float> * texCoordsArr;
-			Array2D<size_t> * indexArr;
+			Array2D<uint> * indexArr;
 		};
 	}
 }

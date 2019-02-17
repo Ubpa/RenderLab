@@ -1,6 +1,8 @@
 #ifndef _OPENGL_MESH_MESH_H_
 #define _OPENGL_MESH_MESH_H_
 
+typedef unsigned int uint;
+
 #include <glm/glm.hpp>
 
 #include <string>
@@ -26,14 +28,14 @@ namespace CppUtil {
 			};
 
 			struct TextureInfo {
-				size_t id;
+				uint id;
 				std::string type;
 				std::string path;
 			};
 
 			/*  Functions  */
 			// constructor
-			Mesh(const std::vector<Vertex> & vertices, const std::vector<size_t> & indices, const std::vector<TextureInfo> & textureInfos);
+			Mesh(const std::vector<Vertex> & vertices, const std::vector<uint> & indices, const std::vector<TextureInfo> & textureInfos);
 
 			// render the mesh
 			void Draw(const Shader & shader, const std::string & materialPrefix = "");
@@ -41,12 +43,12 @@ namespace CppUtil {
 		private:
 			/*  Mesh Data  */
 			std::vector<Vertex> vertices;
-			std::vector<size_t> indices;
+			std::vector<uint> indices;
 			std::vector<TextureInfo> textureInfos;
-			size_t VAO;
+			uint VAO;
 
 			/*  Render data  */
-			size_t VBO, EBO;
+			uint VBO, EBO;
 
 			/*  Functions    */
 			// initializes all the buffer objects/arrays

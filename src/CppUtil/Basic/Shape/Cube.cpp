@@ -42,21 +42,21 @@ Cube::Cube()
 	: Shape(24, 12) {
 	normalArr = new Array2D<float>(vertexNum, 3);
 	texCoordsArr = new Array2D<float>(vertexNum, 2);
-	indexArr = new Array2D<size_t>(triNum, 3);
+	indexArr = new Array2D<uint>(triNum, 3);
 	//----------
-	for (size_t i = 0; i < vertexNum; i++) {
+	for (uint i = 0; i < vertexNum; i++) {
 		posArr->Copy(i, 0, 3, &(cubeData[8 * i]));
 		normalArr->Copy(i, 0, 3, &(cubeData[8 * i + 3]));
 		texCoordsArr->Copy(i, 0, 2, &(cubeData[8 * i + 6]));
 	}
 
-	const size_t squareIdx[6] = {
+	const uint squareIdx[6] = {
 		0, 1, 2,
 		3, 2, 1
 	};
 
-	for (size_t i = 0; i < 6; i++) {
-		for (size_t j = 0; j < 6; j++)
+	for (uint i = 0; i < 6; i++) {
+		for (uint j = 0; j < 6; j++)
 			indexArr->At(2 * i + j / 3, j % 3) = 4 * i + squareIdx[j];
 	}
 }
@@ -84,21 +84,21 @@ float * Cube::GetTexCoordsArr() {
 	return texCoordsArr->GetData();
 }
 
-size_t * Cube::GetIndexArr() {
+uint * Cube::GetIndexArr() {
 	if (indexArr == nullptr)
 		return nullptr;
 
 	return indexArr->GetData();
 }
 
-size_t Cube::GetNormalArrSize() {
+uint Cube::GetNormalArrSize() {
 	return normalArr->GetMemSize();
 }
 
-size_t Cube::GetTexCoordsArrSize() {
+uint Cube::GetTexCoordsArrSize() {
 	return texCoordsArr->GetMemSize();
 }
 
-size_t Cube::GetIndexArrSize() {
+uint Cube::GetIndexArrSize() {
 	return indexArr->GetMemSize();
 }

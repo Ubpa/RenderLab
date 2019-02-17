@@ -79,8 +79,8 @@ vec3 BSDF_CookTorrance::Sample_f(const vec3 & wo, vec3 & wi, float & pd) {
 	float phi = 2 * Math::PI * Xi2;
 	wi = vec3(sinTheta*cos(phi), sinTheta*sin(phi), cosTheta);
 	vec3 h = normalize(wo + wi);
-
 	pd = 1.0f / (2.0f * Math::PI);
+
 	float fr = Fr(wi, h);
 	float kd = 1 - fr;
 	return kd*albedo/Math::PI + NDF(h) * fr * G(wo, wi, h) / (4 * wo.z *wi.z) * refletance;

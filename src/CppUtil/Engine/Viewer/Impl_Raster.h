@@ -33,6 +33,7 @@ namespace CppUtil {
 		class BSDF_Glass;
 		class BSDF_Emission;
 		class BSDF_CookTorrance;
+		class BSDF_MetalWorkflow;
 
 		class Impl_Raster : public Basic::EleVisitor {
 			ELEVISITOR_SETUP_FUNCNAME(Impl_Raster, Draw)
@@ -55,6 +56,7 @@ namespace CppUtil {
 			void Draw(Basic::Ptr<BSDF_Mirror> bsdf);
 			void Draw(Basic::Ptr<BSDF_Emission> bsdf);
 			void Draw(Basic::Ptr<BSDF_CookTorrance> bsdf);
+			void Draw(Basic::Ptr<BSDF_MetalWorkflow> bsdf);
 
 		private:
 			std::vector<glm::mat4> modelVec;

@@ -137,8 +137,8 @@ CppUtil::Basic::Operation::Ptr RasterOpCreator::SceneOp::GetDefaultListenerInitO
 		EventMngr::Reg(::Qt::NoButton, (void*)this->GetOGLW(), EventMngr::MOUSE_WHEEL, wheelOp);
 
 		// Move
-		size_t moveKey[] = { ::Qt::Key_W, ::Qt::Key_S, ::Qt::Key_A, ::Qt::Key_D, ::Qt::Key_Q, ::Qt::Key_E };
-		for (size_t i = 0; i < 6; i++) {
+		uint moveKey[] = { ::Qt::Key_W, ::Qt::Key_S, ::Qt::Key_A, ::Qt::Key_D, ::Qt::Key_Q, ::Qt::Key_E };
+		for (uint i = 0; i < 6; i++) {
 			auto op = ToPtr(new LambdaOp([this, moveKey, i]() {
 				auto pOGLW = this->GetOGLW();
 				Camera * mainCamera;
@@ -270,8 +270,8 @@ RasterOpCreator::SceneOp::Ptr RasterOpCreator::GenScenePaintOp_1() {
 		}
 		bloomObjShader.UniformBlockBind("CameraMatrixs", 0);
 		bloomObjShader.SetInt("diffuseTexture", 0);
-		const size_t lightNum = 4;
-		for (size_t i = 0; i < lightNum; i++) {
+		const uint lightNum = 4;
+		for (uint i = 0; i < lightNum; i++) {
 			bloomObjShader.SetVec3f("lights[" + to_string(i) + "].Position", data_LightPositions[i]);
 			bloomObjShader.SetVec3f("lights[" + to_string(i) + "].Color", data_LightColors[i]);
 		}
@@ -323,7 +323,7 @@ RasterOpCreator::SceneOp::Ptr RasterOpCreator::GenScenePaintOp_1() {
 		};
 		bool flip[textureNum] = { true };
 		bool gammaCorrection[textureNum] = { true };
-		for (size_t i = 0; i < textureNum; i++) {
+		for (uint i = 0; i < textureNum; i++) {
 			if (!textures[i].Load(imgPath[i], flip[i], gammaCorrection[i])) {
 				printf("ERROR: Load texture [%s] fail.\n", imgPath[i].c_str());
 				return;
@@ -335,7 +335,7 @@ RasterOpCreator::SceneOp::Ptr RasterOpCreator::GenScenePaintOp_1() {
 		Camera mainCamera;
 		pOGLW->Reg("mainCamera", mainCamera);
 
-		size_t cameraMatrixsUBO;
+		uint cameraMatrixsUBO;
 		glGenBuffers(1, &cameraMatrixsUBO);
 		glBindBuffer(GL_UNIFORM_BUFFER, cameraMatrixsUBO);
 		glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), NULL, GL_DYNAMIC_DRAW);
@@ -373,7 +373,7 @@ RasterOpCreator::SceneOp::Ptr RasterOpCreator::GenScenePaintOp_1() {
 		Shader * blendShader;
 		Texture * textures[1];
 		Camera * mainCamera;
-		size_t * cameraMatrixsUBO;
+		uint * cameraMatrixsUBO;
 		FBO * FBO_HDR_Bloom;
 		FBO * blurFBOs[2];
 		
@@ -478,7 +478,7 @@ RasterOpCreator::SceneOp::Ptr RasterOpCreator::GenScenePaintOp_1() {
 		}));
 
 		auto lightOp = ToPtr(new LambdaOp([&]() {
-			for (size_t i = 0; i < lightNum; i++) {
+			for (uint i = 0; i < lightNum; i++) {
 				glm::mat4 model(1.0f);
 				model = glm::translate(model, data_LightPositions[i]);
 				model = glm::scale(model, glm::vec3(0.5f));
@@ -511,7 +511,7 @@ RasterOpCreator::SceneOp::Ptr RasterOpCreator::GenScenePaintOp_1() {
 
 			bool horizontal = true;
 			bool first_iteration = true;
-			for (size_t i = 0; i < 10; i++) {
+			for (uint i = 0; i < 10; i++) {
 				blurFBOs[horizontal]->Use();
 				blurShader->SetBool("horizontal", horizontal);
 				if (first_iteration)

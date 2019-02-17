@@ -54,6 +54,7 @@ Impl_Raster::Impl_Raster(Scene::Ptr scene)
 	Reg<BSDF_Glass>();
 	Reg<BSDF_Mirror>();
 	Reg<BSDF_CookTorrance>();
+	Reg<BSDF_MetalWorkflow>();
 }
 
 void Impl_Raster::Init() {
@@ -83,7 +84,7 @@ void Impl_Raster::Init() {
 			continue;
 
 		vector<VAO::VBO_DataPatch> P3_Mesh_Vec_VBO_Data_Patch = {
-			{ &(mesh->GetPositions()[0][0]), mesh->GetPositions().size() * 3 * sizeof(float), 3 },
+			{ &(mesh->GetPositions()[0][0]), static_cast<uint>(mesh->GetPositions().size() * 3 * sizeof(float)), 3 },
 		};
 
 		VAO VAO_P3_Mesh(P3_Mesh_Vec_VBO_Data_Patch, mesh->GetIndice().data(), mesh->GetIndice().size() * sizeof(size_t));
@@ -151,7 +152,7 @@ void Impl_Raster::Draw(TriMesh::Ptr mesh) {
 	auto target = meshVAOs.find(mesh);
 	if (target == meshVAOs.end()) {
 		vector<VAO::VBO_DataPatch> P3_Mesh_Vec_VBO_Data_Patch = {
-				{ &(mesh->GetPositions()[0][0]), mesh->GetPositions().size() * 3 * sizeof(float), 3 },
+				{ &(mesh->GetPositions()[0][0]), static_cast<uint>(mesh->GetPositions().size() * 3 * sizeof(float)), 3 },
 		};
 
 		VAO VAO_P3_Mesh(P3_Mesh_Vec_VBO_Data_Patch, mesh->GetIndice().data(), mesh->GetIndice().size() * sizeof(size_t));
@@ -180,4 +181,8 @@ void Impl_Raster::Draw(BSDF_Emission::Ptr bsdf) {
 
 void Impl_Raster::Draw(BSDF_CookTorrance::Ptr bsdf) {
 	shader_basic.SetVec3f("color", bsdf->refletance);
+}
+
+void Impl_Raster::Draw(BSDF_MetalWorkflow::Ptr bsdf) {
+	shader_basic.SetVec3f("color", bsdf->albedo);
 }

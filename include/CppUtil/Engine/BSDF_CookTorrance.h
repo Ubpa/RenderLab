@@ -26,6 +26,7 @@ namespace CppUtil {
 			virtual glm::vec3 GetEmission() const { return glm::vec3(0); }
 
 			virtual bool IsDelta() const { return false; }
+
 		private:
 			float NDF(const glm::vec3 & h);
 			float Fr(const glm::vec3 & wi, glm::vec3 & h);

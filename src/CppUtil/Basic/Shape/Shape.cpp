@@ -4,7 +4,7 @@ using namespace CppUtil::Basic;
 
 const float Shape::PI = 3.1415926f;
 
-Shape::Shape(size_t vertexNum, size_t triNum)
+Shape::Shape(uint vertexNum, uint triNum)
 	: vertexNum(vertexNum), triNum(triNum){
 	posArr = new Array2D<float>(vertexNum, 3);
 }
@@ -21,6 +21,6 @@ float * Shape::GetPosArr() {
 	return posArr->GetData();
 }
 
-size_t Shape::GetPosArrSize() {
+uint Shape::GetPosArrSize() {
 	return posArr->GetMemSize();
 }

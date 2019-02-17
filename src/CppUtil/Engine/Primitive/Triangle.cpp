@@ -17,7 +17,7 @@ const BBox Triangle::GetBBox() const {
 	vec3 minP = min(min(pArr[0], pArr[1]), pArr[2]);
 	vec3 maxP = max(max(pArr[0], pArr[1]), pArr[2]);
 
-	for (size_t dim = 0; dim < 3; dim++) {
+	for (int dim = 0; dim < 3; dim++) {
 		if (minP[dim] == maxP[dim]) {
 			minP[dim] -= 0.000001f;
 			maxP[dim] += 0.000001f;

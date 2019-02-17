@@ -3,7 +3,7 @@
 using namespace CppUtil::Basic;
 
 void Node::AddChild(Node::Ptr child) {
-	if (child->parent.expired())
+	if (!child->parent.expired())
 		child->parent.lock()->DelChild(child);
 
 	child->parent = This();

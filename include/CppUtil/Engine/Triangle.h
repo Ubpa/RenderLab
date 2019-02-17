@@ -1,6 +1,8 @@
 #ifndef _ENGINE_PRIMITIVE_TRIANGLE_H_
 #define _ENGINE_PRIMITIVE_TRIANGLE_H_
 
+typedef unsigned int uint;
+
 #include <CppUtil/Basic/Element.h>
 #include <CppUtil/Engine/BBox.h>
 
@@ -14,13 +16,13 @@ namespace CppUtil {
 			ELE_SETUP(Triangle)
 			friend class TriMesh;
 		public:
-			Triangle(size_t idx0, size_t idx1, size_t idx2)
+			Triangle(uint idx0, uint idx1, uint idx2)
 				: mesh(Basic::Ptr<TriMesh>(nullptr)), idx{ idx0, idx1, idx2 } { }
 
 			Basic::Ptr<TriMesh> GetMesh() const { return mesh.lock(); }
 			const BBox GetBBox() const;
 		public:
-			size_t idx[3]; // index into the mesh attribute arrays
+			uint idx[3]; // index into the mesh attribute arrays
 
 		private:
 			Basic::WPtr<TriMesh> mesh;
