@@ -1,14 +1,16 @@
 #include <CppUtil/Engine/BSDF_MetalWorkflow.h>
 
+#include <CppUtil/Basic/Image.h>
 #include <CppUtil/Basic/Math.h>
 
 using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
 using namespace glm;
 
-vec3 BSDF_MetalWorkflow::F(const vec3 & wo, const vec3 & wi) {
+vec3 BSDF_MetalWorkflow::F(const vec3 & wo, const vec3 & wi, const vec2 & texcoord) {
+	auto albedo = GetAlbedo(texcoord);
 	auto diffuse = albedo / Math::PI;
-	return (1 - metallic)*diffuse + MS_BRDF(wo, wi);
+	return (1 - metallic)*diffuse + MS_BRDF(wo, wi, albedo);
 }
 
 float BSDF_MetalWorkflow::PDF(const vec3 & wo, const vec3 & wi) {
@@ -17,7 +19,7 @@ float BSDF_MetalWorkflow::PDF(const vec3 & wo, const vec3 & wi) {
 	//return 1.0f / (2.0f * Math::PI);
 }
 
-vec3 BSDF_MetalWorkflow::Sample_f(const vec3 & wo, vec3 & wi, float & pd) {
+vec3 BSDF_MetalWorkflow::Sample_f(const vec3 & wo, const vec2 & texcoord, vec3 & wi, float & pd) {
 	float Xi1 = Math::Rand_F();
 	float Xi2 = Math::Rand_F();
 
@@ -45,16 +47,17 @@ vec3 BSDF_MetalWorkflow::Sample_f(const vec3 & wo, vec3 & wi, float & pd) {
 	pd = 1.0f / (2.0f * Math::PI);
 	*/
 
+	auto albedo = GetAlbedo(texcoord);
 	auto diffuse = albedo / Math::PI;
-	return (1 - metallic)*diffuse + MS_BRDF(wo, wi);
+	return (1 - metallic)*diffuse + MS_BRDF(wo, wi, albedo);
 }
 
-vec3 BSDF_MetalWorkflow::MS_BRDF(const vec3 & wo, const vec3 & wi) {
+vec3 BSDF_MetalWorkflow::MS_BRDF(const vec3 & wo, const vec3 & wi, const vec3 & albedo) const {
 	vec3 h = normalize(wo + wi);
-	return NDF(h)*Fr(wi, h)*G(wo, wi) / (4 * wo.z*wi.z);
+	return NDF(h)*Fr(wi, h, albedo)*G(wo, wi) / (4 * wo.z*wi.z);
 }
 
-float BSDF_MetalWorkflow::NDF(const glm::vec3 & h) {
+float BSDF_MetalWorkflow::NDF(const vec3 & h) const {
 	//  GGX/Trowbridge-Reitz
 
 	float alpha = roughness * roughness;
@@ -63,7 +66,7 @@ float BSDF_MetalWorkflow::NDF(const glm::vec3 & h) {
 	return alpha2 / (Math::PI*pow(NoH*NoH*(alpha2 - 1) + 1, 2));
 }
 
-vec3 BSDF_MetalWorkflow::Fr(const glm::vec3 & wi, glm::vec3 & h) {
+vec3 BSDF_MetalWorkflow::Fr(const vec3 & wi, const vec3 & h, const vec3 & albedo) const {
 	// Schlick¡¯s approximation
 	// use a Spherical Gaussian approximation to replace the power.
 	//  slightly more efficient to calculate and the difference is imperceptible
@@ -73,7 +76,7 @@ vec3 BSDF_MetalWorkflow::Fr(const glm::vec3 & wi, glm::vec3 & h) {
 	return F0 + (vec3(1.0f) - F0) * pow(2.0f, (-5.55473f * HoWi - 6.98316f) * HoWi);
 }
 
-float BSDF_MetalWorkflow::G(const glm::vec3 & wo, const glm::vec3 & wi) {
+float BSDF_MetalWorkflow::G(const vec3 & wo, const vec3 & wi) const {
 	// Schlick, remap roughness and k
 
 	// k = alpha / 2
@@ -87,4 +90,12 @@ float BSDF_MetalWorkflow::G(const glm::vec3 & wo, const glm::vec3 & wi) {
 	float G1_wo = wo.z / (wo.z*(1 - k) + k);
 	float G1_wi = wi.z / (wi.z*(1 - k) + k);
 	return G1_wo * G1_wi;
+}
+
+vec3 BSDF_MetalWorkflow::GetAlbedo(const vec2 & texcoord) const {
+	if (!albedoTexture || !albedoTexture->IsValid())
+		return albedoColor;
+
+	bool blend = albedoTexture->GetChannel() == 4;
+	return vec3(albedoTexture->Sample(texcoord, blend))*albedoColor;
 }

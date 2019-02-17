@@ -15,9 +15,6 @@ namespace CppUtil {
 			protected:
 				bool isIntersect;
 			};
-
-		public:
-			virtual const Rst & GetRst() const = 0;
 		};
 	}
 }

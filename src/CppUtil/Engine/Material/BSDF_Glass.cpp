@@ -9,7 +9,7 @@ using namespace CppUtil::Basic::Math;
 using namespace glm;
 
 
-vec3 BSDF_Glass::Sample_f(const vec3 & wo, vec3 & wi, float & PD) {
+vec3 BSDF_Glass::Sample_f(const vec3 & wo, const vec2 & texcoord, vec3 & wi, float & PD) {
 	// PDF is delta
 
 	if (!LocalRefract(wo, wi, ior)) {

@@ -2,6 +2,7 @@
 #define _ENGINE_INTERSECTOR_RAY_INTERSECTOR_H_
 
 #include <CppUtil/Engine/Intersector.h>
+#include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 
 namespace CppUtil {
@@ -36,13 +37,14 @@ namespace CppUtil {
 
 				Basic::Ptr<SObj> closestSObj;
 				glm::vec3 n;
+				glm::vec2 texcoord;
 			};
 
 		public:
 			RayIntersector(Basic::Ptr<Ray> ray);
 
 		public:
-			virtual const Rst & GetRst() const { return rst; }
+			const Rst & GetRst() const { return rst; }
 
 		private:
 			// 设置 rst，如果相交，则会修改 ray.tMax

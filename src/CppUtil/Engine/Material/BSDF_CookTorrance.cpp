@@ -39,7 +39,7 @@ float BSDF_CookTorrance::G(const vec3 & wo, const vec3 & wi, const vec3 & h){
 	return min(min(1.0f, item1), item2);
 }
 
-vec3 BSDF_CookTorrance::F(const vec3 & wo, const vec3 & wi) {
+vec3 BSDF_CookTorrance::F(const vec3 & wo, const vec3 & wi, const vec2 & texcoord) {
 	vec3 h = normalize(wo + wi);
 	float fr = Fr(wi, h);
 	float kd = 1 - fr;
@@ -53,7 +53,7 @@ float BSDF_CookTorrance::PDF(const vec3 & wo, const vec3 & wi) {
 	return 1.0f / (2.0f * Math::PI);
 }
 
-vec3 BSDF_CookTorrance::Sample_f(const vec3 & wo, vec3 & wi, float & pd) {
+vec3 BSDF_CookTorrance::Sample_f(const vec3 & wo, const vec2 & texcoord, vec3 & wi, float & pd) {
 	/*
 	// 根据 NDF 来进行重要性采样
 	// 有异常，暂时未解决

@@ -10,7 +10,7 @@ namespace CppUtil {
 		public:
 			BSDF_Mirror(const glm::vec3 & reflectance = glm::vec3(1)) : reflectance(reflectance) { }
 
-			virtual glm::vec3 F(const glm::vec3 & wo, const glm::vec3 & wi) { return glm::vec3(0); }
+			virtual glm::vec3 F(const glm::vec3 & wo, const glm::vec3 & wi, const glm::vec2 & texcoord) { return glm::vec3(0); }
 
 			// probability density function
 			virtual float PDF(const glm::vec3 & wo, const glm::vec3 & wi) { return 0; }
@@ -20,7 +20,7 @@ namespace CppUtil {
 			// @arg0 in
 			// @arg1 out
 			// @arg2 out
-			virtual glm::vec3 Sample_f(const glm::vec3 & wo, glm::vec3 & wi, float & PD);
+			virtual glm::vec3 Sample_f(const glm::vec3 & wo, const glm::vec2 & texcoord, glm::vec3 & wi, float & PD);
 
 			virtual glm::vec3 GetEmission() const { return glm::vec3(0); }
 

@@ -11,7 +11,7 @@ namespace CppUtil {
 			BSDF_Glass(float ior = 1.f, const glm::vec3 & transmittance = glm::vec3(1), const glm::vec3 & reflectance = glm::vec3(1))
 				: ior(ior), transmittance(transmittance), reflectance(reflectance) { }
 
-			virtual glm::vec3 F(const glm::vec3 & wo, const glm::vec3 & wi) { return glm::vec3(0); }
+			virtual glm::vec3 F(const glm::vec3 & wo, const glm::vec3 & wi, const glm::vec2 & texcoord) { return glm::vec3(0); }
 
 			// probability density function
 			virtual float PDF(const glm::vec3 & wo, const glm::vec3 & wi) { return 0; }
@@ -21,7 +21,7 @@ namespace CppUtil {
 			// @arg0 in
 			// @arg1 out
 			// @arg2 out
-			virtual glm::vec3 Sample_f(const glm::vec3 & wo, glm::vec3 & wi, float & pd);
+			virtual glm::vec3 Sample_f(const glm::vec3 & wo, const glm::vec2 & texcoord, glm::vec3 & wi, float & pd);
 
 			virtual glm::vec3 GetEmission() const { return glm::vec3(0); }
 

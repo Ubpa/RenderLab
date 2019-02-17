@@ -184,5 +184,5 @@ void Impl_Raster::Draw(BSDF_CookTorrance::Ptr bsdf) {
 }
 
 void Impl_Raster::Draw(BSDF_MetalWorkflow::Ptr bsdf) {
-	shader_basic.SetVec3f("color", bsdf->albedo);
+	shader_basic.SetVec3f("color", bsdf->albedoColor);
 }

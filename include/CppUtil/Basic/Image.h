@@ -61,7 +61,7 @@ namespace CppUtil {
 			static glm::vec<N, uByte> Pixel_F2UB(const glm::vec<N, float> & pixel) {
 				glm::vec<N, uByte> rst;
 				for (size_t i = 0; i < N; i++)
-					rst[i] = static_cast<uByte>(clamp<float>(255.99f * pixel[i], 0.0f, 255.99f));
+					rst[i] = static_cast<uByte>(glm::clamp<float>(255.99f * pixel[i], 0.0f, 255.99f));
 
 				return rst;
 			}
@@ -70,7 +70,7 @@ namespace CppUtil {
 			static glm::vec<N, uByte> Pixel_D2UB(const glm::vec<N, double> & pixel) {
 				glm::vec<N, uByte> rst;
 				for (size_t i = 0; i < N; i++)
-					rst[i] = static_cast<uByte>(clamp<double>(255.99 * pixel[i], 0.0, 255.99));
+					rst[i] = static_cast<uByte>(glm::clamp<double>(255.99 * pixel[i], 0.0, 255.99));
 
 				return rst;
 			}

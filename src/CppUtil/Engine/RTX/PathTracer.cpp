@@ -131,7 +131,7 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 				const float abs_cos_theta = abs(w_in.z);
 
 				// evaluate surface bsdf
-				const vec3 f = bsdf->F(w_out, w_in);
+				const vec3 f = bsdf->F(w_out, w_in, closestRst.texcoord);
 
 				// shadowRay 处于世界坐标
 				Ray::Ptr shadowRay = ToPtr(new Ray(shadowOrigin, dirInWorld));
@@ -152,7 +152,7 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 	// 采样 BSDF
 	vec3 mat_w_in;
 	float matPD;
-	const vec3 matF = bsdf->Sample_f(w_out, mat_w_in, matPD);
+	const vec3 matF = bsdf->Sample_f(w_out, closestRst.texcoord, mat_w_in, matPD);
 	const vec3 matRayDirInWorld = surfaceToWorld * mat_w_in;
 	const float abs_cosTheta = abs(mat_w_in.z);
 

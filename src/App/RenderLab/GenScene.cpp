@@ -2,8 +2,11 @@
 
 #include <CppUtil/Engine/Engine.h>
 
+#include <CppUtil/Basic/Image.h>
 #include <CppUtil/Basic/Math.h>
 #include <CppUtil/Basic/Cube.h>
+
+#include <ROOT_PATH.h>
 
 using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
@@ -100,7 +103,7 @@ SObj::Ptr GenGound() {
 	return sobj_ground;
 }
 
-Scene::Ptr GenScene0() {
+Scene::Ptr GenScene00() {
 	auto sobj_Root = ToPtr(new SObj(nullptr, "root"));
 	auto sobj_Camera = ToPtr(new SObj(sobj_Root, "camera"));
 	auto sobj_MirrorSphere = ToPtr(new SObj(sobj_Root, "mirror sphere"));
@@ -226,11 +229,11 @@ Scene::Ptr GenScene0() {
 	auto materialSky = ToPtr(new Material(sobj_skySphere, dark));
 	*/
 
-	auto scene = ToPtr(new Scene(sobj_Root));
+	auto scene = ToPtr(new Scene(sobj_Root, "scene 00"));
 	return scene;
 }
 
-Scene::Ptr GenScene1() {
+Scene::Ptr GenScene01() {
 	auto sobjRoot = ToPtr(new SObj(nullptr, "root"));
 	auto sobj0 = ToPtr(new SObj(sobjRoot, "sobj0"));
 	auto sobj1 = ToPtr(new SObj(sobjRoot, "sobj1"));
@@ -249,11 +252,11 @@ Scene::Ptr GenScene1() {
 	auto material0 = ToPtr(new Material(sobj0, pink));
 	auto material1 = ToPtr(new Material(sobj1, gray));
 
-	auto scene = ToPtr(new Scene(sobjRoot, "scene0"));
+	auto scene = ToPtr(new Scene(sobjRoot, "scene 01"));
 	return scene;
 }
 
-Scene::Ptr GenScene2() {
+Scene::Ptr GenScene02() {
 	auto sobjRoot = ToPtr(new SObj(nullptr, "root"));
 	auto sobj0 = ToPtr(new SObj(sobjRoot, "sobj0"));
 	auto sobj1 = ToPtr(new SObj(sobjRoot, "sobj1"));
@@ -272,11 +275,11 @@ Scene::Ptr GenScene2() {
 	auto material0 = ToPtr(new Material(sobj0, white));
 	auto material1 = ToPtr(new Material(sobj1, pink));
 
-	auto scene = ToPtr(new Scene(sobjRoot, "scene0"));
+	auto scene = ToPtr(new Scene(sobjRoot, "scene 02"));
 	return scene;
 }
 
-Scene::Ptr GenScene3(){
+Scene::Ptr GenScene03(){
 	auto sobjRoot = ToPtr(new SObj(nullptr, "root"));
 	auto sobj0 = ToPtr(new SObj(sobjRoot, "sobj0"));
 	auto sobj1 = ToPtr(new SObj(sobjRoot, "sobj1"));
@@ -295,11 +298,11 @@ Scene::Ptr GenScene3(){
 	auto material0 = ToPtr(new Material(sobj0, glass));
 	auto material1 = ToPtr(new Material(sobj1, pink));
 
-	auto scene = ToPtr(new Scene(sobjRoot, "scene0"));
+	auto scene = ToPtr(new Scene(sobjRoot, "scene 03"));
 	return scene;
 }
 
-Scene::Ptr GenScene4() {
+Scene::Ptr GenScene04() {
 	auto sobjRoot = ToPtr(new SObj(nullptr, "root"));
 	auto sobj_camera = ToPtr(new SObj(sobjRoot, "camera"));
 	auto sobj_sphere = ToPtr(new SObj(sobjRoot, "sobj_sphere"));
@@ -325,11 +328,11 @@ Scene::Ptr GenScene4() {
 	auto material0 = ToPtr(new Material(sobj_sphere, glass));
 	auto material1 = ToPtr(new Material(sobj_ground, pink));
 
-	auto scene = ToPtr(new Scene(sobjRoot, "scene0"));
+	auto scene = ToPtr(new Scene(sobjRoot, "scene 04"));
 	return scene;
 }
 
-Scene::Ptr GenScene5() {
+Scene::Ptr GenScene05() {
 	auto sobjRoot = ToPtr(new SObj(nullptr, "root"));
 	auto sobj_camera = ToPtr(new SObj(sobjRoot, "camera"));
 	auto sobj_sphere = ToPtr(new SObj(sobjRoot, "sobj_sphere"));
@@ -359,11 +362,11 @@ Scene::Ptr GenScene5() {
 	auto material0 = ToPtr(new Material(sobj_sphere, glass));
 	auto material1 = ToPtr(new Material(sobj_ground, pink));
 
-	auto scene = ToPtr(new Scene(sobjRoot, "scene0"));
+	auto scene = ToPtr(new Scene(sobjRoot, "scene05"));
 	return scene; 
 }
 
-Scene::Ptr GenScene6() {
+Scene::Ptr GenScene06() {
 	auto sobjRoot = ToPtr(new SObj(nullptr, "root"));
 	auto sobj_camera = ToPtr(new SObj(sobjRoot, "camera"));
 	auto sobj_skySphere = ToPtr(new SObj(sobjRoot, "sobj_skySphere"));
@@ -409,11 +412,11 @@ Scene::Ptr GenScene6() {
 	auto material2 = ToPtr(new Material(sobj_sphere, glass));
 	auto material3 = ToPtr(new Material(sobj_light, emission));
 
-	auto scene = ToPtr(new Scene(sobjRoot, "scene0"));
+	auto scene = ToPtr(new Scene(sobjRoot, "scene 06"));
 	return scene;
 }
 
-Scene::Ptr GenScene7() {
+Scene::Ptr GenScene07() {
 	auto sobjRoot = ToPtr(new SObj(nullptr, "root"));
 
 	auto sobj_Camera = ToPtr(new SObj(sobjRoot, "camera"));
@@ -456,7 +459,7 @@ Scene::Ptr GenScene7() {
 		vec3(-2, 1, 0),
 		vec3(-6, 1, 0),
 	};
-	float radius[6] = { 1000,1,1,-0.8,1,1 };
+	float radius[6] = { 1000.f,1.f,1.f,-0.8f,1.f,1.f };
 	BSDF::Ptr bsdf[6] = {
 		ToPtr(new BSDF_Diffuse(vec3(0.5f))),
 		ToPtr(new BSDF_Mirror(vec3(0.7f, 0.6f, 0.5f))),
@@ -472,10 +475,10 @@ Scene::Ptr GenScene7() {
 		auto material = ToPtr(new Material(sobj, bsdf[i]));
 	}
 
-	return ToPtr(new Scene(sobjRoot, "bvh_test"));
+	return ToPtr(new Scene(sobjRoot, "scene 07"));
 }
 
-Scene::Ptr GenScene8() {
+Scene::Ptr GenScene08() {
 	auto sobj_Root = ToPtr(new SObj(nullptr, "root"));
 
 	// camera
@@ -579,10 +582,10 @@ Scene::Ptr GenScene8() {
 	auto dark = ToPtr(new BSDF_Diffuse(vec3(0)));
 	auto materialSky = ToPtr(new Material(sobj_skySphere, dark));
 
-	return ToPtr(new Scene(sobj_Root, "scene 8"));
+	return ToPtr(new Scene(sobj_Root, "scene 08"));
 }
 
-Scene::Ptr GenScene9() {
+Scene::Ptr GenScene09() {
 	auto sobj_Root = ToPtr(new SObj(nullptr, "root"));
 
 	// metal workflow sphere
@@ -622,22 +625,67 @@ Scene::Ptr GenScene9() {
 	auto dark = ToPtr(new BSDF_Diffuse(vec3(0)));
 	auto materialSky = ToPtr(new Material(sobj_skySphere, dark));
 
-	return ToPtr(new Scene(sobj_Root, "scene 9"));
+	return ToPtr(new Scene(sobj_Root, "scene 09"));
+}
+
+Scene::Ptr GenScene10() {
+	auto sobj_Root = ToPtr(new SObj(nullptr, "root"));
+
+	// rusted iron workflow sphere
+	auto sobj_IronSphere = ToPtr(new SObj(sobj_Root, "rusted iron sphere"));
+
+	auto bsdfIron = ToPtr(new BSDF_MetalWorkflow(vec3(1), 1.0f, 0.2f));
+	auto ironAlbedoImg = ToPtr(new Image((ROOT_PATH+"data/textures/pbr/rusted_iron/albedo.png").c_str()));
+	bsdfIron->SetAlbedoTexture(ironAlbedoImg);
+	auto materialIron = ToPtr(new Material(sobj_IronSphere, bsdfIron));
+
+	auto MWSphereTransform = ToPtr(new Transform(sobj_IronSphere));
+	MWSphereTransform->SetPosition(vec3(0, 0.3f, 0));
+	MWSphereTransform->SetScale(vec3(0.3f));
+
+	auto geoMWSphere = ToPtr(new Geometry(sobj_IronSphere, ToPtr(new Sphere)));
+
+	// cornell box
+	//auto box = GenBox();
+	//auto boxTransform = ToPtr(new Transform(box));
+	//box->SetParent(sobj_Root);
+
+	// ground
+	auto ground = GenGound();
+	ground->SetParent(sobj_Root);
+
+	// plane
+
+	// camera
+	auto sobj_Camera = ToPtr(new SObj(sobj_Root, "camera"));
+	auto camera = ToPtr(new Camera(sobj_Camera, 50.0f));
+	auto cameraTransform = ToPtr(new Transform(sobj_Camera));
+	cameraTransform->SetPosition(vec3(0, 0.3f, 1.2f));
+
+	// sky sphere
+	//auto sobj_skySphere = ToPtr(new SObj(sobj_Root, "sky"));
+	//auto skySphere = ToPtr(new Sphere(vec3(0), 100.0f));
+	//auto geoSky = ToPtr(new Geometry(sobj_skySphere, skySphere));
+	//auto dark = ToPtr(new BSDF_Diffuse(vec3(0)));
+	//auto materialSky = ToPtr(new Material(sobj_skySphere, dark));
+
+	return ToPtr(new Scene(sobj_Root, "scene 10"));
 }
 
 Scene::Ptr GenScene(int n) {
-	const int num = 10;
+	const int num = 11;
 	Scene::Ptr(*f[num])() = {
-		&GenScene0,
-		&GenScene1,
-		&GenScene2,
-		&GenScene3,
-		&GenScene4,
-		&GenScene5,
-		&GenScene6,
-		&GenScene7,
-		&GenScene8,
-		&GenScene9,
+		&GenScene00,
+		&GenScene01,
+		&GenScene02,
+		&GenScene03,
+		&GenScene04,
+		&GenScene05,
+		&GenScene06,
+		&GenScene07,
+		&GenScene08,
+		&GenScene09,
+		&GenScene10,
 	};
 
 	if (n < num)

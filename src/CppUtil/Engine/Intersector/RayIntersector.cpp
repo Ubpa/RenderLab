@@ -13,6 +13,8 @@
 #include <CppUtil/Engine/Triangle.h>
 #include <CppUtil/Engine/TriMesh.h>
 
+#include <CppUtil/Basic/Math.h>
+
 #include <glm/geometric.hpp>
 
 using namespace CppUtil::Engine;
@@ -169,6 +171,7 @@ void RayIntersector::Visit(Sphere::Ptr sphere) {
 	rst.isIntersect = true;
 	ray->SetTMax(t);
 	rst.n = (ray->At(t) - center) / radius;
+	rst.texcoord = Math::Sphere2UV(rst.n);
 }
 
 void RayIntersector::Visit(Plane::Ptr plane) {
@@ -192,13 +195,16 @@ void RayIntersector::Visit(Plane::Ptr plane) {
 	rst.isIntersect = true;
 	ray->SetTMax(t);
 	rst.n = vec3(0, sign(origin.y), 0);
+	rst.texcoord = Math::Sphere2UV(rst.n);
 }
 
 void RayIntersector::Visit(Triangle::Ptr triangle) {
-	auto positions = triangle->GetMesh()->GetPositions();
-	vec3 p1 = positions[triangle->idx[0]];
-	vec3 p2 = positions[triangle->idx[1]];
-	vec3 p3 = positions[triangle->idx[2]];
+	auto mesh = triangle->GetMesh();
+
+	auto const & positions = mesh->GetPositions();
+	const vec3 & p1 = positions[triangle->idx[0]];
+	const vec3 & p2 = positions[triangle->idx[1]];
+	const vec3 & p3 = positions[triangle->idx[2]];
 
 	vec3 origin = ray->GetOrigin();
 	vec3 dir = ray->GetDir();
@@ -241,15 +247,25 @@ void RayIntersector::Visit(Triangle::Ptr triangle) {
 		return;
 	}
 
+	rst.isIntersect = true;
+
 	ray->SetTMax(t);
 
 	float w = 1 - u_plus_v;
 
-	auto normals = triangle->GetMesh()->GetNormals();
-	vec3 n1 = normals[triangle->idx[0]];
-	vec3 n2 = normals[triangle->idx[1]];
-	vec3 n3 = normals[triangle->idx[2]];
+	// normal
+	auto const & normals = mesh->GetNormals();
+	const vec3 & n1 = normals[triangle->idx[0]];
+	const vec3 & n2 = normals[triangle->idx[1]];
+	const vec3 & n3 = normals[triangle->idx[2]];
 
 	rst.n = u * n1 + v * n2 + w * n3;
-	rst.isIntersect = true;
+
+	// texcoord
+	auto const & texcoords = mesh->GetTexcoords();
+	const vec3 & tc1 = texcoords[triangle->idx[0]];
+	const vec3 & tc2 = texcoords[triangle->idx[1]];
+	const vec3 & tc3 = texcoords[triangle->idx[2]];
+
+	rst.texcoord = u * tc1 + v * tc2 + w * tc3;
 }

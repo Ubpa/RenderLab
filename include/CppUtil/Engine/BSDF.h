@@ -2,6 +2,7 @@
 #define _ENGINE_MATERIAL_BSDF_H_
 
 #include <CppUtil/Engine/MaterialBase.h>
+#include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 
 namespace CppUtil {
@@ -9,14 +10,14 @@ namespace CppUtil {
 		class BSDF : public MaterialBase {
 			ELE_SETUP(BSDF)
 		public:
-			virtual glm::vec3 F(const glm::vec3 & wo, const glm::vec3 & wi) = 0;
+			virtual glm::vec3 F(const glm::vec3 & wo, const glm::vec3 & wi, const glm::vec2 & texcoord) = 0;
 
 			// probability density function
 			virtual float PDF(const glm::vec3 & wo, const glm::vec3 & wi) = 0;
 
 			// PD is probability density
 			// return albedo
-			virtual glm::vec3 Sample_f(const glm::vec3 & wo, glm::vec3 & wi, float & PD) = 0;
+			virtual glm::vec3 Sample_f(const glm::vec3 & wo, const glm::vec2 & texcoord, glm::vec3 & wi, float & PD) = 0;
 
 			virtual glm::vec3 GetEmission() const = 0;
 

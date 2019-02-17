@@ -263,7 +263,7 @@ void Attribute::ComponentVisitor::Visit(BSDF_CookTorrance::Ptr bsdf) {
 void Attribute::ComponentVisitor::Visit(BSDF_MetalWorkflow::Ptr bsdf) {
 	auto grid = GenGrid(attr->componentType2item[typeid(Material)]);
 	grid.AddTitle("[ BSDF -- Metal Workflow ]");
-	grid.AddEditColor("- Albedo", bsdf->albedo);
+	grid.AddEditColor("- Albedo Color", bsdf->albedoColor);
 	grid.AddEditVal("- Metallic", bsdf->metallic, 0.01);
 	grid.AddEditVal("- Roughness", bsdf->roughness, 0.01);
 }
