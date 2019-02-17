@@ -29,6 +29,10 @@ vec3 BSDF_MetalWorkflow::Sample_f(const vec3 & wo, vec3 & wi, float & pd) {
 	float phi = 2 * Math::PI*Xi2;
 	vec3 h(sinTheta*cos(phi), sinTheta*sin(phi), cosTheta);
 	wi = reflect(-wo, h);
+	if (wi.z <= 0) {
+		pd = 0;
+		return vec3(0);
+	}
 	pd = NDF(h) / 4.0f;
 
 	/*
@@ -76,8 +80,8 @@ float BSDF_MetalWorkflow::G(const glm::vec3 & wo, const glm::vec3 & wi) {
 	// direct light: alpha = pow( (roughness + 1) / 2, 2)
 	// IBL(image base lighting) : alpha = pow( roughness, 2)
 
-	assert(wo.z > 0);
-	assert(wi.z > 0);
+	if (wo.z <= 0 || wi.z <= 0)
+		return 0;
 
 	float k = pow(roughness + 1, 2) / 8.f;
 	float G1_wo = wo.z / (wo.z*(1 - k) + k);

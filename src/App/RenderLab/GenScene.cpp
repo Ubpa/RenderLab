@@ -593,18 +593,19 @@ Scene::Ptr GenScene9() {
 	auto materialGold = ToPtr(new Material(sobj_MWSphere, bsdfGold));
 
 	auto MWSphereTransform = ToPtr(new Transform(sobj_MWSphere));
-	MWSphereTransform->SetPosition(vec3(0, 1.0f, 0));
+	MWSphereTransform->SetPosition(vec3(0, 0.3f, 0));
+	MWSphereTransform->SetScale(vec3(0.3f));
 
 	auto geoMWSphere = ToPtr(new Geometry(sobj_MWSphere, ToPtr(new Sphere)));
 
 	// cornell box
-	// auto box = GenBox();
-	// auto boxTransform = ToPtr(new Transform(box));
-	// box->SetParent(sobj_Root);
+	auto box = GenBox();
+	auto boxTransform = ToPtr(new Transform(box));
+	box->SetParent(sobj_Root);
 
 	// ground
-	auto ground = GenGound();
-	ground->SetParent(sobj_Root);
+	//auto ground = GenGound();
+	//ground->SetParent(sobj_Root);
 
 	// plane
 
@@ -612,14 +613,14 @@ Scene::Ptr GenScene9() {
 	auto sobj_Camera = ToPtr(new SObj(sobj_Root, "camera"));
 	auto camera = ToPtr(new Camera(sobj_Camera, 50.0f));
 	auto cameraTransform = ToPtr(new Transform(sobj_Camera));
-	cameraTransform->SetPosition(vec3(0, 1.0f, 4.0f));
+	cameraTransform->SetPosition(vec3(0, 0.75f, 2.4f));
 
 	// sky sphere
-	//auto sobj_skySphere = ToPtr(new SObj(sobj_Root, "sky"));
-	//auto skySphere = ToPtr(new Sphere(vec3(0), 100.0f));
-	//auto geoSky = ToPtr(new Geometry(sobj_skySphere, skySphere));
-	//auto dark = ToPtr(new BSDF_Diffuse(vec3(0)));
-	//auto materialSky = ToPtr(new Material(sobj_skySphere, dark));
+	auto sobj_skySphere = ToPtr(new SObj(sobj_Root, "sky"));
+	auto skySphere = ToPtr(new Sphere(vec3(0), 100.0f));
+	auto geoSky = ToPtr(new Geometry(sobj_skySphere, skySphere));
+	auto dark = ToPtr(new BSDF_Diffuse(vec3(0)));
+	auto materialSky = ToPtr(new Material(sobj_skySphere, dark));
 
 	return ToPtr(new Scene(sobj_Root, "scene 9"));
 }
