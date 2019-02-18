@@ -13,9 +13,9 @@ namespace CppUtil {
 			Ray(const glm::vec3 & origin, const glm::vec3 dir, float tMin = 0.001f, float tMax = FLT_MAX)
 				: origin(origin), dir(dir), invDir(1.0f/dir.x, 1.0f/dir.y, 1.0f/dir.z), tMin(tMin), tMax(tMax) { }
 
-			const glm::vec3 GetOrigin() const { return origin; }
-			const glm::vec3 GetDir() const { return dir; }
-			const glm::vec3 GetInvDir() const { return invDir; }
+			const glm::vec3 & GetOrigin() const { return origin; }
+			const glm::vec3 & GetDir() const { return dir; }
+			const glm::vec3 & GetInvDir() const { return invDir; }
 			float GetTMin() const { return tMin; }
 			float GetTMax() const { return tMax; }
 

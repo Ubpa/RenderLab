@@ -175,10 +175,7 @@ void VisibilityChecker::Visit(Triangle::Ptr triangle) {
 	vec3 p2 = positions[triangle->idx[1]];
 	vec3 p3 = positions[triangle->idx[2]];
 
-	vec3 origin = ray->GetOrigin();
-	vec3 dir = ray->GetDir();
-	float tMin = ray->GetTMin();
-	float tMax = ray->GetTMax();
+	const vec3 & dir = ray->GetDir();
 
 	vec3 e1 = p2 - p1;
 	vec3 e2 = p3 - p1;
@@ -193,7 +190,7 @@ void VisibilityChecker::Visit(Triangle::Ptr triangle) {
 
 	float inv_denominator = 1.0f / denominator;
 
-	vec3 s = origin - p1;
+	vec3 s = ray->GetOrigin() - p1;
 
 	vec3 e2_x_s = cross(e2, s);
 	float r1 = dot(e2_x_s, dir);
@@ -213,7 +210,7 @@ void VisibilityChecker::Visit(Triangle::Ptr triangle) {
 
 	float r3 = dot(e2_x_s, e1);
 	float t = r3 * inv_denominator;
-	if (t < tMin || t > tMax) {
+	if (t < ray->GetTMin() || t > ray->GetTMax()) {
 		rst.isIntersect = false;
 		return;
 	}

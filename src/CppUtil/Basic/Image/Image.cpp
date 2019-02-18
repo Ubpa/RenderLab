@@ -15,7 +15,7 @@ using namespace std;
 Image::Image()
 	:data(NULL), width(0), height(0), channel(0), type(ENUM_SRC_TYPE_INVALID){ }
 
-Image::Image(size_t width, size_t height, size_t channel){
+Image::Image(int width, int height, int channel){
 	GenBuffer(width, height, channel);
 }
 
@@ -49,25 +49,25 @@ const uByte * Image::GetConstData() const{
 	return data;
 }
 
-size_t Image::GetWidth() const{
+int Image::GetWidth() const{
 	return width;
 }
 
-size_t Image::GetHeight() const{
+int Image::GetHeight() const{
 	return height;
 }
 
-size_t Image::GetChannel() const{
+int Image::GetChannel() const{
 	return channel;
 }
 
 //------------
 
-uByte & Image::At(size_t x, size_t y, size_t channel) {
+uByte & Image::At(int x, int y, int channel) {
 	return data[(y*width + x)*this->channel + channel];
 }
 
-const uByte & Image::At(size_t x, size_t y, size_t channel) const {
+const uByte & Image::At(int x, int y, int channel) const {
 	return data[(y*width + x)*this->channel + channel];
 }
 
@@ -112,19 +112,19 @@ vec4 Image::Sample(float u, float v, bool blend) const {
 	return mixColor;
 }
 
-vec<4,uByte> Image::GetPixel_UB(size_t x, size_t y) const {
+vec<4,uByte> Image::GetPixel_UB(int x, int y) const {
 	vec<4,uByte> rst(0);
-	for (size_t i = 0; i < channel; i++)
+	for (int i = 0; i < channel; i++)
 		rst[i] = At(x, y, i);
 
 	return rst;
 }
 
-vec4 Image::GetPixel_F(size_t x, size_t y) const {
+vec4 Image::GetPixel_F(int x, int y) const {
 	return Pixel_UB2F(GetPixel_UB(x, y));
 }
 
-dvec4 Image::GetPixel_D(size_t x, size_t y) const {
+dvec4 Image::GetPixel_D(int x, int y) const {
 	return Pixel_UB2D(GetPixel_UB(x, y));
 }
 
@@ -149,7 +149,7 @@ bool Image::Load(const std::string & fileName, bool flip) {
 	type = ENUM_SRC_TYPE_STB;
 	return true;
 }
-void Image::GenBuffer(size_t width, size_t height, size_t channel) {
+void Image::GenBuffer(int width, int height, int channel) {
 	Free();
 	this->width = width;
 	this->height = height;
@@ -193,7 +193,7 @@ Image & Image::operator =(const Image & img) {
 	height = img.height;
 	channel = img.channel;
 	type = ENUM_SRC_TYPE_NEW;
-	size_t bytesNum = width * height * channel;
+	int bytesNum = width * height * channel;
 	data = new uByte[bytesNum];
 	memcpy(data, img.data, bytesNum * sizeof(uByte));
 
@@ -205,7 +205,7 @@ Image::Image(const Image & img) {
 	height = img.height;
 	channel = img.channel;
 	type = ENUM_SRC_TYPE_NEW;
-	size_t bytesNum = width * height * channel;
+	int bytesNum = width * height * channel;
 	data = new uByte[bytesNum];
 	memcpy(data, img.data, bytesNum * sizeof(uByte));
 }

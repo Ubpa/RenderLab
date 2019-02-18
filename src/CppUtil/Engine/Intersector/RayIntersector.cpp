@@ -43,7 +43,7 @@ bool RayIntersector::Intersect(const BBox & bbox, float & t0, float & t1) {
 	float tMin = ray->GetTMin();
 	float tMax = ray->GetTMax();
 
-	for (size_t i = 0; i < 3; i++) {
+	for (int i = 0; i < 3; i++) {
 		float invD = invDir[i];
 		float t0 = (bbox.minP[i] - origin[i]) * invD;
 		float t1 = (bbox.maxP[i] - origin[i]) * invD;
@@ -65,8 +65,11 @@ bool RayIntersector::Intersect(const BBox & bbox, float & t0, float & t1) {
 void RayIntersector::Visit(BVHAccel::Ptr bvhAccel) {
 	rst.closestSObj = nullptr;
 	bvhAccel->GetBVHRoot()->Accept(This());
-	if (rst.closestSObj)
-		rst.n = bvhAccel->GetNormL2WMat(rst.closestSObj) * rst.n;
+	if (rst.closestSObj) {
+		auto mat = bvhAccel->GetNormL2WMat(rst.closestSObj);
+		rst.n = mat * rst.n;
+		rst.tangent = mat * rst.tangent;
+	}
 }
 
 void RayIntersector::Visit(BVHNode<Element, BVHAccel>::Ptr bvhNode) {
@@ -171,7 +174,8 @@ void RayIntersector::Visit(Sphere::Ptr sphere) {
 	rst.isIntersect = true;
 	ray->SetTMax(t);
 	rst.n = (ray->At(t) - center) / radius;
-	rst.texcoord = Math::Sphere2UV(rst.n);
+	rst.texcoord = Math::SphereNormal2Texcoord(rst.n);
+	rst.tangent = Math::SphereNormal2Tangent(rst.n);
 }
 
 void RayIntersector::Visit(Plane::Ptr plane) {
@@ -195,21 +199,21 @@ void RayIntersector::Visit(Plane::Ptr plane) {
 	rst.isIntersect = true;
 	ray->SetTMax(t);
 	rst.n = vec3(0, sign(origin.y), 0);
-	rst.texcoord = Math::Sphere2UV(rst.n);
+	rst.texcoord = Math::SphereNormal2Texcoord(rst.n);
 }
 
 void RayIntersector::Visit(Triangle::Ptr triangle) {
 	auto mesh = triangle->GetMesh();
+	int idx1 = triangle->idx[0];
+	int idx2 = triangle->idx[1];
+	int idx3 = triangle->idx[2];
 
 	auto const & positions = mesh->GetPositions();
-	const vec3 & p1 = positions[triangle->idx[0]];
-	const vec3 & p2 = positions[triangle->idx[1]];
-	const vec3 & p3 = positions[triangle->idx[2]];
+	const vec3 & p1 = positions[idx1];
+	const vec3 & p2 = positions[idx2];
+	const vec3 & p3 = positions[idx3];
 
-	vec3 origin = ray->GetOrigin();
-	vec3 dir = ray->GetDir();
-	float tMin = ray->GetTMin();
-	float tMax = ray->GetTMax();
+	const vec3 & dir = ray->GetDir();
 
 	vec3 e1 = p2 - p1;
 	vec3 e2 = p3 - p1;
@@ -222,7 +226,7 @@ void RayIntersector::Visit(Triangle::Ptr triangle) {
 
 	float inv_denominator = 1.0f / denominator;
 
-	vec3 s = origin - p1;
+	vec3 s = ray->GetOrigin() - p1;
 
 	vec3 e2_x_s = cross(e2, s);
 	float r1 = dot(e2_x_s, dir);
@@ -242,7 +246,8 @@ void RayIntersector::Visit(Triangle::Ptr triangle) {
 
 	float r3 = dot(e2_x_s, e1);
 	float t = r3 * inv_denominator;
-	if (t < tMin || t > tMax) {
+
+	if (t < ray->GetTMin() || t > ray->GetTMax()) {
 		rst.isIntersect = false;
 		return;
 	}
@@ -255,17 +260,25 @@ void RayIntersector::Visit(Triangle::Ptr triangle) {
 
 	// normal
 	auto const & normals = mesh->GetNormals();
-	const vec3 & n1 = normals[triangle->idx[0]];
-	const vec3 & n2 = normals[triangle->idx[1]];
-	const vec3 & n3 = normals[triangle->idx[2]];
+	const vec3 & n1 = normals[idx1];
+	const vec3 & n2 = normals[idx2];
+	const vec3 & n3 = normals[idx3];
 
-	rst.n = u * n1 + v * n2 + w * n3;
+	rst.n = normalize(w * n1 + u * n2 + v * n3);
 
 	// texcoord
 	auto const & texcoords = mesh->GetTexcoords();
-	const vec3 & tc1 = texcoords[triangle->idx[0]];
-	const vec3 & tc2 = texcoords[triangle->idx[1]];
-	const vec3 & tc3 = texcoords[triangle->idx[2]];
+	const vec2 & tc1 = texcoords[idx1];
+	const vec2 & tc2 = texcoords[idx2];
+	const vec2 & tc3 = texcoords[idx3];
 
-	rst.texcoord = u * tc1 + v * tc2 + w * tc3;
+	rst.texcoord = w * tc1 + u * tc2 + v * tc3;
+
+	// tangent
+	auto const & tangents = mesh->GetTangents();
+	const vec3 & tg1 = tangents[idx1];
+	const vec3 & tg2 = tangents[idx2];
+	const vec3 & tg3 = tangents[idx3];
+
+	rst.tangent = normalize(w * tg1 + u * tg2 + v * tg3);
 }

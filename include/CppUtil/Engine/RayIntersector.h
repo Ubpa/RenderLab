@@ -38,6 +38,7 @@ namespace CppUtil {
 				Basic::Ptr<SObj> closestSObj;
 				glm::vec3 n;
 				glm::vec2 texcoord;
+				glm::vec3 tangent;
 			};
 
 		public:

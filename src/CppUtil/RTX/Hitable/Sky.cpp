@@ -16,7 +16,7 @@ HitRst Sky::RayIn(Ray::Ptr & ray) const {
 
 	HitRst hitRst(true);
 	vec3 normal = normalize(ray->GetDir());
-	vec2 uv = Math::Sphere2UV(normal);
+	vec2 uv = Math::SphereNormal2Texcoord(normal);
 	hitRst.record = HitRecord(ray, normal, -normal, uv[0], uv[1]);
 	hitRst.material = GetMat();
 	hitRst.isMatCoverable = IsMatCoverable();

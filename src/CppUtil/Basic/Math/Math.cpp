@@ -66,13 +66,22 @@ float Math::FresnelSchlick(const vec3 & viewDir, const vec3 & halfway, float rat
 	return R;
 }
 
-vec2 Math::Sphere2UV(const vec3 & normal) {
+vec2 Math::SphereNormal2Texcoord(const vec3 & normal) {
 	vec2 uv;
-	float phi = atan2(normal.z, normal.x);
-	float theta = asin(normal.y);
-	uv[0] = 1 - (phi + PI) / (2 * PI);
-	uv[1] = (theta + PI/2) / PI;
+	float phi = atan2(-normal.x, -normal.z) + Math::PI;
+	float theta = acos(normal.y);
+
+	uv[0] = phi / (2 * PI);
+	uv[1] = theta / PI;
 	return uv;
+}
+
+vec3 Math::SphereNormal2Tangent(const vec3 & normal) {
+	float phi = atan2(-normal.x, -normal.z) + Math::PI;
+	float theta = acos(normal.y);
+
+	float sinTheta = sin(theta);
+	return vec3(sinTheta * cos(phi), 0, - sinTheta * sin(phi));
 }
 
 vec4 Math::Intersect_RayTri(const vec3 & e, const vec3 & d, const vec3 & a, const vec3 & b, const vec3 & c) {

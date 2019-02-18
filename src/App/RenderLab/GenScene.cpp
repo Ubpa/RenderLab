@@ -158,7 +158,7 @@ Scene::Ptr GenScene00() {
 	auto sobj_Cube = ToPtr(new SObj(sobj_Root, "cube"));
 	Cube cube;
 	auto cubeMesh = ToPtr(new TriMesh(cube.GetTriNum(), cube.GetVertexNum(),
-		cube.GetIndexArr(), cube.GetPosArr(), cube.GetNormalArr()));
+		cube.GetIndexArr(), cube.GetPosArr(), cube.GetNormalArr(), cube.GetTexCoordsArr()));
 	auto cubeG = ToPtr(new Geometry(sobj_Cube, cubeMesh));
 	auto blueGlass = ToPtr(new BSDF_Glass(1.5f, vec3(0.f, 0.794f, 0.916f)));
 	auto materialCube = ToPtr(new Material(sobj_Cube, blueGlass));

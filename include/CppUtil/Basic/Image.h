@@ -13,36 +13,36 @@ namespace CppUtil {
 
 		public:
 			Image();
-			Image(size_t width, size_t height, size_t channel);
+			Image(int width, int height, int channel);
 			Image(const char * fileName, bool flip = false);
 			//------------
 			bool IsValid() const;
 			uByte * GetData();
 			const uByte * GetConstData() const;
-			size_t GetWidth() const;
-			size_t GetHeight() const;
-			size_t GetChannel() const;
+			int GetWidth() const;
+			int GetHeight() const;
+			int GetChannel() const;
 			//------------
 			template<glm::length_t N>
-			void SetPixel(size_t x, size_t y, const glm::vec<N, float> & pixel) {
+			void SetPixel(int x, int y, const glm::vec<N, float> & pixel) {
 				SetPixel(x, y, Pixel_F2UB(pixel));
 			}
 			template<glm::length_t N>
-			void SetPixel(size_t x, size_t y, const glm::vec<N, double> & pixel) {
+			void SetPixel(int x, int y, const glm::vec<N, double> & pixel) {
 				SetPixel(x, y, Pixel_D2UB(pixel));
 			}
 			template<glm::length_t N>
-			void SetPixel(size_t x, size_t y, const glm::vec<N, uByte> pixel) {
+			void SetPixel(int x, int y, const glm::vec<N, uByte> pixel) {
 				assert(channel <= N);
 				for (int i = 0; i < channel; i++)
 					At(x, y, i) = pixel[i];
 			}
 
-			glm::vec<4, uByte> GetPixel_UB(size_t x, size_t y) const;
-			glm::vec4 GetPixel_F(size_t x, size_t y) const;
-			glm::dvec4 GetPixel_D(size_t x, size_t y) const;
-			uByte & At(size_t x, size_t y, size_t channel);
-			const uByte & At(size_t x, size_t y, size_t channel) const;
+			glm::vec<4, uByte> GetPixel_UB(int x, int y) const;
+			glm::vec4 GetPixel_F(int x, int y) const;
+			glm::dvec4 GetPixel_D(int x, int y) const;
+			uByte & At(int x, int y, int channel);
+			const uByte & At(int x, int y, int channel) const;
 			glm::vec4 Sample(float u, float v, bool blend = false) const;
 			glm::vec4 Sample(glm::vec2 texcoord, bool blend = false) const {
 				return Sample(texcoord.x, texcoord.y, blend);
@@ -51,7 +51,7 @@ namespace CppUtil {
 			//------------
 
 			bool Load(const std::string & fileName, bool flip = false);
-			void GenBuffer(size_t width, size_t height, size_t channel);
+			void GenBuffer(int width, int height, int channel);
 			void Free();
 			bool SaveAsPNG(const std::string & fileName, bool flip = false) const;
 
@@ -60,7 +60,7 @@ namespace CppUtil {
 			template<glm::length_t N>
 			static glm::vec<N, uByte> Pixel_F2UB(const glm::vec<N, float> & pixel) {
 				glm::vec<N, uByte> rst;
-				for (size_t i = 0; i < N; i++)
+				for (int i = 0; i < N; i++)
 					rst[i] = static_cast<uByte>(glm::clamp<float>(255.99f * pixel[i], 0.0f, 255.99f));
 
 				return rst;
@@ -69,7 +69,7 @@ namespace CppUtil {
 			template<glm::length_t N>
 			static glm::vec<N, uByte> Pixel_D2UB(const glm::vec<N, double> & pixel) {
 				glm::vec<N, uByte> rst;
-				for (size_t i = 0; i < N; i++)
+				for (int i = 0; i < N; i++)
 					rst[i] = static_cast<uByte>(glm::clamp<double>(255.99 * pixel[i], 0.0, 255.99));
 
 				return rst;
@@ -99,9 +99,9 @@ namespace CppUtil {
 			};
 
 			uByte * data;
-			size_t width;
-			size_t height;
-			size_t channel;
+			int width;
+			int height;
+			int channel;
 			ENUM_SRC_TYPE type;
 		};
 	}
