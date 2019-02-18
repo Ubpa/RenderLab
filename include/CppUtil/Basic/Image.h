@@ -44,7 +44,7 @@ namespace CppUtil {
 			uByte & At(int x, int y, int channel);
 			const uByte & At(int x, int y, int channel) const;
 			glm::vec4 Sample(float u, float v, bool blend = false) const;
-			glm::vec4 Sample(glm::vec2 texcoord, bool blend = false) const {
+			glm::vec4 Sample(const glm::vec2 & texcoord, bool blend = false) const {
 				return Sample(texcoord.x, texcoord.y, blend);
 			}
 

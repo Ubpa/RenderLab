@@ -30,22 +30,29 @@ namespace CppUtil {
 			// @arg2 out
 			virtual glm::vec3 Sample_f(const glm::vec3 & wo, const glm::vec2 & texcoord, glm::vec3 & wi, float & pd);
 
-			virtual glm::vec3 GetEmission() const { return glm::vec3(0); }
-
 			virtual bool IsDelta() const { return false; }
+
+			virtual void ChangeNormal(const glm::vec2 & texcoord, const glm::vec3 tangent, glm::vec3 & normal) const;
 
 		public:
 			void SetAlbedoTexture(Basic::Ptr<Basic::Image> albedoTexture) {
 				this->albedoTexture = albedoTexture;
 			}
+
 			void SetMetallicTexture(Basic::Ptr<Basic::Image> metallicTexture) {
 				this->metallicTexture = metallicTexture;
 			}
+
 			void SetRoughnessTexture(Basic::Ptr<Basic::Image> roughnessTexture) {
 				this->roughnessTexture = roughnessTexture;
 			}
+
 			void SetAOTexture(Basic::Ptr<Basic::Image> aoTexture) {
 				this->aoTexture = aoTexture;
+			}
+
+			void SetNormalTexture(Basic::Ptr<Basic::Image> normalTexture) {
+				this->normalTexture = normalTexture;
 			}
 
 		private:
@@ -76,6 +83,8 @@ namespace CppUtil {
 			Basic::Ptr<Basic::Image> roughnessTexture;
 
 			Basic::Ptr<Basic::Image> aoTexture;
+
+			Basic::Ptr<Basic::Image> normalTexture;
 		private:
 		};
 	}

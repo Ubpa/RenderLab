@@ -84,15 +84,15 @@ cmake .. -Wno-dev
 - [ ] 光线追踪新增功能
   - [x] Cook Torrance BRDF
 
-  - [ ] 金属工作流
+  - [x] 金属工作流
 
     - [x] 基础公式
-    - [ ] 贴图
+    - [x] 贴图
       - [x] albedo
       - [x] metallic
       - [x] roughness
       - [x] ao
-      - [ ] normal
+      - [x] normal
 
   - [ ] 低差异序列
 

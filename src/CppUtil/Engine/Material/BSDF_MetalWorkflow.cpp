@@ -132,3 +132,13 @@ float BSDF_MetalWorkflow::GetAO(const glm::vec2 & texcoord) const {
 
 	return aoTexture->Sample(texcoord).x;
 }
+
+void BSDF_MetalWorkflow::ChangeNormal(const vec2 & texcoord, const vec3 tangent, vec3 & normal) const {
+	if (!normalTexture || !normalTexture->IsValid())
+		return;
+
+	const vec3 bitangent = cross(normal, tangent);
+	mat3 TBN(tangent, bitangent, normal);
+	vec3 normalSample = 2.0f * normalTexture->Sample(texcoord) - 1.0f;
+	normal = normalize(TBN * normalSample);
+}

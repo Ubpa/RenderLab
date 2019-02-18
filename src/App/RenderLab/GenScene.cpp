@@ -643,11 +643,15 @@ Scene::Ptr GenScene10() {
 	bsdfIron->SetRoughnessTexture(ironRoughnessImg);
 	auto ironAOImg = ToPtr(new Image((ROOT_PATH + "data/textures/pbr/rusted_iron/ao.png").c_str()));
 	bsdfIron->SetAOTexture(ironAOImg);
+	auto ironNormalImg = ToPtr(new Image((ROOT_PATH + "data/textures/pbr/rusted_iron/normal.png").c_str()));
+	bsdfIron->SetNormalTexture(ironNormalImg);
 	auto materialIron = ToPtr(new Material(sobj_IronSphere, bsdfIron));
 
 	auto MWSphereTransform = ToPtr(new Transform(sobj_IronSphere));
 	MWSphereTransform->SetPosition(vec3(0, 0.3f, 0));
 	MWSphereTransform->SetScale(vec3(0.3f));
+	MWSphereTransform->Rotate(radians(90.f), vec3(0, 1, 0));
+	MWSphereTransform->Rotate(radians(180.f), vec3(1, 0, 0));
 
 	auto geoMWSphere = ToPtr(new Geometry(sobj_IronSphere, ToPtr(new Sphere)));
 
@@ -666,7 +670,8 @@ Scene::Ptr GenScene10() {
 	auto sobj_Camera = ToPtr(new SObj(sobj_Root, "camera"));
 	auto camera = ToPtr(new Camera(sobj_Camera, 50.0f));
 	auto cameraTransform = ToPtr(new Transform(sobj_Camera));
-	cameraTransform->SetPosition(vec3(0, 0.75f, 2.3f));
+	cameraTransform->SetPosition(vec3(0, 0.5f, 0.8f));
+	cameraTransform->Rotate(radians(-15.0f), vec3(1, 0, 0));
 
 	// sky sphere
 	auto sobj_skySphere = ToPtr(new SObj(sobj_Root, "sky"));

@@ -45,7 +45,7 @@ namespace CppUtil {
 			RayIntersector(Basic::Ptr<Ray> ray);
 
 		public:
-			const Rst & GetRst() const { return rst; }
+			Rst & GetRst() { return rst; }
 
 		private:
 			// 设置 rst，如果相交，则会修改 ray.tMax

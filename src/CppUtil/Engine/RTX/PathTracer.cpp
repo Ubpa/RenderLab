@@ -69,6 +69,9 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 	if (bsdf == nullptr)
 		return vec3(1, 0, 1);
 
+	bsdf->ChangeNormal(closestRst.texcoord, closestRst.tangent, closestRst.n);
+	//return abs(closestRst.n);
+
 	vec3 emitL = bsdf->GetEmission();
 
 	const vec3 hitPos = ray->At(ray->GetTMax());

@@ -19,9 +19,11 @@ namespace CppUtil {
 			// return albedo
 			virtual glm::vec3 Sample_f(const glm::vec3 & wo, const glm::vec2 & texcoord, glm::vec3 & wi, float & PD) = 0;
 
-			virtual glm::vec3 GetEmission() const = 0;
+			virtual glm::vec3 GetEmission() const { return glm::vec3(0); }
 
 			virtual bool IsDelta() const = 0;
+
+			virtual void ChangeNormal(const glm::vec2 & texcoord, const glm::vec3 tangent, glm::vec3 & normal) const { return; }
 
 		public:
 			static glm::vec3 LocalReflect(const glm::vec3 & w) {
