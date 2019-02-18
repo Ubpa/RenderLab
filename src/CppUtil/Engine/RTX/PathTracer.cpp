@@ -118,7 +118,7 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 				const vec3 w_in = normalize(worldToSurface * dirInWorld);
 
 				// 多重重要性采样 Multiple Importance Sampling (MIS)
-				float sumPD = bsdf->PDF(w_out, w_in) + sampleNum * PD;
+				float sumPD = bsdf->PDF(w_out, w_in, closestRst.texcoord) + sampleNum * PD;
 				for (int k = 0; k < lightNum; k++) {
 					if (k != i) {
 						int sampleNum = lights[k]->IsDelta() ? 1 : sampleNumForAreaLight;

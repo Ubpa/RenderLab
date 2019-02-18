@@ -13,7 +13,7 @@ namespace CppUtil {
 			virtual glm::vec3 F(const glm::vec3 & wo, const glm::vec3 & wi, const glm::vec2 & texcoord) = 0;
 
 			// probability density function
-			virtual float PDF(const glm::vec3 & wo, const glm::vec3 & wi) = 0;
+			virtual float PDF(const glm::vec3 & wo, const glm::vec3 & wi, const glm::vec2 & texcoord) = 0;
 
 			// PD is probability density
 			// return albedo

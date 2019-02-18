@@ -88,10 +88,10 @@ cmake .. -Wno-dev
 
     - [x] 基础公式
     - [ ] 贴图
-      - [ ] albedo
-      - [ ] metallic
-      - [ ] roughness
-      - [ ] ao
+      - [x] albedo
+      - [x] metallic
+      - [x] roughness
+      - [x] ao
       - [ ] normal
 
   - [ ] 低差异序列

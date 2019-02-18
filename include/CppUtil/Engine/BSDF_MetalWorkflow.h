@@ -14,13 +14,14 @@ namespace CppUtil {
 		class BSDF_MetalWorkflow : public BSDF {
 			ELE_SETUP(BSDF_MetalWorkflow)
 		public:
-			BSDF_MetalWorkflow(const glm::vec3 & albedoColor, float metallic, float roughness)
-				: albedoColor(albedoColor), metallic(metallic), roughness(roughness) { }
+			BSDF_MetalWorkflow(const glm::vec3 & albedoColor = glm::vec3(1.0f), float roughnessFactor = 1.0f, float metallicFactor = 1.0f)
+				: albedoColor(albedoColor), roughnessFactor(roughnessFactor), metallicFactor(metallicFactor),
+				albedoTexture(nullptr), metallicTexture(nullptr), aoTexture(nullptr) { }
 
 			virtual glm::vec3 F(const glm::vec3 & wo, const glm::vec3 & wi, const glm::vec2 & texcoord);
 
 			// probability density function
-			virtual float PDF(const glm::vec3 & wo, const glm::vec3 & wi);
+			virtual float PDF(const glm::vec3 & wo, const glm::vec3 & wi, const glm::vec2 & texcoord);
 
 			// PD is probability density
 			// return albedo
@@ -37,27 +38,44 @@ namespace CppUtil {
 			void SetAlbedoTexture(Basic::Ptr<Basic::Image> albedoTexture) {
 				this->albedoTexture = albedoTexture;
 			}
+			void SetMetallicTexture(Basic::Ptr<Basic::Image> metallicTexture) {
+				this->metallicTexture = metallicTexture;
+			}
+			void SetRoughnessTexture(Basic::Ptr<Basic::Image> roughnessTexture) {
+				this->roughnessTexture = roughnessTexture;
+			}
+			void SetAOTexture(Basic::Ptr<Basic::Image> aoTexture) {
+				this->aoTexture = aoTexture;
+			}
 
 		private:
 			// Microfacet Specular BRDF
-			glm::vec3 MS_BRDF(const glm::vec3 & wo, const glm::vec3 & wi, const glm::vec3 & albedo) const;
+			static glm::vec3 MS_BRDF(const glm::vec3 & wo, const glm::vec3 & wi, const glm::vec3 & albedo, float metallic, float roughness);
 			// Normal Distribution Function
-			float NDF(const glm::vec3 & h) const;
+			static float NDF(const glm::vec3 & h, float roughness);
 			// Fresnel
-			glm::vec3 Fr(const glm::vec3 & wi, const glm::vec3 & h, const glm::vec3 & albedo) const;
+			static glm::vec3 Fr(const glm::vec3 & wi, const glm::vec3 & h, const glm::vec3 & albedo, float metallic);
 			// Geometric Attenuation
-			float G(const glm::vec3 & wo, const glm::vec3 & wi) const;
+			static float G(const glm::vec3 & wo, const glm::vec3 & wi, float roughness);
 
-			glm::vec3 GetAlbedo(const glm::vec2 & texcoord) const;
+			const glm::vec3 GetAlbedo(const glm::vec2 & texcoord) const;
+			float GetMetallic(const glm::vec2 & texcoord) const;
+			float GetRoughness(const glm::vec2 & texcoord) const;
+			float GetAO(const glm::vec2 & texcoord) const;
 
 		public:
 			glm::vec3 albedoColor;
 			Basic::Ptr<Basic::Image> albedoTexture;
 
 			// 0--1
-			float metallic;
+			float metallicFactor;
+			Basic::Ptr<Basic::Image> metallicTexture;
+
 			// 0--1
-			float roughness;
+			float roughnessFactor;
+			Basic::Ptr<Basic::Image> roughnessTexture;
+
+			Basic::Ptr<Basic::Image> aoTexture;
 		private:
 		};
 	}

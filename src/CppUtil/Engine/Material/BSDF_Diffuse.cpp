@@ -15,6 +15,6 @@ vec3 BSDF_Diffuse::Sample_f(const vec3 & wo, const vec2 & texcoord, vec3 & wi, f
 	return albedo / Math::PI;
 }
 
-float BSDF_Diffuse::PDF(const vec3 & wo, const vec3 & wi) {
+float BSDF_Diffuse::PDF(const vec3 & wo, const vec3 & wi, const vec2 & texcoord) {
 	return wi.z / Math::PI;
 }

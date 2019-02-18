@@ -592,7 +592,7 @@ Scene::Ptr GenScene09() {
 	auto sobj_MWSphere = ToPtr(new SObj(sobj_Root, "metal workflow sphere"));
 
 	vec3 gold(1.00, 0.71, 0.29);
-	auto bsdfGold = ToPtr(new BSDF_MetalWorkflow(gold, 1.0f, 0.2f));
+	auto bsdfGold = ToPtr(new BSDF_MetalWorkflow(gold, 0.2f));
 	auto materialGold = ToPtr(new Material(sobj_MWSphere, bsdfGold));
 
 	auto MWSphereTransform = ToPtr(new Transform(sobj_MWSphere));
@@ -634,9 +634,15 @@ Scene::Ptr GenScene10() {
 	// rusted iron workflow sphere
 	auto sobj_IronSphere = ToPtr(new SObj(sobj_Root, "rusted iron sphere"));
 
-	auto bsdfIron = ToPtr(new BSDF_MetalWorkflow(vec3(1), 1.0f, 0.2f));
+	auto bsdfIron = ToPtr(new BSDF_MetalWorkflow(vec3(1)));
 	auto ironAlbedoImg = ToPtr(new Image((ROOT_PATH+"data/textures/pbr/rusted_iron/albedo.png").c_str()));
 	bsdfIron->SetAlbedoTexture(ironAlbedoImg);
+	auto ironMatallicImg = ToPtr(new Image((ROOT_PATH + "data/textures/pbr/rusted_iron/metallic.png").c_str()));
+	bsdfIron->SetMetallicTexture(ironMatallicImg);
+	auto ironRoughnessImg = ToPtr(new Image((ROOT_PATH + "data/textures/pbr/rusted_iron/roughness.png").c_str()));
+	bsdfIron->SetRoughnessTexture(ironRoughnessImg);
+	auto ironAOImg = ToPtr(new Image((ROOT_PATH + "data/textures/pbr/rusted_iron/ao.png").c_str()));
+	bsdfIron->SetAOTexture(ironAOImg);
 	auto materialIron = ToPtr(new Material(sobj_IronSphere, bsdfIron));
 
 	auto MWSphereTransform = ToPtr(new Transform(sobj_IronSphere));
@@ -646,13 +652,13 @@ Scene::Ptr GenScene10() {
 	auto geoMWSphere = ToPtr(new Geometry(sobj_IronSphere, ToPtr(new Sphere)));
 
 	// cornell box
-	//auto box = GenBox();
-	//auto boxTransform = ToPtr(new Transform(box));
-	//box->SetParent(sobj_Root);
+	auto box = GenBox();
+	auto boxTransform = ToPtr(new Transform(box));
+	box->SetParent(sobj_Root);
 
 	// ground
-	auto ground = GenGound();
-	ground->SetParent(sobj_Root);
+	//auto ground = GenGound();
+	//ground->SetParent(sobj_Root);
 
 	// plane
 
@@ -660,14 +666,14 @@ Scene::Ptr GenScene10() {
 	auto sobj_Camera = ToPtr(new SObj(sobj_Root, "camera"));
 	auto camera = ToPtr(new Camera(sobj_Camera, 50.0f));
 	auto cameraTransform = ToPtr(new Transform(sobj_Camera));
-	cameraTransform->SetPosition(vec3(0, 0.3f, 1.2f));
+	cameraTransform->SetPosition(vec3(0, 0.75f, 2.3f));
 
 	// sky sphere
-	//auto sobj_skySphere = ToPtr(new SObj(sobj_Root, "sky"));
-	//auto skySphere = ToPtr(new Sphere(vec3(0), 100.0f));
-	//auto geoSky = ToPtr(new Geometry(sobj_skySphere, skySphere));
-	//auto dark = ToPtr(new BSDF_Diffuse(vec3(0)));
-	//auto materialSky = ToPtr(new Material(sobj_skySphere, dark));
+	auto sobj_skySphere = ToPtr(new SObj(sobj_Root, "sky"));
+	auto skySphere = ToPtr(new Sphere(vec3(0), 100.0f));
+	auto geoSky = ToPtr(new Geometry(sobj_skySphere, skySphere));
+	auto dark = ToPtr(new BSDF_Diffuse(vec3(0)));
+	auto materialSky = ToPtr(new Material(sobj_skySphere, dark));
 
 	return ToPtr(new Scene(sobj_Root, "scene 10"));
 }

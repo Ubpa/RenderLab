@@ -264,8 +264,8 @@ void Attribute::ComponentVisitor::Visit(BSDF_MetalWorkflow::Ptr bsdf) {
 	auto grid = GenGrid(attr->componentType2item[typeid(Material)]);
 	grid.AddTitle("[ BSDF -- Metal Workflow ]");
 	grid.AddEditColor("- Albedo Color", bsdf->albedoColor);
-	grid.AddEditVal("- Metallic", bsdf->metallic, 0.01);
-	grid.AddEditVal("- Roughness", bsdf->roughness, 0.01);
+	grid.AddEditVal("- Metallic Factor", bsdf->metallicFactor, 0.01);
+	grid.AddEditVal("- Roughness Factor", bsdf->roughnessFactor, 0.01);
 }
 
 // -------------- Light --------------

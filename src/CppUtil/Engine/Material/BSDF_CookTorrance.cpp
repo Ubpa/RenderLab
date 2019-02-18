@@ -46,7 +46,7 @@ vec3 BSDF_CookTorrance::F(const vec3 & wo, const vec3 & wi, const vec2 & texcoor
 	return kd * albedo / Math::PI + NDF(h) * fr * G(wo, wi, h) / (4 * wo.z *wi.z) * refletance;
 }
 
-float BSDF_CookTorrance::PDF(const vec3 & wo, const vec3 & wi) {
+float BSDF_CookTorrance::PDF(const vec3 & wo, const vec3 & wi, const vec2 & texcoord) {
 	//vec3 h = normalize(wo + wi);
 	//return NDF(h) / 4.0f;
 

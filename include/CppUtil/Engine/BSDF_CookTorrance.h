@@ -14,7 +14,7 @@ namespace CppUtil {
 			virtual glm::vec3 F(const glm::vec3 & wo, const glm::vec3 & wi, const glm::vec2 & texcoord);
 
 			// probability density function
-			virtual float PDF(const glm::vec3 & wo, const glm::vec3 & wi);
+			virtual float PDF(const glm::vec3 & wo, const glm::vec3 & wi, const glm::vec2 & texcoord);
 
 			// PD is probability density
 			// return refletance
