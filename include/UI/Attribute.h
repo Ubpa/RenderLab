@@ -16,6 +16,8 @@ namespace CppUtil {
 
 
 namespace Ui {
+	class Grid;
+
 	class Attribute : public CppUtil::Basic::HeapObj {
 		HEAP_OBJ_SETUP(Attribute)
 	private:
@@ -40,6 +42,7 @@ namespace Ui {
 		std::map<CppUtil::Basic::Ptr<CppUtil::Engine::Component>, QWidget *> component2item;
 		std::map<QWidget *, CppUtil::Basic::Ptr<CppUtil::Engine::Component>> item2component;
 		CppUtil::Basic::TypeMap<QWidget *> componentType2item;
+		std::map<QWidget *, CppUtil::Basic::Ptr<Grid>> item2grid;
 
 		CppUtil::Basic::Ptr<ComponentVisitor> visitor;
 	};

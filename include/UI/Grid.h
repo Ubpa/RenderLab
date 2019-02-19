@@ -1,49 +1,59 @@
 #ifndef _UI_GRID_H_
 #define _UI_GRID_H_
 
+#include <CppUtil/Basic/HeapObj.h>
+
 #include <qgridlayout.h>
 #include <QtWidgets/QDoubleSpinBox>
+#include <qcombobox.h>
 
 #include <glm/vec3.hpp>
 
 #include <functional>
+#include <map>
 
 namespace Ui {
-	class Grid{
+	class Grid : public CppUtil::Basic::HeapObj {
+		HEAP_OBJ_SETUP(Grid)
 	public:
 		Grid(QWidget * page, QGridLayout * gridLayout)
 			:page(page), gridLayout(gridLayout) { }
 
-		void AddTitle(const QString & title);
-
 		// spinbox
-		void AddEditVal(const QString & text, double val, double singleStep, const std::function<void(double)> & slot);
+		void AddEditVal(const std::string & text, double val, double singleStep, const std::function<void(double)> & slot);
 		template <typename numT>
-		void AddEditVal(const QString & text, numT & val, double singleStep) {
+		void AddEditVal(const std::string & text, numT & val, double singleStep) {
 			AddEditVal(text, val, singleStep, [&val](double v) {val = v; });
 		}
 
 		// slider
-		void AddEditVal(const QString & text, double val, double minVal , double maxVal, int stepNum, const std::function<void(double)> & slot);
-		void AddEditVal(const QString & text, int val, int minVal, int maxVal, const std::function<void(int)> & slot) {
+		void AddEditVal(const std::string & text, double val, double minVal , double maxVal, int stepNum, const std::function<void(double)> & slot);
+		void AddEditVal(const std::string & text, int val, int minVal, int maxVal, const std::function<void(int)> & slot) {
 			AddEditVal(text, val, minVal, maxVal, maxVal - minVal, slot);
 		}
 		template <typename numT>
-		void AddEditVal(const QString & text, numT & val, double minVal, double maxVal, int stepNum) {
+		void AddEditVal(const std::string & text, numT & val, double minVal, double maxVal, int stepNum) {
 			AddEditVal(text, val, minVal, maxVal, stepNum, [&val](double v) {val = v; });
 		}
 
 		// textlabel
-		void AddShowText(const QString & left, const QString & right);
-		
+		void AddText(const std::string & left, const std::string & right);
+		void AddText(const std::string & text);
 		template <typename numT>
-		void AddShowVal(const QString & text, numT val) { AddShowText(text, QString::number(val)); }
+		void AddText(const std::string & text, numT val) { AddText(text, QString::number(val).toStdString()); }
 
 		// color : [0, 1] x 3
-		void AddEditColor(const QString & text, glm::vec3 & color);
+		void AddEditColor(const std::string & text, glm::vec3 & color);
 
+		// combobox
+		typedef std::map<std::string, std::function<void()>> SlotMap;
+		typedef std::shared_ptr<std::map<std::string, std::function<void()>>> pSlotMap;
+		QComboBox * AddComboBox(const std::string & text, const std::string & curText, pSlotMap slotMap);
+		void AddComboBox(QComboBox * combobox, const std::string & text, const std::string & curText, pSlotMap slotMap);
+
+		void Clear();
 	private:
-		void AddLine(const QString & text, QWidget * widget);
+		void AddLine(const std::string & text, QWidget * widget);
 		void AddLine(QWidget * widgetLeft, QWidget * widgetRight);
 
 	private:

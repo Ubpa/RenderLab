@@ -3,6 +3,7 @@
 
 #include <CppUtil/Basic/HeapObj.h>
 #include <CppUtil/Basic/TypeMap.h>
+#include <CppUtil/Basic/GStorage.h>
 
 #include <functional>
 
@@ -47,6 +48,23 @@ namespace CppUtil {
 				visitOps[typeid(EleType)] = [visitFunc](Basic::Ptr<Element> pEle) {
 					visitFunc(Basic::Ptr<EleType>(pEle));
 				};
+			}
+
+			template<typename ArgType>
+			void RegArg(const std::string & id, const ArgType & arg) {
+				GS::Reg<std::string, ArgType>(std::to_string(size_t(this))+"_"+ id, arg);
+			}
+
+			template<typename ArgType>
+			bool GetArg(const std::string & id, ArgType & arg) {
+				return GS::GetV<std::string, ArgType>(std::to_string(size_t(this)) + "_" + id, arg);
+			}
+
+			template<typename ArgType>
+			ArgType GetArg(const std::string & id, const ArgType * useless_arg = nullptr) {
+				ArgType arg;
+				GS::GetV<std::string, ArgType>(std::to_string(size_t(this)) + "_" + id, arg);
+				return arg;
 			}
 
 		protected:

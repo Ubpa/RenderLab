@@ -19,12 +19,14 @@
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QDoubleSpinBox>
 #include <QtWidgets/QLabel>
+#include <qcombobox.h>
 
+using namespace Ui;
 using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
 using namespace CppUtil::Basic::Math;
-using namespace Ui;
 using namespace glm;
+using namespace std;
 
 class Attribute::ComponentVisitor : public EleVisitor {
 	ELEVISITOR_SETUP(ComponentVisitor)
@@ -84,14 +86,21 @@ private:
 		return item;
 	}
 
-	Grid GenGrid(QWidget * item) {
+	Grid::Ptr GetGrid(QWidget * item) {
+		auto target = attr->item2grid.find(item);
+		if (target != attr->item2grid.end())
+			return target->second;
+
 		auto vboxLayout = new QVBoxLayout(item);
 		auto gridLayout = new QGridLayout();
 		auto verticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
 		vboxLayout->addLayout(gridLayout);
 		vboxLayout->addItem(verticalSpacer);
 
-		return Grid(item, gridLayout);
+		auto grid = ToPtr(new Grid(item, gridLayout));
+		attr->item2grid[item] = grid;
+
+		return grid;
 	}
 
 private:
@@ -102,66 +111,66 @@ private:
 
 void Attribute::ComponentVisitor::Visit(Transform::Ptr transform) {
 	auto item = GenItem(transform, "Transform");
-	auto grid = GenGrid(item);
+	auto grid = GetGrid(item);
 
 	// position
-	grid.AddTitle("- Position");
+	grid->AddText("- Position");
 	auto pos = transform->GetPosition();
-	grid.AddEditVal("x", pos.x, 0.1, [transform](double x) {
+	grid->AddEditVal("x", pos.x, 0.1, [transform](double x) {
 		auto pos = transform->GetPosition();
 		pos.x = x;
 		transform->SetPosition(pos);
 	});
 
-	grid.AddEditVal("y", pos.y, 0.1, [transform](double y) {
+	grid->AddEditVal("y", pos.y, 0.1, [transform](double y) {
 		auto pos = transform->GetPosition();
 		pos.y = y;
 		transform->SetPosition(pos);
 	});
 
-	grid.AddEditVal("z", pos.z, 0.1, [transform](double z) {
+	grid->AddEditVal("z", pos.z, 0.1, [transform](double z) {
 		auto pos = transform->GetPosition();
 		pos.z = z;
 		transform->SetPosition(pos);
 	});
 
 	// rotation
-	grid.AddTitle("- Rotation");
+	grid->AddText("- Rotation");
 	auto rotation = degrees(transform->GetEulerRoatation());
-	grid.AddEditVal("x", rotation.x, 1.0, [transform](double x) {
+	grid->AddEditVal("x", rotation.x, 1.0, [transform](double x) {
 		auto rotation = transform->GetEulerRoatation();
 		rotation.x = radians(x);
 		transform->SetRotation(rotation);
 	});
 
-	grid.AddEditVal("y", rotation.y, 1.0, [transform](double y) {
+	grid->AddEditVal("y", rotation.y, 1.0, [transform](double y) {
 		auto rotation = transform->GetEulerRoatation();
 		rotation.y = radians(y);
 		transform->SetRotation(rotation);
 	});
 
-	grid.AddEditVal("z", rotation.y, 1.0, [transform](double z) {
+	grid->AddEditVal("z", rotation.y, 1.0, [transform](double z) {
 		auto rotation = transform->GetEulerRoatation();
 		rotation.z = radians(z);
 		transform->SetRotation(rotation);
 	});
 
 	// scale
-	grid.AddTitle("- Scale");
+	grid->AddText("- Scale");
 	auto scale = transform->GetScale();
-	grid.AddEditVal("x", scale.x, 0.1, [transform](double x) {
+	grid->AddEditVal("x", scale.x, 0.1, [transform](double x) {
 		auto scale = transform->GetScale();
 		scale.x = x;
 		transform->SetScale(scale);
 	});
 
-	grid.AddEditVal("y", scale.y, 0.1, [transform](double y) {
+	grid->AddEditVal("y", scale.y, 0.1, [transform](double y) {
 		auto scale = transform->GetScale();
 		scale.y = y;
 		transform->SetScale(scale);
 	});
 
-	grid.AddEditVal("z", scale.z, 0.1, [transform](double z) {
+	grid->AddEditVal("z", scale.z, 0.1, [transform](double z) {
 		auto scale = transform->GetScale();
 		scale.z = z;
 		transform->SetScale(scale);
@@ -173,9 +182,9 @@ void Attribute::ComponentVisitor::Visit(Transform::Ptr transform) {
 
 void Attribute::ComponentVisitor::Visit(Camera::Ptr camera) {
 	auto item = GenItem(camera, "Camera");
-	auto grid = GenGrid(item);
+	auto grid = GetGrid(item);
 	
-	grid.AddEditVal("- Field of View", camera->GetFOV(), 1, 179, [camera](double fov) {
+	grid->AddEditVal("- Field of View", camera->GetFOV(), 1, 179, [camera](double fov) {
 		camera->SetFOV(fov);
 	});
 }
@@ -183,37 +192,90 @@ void Attribute::ComponentVisitor::Visit(Camera::Ptr camera) {
 // -------------- Geometry --------------
 
 void Attribute::ComponentVisitor::Visit(Geometry::Ptr geo) {
-	GenItem(geo, "Geometry");
-	if (geo->GetPrimitive())
+	auto item = GenItem(geo, "Geometry");
+	auto grid = GetGrid(item);
+
+	auto getTypeStr = ToPtr(new EleVisitor);
+	getTypeStr->Reg<Sphere>([=](Sphere::Ptr) {
+		getTypeStr->RegArg("typeStr", "Sphere");
+	});
+	getTypeStr->Reg<Plane>([=](Plane::Ptr) {
+		getTypeStr->RegArg("typeStr", "Plane");
+	});
+	getTypeStr->Reg<TriMesh>([=](TriMesh::Ptr) {
+		getTypeStr->RegArg("typeStr", "TriMesh");
+	});
+
+	Grid::pSlotMap pSlotMap(new Grid::SlotMap);
+	QComboBox * combobox = new QComboBox;
+
+	(*pSlotMap)["None"] = [=]() {
+		grid->Clear();
+		grid->AddComboBox("Type", "None", pSlotMap);
+		geo->SetPrimitive(nullptr);
+	};
+	(*pSlotMap)["Sphere"] = [=]() {
+		grid->Clear();
+		grid->AddComboBox("Type", "Sphere", pSlotMap);
+
+		auto sphere = ToPtr(new Sphere);
+		geo->SetPrimitive(sphere);
+		Visit(sphere);
+	};
+	(*pSlotMap)["Plane"] = [=]() {
+		grid->Clear();
+		grid->AddComboBox("Type", "Plane", pSlotMap);
+
+		auto plane = ToPtr(new Plane);
+		geo->SetPrimitive(plane);
+		Visit(plane);
+	};
+	(*pSlotMap)["TriMesh"] = [=]() {
+		if (geo->GetPrimitive()) {
+			geo->GetPrimitive()->Accept(getTypeStr);
+			auto typeStr = getTypeStr->GetArg<string>("typeStr");
+			combobox->setCurrentText(QString::fromStdString(typeStr));
+		}
+		else
+			combobox->setCurrentText("None");
+	};
+
+	if (geo->GetPrimitive()) {
+		geo->GetPrimitive()->Accept(getTypeStr);
+		grid->AddComboBox(combobox, "Type", getTypeStr->GetArg<string>("typeStr"), pSlotMap);
+
 		geo->GetPrimitive()->Accept(This());
+	}
+	else
+		grid->AddComboBox(combobox, "Type", "None", pSlotMap);
 }
 
 void Attribute::ComponentVisitor::Visit(Sphere::Ptr sphere) {
-	auto grid = GenGrid(attr->componentType2item[typeid(Geometry)]);
+	auto grid = GetGrid(attr->componentType2item[typeid(Geometry)]);
 	auto & center = sphere->center;
 	auto & r = sphere->r;
 
-	grid.AddTitle("[ Sphere ]");
+	grid->AddText("[ Sphere ]");
 
-	grid.AddTitle("- center");
-	grid.AddEditVal("x", center.x, 0.1);
-	grid.AddEditVal("y", center.y, 0.1);
-	grid.AddEditVal("z", center.z, 0.1);
+	grid->AddText("- center");
+	grid->AddEditVal("x", center.x, 0.1);
+	grid->AddEditVal("y", center.y, 0.1);
+	grid->AddEditVal("z", center.z, 0.1);
 
-	grid.AddEditVal("- radius", r, 0.1);
+	grid->AddEditVal("- radius", r, 0.1);
 }
 
 void Attribute::ComponentVisitor::Visit(Plane::Ptr plane) {
-	auto grid = GenGrid(attr->componentType2item[typeid(Geometry)]);
-	grid.AddTitle("[ Plane ]");
-	grid.AddTitle("empty");
+	auto grid = GetGrid(attr->componentType2item[typeid(Geometry)]);
+	grid->AddText("[ Plane ]");
+	grid->AddText("empty");
 }
 
 void Attribute::ComponentVisitor::Visit(TriMesh::Ptr mesh) {
-	auto grid = GenGrid(attr->componentType2item[typeid(Geometry)]);
-	grid.AddTitle("[ Mesh ]");
-	grid.AddShowVal("- Triangle", mesh->GetIndice().size() / 3);
-	grid.AddShowVal("- Vertex", mesh->GetPositions().size());
+	auto grid = GetGrid(attr->componentType2item[typeid(Geometry)]);
+	grid->AddText("[ Mesh ]");
+	grid->AddText("- Triangle", mesh->GetIndice().size() / 3);
+	grid->AddText("- Vertex", mesh->GetPositions().size());
 }
 
 // -------------- Material --------------
@@ -225,47 +287,47 @@ void Attribute::ComponentVisitor::Visit(Material::Ptr material) {
 }
 
 void Attribute::ComponentVisitor::Visit(BSDF_Diffuse::Ptr bsdf) {
-	auto grid = GenGrid(attr->componentType2item[typeid(Material)]);
-	grid.AddTitle("[ BSDF -- Diffuse ]");
-	grid.AddEditColor("- Albedo", bsdf->albedo);
+	auto grid = GetGrid(attr->componentType2item[typeid(Material)]);
+	grid->AddText("[ BSDF -- Diffuse ]");
+	grid->AddEditColor("- Albedo", bsdf->albedo);
 }
 
 void Attribute::ComponentVisitor::Visit(BSDF_Emission::Ptr bsdf) {
-	auto grid = GenGrid(attr->componentType2item[typeid(Material)]);
-	grid.AddTitle("[ BSDF -- Emission ]");
-	grid.AddEditColor("- Color", bsdf->color);
-	grid.AddEditVal("- Intensity", bsdf->intensity, 0, 10, 1000);
+	auto grid = GetGrid(attr->componentType2item[typeid(Material)]);
+	grid->AddText("[ BSDF -- Emission ]");
+	grid->AddEditColor("- Color", bsdf->color);
+	grid->AddEditVal("- Intensity", bsdf->intensity, 0, 10, 1000);
 }
 
 void Attribute::ComponentVisitor::Visit(BSDF_Glass::Ptr bsdf) {
-	auto grid = GenGrid(attr->componentType2item[typeid(Material)]);
-	grid.AddTitle("[ BSDF -- Glass ]");
-	grid.AddEditColor("- Transmittance", bsdf->transmittance);
-	grid.AddEditColor("- Reflectance", bsdf->reflectance);
-	grid.AddEditVal("- ior", bsdf->ior, 0.01);
+	auto grid = GetGrid(attr->componentType2item[typeid(Material)]);
+	grid->AddText("[ BSDF -- Glass ]");
+	grid->AddEditColor("- Transmittance", bsdf->transmittance);
+	grid->AddEditColor("- Reflectance", bsdf->reflectance);
+	grid->AddEditVal("- ior", bsdf->ior, 0.01);
 }
 
 void Attribute::ComponentVisitor::Visit(BSDF_Mirror::Ptr bsdf) {
-	auto grid = GenGrid(attr->componentType2item[typeid(Material)]);
-	grid.AddTitle("[ BSDF -- Mirror ]");
-	grid.AddEditColor("- Reflectance", bsdf->reflectance);
+	auto grid = GetGrid(attr->componentType2item[typeid(Material)]);
+	grid->AddText("[ BSDF -- Mirror ]");
+	grid->AddEditColor("- Reflectance", bsdf->reflectance);
 }
 
 void Attribute::ComponentVisitor::Visit(BSDF_CookTorrance::Ptr bsdf) {
-	auto grid = GenGrid(attr->componentType2item[typeid(Material)]);
-	grid.AddTitle("[ BSDF -- Cook Torrance ]");
-	grid.AddEditColor("- Reflectance", bsdf->refletance);
-	grid.AddEditColor("- Albedo", bsdf->albedo);
-	grid.AddEditVal("- Index of Refract", bsdf->ior, 0.01);
-	grid.AddEditVal("- Roughness", bsdf->m, 0, 1, 100);
+	auto grid = GetGrid(attr->componentType2item[typeid(Material)]);
+	grid->AddText("[ BSDF -- Cook Torrance ]");
+	grid->AddEditColor("- Reflectance", bsdf->refletance);
+	grid->AddEditColor("- Albedo", bsdf->albedo);
+	grid->AddEditVal("- Index of Refract", bsdf->ior, 0.01);
+	grid->AddEditVal("- Roughness", bsdf->m, 0, 1, 100);
 }
 
 void Attribute::ComponentVisitor::Visit(BSDF_MetalWorkflow::Ptr bsdf) {
-	auto grid = GenGrid(attr->componentType2item[typeid(Material)]);
-	grid.AddTitle("[ BSDF -- Metal Workflow ]");
-	grid.AddEditColor("- Albedo Color", bsdf->albedoColor);
-	grid.AddEditVal("- Metallic Factor", bsdf->metallicFactor, 0, 1, 100);
-	grid.AddEditVal("- Roughness Factor", bsdf->roughnessFactor, 0, 1, 100);
+	auto grid = GetGrid(attr->componentType2item[typeid(Material)]);
+	grid->AddText("[ BSDF -- Metal Workflow ]");
+	grid->AddEditColor("- Albedo Color", bsdf->albedoColor);
+	grid->AddEditVal("- Metallic Factor", bsdf->metallicFactor, 0, 1, 100);
+	grid->AddEditVal("- Roughness Factor", bsdf->roughnessFactor, 0, 1, 100);
 }
 
 // -------------- Light --------------
@@ -277,12 +339,12 @@ void Attribute::ComponentVisitor::Visit(Light::Ptr light) {
 }
 
 void Attribute::ComponentVisitor::Visit(AreaLight::Ptr light) {
-	auto grid = GenGrid(attr->componentType2item[typeid(Light)]);
-	grid.AddTitle("[ Light -- Arealight ]");
-	grid.AddEditColor("- Color", light->color);
-	grid.AddEditVal("- Intensity", light->intensity, 0.1);
-	grid.AddEditVal("- Width", light->width, 0.1);
-	grid.AddEditVal("- Height", light->height, 0.1);
+	auto grid = GetGrid(attr->componentType2item[typeid(Light)]);
+	grid->AddText("[ Light -- Arealight ]");
+	grid->AddEditColor("- Color", light->color);
+	grid->AddEditVal("- Intensity", light->intensity, 0.1);
+	grid->AddEditVal("- Width", light->width, 0.1);
+	grid->AddEditVal("- Height", light->height, 0.1);
 }
 
 // -------------- Attribute --------------
@@ -312,6 +374,7 @@ void Attribute::SetSObj(SObj::Ptr sobj) {
 	}
 	component2item.clear();
 	item2component.clear();
+	item2grid.clear();
 
 	if (sobj == nullptr)
 		return;
