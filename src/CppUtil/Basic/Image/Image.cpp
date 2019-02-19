@@ -35,20 +35,6 @@ bool Image::IsValid() const{
 	return data != NULL && type != ENUM_SRC_TYPE_INVALID;
 }
 
-uByte * Image::GetData() {
-	if (!IsValid())
-		return NULL;
-
-	return data;
-}
-
-const uByte * Image::GetConstData() const{
-	if (!IsValid())
-		return NULL;
-
-	return data;
-}
-
 int Image::GetWidth() const{
 	return width;
 }

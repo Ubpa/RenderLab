@@ -1,11 +1,15 @@
 #include <UI/Grid.h>
 
+#include <CppUtil/Basic/Image.h>
+
 #include <qlabel.h>
 #include <sstream>
 #include <qpushbutton.h>
 #include <qcolordialog.h>
+#include <qfiledialog.h>
 #include <qslider.h>
 
+using namespace CppUtil::Basic;
 using namespace Ui;
 using namespace std;
 
@@ -116,12 +120,6 @@ void Grid::AddEditColor(const string & text, glm::vec3 & color) {
 	AddLine(text, button);
 }
 
-bool Grid::AddComboBox(const string & text, const string & curText, pSlotMap slotMap) {
-	auto combobox = new QComboBox;
-
-	return AddComboBox(combobox, text, curText, slotMap);
-}
-
 bool Grid::AddComboBox(QComboBox * combobox, const std::string & text, const std::string & curText, pSlotMap slotMap) {
 	if (slotMap->find(curText) == slotMap->cend()) {
 		printf("ERROR: curText is not in slopMap");
@@ -149,4 +147,78 @@ bool Grid::AddComboBox(QComboBox * combobox, const std::string & text, const std
 	AddLine(text, combobox);
 
 	return true;
+}
+
+void Grid::AddEditImage(const string & text, Image::CPtr img, const function<void(Image::Ptr)> & slot) {
+	auto imgLabel = new QLabel;
+	imgLabel->setAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
+	
+	if (img == nullptr)
+		ClearImgLabel(imgLabel);
+	else
+		SetImgLabel(imgLabel, img);
+
+	auto loadImgBtn = new QPushButton;
+	loadImgBtn->setText("Load");
+	page->connect(loadImgBtn, &QPushButton::clicked, [=]() {
+		QString fileName = QFileDialog::getOpenFileName(nullptr,
+			"Ñ¡ÔñÒ»ÕÅÍ¼Æ¬",
+			"./",
+			"Image Files (*.png)");
+		if (fileName.isEmpty())
+			return;
+		
+		auto img = ToPtr(new Image(fileName.toStdString().c_str()));
+		if(SetImgLabel(imgLabel, img))
+			slot(img);
+	});
+
+	auto clearImgBtn = new QPushButton;
+	clearImgBtn->setText("Clear");
+	page->connect(clearImgBtn, &QPushButton::clicked, [=]() {
+		ClearImgLabel(imgLabel);
+		slot(nullptr);
+	});
+
+	AddLine(text, loadImgBtn);
+	AddLine(imgLabel, clearImgBtn);
+}
+
+bool Grid::SetImgLabel(QLabel * imgLabel, Image::CPtr img) {
+	const QImage::Format formatMap[5] = {
+			QImage::Format::Format_Invalid,
+			QImage::Format::Format_Alpha8,
+			QImage::Format::Format_Invalid,
+			QImage::Format::Format_RGB888,
+			QImage::Format::Format_RGBA8888,
+	};
+
+	if (img == nullptr || !img->IsValid() || formatMap[img->GetChannel()] == QImage::Format::Format_Invalid) {
+		QImage qImg(32, 32, QImage::Format::Format_RGB888);
+		for (int i = 0; i < 32; i++) {
+			for (int j = 0; j < 32; j++)
+				qImg.setPixel(QPoint(i, j), qRgb(255, 255, 255));
+		}
+		QPixmap imgIcon;
+		imgIcon.convertFromImage(qImg.scaled(32, 32, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+		imgLabel->setPixmap(imgIcon);
+		return false;
+	}
+	
+	QImage qImg(img->GetData(), img->GetWidth(), img->GetHeight(), formatMap[img->GetChannel()]);
+	QPixmap imgIcon;
+	imgIcon.convertFromImage(qImg.scaled(32, 32, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+	imgLabel->setPixmap(imgIcon);
+	return true;
+}
+
+void Grid::ClearImgLabel(QLabel * imgLabel) {
+	QImage qImg(32, 32, QImage::Format::Format_RGB888);
+	for (int i = 0; i < 32; i++) {
+		for (int j = 0; j < 32; j++)
+			qImg.setPixel(QPoint(i, j), qRgb(255, 255, 255));
+	}
+	QPixmap imgIcon;
+	imgIcon.convertFromImage(qImg.scaled(32, 32, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+	imgLabel->setPixmap(imgIcon);
 }

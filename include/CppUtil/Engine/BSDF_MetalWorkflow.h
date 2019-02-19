@@ -35,6 +35,12 @@ namespace CppUtil {
 			virtual void ChangeNormal(const glm::vec2 & texcoord, const glm::vec3 tangent, glm::vec3 & normal) const;
 
 		public:
+			Basic::CPtr<Basic::Image> GetAlbedoTexture() const;
+			Basic::CPtr<Basic::Image> GetMetallicTexture() const;
+			Basic::CPtr<Basic::Image> GetRoughnessTexture() const;
+			Basic::CPtr<Basic::Image> GetAOTexture() const;
+			Basic::CPtr<Basic::Image> GetNormalTexture() const;
+
 			void SetAlbedoTexture(Basic::Ptr<Basic::Image> albedoTexture) {
 				this->albedoTexture = albedoTexture;
 			}

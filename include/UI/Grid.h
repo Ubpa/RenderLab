@@ -12,6 +12,14 @@
 #include <functional>
 #include <map>
 
+class QLabel;
+
+namespace CppUtil {
+	namespace Basic {
+		class Image;
+	}
+}
+
 namespace Ui {
 	class Grid : public CppUtil::Basic::HeapObj {
 		HEAP_OBJ_SETUP(Grid)
@@ -36,7 +44,7 @@ namespace Ui {
 			AddEditVal(text, val, minVal, maxVal, stepNum, [&val](double v) {val = v; });
 		}
 
-		// textlabel
+		// text
 		void AddText(const std::string & left, const std::string & right);
 		void AddText(const std::string & text);
 		template <typename numT>
@@ -48,13 +56,22 @@ namespace Ui {
 		// combobox
 		typedef std::map<std::string, std::function<void()>> SlotMap;
 		typedef std::shared_ptr<std::map<std::string, std::function<void()>>> pSlotMap;
-		bool AddComboBox(const std::string & text, const std::string & curText, pSlotMap slotMap);
 		bool AddComboBox(QComboBox * combobox, const std::string & text, const std::string & curText, pSlotMap slotMap);
+		bool AddComboBox(const std::string & text, const std::string & curText, pSlotMap slotMap) {
+			return AddComboBox(new QComboBox, text, curText, slotMap);
+		}
 
+		// image
+		void AddEditImage(const std::string & text, CppUtil::Basic::CPtr<CppUtil::Basic::Image> img, const std::function<void(CppUtil::Basic::Ptr<CppUtil::Basic::Image>)> & slot);
+
+		// clear and delete
 		void Clear();
 	private:
 		void AddLine(const std::string & text, QWidget * widget);
-		void AddLine(QWidget * widgetLeft, QWidget * widgetRight);
+		void AddLine(QWidget * widgetLeft, QWidget * widgetRight = nullptr);
+
+		static bool SetImgLabel(QLabel * imgLabel, CppUtil::Basic::CPtr<CppUtil::Basic::Image> img);
+		static void ClearImgLabel(QLabel * imgLabel);
 
 	private:
 		QWidget * page;

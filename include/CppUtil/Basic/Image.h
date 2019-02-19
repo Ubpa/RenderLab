@@ -17,8 +17,8 @@ namespace CppUtil {
 			Image(const char * fileName, bool flip = false);
 			//------------
 			bool IsValid() const;
-			uByte * GetData();
-			const uByte * GetConstData() const;
+			uByte * GetData() { return data; }
+			const uByte * GetData() const { return data; }
 			int GetWidth() const;
 			int GetHeight() const;
 			int GetChannel() const;

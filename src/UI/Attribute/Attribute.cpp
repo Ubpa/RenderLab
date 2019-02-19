@@ -343,20 +343,17 @@ void Attribute::ComponentVisitor::Visit(Material::Ptr material) {
 
 void Attribute::ComponentVisitor::Visit(BSDF_Diffuse::Ptr bsdf) {
 	auto grid = GetGrid(attr->componentType2item[typeid(Material)]);
-	grid->AddText("[ BSDF -- Diffuse ]");
 	grid->AddEditColor("- Albedo", bsdf->albedo);
 }
 
 void Attribute::ComponentVisitor::Visit(BSDF_Emission::Ptr bsdf) {
 	auto grid = GetGrid(attr->componentType2item[typeid(Material)]);
-	grid->AddText("[ BSDF -- Emission ]");
 	grid->AddEditColor("- Color", bsdf->color);
 	grid->AddEditVal("- Intensity", bsdf->intensity, 0, 10, 1000);
 }
 
 void Attribute::ComponentVisitor::Visit(BSDF_Glass::Ptr bsdf) {
 	auto grid = GetGrid(attr->componentType2item[typeid(Material)]);
-	grid->AddText("[ BSDF -- Glass ]");
 	grid->AddEditColor("- Transmittance", bsdf->transmittance);
 	grid->AddEditColor("- Reflectance", bsdf->reflectance);
 	grid->AddEditVal("- ior", bsdf->ior, 0.01);
@@ -364,13 +361,11 @@ void Attribute::ComponentVisitor::Visit(BSDF_Glass::Ptr bsdf) {
 
 void Attribute::ComponentVisitor::Visit(BSDF_Mirror::Ptr bsdf) {
 	auto grid = GetGrid(attr->componentType2item[typeid(Material)]);
-	grid->AddText("[ BSDF -- Mirror ]");
 	grid->AddEditColor("- Reflectance", bsdf->reflectance);
 }
 
 void Attribute::ComponentVisitor::Visit(BSDF_CookTorrance::Ptr bsdf) {
 	auto grid = GetGrid(attr->componentType2item[typeid(Material)]);
-	grid->AddText("[ BSDF -- Cook Torrance ]");
 	grid->AddEditColor("- Reflectance", bsdf->refletance);
 	grid->AddEditColor("- Albedo", bsdf->albedo);
 	grid->AddEditVal("- Index of Refract", bsdf->ior, 0.01);
@@ -379,10 +374,24 @@ void Attribute::ComponentVisitor::Visit(BSDF_CookTorrance::Ptr bsdf) {
 
 void Attribute::ComponentVisitor::Visit(BSDF_MetalWorkflow::Ptr bsdf) {
 	auto grid = GetGrid(attr->componentType2item[typeid(Material)]);
-	grid->AddText("[ BSDF -- Metal Workflow ]");
+
 	grid->AddEditColor("- Albedo Color", bsdf->albedoColor);
+	grid->AddEditImage("- Albedo Texture", bsdf->GetAlbedoTexture(),
+		[=](CppUtil::Basic::Ptr<Image> img) {bsdf->SetAlbedoTexture(img); });
+
 	grid->AddEditVal("- Metallic Factor", bsdf->metallicFactor, 0, 1, 100);
+	grid->AddEditImage("- Metallic Texture", bsdf->GetMetallicTexture(),
+		[=](CppUtil::Basic::Ptr<Image> img) {bsdf->SetMetallicTexture(img); });
+
 	grid->AddEditVal("- Roughness Factor", bsdf->roughnessFactor, 0, 1, 100);
+	grid->AddEditImage("- Roughness Texture", bsdf->GetRoughnessTexture(),
+		[=](CppUtil::Basic::Ptr<Image> img) {bsdf->SetRoughnessTexture(img); });
+
+	grid->AddEditImage("- AO Texture", bsdf->GetAOTexture(),
+		[=](CppUtil::Basic::Ptr<Image> img) {bsdf->SetAOTexture(img); });
+
+	grid->AddEditImage("- Normal Texture", bsdf->GetNormalTexture(),
+		[=](CppUtil::Basic::Ptr<Image> img) {bsdf->SetNormalTexture(img); });
 }
 
 // -------------- Light --------------

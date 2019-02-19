@@ -94,7 +94,7 @@ PaintImgOpCreator::PaintImgOp::Ptr PaintImgOpCreator::GenScenePaintOp() {
 		}
 
 		FBO::UseDefault();
-		if (paintImgOp->GetImg() && paintImgOp->GetImg()->GetConstData()) {
+		if (paintImgOp->GetImg() && paintImgOp->GetImg()->GetData()) {
 			showImgTex->SetImg(*paintImgOp->GetImg());
 			showImgTex->Use(0);
 			imgVAO->Draw(*screenShader);

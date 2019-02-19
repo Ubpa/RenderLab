@@ -81,7 +81,7 @@ bool Texture::Load(const std::vector<std::string> & skybox) {
 			return false;
 		}
 
-		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, img->GetWidth(), img->GetHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, img->GetConstData());
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, img->GetWidth(), img->GetHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, img->GetData());
 		glGenerateMipmap(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i);
 	}
 
@@ -115,7 +115,7 @@ Texture::Texture(const vector<CPtr<Image>> & skyboxImgs) {
 			return;
 		}
 
-		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, skyboxImgs[i]->GetWidth(), skyboxImgs[i]->GetHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, skyboxImgs[i]->GetConstData());
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, skyboxImgs[i]->GetWidth(), skyboxImgs[i]->GetHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, skyboxImgs[i]->GetData());
 		glGenerateMipmap(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i);
 	}
 
@@ -172,7 +172,7 @@ bool Texture::Load(const std::string & path, bool flip, bool gammaCorrection) {
 	@8 源图类型
 	@9 图像数据
 	*/
-	glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, img->GetWidth(), img->GetHeight(), 0, dataFormat, GL_UNSIGNED_BYTE, img->GetConstData());
+	glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, img->GetWidth(), img->GetHeight(), 0, dataFormat, GL_UNSIGNED_BYTE, img->GetData());
 
 	glGenerateMipmap(GL_TEXTURE_2D);
 
@@ -205,7 +205,7 @@ bool Texture::SetImg(const Image & img) {
 		format = GL_RGBA;
 
 	glBindTexture(GL_TEXTURE_2D, ID);
-	glTexImage2D(GL_TEXTURE_2D, 0, format, img.GetWidth(), img.GetHeight(), 0, format, GL_UNSIGNED_BYTE, img.GetConstData());
+	glTexImage2D(GL_TEXTURE_2D, 0, format, img.GetWidth(), img.GetHeight(), 0, format, GL_UNSIGNED_BYTE, img.GetData());
 	glGenerateMipmap(GL_TEXTURE_2D);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
