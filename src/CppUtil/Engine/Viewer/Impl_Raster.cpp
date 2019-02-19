@@ -118,8 +118,11 @@ void Impl_Raster::Draw(SObj::Ptr sobj) {
 		auto primitive = geometry->GetPrimitive();
 		if (primitive) {
 			auto material = sobj->GetComponent<Material>();
-			if (material)
+			if (material && material->GetMat())
 				material->GetMat()->Accept(This());
+			else
+				shader_basic.SetVec3f("color", vec3(1,0,1));
+
 			primitive->Accept(This());
 		}
 	}

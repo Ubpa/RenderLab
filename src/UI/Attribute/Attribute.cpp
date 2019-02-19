@@ -21,6 +21,8 @@
 #include <QtWidgets/QLabel>
 #include <qcombobox.h>
 
+#include <tuple>
+
 using namespace Ui;
 using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
@@ -281,9 +283,62 @@ void Attribute::ComponentVisitor::Visit(TriMesh::Ptr mesh) {
 // -------------- Material --------------
 
 void Attribute::ComponentVisitor::Visit(Material::Ptr material) {
-	GenItem(material, "Material");
-	if (material->GetMat())
+	auto item = GenItem(material, "Material");
+	auto grid = GetGrid(item);
+
+	auto getTypeStr = ToPtr(new EleVisitor);
+	getTypeStr->Reg<BSDF_Diffuse>([=](BSDF_Diffuse::Ptr) {
+		getTypeStr->RegArg("typeStr", "BSDF_Diffuse");
+	});
+	getTypeStr->Reg<BSDF_Emission>([=](BSDF_Emission::Ptr) {
+		getTypeStr->RegArg("typeStr", "BSDF_Emission");
+	});
+	getTypeStr->Reg<BSDF_Glass>([=](BSDF_Glass::Ptr) {
+		getTypeStr->RegArg("typeStr", "BSDF_Glass");
+	});
+	getTypeStr->Reg<BSDF_Mirror>([=](BSDF_Mirror::Ptr) {
+		getTypeStr->RegArg("typeStr", "BSDF_Mirror");
+	});
+	getTypeStr->Reg<BSDF_CookTorrance>([=](BSDF_CookTorrance::Ptr) {
+		getTypeStr->RegArg("typeStr", "BSDF_CookTorrance");
+	});
+	getTypeStr->Reg<BSDF_MetalWorkflow>([=](BSDF_MetalWorkflow::Ptr) {
+		getTypeStr->RegArg("typeStr", "BSDF_MetalWorkflow");
+	});
+
+	const int bsdfNum = 7;
+	tuple<string, BSDF::Ptr(*)()> bsdfArr[bsdfNum] = {
+		{"None", []()->BSDF::Ptr { return nullptr; } },
+		{"BSDF_Diffuse", []()->BSDF::Ptr { return ToPtr(new BSDF_Diffuse); } },
+		{"BSDF_Emission", []()->BSDF::Ptr { return ToPtr(new BSDF_Emission); } },
+		{"BSDF_Glass", []()->BSDF::Ptr { return ToPtr(new BSDF_Glass); } },
+		{"BSDF_Mirror", []()->BSDF::Ptr { return ToPtr(new BSDF_Mirror); } },
+		{"BSDF_CookTorrance", []()->BSDF::Ptr { return ToPtr(new BSDF_CookTorrance(1.5f,0.2f)); } },
+		{"BSDF_MetalWorkflow", []()->BSDF::Ptr { return ToPtr(new BSDF_MetalWorkflow); } },
+	};
+
+	Grid::pSlotMap pSlotMap(new Grid::SlotMap);
+
+	for (int i = 0; i < bsdfNum; i++) {
+		(*pSlotMap)[get<0>(bsdfArr[i])] = [=]() {
+			grid->Clear();
+			grid->AddComboBox("Type", get<0>(bsdfArr[i]), pSlotMap);
+
+			auto bsdf = get<1>(bsdfArr[i])();
+			material->SetMat(bsdf);
+			if(bsdf != nullptr)
+				bsdf->Accept(This());
+		};
+	}
+
+	if (material->GetMat()) {
+		material->GetMat()->Accept(getTypeStr);
+		grid->AddComboBox("Type", getTypeStr->GetArg<string>("typeStr"), pSlotMap);
+
 		material->GetMat()->Accept(This());
+	}
+	else
+		grid->AddComboBox("Type", "None", pSlotMap);
 }
 
 void Attribute::ComponentVisitor::Visit(BSDF_Diffuse::Ptr bsdf) {

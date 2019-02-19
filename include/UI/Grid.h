@@ -48,8 +48,8 @@ namespace Ui {
 		// combobox
 		typedef std::map<std::string, std::function<void()>> SlotMap;
 		typedef std::shared_ptr<std::map<std::string, std::function<void()>>> pSlotMap;
-		QComboBox * AddComboBox(const std::string & text, const std::string & curText, pSlotMap slotMap);
-		void AddComboBox(QComboBox * combobox, const std::string & text, const std::string & curText, pSlotMap slotMap);
+		bool AddComboBox(const std::string & text, const std::string & curText, pSlotMap slotMap);
+		bool AddComboBox(QComboBox * combobox, const std::string & text, const std::string & curText, pSlotMap slotMap);
 
 		void Clear();
 	private:

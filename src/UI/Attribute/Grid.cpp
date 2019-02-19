@@ -116,36 +116,18 @@ void Grid::AddEditColor(const string & text, glm::vec3 & color) {
 	AddLine(text, button);
 }
 
-QComboBox * Grid::AddComboBox(const string & text, const string & curText, pSlotMap slotMap) {
-	if (slotMap->find(curText) == slotMap->cend()) {
-		printf("ERROR: curText is not in slopMap");
-		return nullptr;
-	}
-
+bool Grid::AddComboBox(const string & text, const string & curText, pSlotMap slotMap) {
 	auto combobox = new QComboBox;
 
-	for (auto item : *slotMap)
-		combobox->addItem(QString::fromStdString(item.first));
-
-	combobox->setCurrentText(QString::fromStdString(curText));
-
-	// 只有用户交互才会响应
-	void (QComboBox::*signalFunc)(const QString &) = &QComboBox::activated;
-	page->connect(combobox, signalFunc, [slotMap](const QString & itemText) {
-		string str = itemText.toStdString();
-		auto target = slotMap->find(str);
-		if(target == slotMap->cend())
-			return;
-
-		target->second();
-	});
-
-	AddLine(text, combobox);
-
-	return combobox;
+	return AddComboBox(combobox, text, curText, slotMap);
 }
 
-void Grid::AddComboBox(QComboBox * combobox, const std::string & text, const std::string & curText, pSlotMap slotMap) {
+bool Grid::AddComboBox(QComboBox * combobox, const std::string & text, const std::string & curText, pSlotMap slotMap) {
+	if (slotMap->find(curText) == slotMap->cend()) {
+		printf("ERROR: curText is not in slopMap");
+		return false;
+	}
+
 	combobox->clear();
 
 	for (auto item : *slotMap)
@@ -165,4 +147,6 @@ void Grid::AddComboBox(QComboBox * combobox, const std::string & text, const std
 	});
 
 	AddLine(text, combobox);
+
+	return true;
 }
