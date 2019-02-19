@@ -175,7 +175,7 @@ void Attribute::ComponentVisitor::Visit(Camera::Ptr camera) {
 	auto item = GenItem(camera, "Camera");
 	auto grid = GenGrid(item);
 	
-	grid.AddEditVal("- Field of View", camera->GetFOV(), 1, [camera](double fov) {
+	grid.AddEditVal("- Field of View", camera->GetFOV(), 1, 179, [camera](double fov) {
 		camera->SetFOV(fov);
 	});
 }
@@ -234,7 +234,7 @@ void Attribute::ComponentVisitor::Visit(BSDF_Emission::Ptr bsdf) {
 	auto grid = GenGrid(attr->componentType2item[typeid(Material)]);
 	grid.AddTitle("[ BSDF -- Emission ]");
 	grid.AddEditColor("- Color", bsdf->color);
-	grid.AddEditVal("- Intensity", bsdf->intensity, 0.1);
+	grid.AddEditVal("- Intensity", bsdf->intensity, 0, 10, 1000);
 }
 
 void Attribute::ComponentVisitor::Visit(BSDF_Glass::Ptr bsdf) {
@@ -257,15 +257,15 @@ void Attribute::ComponentVisitor::Visit(BSDF_CookTorrance::Ptr bsdf) {
 	grid.AddEditColor("- Reflectance", bsdf->refletance);
 	grid.AddEditColor("- Albedo", bsdf->albedo);
 	grid.AddEditVal("- Index of Refract", bsdf->ior, 0.01);
-	grid.AddEditVal("- Roughness", bsdf->m, 0.01);
+	grid.AddEditVal("- Roughness", bsdf->m, 0, 1, 100);
 }
 
 void Attribute::ComponentVisitor::Visit(BSDF_MetalWorkflow::Ptr bsdf) {
 	auto grid = GenGrid(attr->componentType2item[typeid(Material)]);
 	grid.AddTitle("[ BSDF -- Metal Workflow ]");
 	grid.AddEditColor("- Albedo Color", bsdf->albedoColor);
-	grid.AddEditVal("- Metallic Factor", bsdf->metallicFactor, 0.01);
-	grid.AddEditVal("- Roughness Factor", bsdf->roughnessFactor, 0.01);
+	grid.AddEditVal("- Metallic Factor", bsdf->metallicFactor, 0, 1, 100);
+	grid.AddEditVal("- Roughness Factor", bsdf->roughnessFactor, 0, 1, 100);
 }
 
 // -------------- Light --------------

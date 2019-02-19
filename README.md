@@ -83,7 +83,6 @@ cmake .. -Wno-dev
   - [ ] 线程化（不要用OpenMP）
 - [ ] 光线追踪新增功能
   - [x] Cook Torrance BRDF
-
   - [x] 金属工作流
 
     - [x] 基础公式
@@ -93,10 +92,12 @@ cmake .. -Wno-dev
       - [x] roughness
       - [x] ao
       - [x] normal
-
   - [ ] 低差异序列
-
-- [ ] json 场景文件
-- [ ] 场景编辑
+  - [ ] 景深
+- [ ] 引擎新增功能
+  - [ ] json 场景文件
+  - [ ] 场景编辑
+  - [ ] 统一相机
 - [ ] 优化实时渲染
+- [ ] 
 

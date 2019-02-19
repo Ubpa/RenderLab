@@ -23,6 +23,16 @@ namespace Ui {
 			AddEditVal(text, val, singleStep, [&val](double v) {val = v; });
 		}
 
+		// slider
+		void AddEditVal(const QString & text, double val, double minVal , double maxVal, int stepNum, const std::function<void(double)> & slot);
+		void AddEditVal(const QString & text, int val, int minVal, int maxVal, const std::function<void(int)> & slot) {
+			AddEditVal(text, val, minVal, maxVal, maxVal - minVal, slot);
+		}
+		template <typename numT>
+		void AddEditVal(const QString & text, numT & val, double minVal, double maxVal, int stepNum) {
+			AddEditVal(text, val, minVal, maxVal, stepNum, [&val](double v) {val = v; });
+		}
+
 		// textlabel
 		void AddShowText(const QString & left, const QString & right);
 		
@@ -31,6 +41,10 @@ namespace Ui {
 
 		// color : [0, 1] x 3
 		void AddEditColor(const QString & text, glm::vec3 & color);
+
+	private:
+		void AddLine(const QString & text, QWidget * widget);
+		void AddLine(QWidget * widgetLeft, QWidget * widgetRight);
 
 	private:
 		QWidget * page;

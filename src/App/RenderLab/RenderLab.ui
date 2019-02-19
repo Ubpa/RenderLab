@@ -155,7 +155,7 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>274</width>
+          <width>232</width>
           <height>722</height>
          </rect>
         </property>
@@ -181,6 +181,13 @@
            </item>
            <item row="1" column="1">
             <widget class="QDoubleSpinBox" name="doubleSpinBox"/>
+           </item>
+           <item row="0" column="1">
+            <widget class="QSlider" name="horizontalSlider">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
            </item>
           </layout>
          </item>
