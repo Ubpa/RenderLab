@@ -22,12 +22,14 @@ namespace CppUtil {
 			void Stop();
 			float ProgressRate();
 
+		public:
+			volatile int maxLoop;
+
 		private:
 			Basic::Ptr<RayTracer> rayTracer;
 
 			volatile bool isStop;
-			size_t maxLoop;
-			size_t curLoop;
+			int curLoop;
 		};
 	}
 }

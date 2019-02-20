@@ -25,8 +25,8 @@ namespace CppUtil {
 			virtual glm::vec3 Trace(Basic::Ptr<Ray> ray, int depth);
 		
 		public:
-			int sampleNumForAreaLight;
-			int maxDepth;
+			volatile int sampleNumForAreaLight;
+			volatile int maxDepth;
 
 		private:
 			std::vector<Basic::Ptr<LightBase>> lights;

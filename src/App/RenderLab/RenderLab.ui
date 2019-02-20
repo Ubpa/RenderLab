@@ -101,7 +101,7 @@
    <property name="minimumSize">
     <size>
      <width>250</width>
-     <height>113</height>
+     <height>161</height>
     </size>
    </property>
    <property name="features">
@@ -117,9 +117,23 @@
     <number>1</number>
    </attribute>
    <widget class="QWidget" name="dc_Setting">
-    <layout class="QHBoxLayout" name="horizontalLayout_3">
+    <layout class="QVBoxLayout" name="verticalLayout_5">
      <item>
-      <widget class="QListView" name="listView"/>
+      <widget class="QScrollArea" name="sa_Setting">
+       <property name="widgetResizable">
+        <bool>true</bool>
+       </property>
+       <widget class="QWidget" name="scrollAreaWidgetContents">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>254</width>
+          <height>478</height>
+         </rect>
+        </property>
+       </widget>
+      </widget>
      </item>
     </layout>
    </widget>
@@ -128,7 +142,7 @@
    <property name="minimumSize">
     <size>
      <width>250</width>
-     <height>161</height>
+     <height>169</height>
     </size>
    </property>
    <property name="features">
@@ -206,6 +220,13 @@
                <string>新建项目</string>
               </property>
              </item>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="Line" name="line">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
             </widget>
            </item>
           </layout>

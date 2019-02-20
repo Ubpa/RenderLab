@@ -3,9 +3,7 @@
 
 #include <CppUtil/Basic/HeapObj.h>
 
-#include <qgridlayout.h>
-#include <QtWidgets/QDoubleSpinBox>
-#include <qcombobox.h>
+#include <qstring.h>
 
 #include <glm/vec3.hpp>
 
@@ -13,6 +11,9 @@
 #include <map>
 
 class QLabel;
+class QWidget;
+class QGridLayout;
+class QComboBox;
 
 namespace CppUtil {
 	namespace Basic {
@@ -24,25 +25,35 @@ namespace Ui {
 	class Grid : public CppUtil::Basic::HeapObj {
 		HEAP_OBJ_SETUP(Grid)
 	public:
-		Grid(QWidget * page, QGridLayout * gridLayout)
-			:page(page), gridLayout(gridLayout) { }
+		Grid() : isInit(false), page(nullptr), gridLayout(nullptr) { }
+		Grid(QWidget * page);
+
+		void Init(QWidget * page);
 
 		// spinbox
 		void AddEditVal(const std::string & text, double val, double singleStep, const std::function<void(double)> & slot);
 		template <typename numT>
-		void AddEditVal(const std::string & text, numT & val, double singleStep) {
+		void AddEditVal(const std::string & text, volatile numT & val, double singleStep) {
 			AddEditVal(text, val, singleStep, [&val](double v) {val = v; });
+		}
+		void AddEditVal(const std::string & text, int val, const std::function<void(int)> & slot);
+		void AddEditVal(const std::string & text, volatile int & val) {
+			AddEditVal(text, val, [&val](int v) {val = v; });
 		}
 
 		// slider
 		void AddEditVal(const std::string & text, double val, double minVal , double maxVal, int stepNum, const std::function<void(double)> & slot);
-		void AddEditVal(const std::string & text, int val, int minVal, int maxVal, const std::function<void(int)> & slot) {
-			AddEditVal(text, val, minVal, maxVal, maxVal - minVal, slot);
+		void AddEditVal(const std::string & text, int val, int minVal, int maxVal, const std::function<void(int)> & slot);
+		void AddEditVal(const std::string & text, volatile int & val, int minVal, int maxVal) {
+			AddEditVal(text, val, minVal, maxVal, [&val](int v) {val = v; });
 		}
 		template <typename numT>
-		void AddEditVal(const std::string & text, numT & val, double minVal, double maxVal, int stepNum) {
+		void AddEditVal(const std::string & text, volatile numT & val, double minVal, double maxVal, int stepNum) {
 			AddEditVal(text, val, minVal, maxVal, stepNum, [&val](double v) {val = v; });
 		}
+
+		// checkbox
+		void AddEditVal(const std::string & text, volatile bool & val);
 
 		// text
 		void AddText(const std::string & left, const std::string & right);
@@ -57,23 +68,26 @@ namespace Ui {
 		typedef std::map<std::string, std::function<void()>> SlotMap;
 		typedef std::shared_ptr<std::map<std::string, std::function<void()>>> pSlotMap;
 		bool AddComboBox(QComboBox * combobox, const std::string & text, const std::string & curText, pSlotMap slotMap);
-		bool AddComboBox(const std::string & text, const std::string & curText, pSlotMap slotMap) {
-			return AddComboBox(new QComboBox, text, curText, slotMap);
-		}
+		bool AddComboBox(const std::string & text, const std::string & curText, pSlotMap slotMap);
 
 		// image
 		void AddEditImage(const std::string & text, CppUtil::Basic::CPtr<CppUtil::Basic::Image> img, const std::function<void(CppUtil::Basic::Ptr<CppUtil::Basic::Image>)> & slot);
 
 		// clear and delete
 		void Clear();
+
+		// line
+		void AddLine();
+		void AddTitle(const std::string & text);
 	private:
-		void AddLine(const std::string & text, QWidget * widget);
-		void AddLine(QWidget * widgetLeft, QWidget * widgetRight = nullptr);
+		void AddRow(const std::string & text, QWidget * widget = nullptr);
+		void AddRow(QWidget * widgetLeft, QWidget * widgetRight = nullptr);
 
 		static bool SetImgLabel(QLabel * imgLabel, CppUtil::Basic::CPtr<CppUtil::Basic::Image> img);
 		static void ClearImgLabel(QLabel * imgLabel);
 
 	private:
+		bool isInit;
 		QWidget * page;
 		QGridLayout * gridLayout;
 	};

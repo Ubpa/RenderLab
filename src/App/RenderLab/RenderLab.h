@@ -13,6 +13,8 @@ namespace CppUtil {
 	namespace Engine {
 		class Scene;
 		class Viewer;
+		class RTX_Renderer;
+		class PathTracer;
 	}
 }
 
@@ -37,8 +39,13 @@ private slots:
 	void UI_Op(CppUtil::Basic::Ptr<CppUtil::Basic::Operation> op);
 
 private:
+	void InitSetting();
+
+private:
 	Ui::RenderLabClass ui;
 	CppUtil::Basic::Ptr<CppUtil::Qt::PaintImgOpCreator::PaintImgOp> paintImgOp;
 	CppUtil::Basic::Ptr<CppUtil::Engine::Scene> scene;
 	CppUtil::Basic::Ptr<CppUtil::Engine::Viewer> viewer;
+	CppUtil::Basic::Ptr<CppUtil::Engine::RTX_Renderer> rtxRenderer;
+	CppUtil::Basic::Ptr<CppUtil::Engine::PathTracer> pathTracer;
 };

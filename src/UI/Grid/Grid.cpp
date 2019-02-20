@@ -3,24 +3,50 @@
 #include <CppUtil/Basic/Image.h>
 
 #include <qlabel.h>
-#include <sstream>
+#include <qgridlayout.h>
+#include <QtWidgets/QDoubleSpinBox>
+#include <QtWidgets/qspinbox.h>
+#include <qcombobox.h>
 #include <qpushbutton.h>
 #include <qcolordialog.h>
 #include <qfiledialog.h>
 #include <qslider.h>
+#include <qcheckbox.h>
+
+#include <sstream>
 
 using namespace CppUtil::Basic;
 using namespace Ui;
 using namespace std;
 
-void Grid::AddLine(const string & text, QWidget * widget) {
+Grid::Grid(QWidget * page)
+	: isInit(false) {
+	Init(page);
+}
+
+void Grid::Init(QWidget * page) {
+	if (isInit)
+		return;
+
+	this->page = page;
+
+	auto vboxLayout = new QVBoxLayout(page);
+	gridLayout = new QGridLayout();
+	auto verticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+	vboxLayout->addLayout(gridLayout);
+	vboxLayout->addItem(verticalSpacer);
+
+	isInit = true;
+}
+
+void Grid::AddRow(const string & text, QWidget * widget) {
 	auto label = new QLabel;
 	label->setText(QString::fromStdString(text));
 
-	AddLine(label, widget);
+	AddRow(label, widget);
 }
 
-void Grid::AddLine(QWidget * widgetLeft, QWidget * widgetRight) {
+void Grid::AddRow(QWidget * widgetLeft, QWidget * widgetRight) {
 	int row = gridLayout->rowCount();
 	if (widgetLeft != nullptr)
 		gridLayout->addWidget(widgetLeft, row, 0);
@@ -38,7 +64,7 @@ void Grid::Clear() {
 }
 
 void Grid::AddText(const string & title) {
-	AddLine(title, nullptr);
+	AddRow(title, nullptr);
 }
 
 void Grid::AddEditVal(const string & text, double val, double singleStep, const function<void(double)> & slot) {
@@ -51,11 +77,23 @@ void Grid::AddEditVal(const string & text, double val, double singleStep, const 
 	void (QDoubleSpinBox::*signalFunc)(double) = &QDoubleSpinBox::valueChanged;
 	page->connect(spinbox, signalFunc, slot);
 
-	AddLine(text, spinbox);
+	AddRow(text, spinbox);
+}
+
+void Grid::AddEditVal(const string & text, int val, const function<void(int)> & slot) {
+	auto spinbox = new QSpinBox;
+	spinbox->setMaximum(INT_MAX);
+	spinbox->setMaximum(INT_MIN);
+	spinbox->setSingleStep(1);
+	spinbox->setValue(val);
+
+	void (QSpinBox::*signalFunc)(int) = &QSpinBox::valueChanged;
+	page->connect(spinbox, signalFunc, slot);
+
+	AddRow(text, spinbox);
 }
 
 void Grid::AddEditVal(const string & text, double val, double minVal, double maxVal, int stepNum, const std::function<void(double)> & slot) {
-
 	double d_step = (maxVal - minVal) / stepNum;
 	int i_val = (val - minVal) / d_step;
 	auto horizontalSlider = new QSlider;
@@ -87,14 +125,58 @@ void Grid::AddEditVal(const string & text, double val, double minVal, double max
 	});
 
 	AddText(text);
-	AddLine(spinbox, horizontalSlider);
+	AddRow(spinbox, horizontalSlider);
+}
+
+void Grid::AddEditVal(const std::string & text, int val, int minVal, int maxVal, const std::function<void(int)> & slot) {
+	auto horizontalSlider = new QSlider;
+	horizontalSlider->setOrientation(Qt::Horizontal);
+	horizontalSlider->setMinimum(minVal);
+	horizontalSlider->setMaximum(maxVal);
+	horizontalSlider->setValue(val);
+
+	auto spinbox = new QSpinBox;
+	spinbox->setMinimum(minVal);
+	spinbox->setMaximum(maxVal);
+	spinbox->setSingleStep(1);
+	spinbox->setValue(val);
+
+	void (QSlider::*signalFunc0)(int) = &QSlider::valueChanged;
+	page->connect(horizontalSlider, signalFunc0, [=](int val) {
+		spinbox->setValue(val);
+		slot(val);
+	});
+
+	void (QSpinBox::*signalFunc1)(int) = &QSpinBox::valueChanged;
+	page->connect(spinbox, signalFunc1, [=](int val) {
+		horizontalSlider->setValue(val);
+		slot(val);
+	});
+
+	AddText(text);
+	AddRow(spinbox, horizontalSlider);
+}
+
+void Grid::AddEditVal(const string & text, volatile bool & val) {
+	auto checkbox = new QCheckBox;
+	checkbox->setChecked(val);
+	checkbox->setText(QString::fromStdString(text));
+
+	page->connect(checkbox, &QCheckBox::stateChanged, [&](int state) {
+		if (state == Qt::Unchecked)
+			val = false;
+		else if (state == Qt::Checked)
+			val = true;
+	});
+
+	AddRow(checkbox);
 }
 
 void Grid::AddText(const string & left, const string & right) {
 	auto label1 = new QLabel;
 	label1->setText(QString::fromStdString(right));
 
-	AddLine(left, label1);
+	AddRow(left, label1);
 }
 
 void Grid::AddEditColor(const string & text, glm::vec3 & color) {
@@ -117,7 +199,7 @@ void Grid::AddEditColor(const string & text, glm::vec3 & color) {
 		button->setStyleSheet(QString::fromStdString(stylesheet.str()));
 	});
 
-	AddLine(text, button);
+	AddRow(text, button);
 }
 
 bool Grid::AddComboBox(QComboBox * combobox, const std::string & text, const std::string & curText, pSlotMap slotMap) {
@@ -144,9 +226,13 @@ bool Grid::AddComboBox(QComboBox * combobox, const std::string & text, const std
 		target->second();
 	});
 
-	AddLine(text, combobox);
+	AddRow(text, combobox);
 
 	return true;
+}
+
+bool Grid::AddComboBox(const string & text, const string & curText, pSlotMap slotMap) {
+	return AddComboBox(new QComboBox, text, curText, slotMap);
 }
 
 void Grid::AddEditImage(const string & text, Image::CPtr img, const function<void(Image::Ptr)> & slot) {
@@ -180,8 +266,10 @@ void Grid::AddEditImage(const string & text, Image::CPtr img, const function<voi
 		slot(nullptr);
 	});
 
-	AddLine(text, loadImgBtn);
-	AddLine(imgLabel, clearImgBtn);
+	AddText(text);
+	AddRow(imgLabel);
+	AddRow(loadImgBtn);
+	AddRow(clearImgBtn);
 }
 
 bool Grid::SetImgLabel(QLabel * imgLabel, Image::CPtr img) {
@@ -221,4 +309,23 @@ void Grid::ClearImgLabel(QLabel * imgLabel) {
 	QPixmap imgIcon;
 	imgIcon.convertFromImage(qImg.scaled(32, 32, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
 	imgLabel->setPixmap(imgIcon);
+}
+
+void Grid::AddLine() {
+	auto line0 = new QFrame();
+	line0->setObjectName(QString::fromUtf8("line"));
+	line0->setFrameShape(QFrame::HLine);
+	line0->setFrameShadow(QFrame::Sunken);
+
+	auto line1 = new QFrame();
+	line1->setObjectName(QString::fromUtf8("line"));
+	line1->setFrameShape(QFrame::HLine);
+	line1->setFrameShadow(QFrame::Sunken);
+
+	AddRow(line0, line1);
+}
+
+void Grid::AddTitle(const std::string & text) {
+	AddLine();
+	AddRow(text);
 }

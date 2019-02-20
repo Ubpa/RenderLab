@@ -61,6 +61,7 @@ void RTX_Renderer::Run(Image::Ptr img) {
 			ray->Transform(cam2world);
 			vec3 rst = rayTracer->Trace(ray);
 			fimg[x][y] += rst;
+
 			img->SetPixel(x, y, sqrt(fimg[x][y] / float(curLoop + 1)));
 		}
 

@@ -2,6 +2,7 @@
 
 #include <UI/Hierarchy.h>
 #include <UI/Attribute.h>
+#include <UI/Setting.h>
 
 #include <CppUtil/Qt/PaintImgOpCreator.h>
 #include <CppUtil/Qt/OpThread.h>
@@ -60,8 +61,13 @@ RenderLab::RenderLab(QWidget *parent)
 	PaintImgOpCreator pioc(ui.OGLW_RayTracer);
 	paintImgOp = pioc.GenScenePaintOp();
 
+	pathTracer = ToPtr(new PathTracer(scene));
+
+	rtxRenderer = ToPtr(new RTX_Renderer(pathTracer));
+
 	Hierarchy::GetInstance()->Init(scene, ui.tree_Hierarchy);
 	Attribute::GetInstance()->Init(ui.tbox_Attribute);
+	InitSetting();
 }
 
 void RenderLab::on_btn_RenderStart_clicked(){
@@ -72,17 +78,13 @@ void RenderLab::on_btn_RenderStart_clicked(){
 	OpThread::Ptr drawImgThread = ToPtr(new OpThread);
 	drawImgThread->UIConnect(this, &RenderLab::UI_Op);
 
-	auto drawImgOp = ToPtr(new LambdaOp([this, drawImgThread]() {
+	auto drawImgOp = ToPtr(new LambdaOp([=]() {
 		paintImgOp->SetOp(1024, 768);
 		auto img = paintImgOp->GetImg();
 
-		auto pathTracer = ToPtr(new PathTracer(this->GetScene()));
-
-		auto rtxRenderer = ToPtr(new RTX_Renderer(pathTracer));
-
 		OpThread::Ptr controller = ToPtr(new OpThread);
 		controller->UIConnect(this, &RenderLab::UI_Op);
-		auto controllOp = ToPtr(new LambdaOp([this, drawImgThread, controller, rtxRenderer]() {
+		auto controllOp = ToPtr(new LambdaOp([=]() {
 			while (!drawImgThread->IsStop()) {
 				controller->UI_Op_Run([&, this]() {
 					ui.rtxProgress->setValue(rtxRenderer->ProgressRate() * ui.rtxProgress->maximum());
@@ -96,7 +98,7 @@ void RenderLab::on_btn_RenderStart_clicked(){
 
 		rtxRenderer->Run(img);
 		controller->terminate();
-		drawImgThread->UI_Op_Run([this, rtxRenderer]() {
+		drawImgThread->UI_Op_Run([=]() {
 			ui.btn_RenderStart->setEnabled(true);
 			ui.btn_RenderStop->setEnabled(false);
 			ui.rtxProgress->setValue(rtxRenderer->ProgressRate() * ui.rtxProgress->maximum());
@@ -148,4 +150,16 @@ void RenderLab::UI_Op(Operation::Ptr op) {
 void RenderLab::on_tree_Hierarchy_itemClicked(QTreeWidgetItem *item, int column) {
 	auto sobj = Hierarchy::GetInstance()->GetSObj(item);
 	Attribute::GetInstance()->SetSObj(sobj);
+}
+
+void RenderLab::InitSetting() {
+	auto setting = Setting::GetInstance();
+	setting->Init(ui.sa_Setting);
+
+	setting->AddTitle("[ RTX_Renderer ]");
+	setting->AddEditVal("- Sample Num", rtxRenderer->maxLoop, 1, 400);
+	
+	setting->AddTitle("[ PathTracer ]");
+	setting->AddEditVal("- Max Depth", pathTracer->maxDepth, 1, 20);
+	setting->AddEditVal("- Samples On Light", pathTracer->sampleNumForAreaLight, 1, 16);
 }

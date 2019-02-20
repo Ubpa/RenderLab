@@ -93,13 +93,7 @@ private:
 		if (target != attr->item2grid.end())
 			return target->second;
 
-		auto vboxLayout = new QVBoxLayout(item);
-		auto gridLayout = new QGridLayout();
-		auto verticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
-		vboxLayout->addLayout(gridLayout);
-		vboxLayout->addItem(verticalSpacer);
-
-		auto grid = ToPtr(new Grid(item, gridLayout));
+		auto grid = ToPtr(new Grid(item));
 		attr->item2grid[item] = grid;
 
 		return grid;
