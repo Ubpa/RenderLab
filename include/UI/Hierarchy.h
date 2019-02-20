@@ -1,5 +1,5 @@
-#ifndef _UI_HIERARCHY_H_
-#define _UI_HIERARCHY_H_
+#ifndef _UI_HIERARCHY_HIERARCHY_H_
+#define _UI_HIERARCHY_HIERARCHY_H_
 
 #include <CppUtil/Basic/HeapObj.h>
 
@@ -28,6 +28,7 @@ namespace Ui {
 	public:
 		void Init(CppUtil::Basic::Ptr<CppUtil::Engine::Scene> scene, QTreeWidget * tree);
 		void SetScene(CppUtil::Basic::Ptr<CppUtil::Engine::Scene> scene);
+		void Move(QTreeWidgetItem * item, QTreeWidgetItem * parent);
 
 		CppUtil::Basic::Ptr<CppUtil::Engine::SObj> GetSObj(QTreeWidgetItem * item) {
 			return item2sobj[item];
@@ -48,4 +49,4 @@ namespace Ui {
 	};
 }
 
-#endif//!_UI_HIERARCHY_H_
+#endif//!_UI_HIERARCHY_HIERARCHY_H_

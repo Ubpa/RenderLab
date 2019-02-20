@@ -35,6 +35,13 @@ private slots:
 	void on_btn_SaveRayTracerImg_clicked();
 
 	void on_tree_Hierarchy_itemClicked(QTreeWidgetItem *item, int column);
+	void on_tree_Hierarchy_itemPressed(QTreeWidgetItem *item, int column);
+	void on_tree_Hierarchy_itemEntered(QTreeWidgetItem *item, int column);
+	void on_tree_Hierarchy_itemActivated(QTreeWidgetItem *item, int column);
+	void on_tree_Hierarchy_itemDoubleClicked(QTreeWidgetItem *item, int column);
+	void on_tree_Hierarchy_itemSelectionChanged();
+	void on_tree_Hierarchy_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
+	void on_tree_Hierarchy_itemChanged(QTreeWidgetItem *item, int column);
 
 	void UI_Op(CppUtil::Basic::Ptr<CppUtil::Basic::Operation> op);
 
@@ -48,4 +55,7 @@ private:
 	CppUtil::Basic::Ptr<CppUtil::Engine::Viewer> viewer;
 	CppUtil::Basic::Ptr<CppUtil::Engine::RTX_Renderer> rtxRenderer;
 	CppUtil::Basic::Ptr<CppUtil::Engine::PathTracer> pathTracer;
+
+private:
+	QTreeWidgetItem * needDragItem;
 };

@@ -20,3 +20,17 @@ void Node::DelChild(Node::Ptr child) {
 void Node::SetParent(Node::Ptr parent) {
 	parent->AddChild(This());
 }
+
+bool Node::IsAncestorOf(Node::CPtr node) const {
+	return node->IsDescendantOf(CThis());
+}
+
+bool Node::IsDescendantOf(Node::CPtr node) const {
+	if (CThis() == node)
+		return true;
+
+	if (parent.expired())
+		return false;
+
+	return parent.lock()->IsDescendantOf(node);
+}

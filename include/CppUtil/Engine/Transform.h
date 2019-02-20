@@ -43,6 +43,8 @@ namespace CppUtil {
 			void Translate(const glm::vec3 & translation);
 			void LookAt(const glm::vec3 & eye, const glm::vec3 & center, const glm::vec3 & up = glm::vec3(0,1,0));
 
+			void SetMatrix(const glm::mat4 & matrix);
+
 			void SetDirty() { dirtyMat = true; dirtyInv = true; dirtyNormMat = true; }
 
 		private:

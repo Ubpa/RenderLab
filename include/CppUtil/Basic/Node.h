@@ -38,6 +38,9 @@ namespace CppUtil {
 			Node::Ptr GetParent() const { return parent.lock(); }
 			const std::set<Node::Ptr> & GetChildren() const { return children; }
 
+			bool IsAncestorOf(Node::CPtr node) const;
+			bool IsDescendantOf(Node::CPtr node) const;
+
 		private:
 			Node::WPtr parent;
 			std::set<Node::Ptr> children;

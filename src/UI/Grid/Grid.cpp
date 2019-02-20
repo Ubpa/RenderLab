@@ -17,6 +17,7 @@
 
 using namespace CppUtil::Basic;
 using namespace Ui;
+using namespace glm;
 using namespace std;
 
 Grid::Grid(QWidget * page)
@@ -182,7 +183,10 @@ void Grid::AddText(const string & left, const string & right) {
 void Grid::AddEditColor(const string & text, glm::vec3 & color) {
 	auto button = new QPushButton;
 	stringstream stylesheet;
-	stylesheet << "background-color: rgb(" << 255 * color.r << ", " << 255 * color.g << ", " << 255 * color.b << ");";
+	stylesheet << "background-color: rgb(" <<
+		clamp<int>(255 * color.r, 0, 255) << ", " <<
+		clamp<int>(255 * color.g, 0, 255) << ", " <<
+		clamp<int>(255 * color.b, 0, 255) << ");";
 	button->setStyleSheet(QString::fromStdString(stylesheet.str()));
 
 	page->connect(button, &QPushButton::clicked, [&color, button]() {
@@ -193,7 +197,7 @@ void Grid::AddEditColor(const string & text, glm::vec3 & color) {
 		color.r = qcolor.red() / 255.0f;
 		color.g = qcolor.green() / 255.0f;
 		color.b = qcolor.blue() / 255.0f;
-		printf("color : (%f, %f, %f)\n", color.r, color.g, color.b);
+
 		stringstream stylesheet;
 		stylesheet << "background-color: rgb(" << int(255 * color.r) << ", " << int(255 * color.g) << ", " << int(255 * color.b) << ");";
 		button->setStyleSheet(QString::fromStdString(stylesheet.str()));

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1565</width>
+    <width>1560</width>
     <height>911</height>
    </rect>
   </property>
@@ -49,7 +49,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1565</width>
+     <width>1560</width>
      <height>23</height>
     </rect>
    </property>
@@ -83,7 +83,7 @@
    <widget class="QWidget" name="dc_Hierarchy">
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
-      <widget class="QTreeWidget" name="tree_Hierarchy">
+      <widget class="Ui::Tree" name="tree_Hierarchy">
        <attribute name="headerVisible">
         <bool>false</bool>
        </attribute>
@@ -119,20 +119,13 @@
    <widget class="QWidget" name="dc_Setting">
     <layout class="QVBoxLayout" name="verticalLayout_5">
      <item>
-      <widget class="QScrollArea" name="sa_Setting">
-       <property name="widgetResizable">
-        <bool>true</bool>
+      <widget class="QFrame" name="frame_Setting">
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
        </property>
-       <widget class="QWidget" name="scrollAreaWidgetContents">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>0</y>
-          <width>254</width>
-          <height>478</height>
-         </rect>
-        </property>
-       </widget>
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
+       </property>
       </widget>
      </item>
     </layout>
@@ -162,7 +155,7 @@
      <item>
       <widget class="QToolBox" name="tbox_Attribute">
        <property name="currentIndex">
-        <number>0</number>
+        <number>1</number>
        </property>
        <widget class="QWidget" name="page">
         <property name="geometry">
@@ -179,30 +172,6 @@
         <layout class="QVBoxLayout" name="verticalLayout_4">
          <item>
           <layout class="QGridLayout" name="gridLayout">
-           <item row="0" column="0">
-            <widget class="QLabel" name="label">
-             <property name="text">
-              <string>TextLabel</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="QSlider" name="horizontalSlider">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0">
-            <widget class="QLabel" name="label_2">
-             <property name="text">
-              <string>TextLabel</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1">
-            <widget class="QDoubleSpinBox" name="doubleSpinBox"/>
-           </item>
            <item row="2" column="1">
             <widget class="QComboBox" name="comboBox">
              <item>
@@ -222,10 +191,27 @@
              </item>
             </widget>
            </item>
-           <item row="2" column="0">
-            <widget class="Line" name="line">
+           <item row="1" column="0">
+            <widget class="QLabel" name="label_2">
+             <property name="text">
+              <string>TextLabel</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QDoubleSpinBox" name="doubleSpinBox"/>
+           </item>
+           <item row="0" column="1">
+            <widget class="QSlider" name="horizontalSlider">
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLabel" name="label">
+             <property name="text">
+              <string>TextLabel</string>
              </property>
             </widget>
            </item>
@@ -394,6 +380,11 @@ font: 15pt &quot;Consolas&quot;;
    <class>CppUtil::Qt::RawAPI_OGLW</class>
    <extends>QOpenGLWidget</extends>
    <header location="global">CppUtil/Qt/RawAPI_OGLW.h</header>
+  </customwidget>
+  <customwidget>
+   <class>Ui::Tree</class>
+   <extends>QTreeWidget</extends>
+   <header location="global">UI/Tree.h</header>
   </customwidget>
  </customwidgets>
  <resources>

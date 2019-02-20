@@ -483,8 +483,6 @@ void Attribute::AddController() {
 	const int componentNum = 5;
 	vector<string> componentNames{ "Camera" , "Geometry", "Light", "Material", "Transform" };
 
-	// Add
-
 	vector<function<Component::Ptr()>> componentGenFuncs{
 		[=]()->Component::Ptr { return ToPtr(new Camera(nullptr)); },
 		[=]()->Component::Ptr { return ToPtr(new Geometry(nullptr, nullptr)); },

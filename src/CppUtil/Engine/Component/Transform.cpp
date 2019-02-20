@@ -83,3 +83,25 @@ void Transform::LookAt(const vec3 & eye, const vec3 & center, const vec3 & up) {
 	scale = vec3(1, 1, 1);
 	rotation = quat_cast(mat);
 }
+
+void Transform::SetMatrix(const glm::mat4 & matrix) {
+	mat = matrix;
+	dirtyMat = false;
+	dirtyInv = true;
+
+	position[0] = matrix[3][0];
+	position[1] = matrix[3][1];
+	position[2] = matrix[3][2];
+
+	mat3x3 mat33(matrix);
+
+	scale[0] = length(mat33[0]);
+	scale[1] = length(mat33[1]);
+	scale[2] = length(mat33[2]);
+
+	mat33[0] /= scale[0];
+	mat33[1] /= scale[1];
+	mat33[2] /= scale[2];
+
+	rotation = quat_cast(mat33);
+}

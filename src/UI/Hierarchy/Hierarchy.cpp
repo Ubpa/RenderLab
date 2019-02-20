@@ -4,6 +4,7 @@
 
 #include <CppUtil/Engine/Scene.h>
 #include <CppUtil/Engine/SObj.h>
+#include <CppUtil/Engine/Transform.h>
 
 #include <CppUtil/Basic/EleVisitor.h>
 
@@ -58,4 +59,30 @@ void Hierarchy::SetScene(CppUtil::Basic::Ptr<CppUtil::Engine::Scene> scene) {
 void Hierarchy::Init(Scene::Ptr scene, QTreeWidget * tree) {
 	this->tree = tree;
 	SetScene(scene);
+}
+
+void Hierarchy::Move(QTreeWidgetItem * item, QTreeWidgetItem * parent) {
+	auto sobj = GetSObj(item);
+	auto parentSObj = GetSObj(parent);
+	if (sobj->IsAncestorOf(parentSObj) || sobj->GetParent() == parentSObj)
+		return;
+
+	//printf("%s to %s\n", sobj->name.c_str(), parentSObj->name.c_str());
+
+	auto parentOfItem = sobj2item[sobj->GetParent()];
+	parentOfItem->takeChild(parentOfItem->indexOfChild(item));
+	parent->addChild(item);
+
+	auto sobjL2W = sobj->GetLocalToWorldMatrix();
+	auto parentW2L = parentSObj->GetWorldToLocalMatrix();
+
+	auto transform = sobj->GetComponent<Transform>();
+	if (!transform)
+		transform = ToPtr(new Transform(sobj));
+
+	transform->SetMatrix(parentW2L * sobjL2W);
+
+	sobj->SetParent(parentSObj);
+
+	//SetScene(scene);
 }
