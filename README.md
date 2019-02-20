@@ -65,7 +65,7 @@ cmake .. -Wno-dev
   - [x] Viewer
   - [x] Raster
   - [x] Roamer（把 Viewer 中的相机相关部分抽出）
-- [ ] 实装UI功能（查看，编辑）
+- [x] 实装UI功能（查看，编辑）
   - [x] 层次面板
   - [x] 属性面板（展示 component）
     - [x] 基础框架
@@ -74,7 +74,7 @@ cmake .. -Wno-dev
     - [x] Material
     - [x] Light
   - [x] 选择器 Picker
-  - [ ] 设置面板
+  - [x] 设置面板
 - [ ] 优化光线追踪
   - [x] 噪点异常
   - [x] 降噪（OptixAIDenoiser）
@@ -105,7 +105,8 @@ cmake .. -Wno-dev
   - [x] 滑动条
   - [x] 图片选择
   - [x] 下拉选择（切换材质等）
-  - [ ] 添加 / 删除组件
+  - [x] 添加 / 删除组件
+  - [ ] 添加 / 删除 / 移动（改变父子关系） SObj
 - [ ] 优化实时渲染
 
 

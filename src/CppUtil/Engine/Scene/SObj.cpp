@@ -43,3 +43,10 @@ mat4 SObj::GetLocalToWorldMatrix() {
 	AscendAccept(getMatVisitor);
 	return mat;
 }
+
+bool SObj::HaveComponentSameTypeWith(Component::Ptr ptr) const {
+	if (ptr == nullptr)
+		return false;
+
+	return components.find(typeid(*ptr)) != components.cend();
+}

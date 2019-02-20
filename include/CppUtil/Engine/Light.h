@@ -16,6 +16,7 @@ namespace CppUtil {
 				: Component(sobj), light(light) { }
 
 			Basic::Ptr<LightBase> GetLight() const { return light; }
+			void SetLight(Basic::Ptr<LightBase> light) { this->light = light; }
 			glm::mat4 GetLightToWorldMatrixWithoutScale() const;
 		private:
 			Basic::Ptr<LightBase> light;

@@ -21,18 +21,26 @@ RTX_Renderer::RTX_Renderer(CppUtil::Basic::Ptr<RayTracer> rayTracer)
 	: rayTracer(rayTracer), isStop(false), maxLoop(200), curLoop(0) { }
 
 void RTX_Renderer::Run(Image::Ptr img) {
-#ifdef NDEBUG
-	omp_set_num_threads(omp_get_num_procs() - 1);
-#else
-	omp_set_num_threads(1);
-#endif //  NDEBUG
+	isStop = false;
 
 	int w = img->GetWidth();
 	int h = img->GetHeight();
 
+	for (int i = 0; i < w; i++) {
+		for (int j = 0; j < h; j++)
+			img->SetPixel(i, j, vec3(0));
+	}
+
 	rayTracer->GetScene()->Init();
 	rayTracer->Init();
+
 	auto camera = rayTracer->GetScene()->GetMainCamera();
+	if (camera == nullptr) {
+		curLoop = maxLoop;
+		isStop = true;
+		return;
+	}
+
 	camera->SetAspectRatio(w, h);
 	auto cam2world = camera->GetSObj()->GetLocalToWorldMatrix();
 
@@ -43,6 +51,12 @@ void RTX_Renderer::Run(Image::Ptr img) {
 		for (int j = 0; j < w; j++)
 			fimg[i].push_back(vec3(0));
 	}
+
+#ifdef NDEBUG
+	omp_set_num_threads(omp_get_num_procs() - 1);
+#else
+	omp_set_num_threads(1);
+#endif //  NDEBUG
 
 	for (curLoop = 0; curLoop < maxLoop; ++curLoop) {
 		ImgPixelSet pixSet(w, h);
@@ -68,6 +82,8 @@ void RTX_Renderer::Run(Image::Ptr img) {
 		if (isStop)
 			return;
 	}
+
+	isStop = true;
 }
 
 void RTX_Renderer::Stop() {

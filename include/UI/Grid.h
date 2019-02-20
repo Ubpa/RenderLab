@@ -8,6 +8,7 @@
 #include <glm/vec3.hpp>
 
 #include <functional>
+#include <vector>
 #include <map>
 
 class QLabel;
@@ -67,8 +68,16 @@ namespace Ui {
 		// combobox
 		typedef std::map<std::string, std::function<void()>> SlotMap;
 		typedef std::shared_ptr<std::map<std::string, std::function<void()>>> pSlotMap;
+
 		bool AddComboBox(QComboBox * combobox, const std::string & text, const std::string & curText, pSlotMap slotMap);
 		bool AddComboBox(const std::string & text, const std::string & curText, pSlotMap slotMap);
+
+		void AddComboBox(QComboBox * combobox, const std::string & text, const std::vector<std::string> & items,
+			const std::function<void(const std::string &)> & slot);
+		void AddComboBox(const std::string & text, const std::vector<std::string> & items,
+			const std::function<void(const std::string &)> & slot);
+		void AddComboBox(const std::string & text, const std::vector<std::string> & items, const std::string & btnText,
+			const std::function<void(const std::string &)> & slot);
 
 		// image
 		void AddEditImage(const std::string & text, CppUtil::Basic::CPtr<CppUtil::Basic::Image> img, const std::function<void(CppUtil::Basic::Ptr<CppUtil::Basic::Image>)> & slot);

@@ -84,7 +84,7 @@ private:
 		attr->component2item[component] = item;
 		attr->item2component[item] = component;
 		attr->componentType2item[typeid(*component)] = item;
-		attr->tbox->addItem(item, str);
+		attr->tbox->insertItem(0, item, str);
 		return item;
 	}
 
@@ -251,8 +251,6 @@ void Attribute::ComponentVisitor::Visit(Sphere::Ptr sphere) {
 	auto & center = sphere->center;
 	auto & r = sphere->r;
 
-	grid->AddText("[ Sphere ]");
-
 	grid->AddText("- center");
 	grid->AddEditVal("x", center.x, 0.1);
 	grid->AddEditVal("y", center.y, 0.1);
@@ -263,13 +261,11 @@ void Attribute::ComponentVisitor::Visit(Sphere::Ptr sphere) {
 
 void Attribute::ComponentVisitor::Visit(Plane::Ptr plane) {
 	auto grid = GetGrid(attr->componentType2item[typeid(Geometry)]);
-	grid->AddText("[ Plane ]");
 	grid->AddText("empty");
 }
 
 void Attribute::ComponentVisitor::Visit(TriMesh::Ptr mesh) {
 	auto grid = GetGrid(attr->componentType2item[typeid(Geometry)]);
-	grid->AddText("[ Mesh ]");
 	grid->AddText("- Triangle", mesh->GetIndice().size() / 3);
 	grid->AddText("- Vertex", mesh->GetPositions().size());
 }
@@ -301,7 +297,7 @@ void Attribute::ComponentVisitor::Visit(Material::Ptr material) {
 	});
 
 	const int bsdfNum = 7;
-	tuple<string, BSDF::Ptr(*)()> bsdfArr[bsdfNum] = {
+	tuple<string, function<BSDF::Ptr()>> bsdfArr[bsdfNum] = {
 		{"None", []()->BSDF::Ptr { return nullptr; } },
 		{"BSDF_Diffuse", []()->BSDF::Ptr { return ToPtr(new BSDF_Diffuse); } },
 		{"BSDF_Emission", []()->BSDF::Ptr { return ToPtr(new BSDF_Emission); } },
@@ -391,14 +387,46 @@ void Attribute::ComponentVisitor::Visit(BSDF_MetalWorkflow::Ptr bsdf) {
 // -------------- Light --------------
 
 void Attribute::ComponentVisitor::Visit(Light::Ptr light) {
-	GenItem(light, "Light");
-	if (light->GetLight())
+	auto item = GenItem(light, "Light");
+	auto grid = GetGrid(item);
+
+	auto getTypeStr = ToPtr(new EleVisitor);
+	getTypeStr->Reg<AreaLight>([=](AreaLight::Ptr) {
+		getTypeStr->RegArg("typeStr", "AreaLight");
+	});
+
+	const int lightNum = 2;
+	tuple<string, function<LightBase::Ptr()>> lightArr[lightNum] = {
+		{"None", []()->LightBase::Ptr { return nullptr; } },
+		{"AreaLight", []()->LightBase::Ptr { return ToPtr(new AreaLight); } },
+	};
+
+	Grid::pSlotMap pSlotMap(new Grid::SlotMap);
+
+	for (int i = 0; i < lightNum; i++) {
+		(*pSlotMap)[get<0>(lightArr[i])] = [=]() {
+			grid->Clear();
+			grid->AddComboBox("Type", get<0>(lightArr[i]), pSlotMap);
+
+			auto lightbase = get<1>(lightArr[i])();
+			light->SetLight(lightbase);
+			if (lightbase != nullptr)
+				lightbase->Accept(This());
+		};
+	}
+
+	if (light->GetLight()) {
+		light->GetLight()->Accept(getTypeStr);
+		grid->AddComboBox("Type", getTypeStr->GetArg<string>("typeStr"), pSlotMap);
+
 		light->GetLight()->Accept(This());
+	}
+	else
+		grid->AddComboBox("Type", "None", pSlotMap);
 }
 
 void Attribute::ComponentVisitor::Visit(AreaLight::Ptr light) {
 	auto grid = GetGrid(attr->componentType2item[typeid(Light)]);
-	grid->AddText("[ Light -- Arealight ]");
 	grid->AddEditColor("- Color", light->color);
 	grid->AddEditVal("- Intensity", light->intensity, 0.1);
 	grid->AddEditVal("- Width", light->width, 0.1);
@@ -439,4 +467,103 @@ void Attribute::SetSObj(SObj::Ptr sobj) {
 
 	for (auto component : sobj->GetAllComponents())
 		component->Accept(visitor);
+
+	AddController();
+}
+
+void Attribute::AddController() {
+	auto item = new QWidget;
+	tbox->insertItem(tbox->count(), item, "Controller");
+
+	auto grid = ToPtr(new Grid(item));
+	item2grid[item] = grid;
+
+	grid->AddTitle("[ Component ]");
+
+	const int componentNum = 5;
+	vector<string> componentNames{ "Camera" , "Geometry", "Light", "Material", "Transform" };
+
+	// Add
+
+	vector<function<Component::Ptr()>> componentGenFuncs{
+		[=]()->Component::Ptr { return ToPtr(new Camera(nullptr)); },
+		[=]()->Component::Ptr { return ToPtr(new Geometry(nullptr, nullptr)); },
+		[=]()->Component::Ptr { return ToPtr(new Light(nullptr, nullptr)); },
+		[=]()->Component::Ptr { return ToPtr(new Material(nullptr, nullptr)); },
+		[=]()->Component::Ptr { return ToPtr(new Transform(nullptr)); },
+	};
+
+	vector<function<Component::Ptr()>> componentDelFuncs{
+		[=]()->Component::Ptr {
+			auto component = sobj->GetComponent<Camera>();
+			sobj->DetachComponent<Camera>();
+			return component;
+		},
+		[=]()->Component::Ptr {
+			auto component = sobj->GetComponent<Geometry>();
+			sobj->DetachComponent<Geometry>();
+			return component;
+		},
+		[=]()->Component::Ptr {
+			auto component = sobj->GetComponent<Light>();
+			sobj->DetachComponent<Light>();
+			return component;
+		},
+		[=]()->Component::Ptr {
+			auto component = sobj->GetComponent<Material>();
+			sobj->DetachComponent<Material>();
+			return component;
+		},
+		[=]()->Component::Ptr {
+			auto component = sobj->GetComponent<Transform>();
+			sobj->DetachComponent<Transform>();
+			return component;
+		},
+	};
+
+	map<std::string, function<Component::Ptr()> > componentGenMap;
+	map<std::string, function<Component::Ptr()> > componentDelMap;
+	for (int i = 0; i < componentNum; i++) {
+		componentGenMap[componentNames[i]] = componentGenFuncs[i];
+		componentDelMap[componentNames[i]] = componentDelFuncs[i];
+	}
+
+	auto addBtnSlot = [=](const string & item) {
+		auto target = componentGenMap.find(item);
+		if (target == componentGenMap.cend())
+			return;
+
+		auto component = target->second();
+		if (sobj->HaveComponentSameTypeWith(component))
+			return;
+
+		component->AttachSObj(sobj);
+		component->Accept(visitor);
+	};
+
+	auto delBtnSlot = [=](const string & item) {
+		auto target = componentDelMap.find(item);
+		if (target == componentDelMap.cend())
+			return;
+
+		auto component = target->second();
+		if (component == nullptr)
+			return;
+
+		auto target2 = component2item.find(component);
+		if (target2 == component2item.end())
+			return;
+
+		auto tboxItem = target2->second;
+
+		component2item.erase(component);
+		item2component.erase(tboxItem);
+		item2grid.erase(tboxItem);
+
+		tbox->removeItem(tbox->indexOf(tboxItem));
+		delete tboxItem;
+	};
+
+	grid->AddComboBox("- Add Component", componentNames, "Add", addBtnSlot);
+	grid->AddComboBox("- Delete Component", componentNames, "Delete", delBtnSlot);
 }

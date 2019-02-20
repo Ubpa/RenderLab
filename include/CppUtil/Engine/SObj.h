@@ -23,12 +23,14 @@ namespace CppUtil {
 				: Node(parent), name(name) { }
 
 		public:
-			void AttachComponent(Basic::Ptr<Component> component);
-
 			template<typename T>
 			Basic::Ptr<T> GetComponent(T * useless_parameter = nullptr) const;
 
+			bool HaveComponentSameTypeWith(Basic::Ptr<Component> ptr) const;
+
 			std::vector<Basic::Ptr<Component>> GetAllComponents() const;
+
+			void AttachComponent(Basic::Ptr<Component> component);
 
 			template<typename T>
 			void DetachComponent(T * useless_parameter = nullptr);

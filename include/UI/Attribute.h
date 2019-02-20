@@ -33,6 +33,9 @@ namespace Ui {
 		void SetSObj(CppUtil::Basic::Ptr<CppUtil::Engine::SObj> sobj);
 
 	private:
+		void AddController();
+
+	private:
 		class ComponentVisitor;
 		friend class ComponentVisitor;
 

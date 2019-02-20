@@ -93,7 +93,7 @@ void Grid::AddEditVal(const string & text, int val, const function<void(int)> & 
 	AddRow(text, spinbox);
 }
 
-void Grid::AddEditVal(const string & text, double val, double minVal, double maxVal, int stepNum, const std::function<void(double)> & slot) {
+void Grid::AddEditVal(const string & text, double val, double minVal, double maxVal, int stepNum, const function<void(double)> & slot) {
 	double d_step = (maxVal - minVal) / stepNum;
 	int i_val = (val - minVal) / d_step;
 	auto horizontalSlider = new QSlider;
@@ -128,7 +128,7 @@ void Grid::AddEditVal(const string & text, double val, double minVal, double max
 	AddRow(spinbox, horizontalSlider);
 }
 
-void Grid::AddEditVal(const std::string & text, int val, int minVal, int maxVal, const std::function<void(int)> & slot) {
+void Grid::AddEditVal(const string & text, int val, int minVal, int maxVal, const function<void(int)> & slot) {
 	auto horizontalSlider = new QSlider;
 	horizontalSlider->setOrientation(Qt::Horizontal);
 	horizontalSlider->setMinimum(minVal);
@@ -202,37 +202,68 @@ void Grid::AddEditColor(const string & text, glm::vec3 & color) {
 	AddRow(text, button);
 }
 
-bool Grid::AddComboBox(QComboBox * combobox, const std::string & text, const std::string & curText, pSlotMap slotMap) {
+void Grid::AddComboBox(QComboBox * combobox, const string & text, const vector<string> & items, const function<void(const string &)> & slot) {
+	combobox->clear();
+
+	for (auto item : items)
+		combobox->addItem(QString::fromStdString(item));
+
+	// 只有用户交互才会响应
+	void (QComboBox::*signalFunc)(const QString &) = &QComboBox::activated;
+	page->connect(combobox, signalFunc, [=](const QString & item) {
+		slot(item.toStdString());
+	});
+
+	AddRow(text, combobox);
+}
+
+void Grid::AddComboBox(const string & text, const vector<string> & items, const function<void(const string &)> & slot) {
+	AddComboBox(new QComboBox, text, items, slot);
+}
+
+bool Grid::AddComboBox(QComboBox * combobox, const string & text, const string & curText, pSlotMap slotMap) {
 	if (slotMap->find(curText) == slotMap->cend()) {
 		printf("ERROR: curText is not in slopMap");
 		return false;
 	}
 
-	combobox->clear();
-
+	vector<string> items;
 	for (auto item : *slotMap)
-		combobox->addItem(QString::fromStdString(item.first));
+		items.push_back(item.first);
 
-	combobox->setCurrentText(QString::fromStdString(curText));
-
-	// 只有用户交互才会响应
-	void (QComboBox::*signalFunc)(const QString &) = &QComboBox::activated;
-	page->connect(combobox, signalFunc, [slotMap](const QString & itemText) {
-		string str = itemText.toStdString();
-		auto target = slotMap->find(str);
+	auto slot = [=](const string & item) {
+		auto target = slotMap->find(item);
 		if (target == slotMap->cend())
 			return;
 
 		target->second();
-	});
+	};
 
-	AddRow(text, combobox);
+	AddComboBox(combobox, text, items, slot);
+
+	combobox->setCurrentText(QString::fromStdString(curText));
 
 	return true;
 }
 
 bool Grid::AddComboBox(const string & text, const string & curText, pSlotMap slotMap) {
 	return AddComboBox(new QComboBox, text, curText, slotMap);
+}
+
+void Grid::AddComboBox(const string & text, const vector<string> & items, const string & btnText, const function<void(const string &)> & slot) {
+	auto combobox = new QComboBox;
+
+	for (auto item : items)
+		combobox->addItem(QString::fromStdString(item));
+
+	auto btn = new QPushButton;
+	btn->setText(QString::fromStdString(btnText));
+	page->connect(btn, &QPushButton::clicked, [=]() {
+		slot(combobox->currentText().toStdString());
+	});
+
+	AddRow(text);
+	AddRow(btn, combobox);
 }
 
 void Grid::AddEditImage(const string & text, Image::CPtr img, const function<void(Image::Ptr)> & slot) {
@@ -325,7 +356,7 @@ void Grid::AddLine() {
 	AddRow(line0, line1);
 }
 
-void Grid::AddTitle(const std::string & text) {
+void Grid::AddTitle(const string & text) {
 	AddLine();
 	AddRow(text);
 }
