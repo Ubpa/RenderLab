@@ -5,13 +5,22 @@
 
 #include <CppUtil/Basic/GStorage.h>
 #include <CppUtil/Engine/SObj.h>
+#include <CppUtil/Engine/TriMesh.h>
+#include <CppUtil/Engine/AllComponents.h>
+#include <CppUtil/Engine/AllBSDFs.h>
+#include <CppUtil/Engine/Sphere.h>
+#include <CppUtil/Engine/Plane.h>
+#include <CppUtil/Engine/AreaLight.h>
 
+#include <qmenu.h>
 #include <qdrag.h>
 #include <qevent.h>
 #include <qmimedata.h>
 
-using namespace CppUtil::Basic;
 using namespace Ui;
+using namespace CppUtil::Engine;
+using namespace CppUtil::Basic;
+using namespace glm;
 using namespace std;
 
 Tree::Tree(QWidget *parent)
@@ -155,4 +164,70 @@ void Tree::mouseReleaseEvent(QMouseEvent *event){
 	canDrag = false;
 	needDragItem = nullptr;
 	QTreeWidget::mouseReleaseEvent(event);
+}
+
+void Tree::contextMenuEvent(QContextMenuEvent *event) {
+	QMenu mainMenu;
+
+	if (currentItem() && Hierarchy::GetInstance()->GetSObj(currentItem()) != Hierarchy::GetInstance()->GetRoot()) {
+		mainMenu.addAction("Delete", this, [=]() {
+			Hierarchy::GetInstance()->DeleteSObj();
+		});
+	}
+
+	mainMenu.addAction("Create Empty", this, [=]() {
+		Hierarchy::GetInstance()->CreateSObj("SObj");
+	});
+
+	// gen obj
+	auto genObjMenu = new QMenu;
+	genObjMenu->setTitle("Create 3D Object");
+
+	genObjMenu->addAction("Cube", this, [=]() {
+		auto sobj = Hierarchy::GetInstance()->CreateSObj("Cube");
+		auto transform = ToPtr(new Transform(sobj));
+		auto geometry = ToPtr(new Geometry(sobj, TriMesh::GenCube()));
+		auto material = ToPtr(new Material(sobj, ToPtr(new BSDF_Diffuse)));
+	});
+
+	genObjMenu->addAction("Sphere", this, [=]() {
+		auto sobj = Hierarchy::GetInstance()->CreateSObj("Sphere");
+		auto transform = ToPtr(new Transform(sobj));
+		auto geometry = ToPtr(new Geometry(sobj, ToPtr(new Sphere)));
+		auto material = ToPtr(new Material(sobj, ToPtr(new BSDF_Diffuse)));
+	});
+
+	genObjMenu->addAction("Plane", this, [=]() {
+		auto sobj = Hierarchy::GetInstance()->CreateSObj("Plane");
+		auto transform = ToPtr(new Transform(sobj));
+		auto geometry = ToPtr(new Geometry(sobj, ToPtr(new Plane)));
+		auto material = ToPtr(new Material(sobj, ToPtr(new BSDF_Diffuse)));
+	});
+
+	mainMenu.addMenu(genObjMenu);
+
+	// light
+	auto genLightMenu = new QMenu;
+	genLightMenu->setTitle("Create Light");
+
+	genLightMenu->addAction("Area Light", this, [=]() {
+		auto sobj = Hierarchy::GetInstance()->CreateSObj("Area Light");
+		auto areaLight = ToPtr(new AreaLight);
+		auto light = ToPtr(new Light(sobj, areaLight));
+		auto lightTransform = ToPtr(new Transform(sobj));
+		auto lightPlane = ToPtr(new Plane);
+		auto lightGeo = ToPtr(new Geometry(sobj, lightPlane));
+		auto bsdfEmission = ToPtr(new BSDF_Emission(vec3(1)));
+		auto materailEmission = ToPtr(new Material(sobj, bsdfEmission));
+	});
+
+	mainMenu.addMenu(genLightMenu);
+
+	mainMenu.addAction("Create Camera", this, [=]() {
+		auto sobj = Hierarchy::GetInstance()->CreateSObj("Camera");
+		auto transform = ToPtr(new Transform(sobj));
+		auto camera = ToPtr(new Camera(sobj));
+	});
+
+	mainMenu.exec(QCursor::pos());
 }

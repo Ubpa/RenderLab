@@ -28,12 +28,18 @@ namespace Ui {
 	public:
 		void Init(CppUtil::Basic::Ptr<CppUtil::Engine::Scene> scene, QTreeWidget * tree);
 		void SetScene(CppUtil::Basic::Ptr<CppUtil::Engine::Scene> scene);
+
 		void Move(QTreeWidgetItem * item, QTreeWidgetItem * parent);
+		void NewItem(QTreeWidget * parent, CppUtil::Basic::Ptr<CppUtil::Engine::SObj> sobj);
+		void NewItem(QTreeWidgetItem * parent, CppUtil::Basic::Ptr<CppUtil::Engine::SObj> sobj);
+		void DelItem(QTreeWidgetItem * item);
+		CppUtil::Basic::Ptr<CppUtil::Engine::SObj> CreateSObj(const std::string & objName);
+		void DeleteSObj();
 
 		CppUtil::Basic::Ptr<CppUtil::Engine::SObj> GetSObj(QTreeWidgetItem * item) {
 			return item2sobj[item];
 		}
-
+		CppUtil::Basic::Ptr<CppUtil::Engine::SObj> GetRoot() const;
 		QTreeWidgetItem * GetItem(CppUtil::Basic::Ptr<CppUtil::Engine::SObj> sobj) {
 			return sobj2item[sobj];
 		}

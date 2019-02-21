@@ -11,6 +11,7 @@
 using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
 using namespace Ui;
+using namespace std;
 
 class Hierarchy::InitHierarchyVisitor : public EleVisitor {
 	ELEVISITOR_SETUP(InitHierarchyVisitor)
@@ -22,17 +23,10 @@ public:
 	
 private:
 	void Visit(SObj::Ptr sobj) {
-		QTreeWidgetItem * item;
-
 		if (sobj == hierarchy->scene->GetRoot())
-			item = new QTreeWidgetItem(hierarchy->tree);
+			hierarchy->NewItem(hierarchy->tree, sobj);
 		else
-			item = new QTreeWidgetItem(hierarchy->sobj2item[sobj->GetParent()]);
-
-		item->setText(0, QString::fromStdString(sobj->name));
-
-		hierarchy->item2sobj[item] = sobj;
-		hierarchy->sobj2item[sobj] = item;
+			hierarchy->NewItem(hierarchy->sobj2item[sobj->GetParent()], sobj);
 	}
 
 private:
@@ -41,6 +35,61 @@ private:
 
 Hierarchy::Hierarchy()
 	: scene(nullptr), tree(nullptr) {
+}
+
+SObj::Ptr Hierarchy::GetRoot() const {
+	return scene->GetRoot();
+}
+
+void Hierarchy::NewItem(QTreeWidget * parent, SObj::Ptr sobj) {
+	auto item = new QTreeWidgetItem(parent);
+	item->setText(0, QString::fromStdString(sobj->name));
+
+	item2sobj[item] = sobj;
+	sobj2item[sobj] = item;
+}
+
+void Hierarchy::NewItem(QTreeWidgetItem * parent, SObj::Ptr sobj) {
+	auto item = new QTreeWidgetItem(parent);
+	item->setText(0, QString::fromStdString(sobj->name));
+
+	item2sobj[item] = sobj;
+	sobj2item[sobj] = item;
+}
+
+void Hierarchy::DelItem(QTreeWidgetItem * item) {
+	while (item->childCount())
+		DelItem(item->child(0));
+
+	auto sobj = item2sobj[item];
+	item2sobj.erase(item);
+	sobj2item.erase(sobj);
+	delete item;
+}
+
+SObj::Ptr Hierarchy::CreateSObj(const std::string & objName) {
+	auto item = tree->currentItem();
+	if (!item)
+		item = sobj2item[scene->GetRoot()];
+
+	auto newSObj = ToPtr(new SObj(item2sobj[item], objName));
+	NewItem(item, newSObj);
+
+	return newSObj;
+}
+
+void Hierarchy::DeleteSObj() {
+	auto item = tree->currentItem();
+	if (!item)
+		return;
+
+	auto sobj = item2sobj[item];
+	if (sobj == scene->GetRoot())
+		return;
+
+	sobj->GetParent()->DelChild(sobj);
+
+	DelItem(item);
 }
 
 void Hierarchy::SetScene(CppUtil::Basic::Ptr<CppUtil::Engine::Scene> scene) {

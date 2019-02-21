@@ -35,6 +35,10 @@ namespace CppUtil {
 			const std::vector<uint> & GetIndice() const { return indice; }
 			const std::vector<Triangle::Ptr> & GetTriangles() const { return triangles; }
 
+		public:
+			static TriMesh::Ptr GenCube();
+			//static TriMesh::Ptr GenSphere();
+
 		private:
 			void GenTangents();
 

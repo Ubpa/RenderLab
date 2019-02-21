@@ -3,6 +3,8 @@
 #include <CppUtil/Engine/Triangle.h>
 #include <CppUtil/Engine/BVHNode.h>
 
+#include <CppUtil/Basic/Cube.h>
+
 #include <glm/mat2x2.hpp>
 #include <glm/mat2x3.hpp>
 
@@ -130,4 +132,11 @@ void TriMesh::GenTangents() {
 	}
 
 	delete[] tan1;
+}
+
+TriMesh::Ptr TriMesh::GenCube() {
+	Cube cube;
+	auto cubeMesh = ToPtr(new TriMesh(cube.GetTriNum(), cube.GetVertexNum(),
+		cube.GetIndexArr(), cube.GetPosArr(), cube.GetNormalArr(), cube.GetTexCoordsArr()));
+	return cubeMesh;
 }

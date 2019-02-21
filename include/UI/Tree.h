@@ -17,6 +17,8 @@ namespace Ui {
 		virtual void dragLeaveEvent(QDragLeaveEvent *event);
 		virtual void dragMoveEvent(QDragMoveEvent *event);
 		virtual void dropEvent(QDropEvent *event);
+
+		virtual void contextMenuEvent(QContextMenuEvent *event);
 	
 	private slots:
 		void on_tree_Hierarchy_itemClicked(QTreeWidgetItem *item, int column);
