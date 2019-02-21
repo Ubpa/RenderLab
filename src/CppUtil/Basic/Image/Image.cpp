@@ -35,18 +35,6 @@ bool Image::IsValid() const{
 	return data != NULL && type != ENUM_SRC_TYPE_INVALID;
 }
 
-int Image::GetWidth() const{
-	return width;
-}
-
-int Image::GetHeight() const{
-	return height;
-}
-
-int Image::GetChannel() const{
-	return channel;
-}
-
 //------------
 
 uByte & Image::At(int x, int y, int channel) {
@@ -133,6 +121,7 @@ bool Image::Load(const std::string & fileName, bool flip) {
 	}
 
 	type = ENUM_SRC_TYPE_STB;
+	path = fileName;
 	return true;
 }
 void Image::GenBuffer(int width, int height, int channel) {
@@ -165,6 +154,7 @@ void Image::Free() {
 	height = 0;
 	channel = 0;
 	data = NULL;
+	path.clear();
 	type = ENUM_SRC_TYPE_INVALID;
 }
 

@@ -14,22 +14,24 @@ namespace CppUtil {
 
 			float GetAspectRatio() const { return ar; }
 			void SetAspectRatio(float ar);
-			void SetAspectRatio(float w, float h) { SetAspectRatio(w / h); }
+			template<typename numT>
+			void SetAspectRatio(numT w, numT h) { SetAspectRatio(static_cast<float>(w) / static_cast<float>(h)); }
 
 			Basic::Ptr<Ray> GenRay(float u, float v);
 
 			float GetFOV() const { return fov; }
 			void SetFOV(float fov);
 
+		public:
+			float nearClipping;
+			float farClipping;
+
 		private:
 			// field of view
 			float fov;
 
-		private:
 			// aspect ratio
 			float ar;
-			float nearClipping;
-			float farClipping;
 
 			float w;
 			float h;

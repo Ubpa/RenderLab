@@ -1,5 +1,8 @@
 #include <CppUtil/Engine/SObj.h>
 
+#include "SObjSaver.h"
+#include "SObjLoader.h"
+
 #include <CppUtil/Engine/Component.h>
 #include <CppUtil/Engine/Transform.h>
 
@@ -10,6 +13,7 @@
 using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
 using namespace glm;
+using namespace std;
 
 void SObj::AttachComponent(CppUtil::Basic::Ptr<Component> component) {
 	auto target = components.find(typeid(*component));
@@ -49,4 +53,15 @@ bool SObj::HaveComponentSameTypeWith(Component::Ptr ptr) const {
 		return false;
 
 	return components.find(typeid(*ptr)) != components.cend();
+}
+
+bool SObj::Save(const string & path) {
+	auto saver = ToPtr(new SObjSaver);
+	saver->Init(path);
+	Accept(saver);
+	return true;
+}
+
+SObj::Ptr SObj::Load(const string & path) {
+	return SObjLoader::Load(path);
 }

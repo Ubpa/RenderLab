@@ -1,0 +1,141 @@
+#ifndef _CPPUTIL_ENGINE_SCENE_SL_COMMON_H_
+#define _CPPUTIL_ENGINE_SCENE_SL_COMMON_H_
+
+namespace str {
+	// ------------- SObj
+
+	namespace SObj {
+		const char * const type = "SObj";
+
+		const char * const name = "name";
+		const char * const components = "components";
+		const char * const children = "children";
+	}
+
+	// component
+
+	// ------------- Camera
+
+	namespace Camera {
+		const char * const type = "Camera";
+
+		const char * const fov = "fov";
+		const char * const ar = "ar";
+		const char * const nearClipping = "nearClipping";
+		const char * const farClipping = "farClipping";
+	}
+
+	// ------------- Geometry
+
+	namespace Geometry {
+		const char * const type = "Geometry";
+		const char * const primitive = "primitive";
+	}
+
+	namespace Sphere {
+		const char * const type = "Sphere";
+
+		const char * const center = "center";
+		const char * const radius = "radius";
+	}
+
+	namespace Plane {
+		const char * const type = "Plane";
+	}
+
+	namespace TriMesh {
+		const char * const type = "TriMesh";
+
+
+	}
+
+	// ------------- Light
+
+	namespace Light {
+		const char * const type = "Light";
+		
+		const char * const lightBase = "lightBase";
+	}
+
+	namespace AreaLight {
+		const char * const type = "Area_Light";
+
+		const char * const color = "color";
+		const char * const intensity = "intensity";
+		const char * const width = "width";
+		const char * const height = "height";
+	}
+
+	// ------------- Material
+
+	namespace Material {
+		const char * const type = "Material";
+
+		const char * const materialBase = "materialBase";
+	}
+
+	// ------------- Transform
+
+	namespace Transform {
+		const char * const type = "Transform";
+
+		const char * const Position = "Position";
+		const char * const Rotation = "Rotation";
+		const char * const Scale = "Scale";
+	}
+
+	namespace BSDF_CookTorrance {
+		const char * const type = "BSDF_CookTorrance";
+
+		const char * const ior = "ior";
+		const char * const roughness = "roughness";
+		const char * const refletance = "refletance";
+		const char * const albedo = "albedo";
+	}
+
+	namespace BSDF_Diffuse {
+		const char * const type = "BSDF_Diffuse";
+
+		const char * const albedo = "albedo";
+	}
+
+	namespace BSDF_Emission {
+		const char * const type = "BSDF_Emission";
+
+		const char * const color = "color";
+		const char * const intensity = "intensity";
+	}
+
+	namespace BSDF_Glass {
+		const char * const type = "BSDF_Glass";
+
+		const char * const ior = "ior";
+		const char * const transmittance = "transmittance";
+		const char * const reflectance = "reflectance";
+	}
+
+	namespace Image {
+		const char * const path = "path";
+	}
+
+	namespace BSDF_MetalWorkflow {
+		const char * const type = "BSDF_MetalWorkflow";
+
+		const char * const albedoColor = "albedoColor";
+		const char * const albedoTexture = "albedoTexture";
+		const char * const metallicFactor = "metallicFactor";
+		const char * const metallicTexture = "metallicTexture";
+		const char * const roughnessFactor = "roughnessFactor";
+		const char * const roughnessTexture = "roughnessTexture";
+		const char * const aoTexture = "aoTexture";
+		const char * const normalTexture = "normalTexture";
+	}
+
+	namespace BSDF_Mirror {
+		const char * const type = "BSDF_Mirror";
+
+		const char * const reflectance = "reflectance";
+	}
+}
+
+#endif//!_CPPUTIL_ENGINE_SCENE_SL_COMMON_H_

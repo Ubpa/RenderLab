@@ -19,9 +19,10 @@ namespace CppUtil {
 			bool IsValid() const;
 			uByte * GetData() { return data; }
 			const uByte * GetData() const { return data; }
-			int GetWidth() const;
-			int GetHeight() const;
-			int GetChannel() const;
+			int GetWidth() const { return width; }
+			int GetHeight() const { return height; }
+			int GetChannel() const { return channel; }
+			const std::string & GetPath() const { return path; }
 			//------------
 			template<glm::length_t N>
 			void SetPixel(int x, int y, const glm::vec<N, float> & pixel) {
@@ -49,7 +50,6 @@ namespace CppUtil {
 			}
 
 			//------------
-
 			bool Load(const std::string & fileName, bool flip = false);
 			void GenBuffer(int width, int height, int channel);
 			void Free();
@@ -102,6 +102,7 @@ namespace CppUtil {
 			int width;
 			int height;
 			int channel;
+			std::string path;
 			ENUM_SRC_TYPE type;
 		};
 	}

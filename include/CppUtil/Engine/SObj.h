@@ -22,6 +22,9 @@ namespace CppUtil {
 			SObj(Node::Ptr parent = nullptr, const std::string & name = "")
 				: Node(parent), name(name) { }
 
+			bool Save(const std::string & path);
+			static SObj::Ptr Load(const std::string & path);
+
 		public:
 			template<typename T>
 			Basic::Ptr<T> GetComponent(T * useless_parameter = nullptr) const;
@@ -43,7 +46,6 @@ namespace CppUtil {
 
 			template<typename T>
 			std::vector<Basic::Ptr<T>> GetComponentsInChildren();
-
 
 		public:
 			// º¥ ±º∆À„
