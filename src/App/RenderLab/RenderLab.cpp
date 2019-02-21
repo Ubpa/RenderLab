@@ -23,8 +23,6 @@
 #include <qtimer.h>
 #include <qfiledialog.h>
 #include <qevent.h>
-#include <qdrag.h>
-#include <qmimedata.h>
 
 #include <synchapi.h>
 
@@ -35,7 +33,7 @@ using namespace std;
 using namespace Ui;
 
 RenderLab::RenderLab(QWidget *parent)
-	: QMainWindow(parent), needDragItem(nullptr)
+	: QMainWindow(parent)
 {
 	ui.setupUi(this);
 
@@ -152,80 +150,6 @@ void RenderLab::on_btn_SaveRasterImg_clicked() {
 
 void RenderLab::UI_Op(Operation::Ptr op) {
 	op->Run();
-}
-
-void RenderLab::on_tree_Hierarchy_itemClicked(QTreeWidgetItem *item, int column) {
-	needDragItem = nullptr;
-	
-	auto sobj = Hierarchy::GetInstance()->GetSObj(item);
-	//printf("click: %s\n", sobj->name.c_str());
-	Attribute::GetInstance()->SetSObj(sobj);
-}
-
-void RenderLab::on_tree_Hierarchy_itemPressed(QTreeWidgetItem *item, int column) {
-	needDragItem = item;
-	/*
-	auto sobj = Hierarchy::GetInstance()->GetSObj(item);
-	printf("press: %s\n", sobj->name.c_str());
-	*/
-}
-
-void RenderLab::on_tree_Hierarchy_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous) {
-	/*
-	auto psobj = Hierarchy::GetInstance()->GetSObj(previous);
-	auto csobj = Hierarchy::GetInstance()->GetSObj(current);
-	printf("cur item change: [p]%s, [c]%s\n", psobj?psobj->name.c_str():"empty", csobj->name.c_str());
-	*/
-	if (needDragItem) {
-		auto drag = new QDrag(this);
-
-		auto mimedata = new QMimeData;
-		GS::Reg("dragItem", needDragItem);
-		mimedata->setText("dragItem");
-		drag->setMimeData(mimedata);
-
-		drag->exec();
-		printf("drag return\n");
-		needDragItem = nullptr;
-	}
-}
-
-void RenderLab::on_tree_Hierarchy_itemChanged(QTreeWidgetItem *item, int column) {
-	/*
-	auto sobj = Hierarchy::GetInstance()->GetSObj(item);
-	printf("item change: %s\n", sobj?sobj->name.c_str():"empty");
-	*/
-}
-
-void RenderLab::on_tree_Hierarchy_itemEntered(QTreeWidgetItem *item, int column) {
-	/*
-	auto sobj = Hierarchy::GetInstance()->GetSObj(item);
-	auto items = ui.tree_Hierarchy->selectedItems();
-	auto selectedSObj = Hierarchy::GetInstance()->GetSObj(*items.begin());
-	printf("enter: %s, cur selection: %d, [0]%s\n", sobj->name.c_str(), items.size(), selectedSObj->name.c_str());
-	*/
-}
-
-void RenderLab::on_tree_Hierarchy_itemActivated(QTreeWidgetItem *item, int column) {
-	/*
-	auto sobj = Hierarchy::GetInstance()->GetSObj(item);
-	printf("activate: %s\n", sobj->name.c_str());
-	*/
-}
-
-void RenderLab::on_tree_Hierarchy_itemDoubleClicked(QTreeWidgetItem *item, int column) {
-	/*
-	auto sobj = Hierarchy::GetInstance()->GetSObj(item);
-	printf("double click: %s\n", sobj->name.c_str());
-	*/
-}
-
-void RenderLab::on_tree_Hierarchy_itemSelectionChanged() {
-	/*
-	auto items = ui.tree_Hierarchy->selectedItems();
-	auto selectedSObj = Hierarchy::GetInstance()->GetSObj(*items.begin());
-	//printf("selection change: %d, [0]%s\n", items.size(), selectedSObj->name.c_str());
-	*/
 }
 
 void RenderLab::InitSetting() {

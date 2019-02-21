@@ -1,8 +1,12 @@
 #include <UI/Tree.h>
 
 #include <UI/Hierarchy.h>
-#include <CppUtil/Basic/GStorage.h>
+#include <UI/Attribute.h>
 
+#include <CppUtil/Basic/GStorage.h>
+#include <CppUtil/Engine/SObj.h>
+
+#include <qdrag.h>
 #include <qevent.h>
 #include <qmimedata.h>
 
@@ -11,20 +15,15 @@ using namespace Ui;
 using namespace std;
 
 Tree::Tree(QWidget *parent)
-	: QTreeWidget(parent){
+	: QTreeWidget(parent), needDragItem(nullptr), canDrag(false) {
 
 	setAcceptDrops(true);
+
+	connect(this, &QTreeWidget::currentItemChanged, this, &Tree::on_tree_Hierarchy_currentItemChanged);
+	connect(this, &QTreeWidget::itemClicked, this, &Tree::on_tree_Hierarchy_itemClicked);
+	connect(this, &QTreeWidget::itemPressed, this, &Tree::on_tree_Hierarchy_itemPressed);
+
 }
-/*
-void Tree::mousePressEvent(QMouseEvent *event) {
-	printf("mouse press\n");
-	QTreeWidget::mousePressEvent(event);
-}
-void Tree::mouseMoveEvent(QMouseEvent *event) {
-	printf("mouse move\n");
-	QTreeWidget::mouseMoveEvent(event);
-}
-*/
 
 void Tree::dragEnterEvent(QDragEnterEvent *event) {
 	//printf("drag enter\n");
@@ -63,4 +62,97 @@ void Tree::dropEvent(QDropEvent *event) {
 
 	Hierarchy::GetInstance()->Move(item, currentItem());
 	//QTreeWidget::dropEvent(event);
+}
+
+
+void Tree::on_tree_Hierarchy_itemClicked(QTreeWidgetItem *item, int column) {
+	auto sobj = Hierarchy::GetInstance()->GetSObj(item);
+#ifndef NDEBUG
+	printf("click: %s\n", sobj->name.c_str());
+#endif // !NDEBUG
+	Attribute::GetInstance()->SetSObj(sobj);
+}
+
+void Tree::on_tree_Hierarchy_itemPressed(QTreeWidgetItem *item, int column) {
+	if (canDrag)
+		needDragItem = item;
+
+#ifndef NDEBUG
+	auto sobj = Hierarchy::GetInstance()->GetSObj(item);
+	printf("press: %s\n", sobj->name.c_str());
+#endif // !NDEBUG
+}
+
+void Tree::on_tree_Hierarchy_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous) {
+#ifndef NDEBUG
+	auto psobj = Hierarchy::GetInstance()->GetSObj(previous);
+	auto csobj = Hierarchy::GetInstance()->GetSObj(current);
+	printf("cur item change: [p]%s, [c]%s\n", psobj ? psobj->name.c_str() : "empty", csobj->name.c_str());
+#endif // !NDEBUG
+
+	if (needDragItem && current != previous) {
+		auto drag = new QDrag(this);
+
+		auto mimedata = new QMimeData;
+		GS::Reg("dragItem", needDragItem);
+		needDragItem = nullptr;
+		mimedata->setText("dragItem");
+		drag->setMimeData(mimedata);
+
+		drag->exec();
+
+#ifndef NDEBUG
+		printf("drag return\n");
+#endif // !NDEBUG
+	}
+}
+
+void Tree::on_tree_Hierarchy_itemChanged(QTreeWidgetItem *item, int column) {
+#ifndef NDEBUG
+	auto sobj = Hierarchy::GetInstance()->GetSObj(item);
+	printf("item change: %s\n", sobj ? sobj->name.c_str() : "empty");
+#endif // !NDBUG
+}
+
+void Tree::on_tree_Hierarchy_itemEntered(QTreeWidgetItem *item, int column) {
+#ifndef NDEBUG
+	auto sobj = Hierarchy::GetInstance()->GetSObj(item);
+	auto items = selectedItems();
+	auto selectedSObj = Hierarchy::GetInstance()->GetSObj(*items.begin());
+	printf("enter: %s, cur selection: %d, [0]%s\n", sobj->name.c_str(), items.size(), selectedSObj->name.c_str());
+#endif // !NDEBUG
+}
+
+void Tree::on_tree_Hierarchy_itemActivated(QTreeWidgetItem *item, int column) {
+#ifndef NDEBUG
+	auto sobj = Hierarchy::GetInstance()->GetSObj(item);
+	printf("activate: %s\n", sobj->name.c_str());
+#endif // !NDEBUG
+}
+
+void Tree::on_tree_Hierarchy_itemDoubleClicked(QTreeWidgetItem *item, int column) {
+#ifndef NDEBUG
+	auto sobj = Hierarchy::GetInstance()->GetSObj(item);
+	printf("double click: %s\n", sobj->name.c_str());
+#endif // !NDEBUG
+}
+
+void Tree::on_tree_Hierarchy_itemSelectionChanged() {
+#ifndef NDEBUG
+	auto items = selectedItems();
+	auto selectedSObj = Hierarchy::GetInstance()->GetSObj(*items.begin());
+	printf("selection change: %d, [0]%s\n", items.size(), selectedSObj->name.c_str());
+#endif // !NDEBUG
+}
+
+void Tree::mousePressEvent(QMouseEvent *event){
+	canDrag = event->button() == Qt::LeftButton;
+	needDragItem = nullptr;
+	QTreeWidget::mousePressEvent(event);
+}
+
+void Tree::mouseReleaseEvent(QMouseEvent *event){
+	canDrag = false;
+	needDragItem = nullptr;
+	QTreeWidget::mouseReleaseEvent(event);
 }
