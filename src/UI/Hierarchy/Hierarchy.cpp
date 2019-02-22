@@ -13,26 +13,6 @@ using namespace CppUtil::Basic;
 using namespace Ui;
 using namespace std;
 
-class Hierarchy::InitHierarchyVisitor : public EleVisitor {
-	ELEVISITOR_SETUP(InitHierarchyVisitor)
-public:
-	InitHierarchyVisitor(Hierarchy * hierarchy)
-		: hierarchy(hierarchy) {
-		Reg<SObj>();
-	}
-	
-private:
-	void Visit(SObj::Ptr sobj) {
-		if (sobj == hierarchy->scene->GetRoot())
-			hierarchy->NewItem(hierarchy->tree, sobj);
-		else
-			hierarchy->NewItem(hierarchy->sobj2item[sobj->GetParent()], sobj);
-	}
-
-private:
-	Hierarchy * hierarchy;
-};
-
 Hierarchy::Hierarchy()
 	: scene(nullptr), tree(nullptr) {
 }
@@ -41,12 +21,31 @@ SObj::Ptr Hierarchy::GetRoot() const {
 	return scene->GetRoot();
 }
 
+SObj::Ptr Hierarchy::GetSObj(QTreeWidgetItem * item) const {
+	auto target = item2sobj.find(item);
+	if (target == item2sobj.cend())
+		return nullptr;
+
+	return target->second;
+}
+
+QTreeWidgetItem * Hierarchy::GetItem(SObj::Ptr sobj) const {
+	auto target = sobj2item.find(sobj);
+	if (target == sobj2item.cend())
+		return nullptr;
+
+	return target->second;
+}
+
 void Hierarchy::NewItem(QTreeWidget * parent, SObj::Ptr sobj) {
 	auto item = new QTreeWidgetItem(parent);
 	item->setText(0, QString::fromStdString(sobj->name));
 
 	item2sobj[item] = sobj;
 	sobj2item[sobj] = item;
+
+	for (auto child : sobj->GetChildren())
+		NewItem(item, child);
 }
 
 void Hierarchy::NewItem(QTreeWidgetItem * parent, SObj::Ptr sobj) {
@@ -55,6 +54,20 @@ void Hierarchy::NewItem(QTreeWidgetItem * parent, SObj::Ptr sobj) {
 
 	item2sobj[item] = sobj;
 	sobj2item[sobj] = item;
+
+	for (auto child : sobj->GetChildren())
+		NewItem(item, child);
+}
+
+// 自动找一个 item 作为 sobj 的 parent
+void Hierarchy::BindSObj(SObj::Ptr sobj) {
+	auto item = tree->currentItem();
+	if (item == nullptr)
+		item = sobj2item[scene->GetRoot()];
+
+	auto parentSObj = item2sobj[item];
+	parentSObj->AddChild(sobj);
+	NewItem(item, sobj);
 }
 
 void Hierarchy::DelItem(QTreeWidgetItem * item) {
@@ -101,8 +114,7 @@ void Hierarchy::SetScene(CppUtil::Basic::Ptr<CppUtil::Engine::Scene> scene) {
 	item2sobj.clear();
 	item2sobj.clear();
 
-	auto visitor = ToPtr(new InitHierarchyVisitor(this));
-	scene->GetRoot()->TraverseAccept(visitor);
+	NewItem(tree, scene->GetRoot());
 }
 
 void Hierarchy::Init(Scene::Ptr scene, QTreeWidget * tree) {
@@ -115,8 +127,10 @@ void Hierarchy::Move(QTreeWidgetItem * item, QTreeWidgetItem * parent) {
 	auto parentSObj = GetSObj(parent);
 	if (sobj->IsAncestorOf(parentSObj) || sobj->GetParent() == parentSObj)
 		return;
-
-	//printf("%s to %s\n", sobj->name.c_str(), parentSObj->name.c_str());
+	
+#ifndef NDEBUG
+	printf("%s to %s\n", sobj->name.c_str(), parentSObj->name.c_str());
+#endif // !NDEBUG
 
 	auto parentOfItem = sobj2item[sobj->GetParent()];
 	parentOfItem->takeChild(parentOfItem->indexOfChild(item));
@@ -132,6 +146,4 @@ void Hierarchy::Move(QTreeWidgetItem * item, QTreeWidgetItem * parent) {
 	transform->SetMatrix(parentW2L * sobjL2W);
 
 	sobj->SetParent(parentSObj);
-
-	//SetScene(scene);
 }

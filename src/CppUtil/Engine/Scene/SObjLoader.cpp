@@ -24,32 +24,36 @@ using namespace tinyxml2;
 using namespace glm;
 using namespace std;
 
+// ------------ To ----------------
+
 template<>
-float SObjLoader::To(const std::string & text, float *) {
-	return static_cast<float>(atof(text.c_str()));
+float SObjLoader::To(const std::string & key, float *) {
+	return static_cast<float>(atof(key.c_str()));
 }
 
 template<>
-int SObjLoader::To(const std::string & text, int *) {
-	return atoi(text.c_str());
+int SObjLoader::To(const std::string & key, int *) {
+	return atoi(key.c_str());
 }
 
 template<>
-string SObjLoader::To(const std::string & text, string *) {
-	return text;
+string SObjLoader::To(const std::string & key, string *) {
+	return key;
 }
 
 template<>
-vec3 SObjLoader::To(const std::string & text, vec3 *) {
-	auto idx0 = text.find(' ');
-	auto idx1 = text.find(' ', idx0 + 1);
+vec3 SObjLoader::To(const std::string & key, vec3 *) {
+	auto idx0 = key.find(' ');
+	auto idx1 = key.find(' ', idx0 + 1);
 
-	auto text0 = text.substr(0, idx0);
-	auto text1 = text.substr(idx0, idx1);
-	auto text2 = text.substr(idx1, text.size());
+	auto key0 = key.substr(0, idx0);
+	auto key1 = key.substr(idx0, idx1);
+	auto key2 = key.substr(idx1, key.size());
 
-	return vec3(To<float>(text0), To<float>(text1), To<float>(text2));
+	return vec3(To<float>(key0), To<float>(key1), To<float>(key2));
 }
+
+// ------------ Basic ----------------
 
 void SObjLoader::LoadChildrenEles(XMLElement * ele, const FuncMap & funcMap) {
 	for (auto child = ele->FirstChildElement(); child != nullptr; child = child->NextSiblingElement()) {
@@ -73,6 +77,8 @@ static Image::Ptr SObjLoader::Load(XMLElement * ele, Image*) {
 
 	return img;
 }
+
+// ------------ SObj ----------------
 
 template<>
 static SObj::Ptr SObjLoader::Load(XMLElement * ele, SObj*) {
@@ -125,6 +131,8 @@ static void SObjLoader::LoadAndBind(XMLElement * ele, SObj::Ptr sobj, vector<SOb
 	LoadChildrenEles(ele, pack.funcMap);
 }
 
+// ------------ Camera ----------------
+
 template<>
 static void SObjLoader::LoadAndBind(XMLElement * ele, SObj::Ptr sobj, Camera*){
 	auto camera = ToPtr(new Camera(sobj));
@@ -138,6 +146,8 @@ static void SObjLoader::LoadAndBind(XMLElement * ele, SObj::Ptr sobj, Camera*){
 
 	LoadChildrenEles(ele, funcMap);
 }
+
+// ------------ Geometry ----------------
 
 template<>
 static void SObjLoader::LoadAndBind(XMLElement * ele, SObj::Ptr sobj, Geometry*){
@@ -178,6 +188,8 @@ static Plane::Ptr SObjLoader::Load(XMLElement * ele, Plane*) {
 	return plane;
 }
 
+// ------------ Light ----------------
+
 template<>
 static void SObjLoader::LoadAndBind(XMLElement * ele, SObj::Ptr sobj, Light*){
 	auto light = ToPtr(new Light(sobj, nullptr));
@@ -211,6 +223,8 @@ static AreaLight::Ptr SObjLoader::Load(XMLElement * ele, AreaLight*) {
 
 	return areaLight;
 }
+
+// ------------ Material ----------------
 
 template<>
 static void SObjLoader::LoadAndBind(XMLElement * ele, SObj::Ptr sobj, Material*){
@@ -326,6 +340,8 @@ static BSDF_Mirror::Ptr SObjLoader::Load(XMLElement * ele, BSDF_Mirror*) {
 
 	return bsdf;
 }
+
+// ------------ Transform ----------------
 
 template<>
 static void SObjLoader::LoadAndBind(XMLElement * ele, SObj::Ptr sobj, Transform*){

@@ -30,24 +30,21 @@ namespace Ui {
 		void SetScene(CppUtil::Basic::Ptr<CppUtil::Engine::Scene> scene);
 
 		void Move(QTreeWidgetItem * item, QTreeWidgetItem * parent);
+		// 这里要求 sobj 已经绑定到场景里了
 		void NewItem(QTreeWidget * parent, CppUtil::Basic::Ptr<CppUtil::Engine::SObj> sobj);
+		// 这里要求 sobj 已经绑定到场景里了
 		void NewItem(QTreeWidgetItem * parent, CppUtil::Basic::Ptr<CppUtil::Engine::SObj> sobj);
+		// 自动找一个 item 作为 sobj 的 parent
+		void BindSObj(CppUtil::Basic::Ptr<CppUtil::Engine::SObj> sobj);
 		void DelItem(QTreeWidgetItem * item);
 		CppUtil::Basic::Ptr<CppUtil::Engine::SObj> CreateSObj(const std::string & objName);
 		void DeleteSObj();
 
-		CppUtil::Basic::Ptr<CppUtil::Engine::SObj> GetSObj(QTreeWidgetItem * item) {
-			return item2sobj[item];
-		}
+		CppUtil::Basic::Ptr<CppUtil::Engine::SObj> GetSObj(QTreeWidgetItem * item) const;
 		CppUtil::Basic::Ptr<CppUtil::Engine::SObj> GetRoot() const;
-		QTreeWidgetItem * GetItem(CppUtil::Basic::Ptr<CppUtil::Engine::SObj> sobj) {
-			return sobj2item[sobj];
-		}
+		QTreeWidgetItem * GetItem(CppUtil::Basic::Ptr<CppUtil::Engine::SObj> sobj) const;
 
 	private:
-		class InitHierarchyVisitor;
-		friend class InitHierarchyVisitor;
-
 		CppUtil::Basic::Ptr<CppUtil::Engine::Scene> scene;
 		std::map<CppUtil::Basic::Ptr<CppUtil::Engine::SObj>, QTreeWidgetItem *> sobj2item;
 		std::map<QTreeWidgetItem *, CppUtil::Basic::Ptr<CppUtil::Engine::SObj>> item2sobj;

@@ -16,6 +16,7 @@
 #include <qdrag.h>
 #include <qevent.h>
 #include <qmimedata.h>
+#include <qfiledialog.h>
 
 using namespace Ui;
 using namespace CppUtil::Engine;
@@ -175,6 +176,10 @@ void Tree::contextMenuEvent(QContextMenuEvent *event) {
 		});
 	}
 
+	auto spitLine0 = new QAction;
+	spitLine0->setSeparator(true);
+	mainMenu.addAction(spitLine0);
+
 	mainMenu.addAction("Create Empty", this, [=]() {
 		Hierarchy::GetInstance()->CreateSObj("SObj");
 	});
@@ -228,6 +233,45 @@ void Tree::contextMenuEvent(QContextMenuEvent *event) {
 		auto transform = ToPtr(new Transform(sobj));
 		auto camera = ToPtr(new Camera(sobj));
 	});
+
+	auto spitLine1 = new QAction;
+	spitLine1->setSeparator(true);
+	mainMenu.addAction(spitLine1);
+
+	// Load Save
+	mainMenu.addAction("Load SObj", this, [=]() {
+		QString fileName = QFileDialog::getOpenFileName(this,
+			tr("Load SObj"),
+			"./",
+			tr("SObj XML Files (*.xml)"));
+
+		if (fileName.isEmpty())
+			return;
+
+		auto sobj = SObj::Load(fileName.toStdString());
+		if (sobj == nullptr)
+			return;
+
+		Hierarchy::GetInstance()->BindSObj(sobj);
+	});
+
+	if (currentItem()) {
+		mainMenu.addAction("Save SObj", this, [=]() {
+			QString fileName = QFileDialog::getSaveFileName(this,
+				tr("Save SObj"),
+				"./",
+				tr("SObj XML Files (*.xml)"));
+
+			if (fileName.isEmpty())
+				return;
+
+			auto sobj = Hierarchy::GetInstance()->GetSObj(currentItem());
+			if (sobj == nullptr)
+				return;
+
+			sobj->Save(fileName.toStdString());
+		});
+	}
 
 	mainMenu.exec(QCursor::pos());
 }
