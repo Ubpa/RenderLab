@@ -199,7 +199,8 @@ void RayIntersector::Visit(Plane::Ptr plane) {
 	rst.isIntersect = true;
 	ray->SetTMax(t);
 	rst.n = vec3(0, sign(origin.y), 0);
-	rst.texcoord = Math::SphereNormal2Texcoord(rst.n);
+	rst.texcoord = vec2(pos.x, pos.z) * 2.f + 1.f;
+	rst.tangent = vec3(1.f, 0, 0);
 }
 
 void RayIntersector::Visit(Triangle::Ptr triangle) {
