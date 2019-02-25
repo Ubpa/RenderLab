@@ -8,6 +8,8 @@
 
 #include <CppUtil/Basic/EleVisitor.h>
 
+#include <qlineedit.h>
+
 using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
 using namespace Ui;
@@ -146,4 +148,23 @@ void Hierarchy::Move(QTreeWidgetItem * item, QTreeWidgetItem * parent) {
 	transform->SetMatrix(parentW2L * sobjL2W);
 
 	sobj->SetParent(parentSObj);
+}
+
+void Hierarchy::RenameCurItem() {
+	auto item = tree->currentItem();
+	if (!item)
+		return;
+
+	auto sobj = item2sobj[item];
+	auto lineEdit = new QLineEdit;
+
+	lineEdit->setText(QString::fromStdString(sobj->name));
+	tree->setItemWidget(item, 0, lineEdit);
+	lineEdit->connect(lineEdit, &QLineEdit::editingFinished, [=]() {
+		item->setText(0, lineEdit->text());
+		sobj->name = lineEdit->text().toStdString();
+		tree->removeItemWidget(item, 0);
+
+		delete lineEdit;
+	});
 }

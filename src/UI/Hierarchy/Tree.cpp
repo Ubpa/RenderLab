@@ -170,6 +170,12 @@ void Tree::mouseReleaseEvent(QMouseEvent *event){
 void Tree::contextMenuEvent(QContextMenuEvent *event) {
 	QMenu mainMenu;
 
+	if (currentItem()) {
+		mainMenu.addAction("Rename", this, [=]() {
+			Hierarchy::GetInstance()->RenameCurItem();
+		});
+	}
+
 	if (currentItem() && Hierarchy::GetInstance()->GetSObj(currentItem()) != Hierarchy::GetInstance()->GetRoot()) {
 		mainMenu.addAction("Delete", this, [=]() {
 			Hierarchy::GetInstance()->DeleteSObj();

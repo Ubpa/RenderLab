@@ -44,6 +44,8 @@ namespace Ui {
 		CppUtil::Basic::Ptr<CppUtil::Engine::SObj> GetRoot() const;
 		QTreeWidgetItem * GetItem(CppUtil::Basic::Ptr<CppUtil::Engine::SObj> sobj) const;
 
+		void RenameCurItem();
+
 	private:
 		CppUtil::Basic::Ptr<CppUtil::Engine::Scene> scene;
 		std::map<CppUtil::Basic::Ptr<CppUtil::Engine::SObj>, QTreeWidgetItem *> sobj2item;
