@@ -116,6 +116,7 @@ cmake .. -Wno-dev
     - [x] 载入 SObj
     - [x] 在 UI 中实现
   - [x] 场景编辑
+  - [ ] connect 信号槽机制
   - [ ] 统一相机
   - [ ] 后处理
     - [ ] Gamma校正
