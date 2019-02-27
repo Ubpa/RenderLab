@@ -48,7 +48,7 @@ vec3 AreaLight::GetL(const vec3 & p, const vec3 & dirToLight, float & distToLigh
 	return intensity * color;
 }
 
-vec3 AreaLight::GetL(const vec3 & p) const {
+vec3 AreaLight::GetMaxL(const vec3 & p) const {
 	return p.y < 0 ? intensity * color : vec3(0);
 }
 

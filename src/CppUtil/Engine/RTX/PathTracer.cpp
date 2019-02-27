@@ -111,7 +111,7 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 	auto lightComponent = closestRst.closestSObj->GetComponent<Light>();
 	if (lightComponent) {
 		int idx = lightToIdx[lightComponent->GetLight()];
-		emitL += lightComponent->GetLight()->GetL(worldToLightVec[idx] * vec4(ray->GetOrigin(), 1));
+		emitL += lightComponent->GetLight()->GetMaxL(worldToLightVec[idx] * vec4(ray->GetOrigin(), 1));
 	}
 	
 	if (!bsdf->IsDelta()) {
@@ -142,12 +142,14 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 				const vec3 w_in = normalize(worldToSurface * dirInWorld);
 
 				// 多重重要性采样 Multiple Importance Sampling (MIS)
-				float sumPD = bsdf->PDF(w_out, w_in, closestRst.texcoord) + sampleNum * PD;
-				for (int k = 0; k < lightNum; k++) {
-					if (k != i) {
-						int sampleNum = lights[k]->IsDelta() ? 1 : sampleNumForAreaLight;
-						vec3 dirInLight = dir_worldToLightVec[k] * dirInWorld;
-						sumPD += sampleNum * lights[k]->PDF(posInLightSpaceVec[i], dirInLight);
+				float sumPD = sampleNum * PD;
+				if (!light->IsDelta()) {
+					sumPD += bsdf->PDF(w_out, w_in, closestRst.texcoord);
+					for (int k = 0; k < lightNum; k++) {
+						if (k != i && !lights[k]->IsDelta()) {
+							vec3 dirInLight = dir_worldToLightVec[k] * dirInWorld;
+							sumPD += sampleNumForAreaLight * lights[k]->PDF(posInLightSpaceVec[i], dirInLight);
+						}
 					}
 				}
 
@@ -196,9 +198,11 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 	float sumPD = matPD;
 	if (!bsdf->IsDelta()) {
 		for (int i = 0; i < lightNum; i++) {
-			int sampleNum = lights[i]->IsDelta() ? 1 : sampleNumForAreaLight;
+			if (lights[i]->IsDelta())
+				continue;
+
 			vec3 dirInLight = dir_worldToLightVec[i] * matRayDirInWorld;
-			sumPD += sampleNum * lights[i]->PDF(posInLightSpaceVec[i], dirInLight);
+			sumPD += sampleNumForAreaLight * lights[i]->PDF(posInLightSpaceVec[i], dirInLight);
 		}
 	}
 

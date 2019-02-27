@@ -22,6 +22,7 @@ namespace CppUtil {
 
 		class Light;
 		class AreaLight;
+		class PointLight;
 
 		class Material;
 		class BSDF_CookTorrance;

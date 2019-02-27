@@ -1,0 +1,190 @@
+<SObj>
+    <name>root</name>
+    <components/>
+    <children>
+        <SObj>
+            <name>Cornell Box</name>
+            <components>
+                <Transform>
+                    <Position>0.000000 0.000000 0.000000</Position>
+                    <Rotation>0.000000 -0.000000 0.000000</Rotation>
+                    <Scale>1.000000 1.000000 1.000000</Scale>
+                </Transform>
+            </components>
+            <children>
+                <SObj>
+                    <name>wall down</name>
+                    <components>
+                        <Material>
+                            <materialBase>
+                                <BSDF_Diffuse>
+                                    <albedo>0.600000 0.600000 0.600000</albedo>
+                                </BSDF_Diffuse>
+                            </materialBase>
+                        </Material>
+                        <Geometry>
+                            <primitive>
+                                <Plane/>
+                            </primitive>
+                        </Geometry>
+                        <Transform>
+                            <Position>0.000000 0.000000 0.000000</Position>
+                            <Rotation>0.000000 -0.000000 0.000000</Rotation>
+                            <Scale>2.000000 1.000000 2.000000</Scale>
+                        </Transform>
+                    </components>
+                    <children/>
+                </SObj>
+                <SObj>
+                    <name>wall right</name>
+                    <components>
+                        <Material>
+                            <materialBase>
+                                <BSDF_Diffuse>
+                                    <albedo>0.200000 0.200000 0.600000</albedo>
+                                </BSDF_Diffuse>
+                            </materialBase>
+                        </Material>
+                        <Geometry>
+                            <primitive>
+                                <Plane/>
+                            </primitive>
+                        </Geometry>
+                        <Transform>
+                            <Position>1.000000 0.750000 0.000000</Position>
+                            <Rotation>0.000000 -0.000000 1.570796</Rotation>
+                            <Scale>1.500000 1.000000 2.000000</Scale>
+                        </Transform>
+                    </components>
+                    <children/>
+                </SObj>
+                <SObj>
+                    <name>wall left</name>
+                    <components>
+                        <Material>
+                            <materialBase>
+                                <BSDF_Diffuse>
+                                    <albedo>0.600000 0.200000 0.200000</albedo>
+                                </BSDF_Diffuse>
+                            </materialBase>
+                        </Material>
+                        <Geometry>
+                            <primitive>
+                                <Plane/>
+                            </primitive>
+                        </Geometry>
+                        <Transform>
+                            <Position>-1.000000 0.750000 0.000000</Position>
+                            <Rotation>0.000000 -0.000000 1.570796</Rotation>
+                            <Scale>1.500000 1.000000 2.000000</Scale>
+                        </Transform>
+                    </components>
+                    <children/>
+                </SObj>
+                <SObj>
+                    <name>wall back</name>
+                    <components>
+                        <Material>
+                            <materialBase>
+                                <BSDF_Diffuse>
+                                    <albedo>0.600000 0.600000 0.600000</albedo>
+                                </BSDF_Diffuse>
+                            </materialBase>
+                        </Material>
+                        <Geometry>
+                            <primitive>
+                                <Plane/>
+                            </primitive>
+                        </Geometry>
+                        <Transform>
+                            <Position>0.000000 0.750000 -1.000000</Position>
+                            <Rotation>1.570796 -0.000000 0.000000</Rotation>
+                            <Scale>2.000000 1.000000 1.500000</Scale>
+                        </Transform>
+                    </components>
+                    <children/>
+                </SObj>
+                <SObj>
+                    <name>area light</name>
+                    <components>
+                        <Transform>
+                            <Position>0.000000 1.450000 0.000000</Position>
+                            <Rotation>0.000000 -0.000000 0.000000</Rotation>
+                            <Scale>0.800000 1.000000 0.600000</Scale>
+                        </Transform>
+                        <Light>
+                            <lightBase/>
+                        </Light>
+                    </components>
+                    <children/>
+                </SObj>
+                <SObj>
+                    <name>wall ceil</name>
+                    <components>
+                        <Material>
+                            <materialBase>
+                                <BSDF_Diffuse>
+                                    <albedo>0.600000 0.600000 0.600000</albedo>
+                                </BSDF_Diffuse>
+                            </materialBase>
+                        </Material>
+                        <Geometry>
+                            <primitive>
+                                <Plane/>
+                            </primitive>
+                        </Geometry>
+                        <Transform>
+                            <Position>0.000000 1.500000 0.000000</Position>
+                            <Rotation>0.000000 -0.000000 0.000000</Rotation>
+                            <Scale>2.000000 1.000000 2.000000</Scale>
+                        </Transform>
+                    </components>
+                    <children/>
+                </SObj>
+            </children>
+        </SObj>
+        <SObj>
+            <name>camera</name>
+            <components>
+                <Camera>
+                    <fov>50.000000</fov>
+                    <ar>1.333333</ar>
+                    <nearClipping>0.001000</nearClipping>
+                    <farClipping>1000.000000</farClipping>
+                </Camera>
+                <Transform>
+                    <Position>0.000000 0.750000 2.300000</Position>
+                    <Rotation>0.000000 -0.000000 0.000000</Rotation>
+                    <Scale>1.000000 1.000000 1.000000</Scale>
+                </Transform>
+            </components>
+            <children/>
+        </SObj>
+        <SObj>
+            <name>sky</name>
+            <components>
+                <Geometry>
+                    <primitive>
+                        <Sphere>
+                            <center>0.000000 0.000000 0.000000</center>
+                            <radius>100.000000</radius>
+                        </Sphere>
+                    </primitive>
+                </Geometry>
+                <Material>
+                    <materialBase>
+                        <BSDF_Diffuse>
+                            <albedo>0.000000 0.000000 0.000000</albedo>
+                        </BSDF_Diffuse>
+                    </materialBase>
+                </Material>
+                <Transform>
+                    <Position>0.000000 0.000000 0.000000</Position>
+                    <Rotation>0.000000 -0.000000 0.000000</Rotation>
+                    <Scale>1.000000 1.000000 1.000000</Scale>
+                </Transform>
+            </components>
+            <children/>
+        </SObj>
+    </children>
+</SObj>

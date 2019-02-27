@@ -2,20 +2,6 @@
 
 #include "SL_Common.h"
 
-#include <CppUtil/Engine/SObj.h>
-
-#include <CppUtil/Engine/AllComponents.h>
-
-#include <CppUtil/Engine/Sphere.h>
-#include <CppUtil/Engine/Plane.h>
-#include <CppUtil/Engine/TriMesh.h>
-
-#include <CppUtil/Engine/AreaLight.h>
-
-#include <CppUtil/Engine/AllBSDFs.h>
-
-#include <CppUtil/Basic/Image.h>
-
 using namespace CppUtil::Basic;
 using namespace CppUtil::Engine;
 using namespace tinyxml2;
@@ -33,6 +19,7 @@ SObjSaver::SObjSaver() {
 
 	Reg<Light>();
 	Reg<AreaLight>();
+	Reg<PointLight>();
 
 	Reg<Material>();
 	Reg<BSDF_CookTorrance>();
@@ -139,6 +126,15 @@ void SObjSaver::Visit(AreaLight::Ptr areaLight) {
 		NewEle(str::AreaLight::intensity, areaLight->intensity);
 		NewEle(str::AreaLight::width, areaLight->width);
 		NewEle(str::AreaLight::height, areaLight->height);
+	});
+}
+
+void SObjSaver::Visit(PointLight::Ptr pointLight) {
+	NewEle(str::PointLight::type, [=]() {
+		NewEle(str::PointLight::color, pointLight->color);
+		NewEle(str::PointLight::intensity, pointLight->intensity);
+		NewEle(str::PointLight::linear, pointLight->linear);
+		NewEle(str::PointLight::quadratic, pointLight->quadratic);
 	});
 }
 

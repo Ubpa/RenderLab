@@ -2,22 +2,6 @@
 
 #include "SL_Common.h"
 
-#include <CppUtil/Engine/SObj.h>
-
-#include <CppUtil/Engine/AllComponents.h>
-
-#include <CppUtil/Engine/Sphere.h>
-#include <CppUtil/Engine/Plane.h>
-#include <CppUtil/Engine/TriMesh.h>
-
-#include <CppUtil/Engine/AreaLight.h>
-
-#include <CppUtil/Engine/AllBSDFs.h>
-
-#include <CppUtil/Basic/Image.h>
-
-#include <functional>
-
 using namespace CppUtil::Basic;
 using namespace CppUtil::Engine;
 using namespace tinyxml2;
@@ -205,6 +189,7 @@ static void SObjLoader::LoadAndBind(XMLElement * ele, Light::Ptr light, LightBas
 	auto pack = GenPack(light, &Light::SetLight);
 
 	Reg<AreaLight>(pack, str::AreaLight::type);
+	Reg<PointLight>(pack, str::PointLight::type);
 
 	LoadChildrenEles(ele, pack.funcMap);
 }
@@ -215,13 +200,28 @@ static AreaLight::Ptr SObjLoader::Load(XMLElement * ele, AreaLight*) {
 
 	FuncMap funcMap;
 	Reg(funcMap, str::AreaLight::color, areaLight->color);
+	Reg(funcMap, str::AreaLight::intensity, areaLight->intensity);
 	Reg(funcMap, str::AreaLight::height, areaLight->height);
 	Reg(funcMap, str::AreaLight::width, areaLight->width);
-	Reg(funcMap, str::AreaLight::intensity, areaLight->intensity);
 
 	LoadChildrenEles(ele, funcMap);
 
 	return areaLight;
+}
+
+template<>
+static PointLight::Ptr SObjLoader::Load(XMLElement * ele, PointLight*) {
+	auto pointLight = ToPtr(new PointLight);
+
+	FuncMap funcMap;
+	Reg(funcMap, str::PointLight::color, pointLight->color);
+	Reg(funcMap, str::PointLight::intensity, pointLight->intensity);
+	Reg(funcMap, str::PointLight::linear, pointLight->linear);
+	Reg(funcMap, str::PointLight::intensity, pointLight->quadratic);
+
+	LoadChildrenEles(ele, funcMap);
+
+	return pointLight;
 }
 
 // ------------ Material ----------------

@@ -1,6 +1,23 @@
 #ifndef _CPPUTIL_ENGINE_SCENE_SL_COMMON_H_
 #define _CPPUTIL_ENGINE_SCENE_SL_COMMON_H_
 
+#include <CppUtil/Engine/SObj.h>
+
+#include <CppUtil/Engine/AllComponents.h>
+
+#include <CppUtil/Engine/Sphere.h>
+#include <CppUtil/Engine/Plane.h>
+#include <CppUtil/Engine/TriMesh.h>
+
+#include <CppUtil/Engine/AreaLight.h>
+#include <CppUtil/Engine/PointLight.h>
+
+#include <CppUtil/Engine/AllBSDFs.h>
+
+#include <CppUtil/Basic/Image.h>
+
+#include <functional>
+
 namespace str {
 	// ------------- SObj
 
@@ -64,6 +81,15 @@ namespace str {
 		const char * const intensity = "intensity";
 		const char * const width = "width";
 		const char * const height = "height";
+	}
+
+	namespace PointLight {
+		const char * const type = "Point_Light";
+
+		const char * const color = "color";
+		const char * const intensity = "intensity";
+		const char * const linear = "linear";
+		const char * const quadratic = "quadratic";
 	}
 
 	// ------------- Material

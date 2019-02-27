@@ -21,6 +21,7 @@ namespace CppUtil {
 
 		class Light;
 		class AreaLight;
+		class PointLight;
 
 		class Material;
 		class BSDF_CookTorrance;
@@ -49,6 +50,7 @@ namespace CppUtil {
 
 			void Visit(Basic::Ptr<Light> light);
 			void Visit(Basic::Ptr<AreaLight> areaLight);
+			void Visit(Basic::Ptr<PointLight> pointLight);
 
 			void Visit(Basic::Ptr<Material> meterial);
 			void Visit(Basic::Ptr<BSDF_CookTorrance> bsdf);

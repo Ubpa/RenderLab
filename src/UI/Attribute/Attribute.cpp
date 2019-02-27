@@ -12,6 +12,7 @@
 #include <CppUtil/Engine/AllBSDFs.h>
 
 #include <CppUtil/Engine/AreaLight.h>
+#include <CppUtil/Engine/PointLight.h>
 
 #include <CppUtil/Basic/EleVisitor.h>
 #include <CppUtil/Basic/Math.h>
@@ -44,6 +45,7 @@ public:
 
 		Reg<Light>();
 		Reg<AreaLight>();
+		Reg<PointLight>();
 
 		Reg<Material>();
 		Reg<BSDF_Diffuse>();
@@ -66,6 +68,7 @@ private:
 
 	void Visit(Light::Ptr light);
 	void Visit(AreaLight::Ptr light);
+	void Visit(PointLight::Ptr light);
 
 	void Visit(Material::Ptr material);
 	void Visit(BSDF_Diffuse::Ptr bsdf);
@@ -394,11 +397,15 @@ void Attribute::ComponentVisitor::Visit(Light::Ptr light) {
 	getTypeStr->Reg<AreaLight>([=](AreaLight::Ptr) {
 		getTypeStr->RegArg("typeStr", "AreaLight");
 	});
+	getTypeStr->Reg<PointLight>([=](PointLight::Ptr) {
+		getTypeStr->RegArg("typeStr", "PointLight");
+	});
 
-	const int lightNum = 2;
+	const int lightNum = 3;
 	tuple<string, function<LightBase::Ptr()>> lightArr[lightNum] = {
 		{"None", []()->LightBase::Ptr { return nullptr; } },
 		{"AreaLight", []()->LightBase::Ptr { return ToPtr(new AreaLight); } },
+		{"PointLight", []()->LightBase::Ptr { return ToPtr(new PointLight); } },
 	};
 
 	Grid::pSlotMap pSlotMap(new Grid::SlotMap);
@@ -431,6 +438,14 @@ void Attribute::ComponentVisitor::Visit(AreaLight::Ptr light) {
 	grid->AddEditVal("- Intensity", light->intensity, 0.1);
 	grid->AddEditVal("- Width", light->width, 0.1);
 	grid->AddEditVal("- Height", light->height, 0.1);
+}
+
+void Attribute::ComponentVisitor::Visit(PointLight::Ptr light) {
+	auto grid = GetGrid(attr->componentType2item[typeid(Light)]);
+	grid->AddEditColor("- Color", light->color);
+	grid->AddEditVal("- Intensity", light->intensity, 0, 20, 0.1);
+	grid->AddEditVal("- Linear", light->linear, 0, 1.0, 0.01);
+	grid->AddEditVal("- Quadratic", light->quadratic, 0, 2.0, 0.01);
 }
 
 // -------------- Attribute --------------
