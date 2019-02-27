@@ -48,6 +48,10 @@ vec3 AreaLight::GetL(const vec3 & p, const vec3 & dirToLight, float & distToLigh
 	return intensity * color;
 }
 
+vec3 AreaLight::GetL(const vec3 & p) const {
+	return p.y < 0 ? intensity * color : vec3(0);
+}
+
 bool AreaLight::Hit(const vec3& p, const vec3 & dirToLight, vec3 & hitPos) const {
 	if (p.y >= 0 || dirToLight.y < 0)
 		return false;

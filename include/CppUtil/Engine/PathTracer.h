@@ -7,6 +7,7 @@
 #include <glm/mat3x3.hpp>
 
 #include <vector>
+#include <map>
 
 namespace CppUtil {
 	namespace Engine {
@@ -30,6 +31,7 @@ namespace CppUtil {
 
 		private:
 			std::vector<Basic::Ptr<LightBase>> lights;
+			std::map<Basic::Ptr<LightBase>, int> lightToIdx;
 			std::vector<glm::mat4> worldToLightVec;
 			std::vector<glm::mat3> dir_worldToLightVec;// 只需要旋转方向，所以使用 mat3
 			std::vector<glm::mat3> dir_lightToWorldVec;// 只需要旋转方向，所以使用 mat3

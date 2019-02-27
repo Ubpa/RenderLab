@@ -34,7 +34,7 @@ namespace CppUtil {
 			}
 			template<glm::length_t N>
 			void SetPixel(int x, int y, const glm::vec<N, uByte> pixel) {
-				assert(channel <= N);
+				//assert(channel <= N);
 				for (int i = 0; i < channel; i++)
 					At(x, y, i) = pixel[i];
 			}

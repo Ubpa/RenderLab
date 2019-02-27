@@ -31,6 +31,23 @@ void PathTracer::Init() {
 	worldToLightVec.clear();
 	dir_lightToWorldVec.clear();
 	dir_worldToLightVec.clear();
+	lightToIdx.clear();
+
+	for (int i = 0; i < scene->GetLights().size(); i++) {
+		auto lightComponent = scene->GetLights()[i];
+		auto light = lightComponent->GetLight();
+
+		lightToIdx[light] = i;
+
+		lights.push_back(light);
+
+		mat4 lightToWorld = lightComponent->GetLightToWorldMatrixWithoutScale();
+		mat4 worldToLight = inverse(lightToWorld);
+
+		worldToLightVec.push_back(worldToLight);
+		dir_lightToWorldVec.push_back(lightToWorld);
+		dir_worldToLightVec.push_back(worldToLight);
+	}
 
 	for (auto lightComponent : scene->GetLights()) {
 		lights.push_back(lightComponent->GetLight());
@@ -72,8 +89,6 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 	bsdf->ChangeNormal(closestRst.texcoord, closestRst.tangent, closestRst.n);
 	//return abs(closestRst.n);
 
-	vec3 emitL = bsdf->GetEmission();
-
 	const vec3 hitPos = ray->At(ray->GetTMax());
 
 	auto const surfaceToWorld = Math::GenCoordSpace(closestRst.n);
@@ -91,6 +106,13 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 	int lightNum = lights.size();
 	for (int i = 0; i < lightNum; i++)
 		posInLightSpaceVec.push_back(worldToLightVec[i] * hitPos4);
+
+	vec3 emitL = bsdf->GetEmission();
+	auto lightComponent = closestRst.closestSObj->GetComponent<Light>();
+	if (lightComponent) {
+		int idx = lightToIdx[lightComponent->GetLight()];
+		emitL += lightComponent->GetLight()->GetL(worldToLightVec[idx] * vec4(ray->GetOrigin(), 1));
+	}
 	
 	if (!bsdf->IsDelta()) {
 		vec3 dir_ToLight; // 把变量放在这里减少初始化次数
