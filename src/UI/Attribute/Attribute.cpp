@@ -336,7 +336,8 @@ void Attribute::ComponentVisitor::Visit(Material::Ptr material) {
 
 void Attribute::ComponentVisitor::Visit(BSDF_Diffuse::Ptr bsdf) {
 	auto grid = GetGrid(attr->componentType2item[typeid(Material)]);
-	grid->AddEditColor("- Albedo", bsdf->albedo);
+	grid->AddEditColor("- Albedo", bsdf->albedoColor);
+	grid->AddEditImage("- Albedo Texture", bsdf->albedoTexture);
 }
 
 void Attribute::ComponentVisitor::Visit(BSDF_Emission::Ptr bsdf) {

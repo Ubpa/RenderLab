@@ -9,6 +9,10 @@
 #include <functional>
 
 namespace CppUtil {
+	namespace Basic {
+		class Image;
+	}
+
 	namespace Engine {
 		class SObj;
 
@@ -40,6 +44,9 @@ namespace CppUtil {
 			void Init(const std::string & path);
 
 		private:
+			void Visit(Basic::CPtr<Basic::Image> img);
+			void Visit(Basic::Ptr<Basic::Image> img);
+
 			void Visit(Basic::Ptr<SObj> sobj);
 			void Visit(Basic::Ptr<Camera> camera);
 
@@ -92,11 +99,6 @@ namespace CppUtil {
 
 			void NewEle(const char * const name, const std::string & text) {
 				NewEle(parentEleStack.back(), name, text);
-			}
-
-			template<typename numT>
-			void NewEle(tinyxml2::XMLElement * parent, const char * name, numT val) {
-				NewEle(parent, name, std::to_string(val));
 			}
 
 			void NewEle(const char * const name, float val) {

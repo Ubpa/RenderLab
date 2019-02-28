@@ -48,6 +48,17 @@ void SObjSaver::Member(XMLElement * parent, const function<void()> & func) {
 	parentEleStack.pop_back();
 }
 
+void SObjSaver::Visit(Image::CPtr img) {
+	if (!img || !img->IsValid() || img->GetPath().empty())
+		return;
+
+	NewEle(str::Image::path, img->GetPath());
+}
+
+void SObjSaver::Visit(Image::Ptr img) {
+	Visit(Image::CPtr(img));
+}
+
 void SObjSaver::Visit(SObj::Ptr sobj) {
 	// sobj
 	auto ele = doc.NewElement(str::SObj::type);
@@ -158,7 +169,10 @@ void SObjSaver::Visit(BSDF_CookTorrance::Ptr bsdf){
 
 void SObjSaver::Visit(BSDF_Diffuse::Ptr bsdf){
 	NewEle(str::BSDF_Diffuse::type, [=]() {
-		NewEle(str::BSDF_Diffuse::albedo, bsdf->albedo);
+		NewEle(str::BSDF_Diffuse::albedoColor, bsdf->albedoColor);
+		NewEle(str::BSDF_Diffuse::albedoTexture, [=]() {
+			Visit(bsdf->albedoTexture);
+		});
 	});
 }
 
@@ -181,40 +195,25 @@ void SObjSaver::Visit(BSDF_MetalWorkflow::Ptr bsdf){
 	NewEle(str::BSDF_MetalWorkflow::type, [=]() {
 		NewEle(str::BSDF_MetalWorkflow::albedoColor, bsdf->albedoColor);
 		NewEle(str::BSDF_MetalWorkflow::albedoTexture, [=]() {
-			auto img = bsdf->GetAlbedoTexture();
-			if (img && img->IsValid() && !img->GetPath().empty()) {
-				NewEle(str::Image::path, img->GetPath());
-			}
+			Visit(bsdf->GetAlbedoTexture());
 		});
 
 		NewEle(str::BSDF_MetalWorkflow::metallicFactor, bsdf->metallicFactor);
 		NewEle(str::BSDF_MetalWorkflow::metallicTexture, [=]() {
-			auto img = bsdf->GetMetallicTexture();
-			if (img && img->IsValid() && !img->GetPath().empty()) {
-				NewEle(str::Image::path, img->GetPath());
-			}
+			Visit(bsdf->GetMetallicTexture());
 		});
 
 		NewEle(str::BSDF_MetalWorkflow::roughnessFactor, bsdf->roughnessFactor);
 		NewEle(str::BSDF_MetalWorkflow::roughnessTexture, [=]() {
-			auto img = bsdf->GetRoughnessTexture();
-			if (img && img->IsValid() && !img->GetPath().empty()) {
-				NewEle(str::Image::path, img->GetPath());
-			}
+			Visit(bsdf->GetRoughnessTexture());
 		});
 
 		NewEle(str::BSDF_MetalWorkflow::aoTexture, [=]() {
-			auto img = bsdf->GetAOTexture();
-			if (img && img->IsValid() && !img->GetPath().empty()) {
-				NewEle(str::Image::path, img->GetPath());
-			}
+			Visit(bsdf->GetAOTexture());
 		});
 
 		NewEle(str::BSDF_MetalWorkflow::normalTexture, [=]() {
-			auto img = bsdf->GetNormalTexture();
-			if (img && img->IsValid() && !img->GetPath().empty()) {
-				NewEle(str::Image::path, img->GetPath());
-			}
+			Visit(bsdf->GetNormalTexture());
 		});
 	});
 }

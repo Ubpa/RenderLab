@@ -59,6 +59,21 @@ namespace CppUtil {
 				};
 			}
 
+			// 将 name == key 的 ele 做参数调用 func
+			static void Reg(FuncMap & funcMap, const char * const key, const std::function<void(tinyxml2::XMLElement *)> & func) {
+				funcMap[key] = [=](tinyxml2::XMLElement * ele) {
+					func(ele);
+				};
+			}
+
+			// 将 ele 视为 T 载入，复制给 val
+			template<typename T>
+			static void RegLoad(FuncMap & funcMap, const char * const key, Basic::Ptr<T> & val) {
+				Reg(funcMap, key, [&](tinyxml2::XMLElement * ele) {
+					val = Load<T>(ele);
+				});
+			}
+
 			// 将 name == key 的 ele 的 text 以 T 做参数调用func
 			template<typename T>
 			static void Reg(FuncMap & funcMap, const char * const key, const std::function<void(const T &)> & func) {
@@ -72,13 +87,6 @@ namespace CppUtil {
 			static void Reg(FuncMap & funcMap, const char * const key, Basic::Ptr<ObjType> obj, RetType(ObjType::*setVal)(ValType)) {
 				funcMap[key] = [=](tinyxml2::XMLElement * ele) {
 					((*obj).*setVal)(To<std::remove_cv<std::remove_reference<ValType>::type>::type>(ele->GetText()));
-				};
-			}
-			
-			// 将 name == key 的 ele 做参数调用 func
-			static void Reg(FuncMap & funcMap, const char * const key, const std::function<void(tinyxml2::XMLElement *)> & func) {
-				funcMap[key] = [=](tinyxml2::XMLElement * ele) {
-					func(ele);
 				};
 			}
 

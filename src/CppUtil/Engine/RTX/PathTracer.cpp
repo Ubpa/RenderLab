@@ -82,7 +82,7 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 		return vec3(1, 0, 1);
 
 	// 现只支持 BSDF
-	BSDF::Ptr bsdf = material->GetMat();
+	auto bsdf = BSDF::Ptr::Cast(material->GetMat());
 	if (bsdf == nullptr)
 		return vec3(1, 0, 1);
 

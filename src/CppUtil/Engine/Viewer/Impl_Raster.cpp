@@ -79,7 +79,7 @@ void Impl_Raster::Init() {
 
 	auto geos = scene->GetRoot()->GetComponentsInChildren<Geometry>();
 	for (auto geo : geos) {
-		TriMesh::Ptr mesh = geo->GetPrimitive();
+		auto mesh = TriMesh::Ptr::Cast(geo->GetPrimitive());
 		if (mesh == nullptr)
 			continue;
 
@@ -167,7 +167,7 @@ void Impl_Raster::Draw(TriMesh::Ptr mesh) {
 }
 
 void Impl_Raster::Draw(BSDF_Diffuse::Ptr bsdf) {
-	shader_basic.SetVec3f("color", bsdf->albedo);
+	shader_basic.SetVec3f("color", bsdf->albedoColor);
 }
 
 void Impl_Raster::Draw(BSDF_Glass::Ptr bsdf) {

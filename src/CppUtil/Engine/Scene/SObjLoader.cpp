@@ -272,7 +272,8 @@ static BSDF_Diffuse::Ptr SObjLoader::Load(XMLElement * ele, BSDF_Diffuse*){
 
 	FuncMap funcMap;
 
-	Reg(funcMap, str::BSDF_Diffuse::albedo, bsdf->albedo);
+	Reg(funcMap, str::BSDF_Diffuse::albedoColor, bsdf->albedoColor);
+	RegLoad(funcMap, str::BSDF_Diffuse::albedoTexture, bsdf->albedoTexture);
 
 	LoadChildrenEles(ele, funcMap);
 

@@ -122,7 +122,8 @@ namespace str {
 	namespace BSDF_Diffuse {
 		const char * const type = "BSDF_Diffuse";
 
-		const char * const albedo = "albedo";
+		const char * const albedoColor = "albedoColor";
+		const char * const albedoTexture = "albedoTexture";
 	}
 
 	namespace BSDF_Emission {
