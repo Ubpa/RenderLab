@@ -142,9 +142,3 @@ void BSDF_MetalWorkflow::ChangeNormal(const vec2 & texcoord, const vec3 tangent,
 	vec3 normalSample = 2.0f * normalTexture->Sample(texcoord) - 1.0f;
 	normal = normalize(TBN * normalSample);
 }
-
-Image::CPtr BSDF_MetalWorkflow::GetAlbedoTexture() const { return albedoTexture; }
-Image::CPtr BSDF_MetalWorkflow::GetMetallicTexture() const { return metallicTexture; }
-Image::CPtr BSDF_MetalWorkflow::GetRoughnessTexture() const { return roughnessTexture; }
-Image::CPtr BSDF_MetalWorkflow::GetAOTexture() const { return aoTexture; }
-Image::CPtr BSDF_MetalWorkflow::GetNormalTexture() const { return normalTexture; }

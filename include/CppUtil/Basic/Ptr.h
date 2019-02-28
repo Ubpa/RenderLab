@@ -2,6 +2,7 @@
 #define _BASIC_HEADER_PTR_H_
 
 #include <memory>
+#include <typeinfo>
 
 namespace CppUtil {
 	namespace Basic {
@@ -23,14 +24,14 @@ namespace CppUtil {
 
 		template <typename T>
 		struct InitWrapper<T, true> {
-			static void Func(T * p) {
+			inline static void Func(T * p) {
 				if (p != nullptr) p->InitAfterGenSharePtr();
 			}
 		};
 
 		template <typename T>
 		struct InitWrapper<T, false> {
-			static void Func(T * p) { }
+			inline static void Func(T * p) { }
 		};
 
 		template <typename T>
@@ -40,14 +41,14 @@ namespace CppUtil {
 		struct CastWrapper;
 		template <typename T1, typename T2>
 		struct CastWrapper<T1, T2, true> {
-			static std::shared_ptr<T1> call(std::shared_ptr<T2> ptr) {
+			inline static std::shared_ptr<T1> call(std::shared_ptr<T2> ptr) {
 				return std::dynamic_pointer_cast<T1>(ptr);
 			}
 		};
 		template <typename T1, typename T2>
 		struct CastWrapper<T1, T2, false> {
-			static std::shared_ptr<T1> call(std::shared_ptr<T2> ptr) {
-				return ERROR_T1_is_not_base_of_T2_or_T2_is_not_base_of_T1();
+			inline static std::shared_ptr<T1> call(std::shared_ptr<T2> ptr) {
+				return ERROR_T1_is_not_base_of_T2();
 			}
 		};
 		template <typename T1, typename T2>
@@ -71,12 +72,25 @@ namespace CppUtil {
 			Ptr(const std::shared_ptr<T> & p) : std::shared_ptr<T>(p) { }
 			Ptr(const std::shared_ptr<T> && p) : std::shared_ptr<T>(p) { }
 
-			// T1 is base of T2 or T2 is base of T1
-			template<typename T2>
-			Ptr(const Ptr<T2> & ptr) : std::shared_ptr<T>(Cast<T, T2>::call(std::shared_ptr<T2>(ptr))) { }
+			template<typename ChildT>
+			Ptr(const Ptr<ChildT> & ptr) : std::shared_ptr<T>(CastWrapper<T, ChildT, std::is_base_of_v<T, ChildT>>::call(ptr)) { }
 
-			operator bool() const{
+			template<typename BaseT>
+			inline static Ptr<T> Cast(const Ptr<BaseT> & ptr) {
+				return Ptr<T>(CastWrapper<T, BaseT, std::is_base_of_v<BaseT, T>>::call(ptr));
+			}
+
+			Ptr(const Ptr<std::remove_const_t<T>> & ptr) : std::shared_ptr<T>(ptr) {}
+
+			operator std::shared_ptr<T>() { return std::shared_ptr<T>(*this); }
+
+			inline operator bool() const{
 				return *this != nullptr;
+			}
+
+			template<typename T>
+			inline bool IsPtrOf() const {
+				return typeid(*this) == typeid(T);
 			}
 		};
 
@@ -86,7 +100,7 @@ namespace CppUtil {
 		public:
 			using std::weak_ptr<T>::weak_ptr;
 
-			bool operator < (const std::weak_ptr<T> & rhs) const {
+			inline bool operator < (const std::weak_ptr<T> & rhs) const {
 				return this->lock() < rhs.lock();
 			}
 		};

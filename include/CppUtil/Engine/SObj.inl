@@ -10,7 +10,10 @@ struct SObj::Wrapper<T, true> {
 
 	static Basic::Ptr<T> GetComponent(const Basic::TypeMap<Basic::Ptr<Component>> & components) {
 		auto target = components.find(typeid(T));
-		return target == components.end() ? nullptr : target->second;
+		if (target == components.end())
+			return nullptr;
+
+		return Basic::Ptr<T>::Cast(target->second);
 	}
 };
 

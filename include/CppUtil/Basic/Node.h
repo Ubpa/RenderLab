@@ -5,46 +5,77 @@
 
 #include <set>
 
-#define NODE_SETUP(CLASS)\
-ELE_SETUP(CLASS)\
-public:\
-virtual void TraverseAccept(CppUtil::Basic::EleVisitor::Ptr eleVisitor) {\
-	eleVisitor->Visit(This());\
-	for (auto child : GetChildren())\
-		child->TraverseAccept(eleVisitor);\
-}\
-virtual void AscendAccept(CppUtil::Basic::EleVisitor::Ptr eleVisitor) {\
-	eleVisitor->Visit(This());\
-	if(GetParent())\
-		GetParent()->AscendAccept(eleVisitor);\
-}\
-virtual void InitAfterGenSharePtr() {\
-	if(GetParent())\
-		GetParent()->AddChild(This());\
-} 
-
 namespace CppUtil {
 	namespace Basic {
+		template<typename T>
 		class Node : public Element {
-			NODE_SETUP(Node)
+			ELE_SETUP(Node<T>)
 
 		public:
-			Node(Node::Ptr parent = nullptr)
+			Node(Basic::Ptr<T> parent = nullptr)
 				: parent(parent) { }
 
-			void AddChild(Node::Ptr child);
-			void DelChild(Node::Ptr child);
-			void SetParent(Node::Ptr parent);
-			Node::Ptr GetParent() const { return parent.lock(); }
-			const std::set<Node::Ptr> & GetChildren() const { return children; }
+			void AddChild(Basic::Ptr<T> child) {
+				if (!child->parent.expired())
+					child->parent.lock()->DelChild(child);
 
-			bool IsAncestorOf(Node::CPtr node) const;
-			bool IsDescendantOf(Node::CPtr node) const;
+				child->parent = Basic::Ptr<T>::Cast(This());
+				children.insert(child);
+			}
+
+			void DelChild(Basic::Ptr<T> child) {
+				if (child->parent.lock() == This()) {
+					children.erase(child);
+					child->parent.reset();
+				}
+			}
+
+			void SetParent(Basic::Ptr<T> parent) {
+				parent->AddChild(Basic::Ptr<T>::Cast(This()));
+			}
+
+			Basic::Ptr<T> GetParent() const { return parent.lock(); }
+			const std::set<Basic::Ptr<T>> & GetChildren() const { return children; }
+
+			bool IsAncestorOf(Basic::CPtr<T> node) const {
+				return node->IsDescendantOf(Basic::CPtr<T>::Cast(CThis()));
+			}
+
+			bool IsDescendantOf(Basic::CPtr<T> node) const {
+				if (CThis() == node)
+					return true;
+
+				if (parent.expired())
+					return false;
+
+				return parent.lock()->IsDescendantOf(node);
+			}
+
+		public:
+			void TraverseAccept(CppUtil::Basic::EleVisitor::Ptr eleVisitor) {
+				eleVisitor->Visit(Basic::Ptr<T>::Cast(This()));
+				for (auto child : GetChildren())
+					child->TraverseAccept(eleVisitor);
+			}
+
+			void AscendAccept(CppUtil::Basic::EleVisitor::Ptr eleVisitor) {
+				eleVisitor->Visit(Basic::Ptr<T>::Cast(This()));
+				if (GetParent())
+					GetParent()->AscendAccept(eleVisitor);
+			}
+
+			virtual void InitAfterGenSharePtr() = 0;
 
 		private:
-			Node::WPtr parent;
-			std::set<Node::Ptr> children;
+			Basic::WPtr<T> parent;
+			std::set<Basic::Ptr<T>> children;
 		};
+
+		template<typename T>
+		void Node<T>::InitAfterGenSharePtr() {
+			if (GetParent())
+				GetParent()->AddChild(Basic::Ptr<T>::Cast(This()));
+		}
 	}
 }
 

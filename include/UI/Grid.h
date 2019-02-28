@@ -82,6 +82,11 @@ namespace Ui {
 		// image
 		void AddEditImage(const std::string & text, CppUtil::Basic::CPtr<CppUtil::Basic::Image> img, const std::function<void(CppUtil::Basic::Ptr<CppUtil::Basic::Image>)> & slot);
 
+		// image
+		void AddEditImage(const std::string & text, CppUtil::Basic::Ptr<CppUtil::Basic::Image> & img) {
+			AddEditImage(text, img, [&](CppUtil::Basic::Ptr<CppUtil::Basic::Image> newImg) {img = newImg; });
+		}
+
 		// clear and delete
 		void Clear();
 

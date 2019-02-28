@@ -16,10 +16,10 @@ namespace CppUtil {
 		class Component;
 
 		// 组件式编程，不要再派生子类了，就是用 component 来表达语义
-		class SObj final : public Basic::Node {
-			NODE_SETUP(SObj)
+		class SObj final : public Basic::Node<SObj> {
+			ELE_SETUP(SObj)
 		public:
-			SObj(Node::Ptr parent = nullptr, const std::string & name = "")
+			SObj(SObj::Ptr parent = nullptr, const std::string & name = "")
 				: Node(parent), name(name) { }
 
 			bool Save(const std::string & path);
@@ -52,6 +52,11 @@ namespace CppUtil {
 			glm::mat4 GetLocalToWorldMatrix();
 			glm::mat4 GetWorldToLocalMatrix() {
 				return glm::inverse(GetLocalToWorldMatrix());
+			}
+
+		public:
+			virtual void InitAfterGenSharePtr() {
+				Basic::Node<SObj>::InitAfterGenSharePtr();
 			}
 
 		public:

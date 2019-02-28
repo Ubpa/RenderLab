@@ -38,8 +38,6 @@ cd build
 cmake .. -Wno-dev
 ```
 
-
-
 ## 3. TODO
 
 - [x] 移植 OpenGL
@@ -110,6 +108,7 @@ cmake .. -Wno-dev
       - [x] normal
   - [ ] 低差异序列
   - [ ] 景深
+  - [x] 点光源
 - [ ] 引擎新增功能
   - [x] xml 场景文件
     - [x] 保存 SObj
