@@ -35,7 +35,7 @@ SObj::Ptr GenBox() {
 	};
 
 	vec3 axisArr[wallNum] = {
-		vec3(0, 1, 0),
+		vec3(0, 0, 1),
 		vec3(0, 1, 0),
 		vec3(0, 0, 1),
 		vec3(0, 0, 1),
@@ -43,9 +43,9 @@ SObj::Ptr GenBox() {
 	};
 
 	float degreeArr[wallNum] = {
+		180,
 		0,
-		0,
-		90,
+		-90,
 		90,
 		90,
 	};

@@ -444,9 +444,9 @@ void Attribute::ComponentVisitor::Visit(AreaLight::Ptr light) {
 void Attribute::ComponentVisitor::Visit(PointLight::Ptr light) {
 	auto grid = GetGrid(attr->componentType2item[typeid(Light)]);
 	grid->AddEditColor("- Color", light->color);
-	grid->AddEditVal("- Intensity", light->intensity, 0, 20, 0.1);
-	grid->AddEditVal("- Linear", light->linear, 0, 1.0, 0.01);
-	grid->AddEditVal("- Quadratic", light->quadratic, 0, 2.0, 0.01);
+	grid->AddEditVal("- Intensity", light->intensity, 0, 20, 2000);
+	grid->AddEditVal("- Linear", light->linear, 0, 1.0, 100);
+	grid->AddEditVal("- Quadratic", light->quadratic, 0, 2.0, 200);
 }
 
 // -------------- Attribute --------------

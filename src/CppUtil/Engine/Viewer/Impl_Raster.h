@@ -7,12 +7,14 @@
 
 #include <CppUtil/OpenGL/VAO.h>
 #include <CppUtil/OpenGL/Shader.h>
+#include <CppUtil/OpenGL/Texture.h>
 
 #include <map>
 
 namespace CppUtil {
 	namespace Basic {
 		class Operation;
+		class Image;
 	}
 
 	namespace Qt {
@@ -59,6 +61,9 @@ namespace CppUtil {
 			void Draw(Basic::Ptr<BSDF_MetalWorkflow> bsdf);
 
 		private:
+			OpenGL::Texture GetTex(Basic::CPtr<Basic::Image> img);
+
+		private:
 			std::vector<glm::mat4> modelVec;
 
 		private:
@@ -66,7 +71,13 @@ namespace CppUtil {
 			OpenGL::VAO VAO_P3_Sphere;
 			OpenGL::VAO VAO_P3_Plane;
 			OpenGL::Shader shader_basic;
+			OpenGL::Shader shader_diffuse;
 			std::map<Basic::Ptr<TriMesh>, OpenGL::VAO> meshVAOs;
+			std::map<Basic::CPtr<Basic::Image>, OpenGL::Texture> img2tex;
+
+			unsigned int lightsUBO;
+
+			OpenGL::Shader curShader;
 		};
 	}
 }

@@ -15,9 +15,11 @@ using namespace CppUtil::Basic;
 using namespace CppUtil::Engine;
 using namespace CppUtil::Qt;
 using namespace CppUtil::OpenGL;
+using namespace glm;
 
 Roamer::Roamer(RawAPI_OGLW * pOGLW)
-	: pOGLW(pOGLW), camera(new Camera) { }
+	: pOGLW(pOGLW), camera(new Camera(vec3(0,0.75,2.3))) {
+}
 
 void Roamer::Init() {
 	glGenBuffers(1, &cameraMatrixsUBO);

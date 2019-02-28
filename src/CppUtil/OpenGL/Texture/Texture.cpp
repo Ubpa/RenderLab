@@ -23,6 +23,10 @@ Texture::Texture(uint ID, ENUM_TYPE type)
 Texture::Texture(ENUM_TYPE type)
 	: Texture(0, type) { }
 
+Texture::Texture(Image::CPtr img) : type(ENUM_TYPE_2D_DYNAMIC) {
+	SetImg(*img);
+}
+
 Texture::Texture(uint width, uint height, const float * data, uint dataType, uint srcFormat, uint internalFormat) {
 	glGenTextures(1, &ID);
 	glBindTexture(GL_TEXTURE_2D, ID);

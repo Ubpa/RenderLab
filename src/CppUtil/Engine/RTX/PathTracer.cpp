@@ -49,17 +49,6 @@ void PathTracer::Init() {
 		dir_worldToLightVec.push_back(worldToLight);
 	}
 
-	for (auto lightComponent : scene->GetLights()) {
-		lights.push_back(lightComponent->GetLight());
-
-		mat4 lightToWorld = lightComponent->GetLightToWorldMatrixWithoutScale();
-		mat4 worldToLight = inverse(lightToWorld);
-
-		worldToLightVec.push_back(worldToLight);
-		dir_lightToWorldVec.push_back(lightToWorld);
-		dir_worldToLightVec.push_back(worldToLight);
-	}
-
 	bvhAccel->Init(scene->GetRoot());
 }
 
@@ -170,6 +159,9 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 			}
 		}
 	}
+	if (depth+1 >= maxDepth)
+		return emitL + sumLightL;
+	
 	// Éî¶È£¬¶ªÆú¸ÅÂÊ
 	float depthP = depth < maxDepth ? 0.f : 0.5f;
 	if (Math::Rand_F() < depthP)

@@ -9,7 +9,7 @@ const float Camera::NEAR_PLANE = 0.01f;
 const float Camera::FAR_PLANE = 100.0f;
 const float Camera::YAW = -90.0f;
 const float Camera::PITCH = 0.0f;
-const float Camera::FOV = 45.0f;
+const float Camera::FOV = 50.0f;
 const Camera::ENUM_Projection Camera::PROJECTION_MODE = Camera::PROJECTION_PERSEPCTIVE;
 
 // Constructor with vectors

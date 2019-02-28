@@ -30,6 +30,7 @@ namespace CppUtil {
 			Texture(const std::vector<std::string> & skybox);
 			Texture(const std::vector<Basic::CPtr<Basic::Image>> & skyboxImgs);
 			Texture(const std::string & path, bool flip = false, bool gammaCorrection = false);
+			Texture(Basic::CPtr<Basic::Image> img);
 
 			bool Load(const std::vector<std::string> & skybox);
 			bool Load(const std::string & path, bool flip = false, bool gammaCorrection = false);

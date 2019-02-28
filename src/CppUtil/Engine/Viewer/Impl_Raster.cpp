@@ -12,6 +12,9 @@
 #include <CppUtil/Engine/TriMesh.h>
 #include <CppUtil/Engine/AllBSDFs.h>
 
+#include <CppUtil/Engine/Light.h>
+#include <CppUtil/Engine/PointLight.h>
+
 #include <CppUtil/Qt/RawAPI_OGLW.h>
 #include <CppUtil/Qt/RawAPI_Define.h>
 
@@ -25,6 +28,7 @@
 #include <CppUtil/Basic/LambdaOp.h>
 #include <CppUtil/Basic/Sphere.h>
 #include <CppUtil/Basic/Plane.h>
+#include <CppUtil/Basic/Image.h>
 
 #include <ROOT_PATH.h>
 
@@ -58,10 +62,19 @@ Impl_Raster::Impl_Raster(Scene::Ptr scene)
 }
 
 void Impl_Raster::Init() {
+	//------------- light UBO
+	glGenBuffers(1, &lightsUBO);
+	glBindBuffer(GL_UNIFORM_BUFFER, lightsUBO);
+	glBufferData(GL_UNIFORM_BUFFER, 1552, NULL, GL_DYNAMIC_DRAW);
+	glBindBufferBase(GL_UNIFORM_BUFFER, 1, lightsUBO);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
 	//------------ 模型 . P3_Sphere
 	Basic::Sphere sphere(50);
 	vector<VAO::VBO_DataPatch> P3_Sphere_Vec_VBO_Data_Patch = {
 		{sphere.GetPosArr(), sphere.GetPosArrSize(), 3},
+		{sphere.GetNormalArr(), sphere.GetNormalArrSize(), 3},
+		{sphere.GetTexCoordsArr(), sphere.GetTexCoordsArrSize(), 2},
 	};
 	VAO_P3_Sphere = VAO(P3_Sphere_Vec_VBO_Data_Patch, sphere.GetIndexArr(), sphere.GetIndexArrSize());
 
@@ -70,12 +83,15 @@ void Impl_Raster::Init() {
 	Basic::Plane plane;
 	vector<VAO::VBO_DataPatch> P3_Plane_Vec_VBO_Data_Patch = {
 		{plane.GetPosArr(), plane.GetPosArrSize(), 3},
+		{plane.GetNormalArr(), plane.GetNormalArrSize(), 3},
+		{plane.GetTexCoordsArr(), plane.GetTexCoordsArrSize(), 2},
 	};
 	VAO_P3_Plane = VAO(P3_Plane_Vec_VBO_Data_Patch, plane.GetIndexArr(), plane.GetIndexArrSize());
 
 	//------------ 着色器 . basic
 	shader_basic = Shader(rootPath + str_Basic_P3_vs, rootPath + str_Basic_fs);
 	shader_basic.UniformBlockBind("CameraMatrixs", 0);
+	//shader_basic.UniformBlockBind("PointLights", 1);
 
 	auto geos = scene->GetRoot()->GetComponentsInChildren<Geometry>();
 	for (auto geo : geos) {
@@ -91,6 +107,11 @@ void Impl_Raster::Init() {
 		// 用 TriMesh::Ptr 做 ID
 		meshVAOs[mesh] = VAO_P3_Mesh;
 	}
+
+	//------------- 着色器 Diffuse
+	shader_diffuse = Shader(rootPath + str_Basic_P3N3T2_vs, rootPath + "data/shaders/Engine/BSDF_Diffuse.fs");
+	shader_diffuse.UniformBlockBind("CameraMatrixs", 0);
+	shader_diffuse.UniformBlockBind("PointLights", 1);
 }
 
 void Impl_Raster::Draw() {
@@ -101,6 +122,26 @@ void Impl_Raster::Draw() {
 	modelVec.clear();
 	modelVec.push_back(mat4(1.0f));
 	scene->GetRoot()->Accept(This());
+
+	scene->Init();
+	int numLights = 0;
+	glBindBuffer(GL_UNIFORM_BUFFER, lightsUBO);
+	for (auto lightComponent : scene->GetLights()) {
+		auto pointLight = PointLight::Ptr::Cast(lightComponent->GetLight());
+		if (!pointLight)
+			continue;
+
+		numLights++;
+		vec3 position = lightComponent->GetSObj()->GetLocalToWorldMatrix()*vec4(0, 0, 0, 1);
+
+		int base = 16 + 48 * (numLights-1);
+		glBufferSubData(GL_UNIFORM_BUFFER, base, 12, glm::value_ptr(position));
+		glBufferSubData(GL_UNIFORM_BUFFER, base + 16, 12, glm::value_ptr(pointLight->intensity * pointLight->color));
+		glBufferSubData(GL_UNIFORM_BUFFER, base + 28, 4, &pointLight->linear);
+		glBufferSubData(GL_UNIFORM_BUFFER, base + 32, 4, &pointLight->quadratic);
+	}
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, 4, &numLights);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
 void Impl_Raster::Draw(SObj::Ptr sobj) {
@@ -120,8 +161,10 @@ void Impl_Raster::Draw(SObj::Ptr sobj) {
 			auto material = sobj->GetComponent<Material>();
 			if (material && material->GetMat())
 				material->GetMat()->Accept(This());
-			else
-				shader_basic.SetVec3f("color", vec3(1,0,1));
+			else {
+				curShader = shader_basic;
+				shader_basic.SetVec3f("color", vec3(1, 0, 1));
+			}
 
 			primitive->Accept(This());
 		}
@@ -139,18 +182,18 @@ void Impl_Raster::Draw(Engine::Sphere::Ptr sphere) {
 	model = translate(model, sphere->center);
 	model = scale(model, vec3(sphere->r));
 
-	shader_basic.SetMat4f("model", model);
+	curShader.SetMat4f("model", model);
 	
-	VAO_P3_Sphere.Draw(shader_basic);
+	VAO_P3_Sphere.Draw(curShader);
 }
 
 void Impl_Raster::Draw(Engine::Plane::Ptr plane) {
-	shader_basic.SetMat4f("model", modelVec.back());
-	VAO_P3_Plane.Draw(shader_basic);
+	curShader.SetMat4f("model", modelVec.back());
+	VAO_P3_Plane.Draw(curShader);
 }
 
 void Impl_Raster::Draw(TriMesh::Ptr mesh) {
-	shader_basic.SetMat4f("model", modelVec.back());
+	curShader.SetMat4f("model", modelVec.back());
 
 	auto target = meshVAOs.find(mesh);
 	if (target == meshVAOs.end()) {
@@ -163,29 +206,52 @@ void Impl_Raster::Draw(TriMesh::Ptr mesh) {
 		meshVAOs[mesh] = VAO_P3_Mesh;
 	}
 
-	meshVAOs[mesh].Draw(shader_basic);
+	meshVAOs[mesh].Draw(curShader);
 }
 
 void Impl_Raster::Draw(BSDF_Diffuse::Ptr bsdf) {
-	shader_basic.SetVec3f("color", bsdf->albedoColor);
+	curShader = shader_diffuse;
+	string strBSDF = "bsdf.";
+	shader_diffuse.SetVec3f(strBSDF + "albedoColor", bsdf->albedoColor);
+	if (bsdf->albedoTexture && bsdf->albedoTexture->IsValid()) {
+		shader_diffuse.SetBool(strBSDF + "haveAlbedoTexture", true);
+		shader_diffuse.SetInt(strBSDF + "salbedoTexture", 0);
+		GetTex(bsdf->albedoTexture).Use(0);
+	}else
+		shader_diffuse.SetBool(strBSDF + "haveAlbedoTexture", false);
 }
 
 void Impl_Raster::Draw(BSDF_Glass::Ptr bsdf) {
+	curShader = shader_basic;
 	shader_basic.SetVec3f("color", bsdf->transmittance);
 }
 
 void Impl_Raster::Draw(BSDF_Mirror::Ptr bsdf) {
+	curShader = shader_basic;
 	shader_basic.SetVec3f("color", bsdf->reflectance);
 }
 
 void Impl_Raster::Draw(BSDF_Emission::Ptr bsdf) {
+	curShader = shader_basic;
 	shader_basic.SetVec3f("color", bsdf->GetEmission());
 }
 
 void Impl_Raster::Draw(BSDF_CookTorrance::Ptr bsdf) {
+	curShader = shader_basic;
 	shader_basic.SetVec3f("color", bsdf->refletance);
 }
 
 void Impl_Raster::Draw(BSDF_MetalWorkflow::Ptr bsdf) {
+	curShader = shader_basic;
 	shader_basic.SetVec3f("color", bsdf->albedoColor);
+}
+
+Texture Impl_Raster::GetTex(Image::CPtr img) {
+	auto target = img2tex.find(img);
+	if (target != img2tex.end())
+		return target->second;
+
+	auto tex = Texture(img);
+	img2tex[img] = tex;
+	return tex;
 }
