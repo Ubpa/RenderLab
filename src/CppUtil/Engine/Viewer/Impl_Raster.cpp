@@ -123,25 +123,7 @@ void Impl_Raster::Draw() {
 	modelVec.push_back(mat4(1.0f));
 	scene->GetRoot()->Accept(This());
 
-	scene->Init();
-	int numLights = 0;
-	glBindBuffer(GL_UNIFORM_BUFFER, lightsUBO);
-	for (auto lightComponent : scene->GetLights()) {
-		auto pointLight = PointLight::Ptr::Cast(lightComponent->GetLight());
-		if (!pointLight)
-			continue;
-
-		numLights++;
-		vec3 position = lightComponent->GetSObj()->GetLocalToWorldMatrix()*vec4(0, 0, 0, 1);
-
-		int base = 16 + 48 * (numLights-1);
-		glBufferSubData(GL_UNIFORM_BUFFER, base, 12, glm::value_ptr(position));
-		glBufferSubData(GL_UNIFORM_BUFFER, base + 16, 12, glm::value_ptr(pointLight->intensity * pointLight->color));
-		glBufferSubData(GL_UNIFORM_BUFFER, base + 28, 4, &pointLight->linear);
-		glBufferSubData(GL_UNIFORM_BUFFER, base + 32, 4, &pointLight->quadratic);
-	}
-	glBufferSubData(GL_UNIFORM_BUFFER, 0, 4, &numLights);
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	UpdateLights();
 }
 
 void Impl_Raster::Draw(SObj::Ptr sobj) {
@@ -215,7 +197,7 @@ void Impl_Raster::Draw(BSDF_Diffuse::Ptr bsdf) {
 	shader_diffuse.SetVec3f(strBSDF + "albedoColor", bsdf->albedoColor);
 	if (bsdf->albedoTexture && bsdf->albedoTexture->IsValid()) {
 		shader_diffuse.SetBool(strBSDF + "haveAlbedoTexture", true);
-		shader_diffuse.SetInt(strBSDF + "salbedoTexture", 0);
+		shader_diffuse.SetInt(strBSDF + "albedoTexture", 0);
 		GetTex(bsdf->albedoTexture).Use(0);
 	}else
 		shader_diffuse.SetBool(strBSDF + "haveAlbedoTexture", false);
@@ -254,4 +236,26 @@ Texture Impl_Raster::GetTex(Image::CPtr img) {
 	auto tex = Texture(img);
 	img2tex[img] = tex;
 	return tex;
+}
+
+void Impl_Raster::UpdateLights() const {
+	scene->Init();
+	int numLights = 0;
+	glBindBuffer(GL_UNIFORM_BUFFER, lightsUBO);
+	for (auto lightComponent : scene->GetLights()) {
+		auto pointLight = PointLight::Ptr::Cast(lightComponent->GetLight());
+		if (!pointLight)
+			continue;
+
+		numLights++;
+		vec3 position = lightComponent->GetSObj()->GetLocalToWorldMatrix()*vec4(0, 0, 0, 1);
+
+		int base = 16 + 48 * (numLights - 1);
+		glBufferSubData(GL_UNIFORM_BUFFER, base, 12, glm::value_ptr(position));
+		glBufferSubData(GL_UNIFORM_BUFFER, base + 16, 12, glm::value_ptr(pointLight->intensity * pointLight->color));
+		glBufferSubData(GL_UNIFORM_BUFFER, base + 28, 4, &pointLight->linear);
+		glBufferSubData(GL_UNIFORM_BUFFER, base + 32, 4, &pointLight->quadratic);
+	}
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, 4, &numLights);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }

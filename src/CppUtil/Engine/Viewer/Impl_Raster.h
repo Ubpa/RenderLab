@@ -46,7 +46,6 @@ namespace CppUtil {
 			void Init();
 
 		private:
-
 			void Draw(Basic::Ptr<SObj> sobj);
 
 			void Draw(Basic::Ptr<Sphere> sphere);
@@ -61,6 +60,7 @@ namespace CppUtil {
 			void Draw(Basic::Ptr<BSDF_MetalWorkflow> bsdf);
 
 		private:
+			void UpdateLights() const;
 			OpenGL::Texture GetTex(Basic::CPtr<Basic::Image> img);
 
 		private:
@@ -73,7 +73,7 @@ namespace CppUtil {
 			OpenGL::Shader shader_basic;
 			OpenGL::Shader shader_diffuse;
 			std::map<Basic::Ptr<TriMesh>, OpenGL::VAO> meshVAOs;
-			std::map<Basic::CPtr<Basic::Image>, OpenGL::Texture> img2tex;
+			std::map<Basic::WCPtr<Basic::Image>, OpenGL::Texture> img2tex;
 
 			unsigned int lightsUBO;
 

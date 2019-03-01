@@ -64,6 +64,8 @@ namespace CppUtil {
 		private:
 			// Microfacet Specular BRDF
 			static glm::vec3 MS_BRDF(const glm::vec3 & wo, const glm::vec3 & wi, const glm::vec3 & albedo, float metallic, float roughness);
+			// Microfacet Specular BRDF
+			static glm::vec3 MS_BRDF(const glm::vec3 & wo, const glm::vec3 & wi, const glm::vec3 & fr, const glm::vec3 & albedo, float roughness);
 			// Normal Distribution Function
 			static float NDF(const glm::vec3 & h, float roughness);
 			// Fresnel

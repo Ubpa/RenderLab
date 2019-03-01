@@ -13,8 +13,11 @@ vec3 BSDF_MetalWorkflow::F(const vec3 & wo, const vec3 & wi, const vec2 & texcoo
 	auto roughness = GetRoughness(texcoord);
 	auto ao = GetAO(texcoord);
 
+	auto h = normalize(wo + wi);
 	auto diffuse = albedo / Math::PI;
-	return ao * ((1 - metallic)*diffuse + MS_BRDF(wo, wi, albedo, metallic, roughness));
+	auto fr = Fr(wi, h, albedo, metallic);
+
+	return ao * ((1 - metallic)*(1.0f - fr)*diffuse + MS_BRDF(wo, wi, fr, albedo, roughness));
 }
 
 float BSDF_MetalWorkflow::PDF(const vec3 & wo, const vec3 & wi, const vec2 & texcoord) {
@@ -58,15 +61,21 @@ vec3 BSDF_MetalWorkflow::Sample_f(const vec3 & wo, const vec2 & texcoord, vec3 &
 	auto albedo = GetAlbedo(texcoord);
 	auto metallic = GetMetallic(texcoord);
 	auto ao = GetAO(texcoord);
-	//printf("albedo:(%f,%f,%f), metallic£º%f, roughness:%f\n", albedo.x, albedo.y, albedo.z, metallic, roughness);
 
+	auto fr = Fr(wi, h, albedo, metallic);
 	auto diffuse = albedo / Math::PI;
-	return ao * ((1 - metallic)*diffuse + MS_BRDF(wo, wi, albedo, metallic, roughness));
+
+	return ao * ((1 - metallic)*(1.0f - fr)*diffuse + MS_BRDF(wo, wi, fr, albedo, roughness));
 }
 
 vec3 BSDF_MetalWorkflow::MS_BRDF(const vec3 & wo, const vec3 & wi, const vec3 & albedo, float metallic, float roughness) {
 	vec3 h = normalize(wo + wi);
 	return NDF(h, roughness)*Fr(wi, h, albedo, metallic)*G(wo, wi, roughness) / (4 * wo.z*wi.z);
+}
+
+vec3 BSDF_MetalWorkflow::MS_BRDF(const vec3 & wo, const glm::vec3 & wi, const glm::vec3 & fr, const glm::vec3 & albedo, float roughness) {
+	vec3 h = normalize(wo + wi);
+	return NDF(h, roughness) / (4 * wo.z* wi.z) * fr * G(wo, wi, roughness);
 }
 
 float BSDF_MetalWorkflow::NDF(const vec3 & h, float roughness) {

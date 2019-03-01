@@ -107,6 +107,9 @@ namespace CppUtil {
 
 		template<typename T>
 		using CPtr = Ptr<const T>;
+
+		template<typename T>
+		using WCPtr = WPtr<const T>;
 	}
 }
 

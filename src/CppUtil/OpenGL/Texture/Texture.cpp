@@ -23,7 +23,7 @@ Texture::Texture(uint ID, ENUM_TYPE type)
 Texture::Texture(ENUM_TYPE type)
 	: Texture(0, type) { }
 
-Texture::Texture(Image::CPtr img) : type(ENUM_TYPE_2D_DYNAMIC) {
+Texture::Texture(Image::CPtr img) : ID(0), type(ENUM_TYPE_2D_DYNAMIC) {
 	SetImg(*img);
 }
 
