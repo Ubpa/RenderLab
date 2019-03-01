@@ -122,7 +122,7 @@ bool FBO::GenFBO_RGBF_DEPTH(uint width, uint height, uint colorBufferNum) {
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, colorBufferID, 0);
-		colorTextures.push_back(Texture(colorBufferID));
+		colorTextures.push_back(Texture(colorBufferID, Texture::ENUM_TYPE_2D));
 	}
 
 	if (colorBufferNum > 1) {
@@ -179,7 +179,7 @@ bool FBO::GenFBO_MSAA(uint width, uint height) {
 		return false;
 	}
 
-	colorTextures.push_back(Texture(colorBufferID));
+	colorTextures.push_back(Texture(colorBufferID, Texture::ENUM_TYPE_2D));
 	return true;
 }
 
@@ -209,7 +209,7 @@ bool FBO::GenFBO_COLOR(uint width, uint height, bool isFloat) {
 		return false;
 	}
 
-	colorTextures.push_back(Texture(colorBufferID));
+	colorTextures.push_back(Texture(colorBufferID, Texture::ENUM_TYPE_2D));
 	return true;
 }
 
@@ -235,7 +235,7 @@ bool FBO::GenFBO_RTX(uint width, uint height) {
 		return false;
 	}
 
-	colorTextures.push_back(Texture(colorBufferID));
+	colorTextures.push_back(Texture(colorBufferID, Texture::ENUM_TYPE_2D));
 	return true;
 }
 
@@ -259,7 +259,7 @@ bool FBO::GenFBO_RED(uint width, uint height) {
 		return false;
 	}
 
-	colorTextures.push_back(Texture(colorBufferID));
+	colorTextures.push_back(Texture(colorBufferID, Texture::ENUM_TYPE_2D));
 	return true;
 }
 
@@ -290,7 +290,7 @@ bool FBO::GenFBO_DEPTH(uint width, uint height) {
 		return false;
 	}
 
-	depthTexture = Texture(depthBufferID);
+	depthTexture = Texture(depthBufferID, Texture::ENUM_TYPE_2D);
 	return true;
 }
 
@@ -376,9 +376,9 @@ bool FBO::GenFBO_GBUFFER(uint width, uint height) {
 		return false;
 	}
 
-	colorTextures.push_back(gPosition);
-	colorTextures.push_back(gNormal);
-	colorTextures.push_back(gAlbedoSpec);
+	colorTextures.push_back(Texture(gPosition, Texture::ENUM_TYPE_2D));
+	colorTextures.push_back(Texture(gNormal, Texture::ENUM_TYPE_2D));
+	colorTextures.push_back(Texture(gAlbedoSpec, Texture::ENUM_TYPE_2D));
 
 	return true;
 }
@@ -398,7 +398,7 @@ bool FBO::GenFBO_RAYTRACING(uint width, uint height) {
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, colorBufferID, 0);
-		colorTextures.push_back(Texture(colorBufferID));
+		colorTextures.push_back(Texture(colorBufferID, Texture::ENUM_TYPE_2D));
 	}
 	{
 		uint colorBufferID;
@@ -410,7 +410,7 @@ bool FBO::GenFBO_RAYTRACING(uint width, uint height) {
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, colorBufferID, 0);
-		colorTextures.push_back(Texture(colorBufferID));
+		colorTextures.push_back(Texture(colorBufferID, Texture::ENUM_TYPE_2D));
 	}
 
 	uint attachments[colorBufferNum] = {

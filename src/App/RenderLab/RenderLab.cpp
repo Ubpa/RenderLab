@@ -19,6 +19,8 @@
 #include <CppUtil/Basic/GStorage.h>
 #include <CppUtil/Basic/Math.h>
 
+#include <ROOT_PATH.h>
+
 #include <qdebug.h>
 #include <qtimer.h>
 #include <qfiledialog.h>
@@ -53,7 +55,8 @@ RenderLab::RenderLab(QWidget *parent)
 	const size_t fps = 60;
 	timer->start(1000 / fps);
 
-	scene = GenScene(10);
+	auto root = SObj::Load(ROOT_PATH + "data/SObjs/CB_PointLight.xml");
+	scene = ToPtr(new Scene(root));
 
 	// viewer
 	viewer = ToPtr(new Viewer(ui.OGLW_Raster, scene));

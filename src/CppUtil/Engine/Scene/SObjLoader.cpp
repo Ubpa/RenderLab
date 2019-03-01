@@ -217,7 +217,7 @@ static PointLight::Ptr SObjLoader::Load(XMLElement * ele, PointLight*) {
 	Reg(funcMap, str::PointLight::color, pointLight->color);
 	Reg(funcMap, str::PointLight::intensity, pointLight->intensity);
 	Reg(funcMap, str::PointLight::linear, pointLight->linear);
-	Reg(funcMap, str::PointLight::intensity, pointLight->quadratic);
+	Reg(funcMap, str::PointLight::quadratic, pointLight->quadratic);
 
 	LoadChildrenEles(ele, funcMap);
 

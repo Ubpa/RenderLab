@@ -185,3 +185,17 @@ Image::Image(const Image & img) {
 	data = new uByte[bytesNum];
 	memcpy(data, img.data, bytesNum * sizeof(uByte));
 }
+
+Image::Ptr Image::GenFlip() const {
+	if (!IsValid())
+		return nullptr;
+
+	auto img = ToPtr(new Image(width, height, channel));
+
+	for (int i = 0; i < width; i++) {
+		for (int j = 0; j < height; j++)
+			img->SetPixel(i, height - 1 - j, GetPixel_UB(i, j));
+	}
+
+	return img;
+}

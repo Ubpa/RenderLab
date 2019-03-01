@@ -24,7 +24,8 @@ namespace CppUtil {
 				ENUM_TYPE_2D_DYNAMIC,
 			};
 
-			Texture(uint ID = 0, ENUM_TYPE type = ENUM_TYPE_2D);
+			Texture();
+			Texture(uint ID, ENUM_TYPE type);
 			Texture(ENUM_TYPE type);
 			Texture(uint width, uint height, const float * data, uint dataType, uint srcFormat, uint internalFormat);
 			Texture(const std::vector<std::string> & skybox);

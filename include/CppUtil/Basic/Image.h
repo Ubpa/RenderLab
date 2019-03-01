@@ -54,6 +54,7 @@ namespace CppUtil {
 			void GenBuffer(int width, int height, int channel);
 			void Free();
 			bool SaveAsPNG(const std::string & fileName, bool flip = false) const;
+			Image::Ptr GenFlip() const;
 
 			//------------
 

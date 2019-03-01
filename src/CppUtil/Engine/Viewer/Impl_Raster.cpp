@@ -233,7 +233,7 @@ Texture Impl_Raster::GetTex(Image::CPtr img) {
 	if (target != img2tex.end())
 		return target->second;
 
-	auto tex = Texture(img);
+	auto tex = Texture(img->GenFlip());
 	img2tex[img] = tex;
 	return tex;
 }
