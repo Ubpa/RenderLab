@@ -78,10 +78,8 @@ vec2 Math::SphereNormal2Texcoord(const vec3 & normal) {
 
 vec3 Math::SphereNormal2Tangent(const vec3 & normal) {
 	float phi = atan2(-normal.x, -normal.z) + Math::PI;
-	float theta = acos(normal.y);
 
-	float sinTheta = sin(theta);
-	return normalize(vec3(sinTheta * cos(phi), 0, - sinTheta * sin(phi)));
+	return vec3(cos(phi), 0, - sin(phi));
 }
 
 vec4 Math::Intersect_RayTri(const vec3 & e, const vec3 & d, const vec3 & a, const vec3 & b, const vec3 & c) {

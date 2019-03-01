@@ -68,8 +68,8 @@ namespace CppUtil {
 
 		private:
 			Basic::Ptr<Scene> scene;
-			OpenGL::VAO VAO_P3_Sphere;
-			OpenGL::VAO VAO_P3_Plane;
+			OpenGL::VAO VAO_P3N3T2T3_Sphere;
+			OpenGL::VAO VAO_P3N3T2T3_Plane;
 			OpenGL::Shader shader_basic;
 			OpenGL::Shader shader_diffuse;
 			OpenGL::Shader shader_metalWorkflow;

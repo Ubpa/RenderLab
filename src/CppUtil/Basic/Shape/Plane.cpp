@@ -6,10 +6,10 @@ Plane::Plane()
 	: Shape(4, 2) {
 	const float vertexData[32] = {
 		// positions          // normals           // texture coords
-		-0.5f,  0.0f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 0.0f, //left front
-		 0.5f,  0.0f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 0.0f, //right front
-		-0.5f,  0.0f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f, //left back
-		 0.5f,  0.0f, -0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 1.0f, //right back
+		-0.5f,  0.0f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f, //left front
+		 0.5f,  0.0f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 1.0f, //right front
+		-0.5f,  0.0f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 0.0f, //left back
+		 0.5f,  0.0f, -0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 0.0f, //right back
 	};
 
 	normalArr = new Array2D<float>(vertexNum, 3);

@@ -149,7 +149,7 @@ void BSDF_MetalWorkflow::ChangeNormal(const vec2 & texcoord, const vec3 tangent,
 	if (!normalTexture || !normalTexture->IsValid())
 		return;
 
-	const vec3 bitangent = cross(normal, tangent);
+	const vec3 bitangent = cross(tangent, normal);
 	mat3 TBN(tangent, bitangent, normal);
 	vec3 normalSample = 2.0f * normalTexture->Sample(texcoord) - 1.0f;
 	normal = normalize(TBN * normalSample);

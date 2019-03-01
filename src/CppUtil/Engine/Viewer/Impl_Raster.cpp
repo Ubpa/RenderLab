@@ -65,28 +65,30 @@ void Impl_Raster::Init() {
 	//------------- light UBO
 	glGenBuffers(1, &lightsUBO);
 	glBindBuffer(GL_UNIFORM_BUFFER, lightsUBO);
-	glBufferData(GL_UNIFORM_BUFFER, 1552, NULL, GL_DYNAMIC_DRAW);
+	glBufferData(GL_UNIFORM_BUFFER, 784, NULL, GL_DYNAMIC_DRAW);
 	glBindBufferBase(GL_UNIFORM_BUFFER, 1, lightsUBO);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-	//------------ 模型 . P3_Sphere
+	//------------ 模型 . P3N3T2T3_plane
 	Basic::Sphere sphere(50);
 	vector<VAO::VBO_DataPatch> P3_Sphere_Vec_VBO_Data_Patch = {
 		{sphere.GetPosArr(), sphere.GetPosArrSize(), 3},
 		{sphere.GetNormalArr(), sphere.GetNormalArrSize(), 3},
 		{sphere.GetTexCoordsArr(), sphere.GetTexCoordsArrSize(), 2},
+		{sphere.GetTangentArr(), sphere.GetTangentArrSize(), 3},
 	};
-	VAO_P3_Sphere = VAO(P3_Sphere_Vec_VBO_Data_Patch, sphere.GetIndexArr(), sphere.GetIndexArrSize());
+	VAO_P3N3T2T3_Sphere = VAO(P3_Sphere_Vec_VBO_Data_Patch, sphere.GetIndexArr(), sphere.GetIndexArrSize());
 
 
 	//------------ 模型 . P3_Plane
-	Basic::Plane plane;
+	auto plane = TriMesh::GenPlane();
 	vector<VAO::VBO_DataPatch> P3_Plane_Vec_VBO_Data_Patch = {
-		{plane.GetPosArr(), plane.GetPosArrSize(), 3},
-		{plane.GetNormalArr(), plane.GetNormalArrSize(), 3},
-		{plane.GetTexCoordsArr(), plane.GetTexCoordsArrSize(), 2},
+		{&(plane->GetPositions()[0][0]), static_cast<uint>(plane->GetPositions().size() * 3 * sizeof(float)), 3},
+		{&(plane->GetNormals()[0][0]), static_cast<uint>(plane->GetNormals().size() * 3 * sizeof(float)), 3},
+		{&(plane->GetTexcoords()[0][0]), static_cast<uint>(plane->GetTexcoords().size() * 2 * sizeof(float)), 2},
+		{&(plane->GetTangents()[0][0]), static_cast<uint>(plane->GetTangents().size() * 3 * sizeof(float)), 3},
 	};
-	VAO_P3_Plane = VAO(P3_Plane_Vec_VBO_Data_Patch, plane.GetIndexArr(), plane.GetIndexArrSize());
+	VAO_P3N3T2T3_Plane = VAO(P3_Plane_Vec_VBO_Data_Patch, plane->GetIndice().data(), static_cast<uint>(plane->GetIndice().size() * sizeof(uint)));
 
 	//------------ 着色器 . basic
 	shader_basic = Shader(rootPath + str_Basic_P3_vs, rootPath + str_Basic_fs);
@@ -99,12 +101,15 @@ void Impl_Raster::Init() {
 			continue;
 
 		vector<VAO::VBO_DataPatch> P3_Mesh_Vec_VBO_Data_Patch = {
-			{ &(mesh->GetPositions()[0][0]), static_cast<uint>(mesh->GetPositions().size() * 3 * sizeof(float)), 3 },
+			{&(mesh->GetPositions()[0][0]), static_cast<uint>(mesh->GetPositions().size() * 3 * sizeof(float)), 3},
+			{&(mesh->GetNormals()[0][0]), static_cast<uint>(mesh->GetNormals().size() * 3 * sizeof(float)), 3},
+			{&(mesh->GetTexcoords()[0][0]), static_cast<uint>(mesh->GetTexcoords().size() * 2 * sizeof(float)), 2},
+			{&(mesh->GetTangents()[0][0]), static_cast<uint>(mesh->GetTangents().size() * 3 * sizeof(float)), 3},
 		};
 
-		VAO VAO_P3_Mesh(P3_Mesh_Vec_VBO_Data_Patch, mesh->GetIndice().data(), mesh->GetIndice().size() * sizeof(size_t));
+		VAO VAO_P3N3T2T3_Mesh(P3_Mesh_Vec_VBO_Data_Patch, mesh->GetIndice().data(), static_cast<uint>(plane->GetIndice().size() * sizeof(uint)));
 		// 用 TriMesh::Ptr 做 ID
-		meshVAOs[mesh] = VAO_P3_Mesh;
+		meshVAOs[mesh] = VAO_P3N3T2T3_Mesh;
 	}
 
 	//------------- 着色器 Diffuse
@@ -114,13 +119,14 @@ void Impl_Raster::Init() {
 	shader_diffuse.SetInt("bsdf.albedoTexture", 0);
 
 	//------------- 着色器 MetalWorkflow
-	shader_metalWorkflow = Shader(rootPath + str_Basic_P3N3T2_vs, rootPath + "data/shaders/Engine/BSDF_MetalWorkflow.fs");
+	shader_metalWorkflow = Shader(rootPath + str_Basic_P3N3T2T3_vs, rootPath + "data/shaders/Engine/BSDF_MetalWorkflow.fs");
 	shader_metalWorkflow.UniformBlockBind("Camera", 0);
 	shader_metalWorkflow.UniformBlockBind("PointLights", 1);
 	shader_metalWorkflow.SetInt("bsdf.albedoTexture", 0);
 	shader_metalWorkflow.SetInt("bsdf.metallicTexture", 1);
 	shader_metalWorkflow.SetInt("bsdf.roughnessTexture", 2);
 	shader_metalWorkflow.SetInt("bsdf.aoTexture", 3);
+	shader_metalWorkflow.SetInt("bsdf.normalTexture", 4);
 }
 
 void Impl_Raster::Draw() {
@@ -175,12 +181,12 @@ void Impl_Raster::Draw(Engine::Sphere::Ptr sphere) {
 
 	curShader.SetMat4f("model", model);
 	
-	VAO_P3_Sphere.Draw(curShader);
+	VAO_P3N3T2T3_Sphere.Draw(curShader);
 }
 
 void Impl_Raster::Draw(Engine::Plane::Ptr plane) {
 	curShader.SetMat4f("model", modelVec.back());
-	VAO_P3_Plane.Draw(curShader);
+	VAO_P3N3T2T3_Plane.Draw(curShader);
 }
 
 void Impl_Raster::Draw(TriMesh::Ptr mesh) {
@@ -239,9 +245,9 @@ void Impl_Raster::Draw(BSDF_MetalWorkflow::Ptr bsdf) {
 	shader_metalWorkflow.SetFloat(strBSDF + "metallicFactor", bsdf->metallicFactor);
 	shader_metalWorkflow.SetFloat(strBSDF + "roughnessFactor", bsdf->roughnessFactor);
 
-	const int texNum = 4;
-	Image::CPtr imgs[texNum] = { bsdf->albedoTexture, bsdf->metallicTexture, bsdf->roughnessTexture, bsdf->aoTexture };
-	string names[texNum] = { "Albedo", "Metallic", "Roughness", "AO" };
+	const int texNum = 5;
+	Image::CPtr imgs[texNum] = { bsdf->albedoTexture, bsdf->metallicTexture, bsdf->roughnessTexture, bsdf->aoTexture, bsdf->normalTexture };
+	string names[texNum] = { "Albedo", "Metallic", "Roughness", "AO", "Normal" };
 
 	for (int i = 0; i < texNum; i++) {
 		string wholeName = strBSDF + "have" + names[i] + "Texture";
@@ -259,7 +265,7 @@ Texture Impl_Raster::GetTex(Image::CPtr img) {
 	if (target != img2tex.end())
 		return target->second;
 
-	auto tex = Texture(img->GenFlip());
+	auto tex = Texture(img);
 	img2tex[img] = tex;
 	return tex;
 }

@@ -4,6 +4,8 @@
 #include <CppUtil/Engine/BVHNode.h>
 
 #include <CppUtil/Basic/Cube.h>
+#include <CppUtil/Basic/Sphere.h>
+#include <CppUtil/Basic/Plane.h>
 
 #include <glm/mat2x2.hpp>
 #include <glm/mat2x3.hpp>
@@ -139,4 +141,18 @@ TriMesh::Ptr TriMesh::GenCube() {
 	auto cubeMesh = ToPtr(new TriMesh(cube.GetTriNum(), cube.GetVertexNum(),
 		cube.GetIndexArr(), cube.GetPosArr(), cube.GetNormalArr(), cube.GetTexCoordsArr()));
 	return cubeMesh;
+}
+
+TriMesh::Ptr TriMesh::GenSphere() {
+	Sphere sphere(50);
+	auto sphereMesh = ToPtr(new TriMesh(sphere.GetTriNum(), sphere.GetVertexNum(),
+		sphere.GetIndexArr(), sphere.GetPosArr(), sphere.GetNormalArr(), sphere.GetTexCoordsArr()));
+	return sphereMesh;
+}
+
+TriMesh::Ptr TriMesh::GenPlane() {
+	Plane plane;
+	auto planeMesh = ToPtr(new TriMesh(plane.GetTriNum(), plane.GetVertexNum(),
+		plane.GetIndexArr(), plane.GetPosArr(), plane.GetNormalArr(), plane.GetTexCoordsArr()));
+	return planeMesh;
 }

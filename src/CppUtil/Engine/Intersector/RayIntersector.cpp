@@ -67,8 +67,8 @@ void RayIntersector::Visit(BVHAccel::Ptr bvhAccel) {
 	bvhAccel->GetBVHRoot()->Accept(This());
 	if (rst.closestSObj) {
 		auto mat = bvhAccel->GetNormL2WMat(rst.closestSObj);
-		rst.n = mat * rst.n;
-		rst.tangent = mat * rst.tangent;
+		rst.n = normalize(mat * rst.n);
+		rst.tangent = normalize(mat * rst.tangent);
 	}
 }
 

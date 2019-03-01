@@ -16,7 +16,7 @@ struct PointLight {
     float quadratic;// 4	32
 };
 
-#define MAX_POINT_LIGHTS 32
+#define MAX_POINT_LIGHTS 16
 const float PI = 3.14159265359;
 
 in VS_OUT {
@@ -25,10 +25,10 @@ in VS_OUT {
 	vec2 TexCoords;
 } fs_in;
 
-// 1552
+// 784
 layout (std140) uniform PointLights{
 	int numLight;// 16
-	PointLight pointLights[MAX_POINT_LIGHTS];// 48 * MAX_POINT_LIGHTS = 48 * 32
+	PointLight pointLights[MAX_POINT_LIGHTS];// 48 * MAX_POINT_LIGHTS = 48 * 16 = 768
 };
 
 uniform BSDF_Diffuse bsdf;

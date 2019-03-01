@@ -37,7 +37,8 @@ namespace CppUtil {
 
 		public:
 			static TriMesh::Ptr GenCube();
-			//static TriMesh::Ptr GenSphere();
+			static TriMesh::Ptr GenSphere();
+			static TriMesh::Ptr GenPlane();
 
 		private:
 			void GenTangents();
