@@ -72,6 +72,7 @@ namespace CppUtil {
 			OpenGL::VAO VAO_P3_Plane;
 			OpenGL::Shader shader_basic;
 			OpenGL::Shader shader_diffuse;
+			OpenGL::Shader shader_metalWorkflow;
 			std::map<Basic::Ptr<TriMesh>, OpenGL::VAO> meshVAOs;
 			std::map<Basic::WCPtr<Basic::Image>, OpenGL::Texture> img2tex;
 

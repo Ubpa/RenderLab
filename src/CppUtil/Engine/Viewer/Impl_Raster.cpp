@@ -90,8 +90,7 @@ void Impl_Raster::Init() {
 
 	//------------ 着色器 . basic
 	shader_basic = Shader(rootPath + str_Basic_P3_vs, rootPath + str_Basic_fs);
-	shader_basic.UniformBlockBind("CameraMatrixs", 0);
-	//shader_basic.UniformBlockBind("PointLights", 1);
+	shader_basic.UniformBlockBind("Camera", 0);
 
 	auto geos = scene->GetRoot()->GetComponentsInChildren<Geometry>();
 	for (auto geo : geos) {
@@ -110,8 +109,18 @@ void Impl_Raster::Init() {
 
 	//------------- 着色器 Diffuse
 	shader_diffuse = Shader(rootPath + str_Basic_P3N3T2_vs, rootPath + "data/shaders/Engine/BSDF_Diffuse.fs");
-	shader_diffuse.UniformBlockBind("CameraMatrixs", 0);
+	shader_diffuse.UniformBlockBind("Camera", 0);
 	shader_diffuse.UniformBlockBind("PointLights", 1);
+	shader_diffuse.SetInt("bsdf.albedoTexture", 0);
+
+	//------------- 着色器 MetalWorkflow
+	shader_metalWorkflow = Shader(rootPath + str_Basic_P3N3T2_vs, rootPath + "data/shaders/Engine/BSDF_MetalWorkflow.fs");
+	shader_metalWorkflow.UniformBlockBind("Camera", 0);
+	shader_metalWorkflow.UniformBlockBind("PointLights", 1);
+	shader_metalWorkflow.SetInt("bsdf.albedoTexture", 0);
+	shader_metalWorkflow.SetInt("bsdf.metallicTexture", 1);
+	shader_metalWorkflow.SetInt("bsdf.roughnessTexture", 2);
+	shader_metalWorkflow.SetInt("bsdf.aoTexture", 3);
 }
 
 void Impl_Raster::Draw() {
@@ -197,7 +206,6 @@ void Impl_Raster::Draw(BSDF_Diffuse::Ptr bsdf) {
 	shader_diffuse.SetVec3f(strBSDF + "albedoColor", bsdf->albedoColor);
 	if (bsdf->albedoTexture && bsdf->albedoTexture->IsValid()) {
 		shader_diffuse.SetBool(strBSDF + "haveAlbedoTexture", true);
-		shader_diffuse.SetInt(strBSDF + "albedoTexture", 0);
 		GetTex(bsdf->albedoTexture).Use(0);
 	}else
 		shader_diffuse.SetBool(strBSDF + "haveAlbedoTexture", false);
@@ -224,8 +232,26 @@ void Impl_Raster::Draw(BSDF_CookTorrance::Ptr bsdf) {
 }
 
 void Impl_Raster::Draw(BSDF_MetalWorkflow::Ptr bsdf) {
-	curShader = shader_basic;
-	shader_basic.SetVec3f("color", bsdf->albedoColor);
+	curShader = shader_metalWorkflow;
+
+	string strBSDF = "bsdf.";
+	shader_metalWorkflow.SetVec3f(strBSDF + "albedoColor", bsdf->albedoColor);
+	shader_metalWorkflow.SetFloat(strBSDF + "metallicFactor", bsdf->metallicFactor);
+	shader_metalWorkflow.SetFloat(strBSDF + "roughnessFactor", bsdf->roughnessFactor);
+
+	const int texNum = 4;
+	Image::CPtr imgs[texNum] = { bsdf->albedoTexture, bsdf->metallicTexture, bsdf->roughnessTexture, bsdf->aoTexture };
+	string names[texNum] = { "Albedo", "Metallic", "Roughness", "AO" };
+
+	for (int i = 0; i < texNum; i++) {
+		string wholeName = strBSDF + "have" + names[i] + "Texture";
+		if (imgs[i] && imgs[i]->IsValid()) {
+			shader_metalWorkflow.SetBool(wholeName, true);
+			GetTex(imgs[i]).Use(i);
+		}
+		else
+			shader_metalWorkflow.SetBool(wholeName, false);
+	}
 }
 
 Texture Impl_Raster::GetTex(Image::CPtr img) {

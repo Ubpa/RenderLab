@@ -28,7 +28,7 @@ namespace CppUtil {
 			void UpdateCamera();
 
 			Qt::RawAPI_OGLW * pOGLW;
-			unsigned int cameraMatrixsUBO;
+			unsigned int cameraUBO;
 			Basic::Ptr<OpenGL::Camera> camera;
 		};
 	}

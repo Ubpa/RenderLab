@@ -268,7 +268,7 @@ RasterOpCreator::SceneOp::Ptr RasterOpCreator::GenScenePaintOp_1() {
 			printf("ERROR: bloomObjShader load fail\n");
 			return;
 		}
-		bloomObjShader.UniformBlockBind("CameraMatrixs", 0);
+		bloomObjShader.UniformBlockBind("Camera", 0);
 		bloomObjShader.SetInt("diffuseTexture", 0);
 		const uint lightNum = 4;
 		for (uint i = 0; i < lightNum; i++) {
@@ -285,7 +285,7 @@ RasterOpCreator::SceneOp::Ptr RasterOpCreator::GenScenePaintOp_1() {
 			printf("ERROR: bloomLightShader load fail\n");
 			return;
 		}
-		bloomLightShader.UniformBlockBind("CameraMatrixs", 0);
+		bloomLightShader.UniformBlockBind("Camera", 0);
 		pOGLW->Reg("bloomLightShader", bloomLightShader);
 
 		//------------ Blur Shader
@@ -335,13 +335,13 @@ RasterOpCreator::SceneOp::Ptr RasterOpCreator::GenScenePaintOp_1() {
 		Camera mainCamera;
 		pOGLW->Reg("mainCamera", mainCamera);
 
-		uint cameraMatrixsUBO;
-		glGenBuffers(1, &cameraMatrixsUBO);
-		glBindBuffer(GL_UNIFORM_BUFFER, cameraMatrixsUBO);
-		glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), NULL, GL_DYNAMIC_DRAW);
-		glBindBufferBase(GL_UNIFORM_BUFFER, 0, cameraMatrixsUBO);
+		uint cameraUBO;
+		glGenBuffers(1, &cameraUBO);
+		glBindBuffer(GL_UNIFORM_BUFFER, cameraUBO);
+		glBufferData(GL_UNIFORM_BUFFER, 144, NULL, GL_DYNAMIC_DRAW);
+		glBindBufferBase(GL_UNIFORM_BUFFER, 0, cameraUBO);
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
-		pOGLW->Reg("cameraMatrixsUBO", cameraMatrixsUBO);
+		pOGLW->Reg("Camera", cameraUBO);
 
 		//------------ HDR_Bloom 帧缓冲
 		FBO FBO_HDR_Bloom(val_windowWidth, val_windowHeight, FBO::ENUM_TYPE_RGBF2_DEPTH);
@@ -373,7 +373,7 @@ RasterOpCreator::SceneOp::Ptr RasterOpCreator::GenScenePaintOp_1() {
 		Shader * blendShader;
 		Texture * textures[1];
 		Camera * mainCamera;
-		uint * cameraMatrixsUBO;
+		uint * cameraUBO;
 		FBO * FBO_HDR_Bloom;
 		FBO * blurFBOs[2];
 		
@@ -390,7 +390,7 @@ RasterOpCreator::SceneOp::Ptr RasterOpCreator::GenScenePaintOp_1() {
 		pOGLW->GetP("textures[0]", textures[0]);
 		pOGLW->GetP("mainCamera", mainCamera);
 		pOGLW->GetP("FBO_HDR_Bloom", FBO_HDR_Bloom);
-		pOGLW->GetP("cameraMatrixsUBO", cameraMatrixsUBO);
+		pOGLW->GetP("Camera", cameraUBO);
 		pOGLW->GetP("blurFBOs[0]", blurFBOs[0]);
 		pOGLW->GetP("blurFBOs[1]", blurFBOs[1]);
 
@@ -406,7 +406,7 @@ RasterOpCreator::SceneOp::Ptr RasterOpCreator::GenScenePaintOp_1() {
 			|| !blendShader
 			|| !textures[0]
 			|| !mainCamera
-			|| !cameraMatrixsUBO
+			|| !cameraUBO
 			|| !FBO_HDR_Bloom
 			|| !blurFBOs[0]
 			|| !blurFBOs[1]) {
@@ -415,15 +415,16 @@ RasterOpCreator::SceneOp::Ptr RasterOpCreator::GenScenePaintOp_1() {
 		}
 
 		//------------ 更新相机
-		auto cameraMatrixsUBO_Update = ToPtr(new LambdaOp([&]() {
-			glBindBuffer(GL_UNIFORM_BUFFER, *cameraMatrixsUBO);
-			glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(mainCamera->GetViewMatrix()));
-			glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(mainCamera->GetProjectionMatrix()));
+		auto cameraUBO_Update = ToPtr(new LambdaOp([&]() {
+			glBindBuffer(GL_UNIFORM_BUFFER, *cameraUBO);
+			glBufferSubData(GL_UNIFORM_BUFFER, 0, 64, glm::value_ptr(mainCamera->GetViewMatrix()));
+			glBufferSubData(GL_UNIFORM_BUFFER, 64, 64, glm::value_ptr(mainCamera->GetProjectionMatrix()));
+			glBufferSubData(GL_UNIFORM_BUFFER, 128, 12, glm::value_ptr(mainCamera->GetPos()));
 			glBindBuffer(GL_UNIFORM_BUFFER, 0);
 		}));
 
 		auto updateOpQueue = new OpQueue;
-		(*updateOpQueue) << cameraMatrixsUBO_Update;
+		(*updateOpQueue) << cameraUBO_Update;
 
 
 		//------------ 模型场景

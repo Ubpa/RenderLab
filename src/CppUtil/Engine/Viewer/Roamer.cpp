@@ -22,10 +22,10 @@ Roamer::Roamer(RawAPI_OGLW * pOGLW)
 }
 
 void Roamer::Init() {
-	glGenBuffers(1, &cameraMatrixsUBO);
-	glBindBuffer(GL_UNIFORM_BUFFER, cameraMatrixsUBO);
-	glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), NULL, GL_DYNAMIC_DRAW);
-	glBindBufferBase(GL_UNIFORM_BUFFER, 0, cameraMatrixsUBO);
+	glGenBuffers(1, &cameraUBO);
+	glBindBuffer(GL_UNIFORM_BUFFER, cameraUBO);
+	glBufferData(GL_UNIFORM_BUFFER, 144, NULL, GL_DYNAMIC_DRAW);
+	glBindBufferBase(GL_UNIFORM_BUFFER, 0, cameraUBO);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 	SetWH(pOGLW->width(), pOGLW->height());
@@ -123,8 +123,9 @@ void Roamer::ListenerInit() {
 }
 
 void Roamer::UpdateCamera() {
-	glBindBuffer(GL_UNIFORM_BUFFER, cameraMatrixsUBO);
-	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(camera->GetViewMatrix()));
-	glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(this->GetCamera()->GetProjectionMatrix()));
+	glBindBuffer(GL_UNIFORM_BUFFER, cameraUBO);
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, 64, glm::value_ptr(camera->GetViewMatrix()));
+	glBufferSubData(GL_UNIFORM_BUFFER, 64, 64, glm::value_ptr(camera->GetProjectionMatrix()));
+	glBufferSubData(GL_UNIFORM_BUFFER, 128, 12, glm::value_ptr(camera->GetPos()));
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }

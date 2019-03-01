@@ -75,7 +75,7 @@ vec3 BSDF_MetalWorkflow::MS_BRDF(const vec3 & wo, const vec3 & wi, const vec3 & 
 
 vec3 BSDF_MetalWorkflow::MS_BRDF(const vec3 & wo, const glm::vec3 & wi, const glm::vec3 & fr, const glm::vec3 & albedo, float roughness) {
 	vec3 h = normalize(wo + wi);
-	return NDF(h, roughness) / (4 * wo.z* wi.z) * fr * G(wo, wi, roughness);
+	return NDF(h, roughness) * G(wo, wi, roughness) / (4 * wo.z* wi.z) * fr;
 }
 
 float BSDF_MetalWorkflow::NDF(const vec3 & h, float roughness) {
@@ -94,7 +94,7 @@ vec3 BSDF_MetalWorkflow::Fr(const vec3 & wi, const vec3 & h, const vec3 & albedo
 
 	vec3 F0 = mix(vec3(0.04f), albedo, metallic);
 	float HoWi = dot(h, wi);
-	return F0 + (vec3(1.0f) - F0) * pow(2.0f, (-5.55473f * HoWi - 6.98316f) * HoWi);
+	return F0 + pow(2.0f, (-5.55473f * HoWi - 6.98316f) * HoWi) * (vec3(1.0f) - F0);
 }
 
 float BSDF_MetalWorkflow::G(const vec3 & wo, const vec3 & wi, float roughness) {
@@ -107,9 +107,12 @@ float BSDF_MetalWorkflow::G(const vec3 & wo, const vec3 & wi, float roughness) {
 	if (wo.z <= 0 || wi.z <= 0)
 		return 0;
 
-	float k = pow(roughness + 1, 2) / 8.f;
-	float G1_wo = wo.z / (wo.z*(1 - k) + k);
-	float G1_wi = wi.z / (wi.z*(1 - k) + k);
+	float k = pow(roughness + 1.f, 2) / 8.f;
+	float one_minus_k = 1.f - k;
+
+	float G1_wo = wo.z / (wo.z * one_minus_k + k);
+	float G1_wi = wi.z / (wi.z * one_minus_k + k);
+
 	return G1_wo * G1_wi;
 }
 

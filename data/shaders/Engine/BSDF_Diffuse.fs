@@ -8,16 +8,16 @@ struct BSDF_Diffuse {
     sampler2D albedoTexture;
 };
 
-// 32
+// 48
 struct PointLight {
-    vec3 position;	// 12
-    vec3 L;			// 12
-    float linear;	// 4
-    float quadratic;// 4
+    vec3 position;	// 12	0
+    vec3 L;			// 12	16
+    float linear;	// 4	28
+    float quadratic;// 4	32
 };
 
 #define MAX_POINT_LIGHTS 32
-const float PI = 3.1415926;
+const float PI = 3.14159265359;
 
 in VS_OUT {
 	vec3 FragPos;
@@ -25,20 +25,22 @@ in VS_OUT {
 	vec2 TexCoords;
 } fs_in;
 
-// 1040
+// 1552
 layout (std140) uniform PointLights{
-	int numLight;// 4
-	PointLight pointLights[MAX_POINT_LIGHTS];// 32 * MAX_POINT_LIGHTS = 32 * 32
+	int numLight;// 16
+	PointLight pointLights[MAX_POINT_LIGHTS];// 48 * MAX_POINT_LIGHTS = 48 * 32
 };
 
 uniform BSDF_Diffuse bsdf;
 
 void main()
 {
-	vec3 albedo = bsdf.albedoColor / PI;
+	vec3 albedo = bsdf.albedoColor;
 	if(bsdf.haveAlbedoTexture){
 		albedo *= texture(bsdf.albedoTexture,fs_in.TexCoords).xyz;
 	}
+	
+	vec3 diffuse = albedo / PI;
 	
 	vec3 result = vec3(0);
     for(int i = 0; i < numLight; i++){
@@ -50,7 +52,7 @@ void main()
 		
 		float attenuation = 1.0f + pointLights[i].linear * dist + pointLights[i].quadratic * dist2;
 		
-		result += cosTheta / attenuation * albedo * pointLights[i].L ;
+		result += cosTheta / attenuation * diffuse * pointLights[i].L ;
 	}
 	
     FragColor = vec4(sqrt(result),1.0);
