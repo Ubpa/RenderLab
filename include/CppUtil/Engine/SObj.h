@@ -53,6 +53,9 @@ namespace CppUtil {
 			glm::mat4 GetWorldToLocalMatrix() {
 				return glm::inverse(GetLocalToWorldMatrix());
 			}
+			glm::vec3 GetWorldPos() {
+				return GetLocalToWorldMatrix() * glm::vec4(0, 0, 0, 1);
+			}
 
 		public:
 			virtual void InitAfterGenSharePtr() {

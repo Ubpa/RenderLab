@@ -1,7 +1,32 @@
 #version 330 core
+
+// ----------------- 输入输出
+
 out vec4 FragColor;
 
-#define MAX_POINT_LIGHTS 16
+in VS_OUT {
+    vec3 FragPos;
+    vec3 Normal;
+    vec2 TexCoords;
+    vec3 Tangent;
+} fs_in;
+
+// ----------------- 常量
+
+#define MAX_POINT_LIGHTS 8
+const float PI = 3.14159265359;
+
+// array of offset direction for sampling
+const vec3 gridSamplingDisk[20] = vec3[]
+(
+   vec3(1, 1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1, 1,  1), 
+   vec3(1, 1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1, 1, -1),
+   vec3(1, 1,  0), vec3( 1, -1,  0), vec3(-1, -1,  0), vec3(-1, 1,  0),
+   vec3(1, 0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1, 0, -1),
+   vec3(0, 1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0, 1, -1)
+);
+
+// ----------------- 结构
 
 struct BSDF_MetalWorkflow {
 	vec3 albedoColor;
@@ -23,6 +48,8 @@ struct BSDF_MetalWorkflow {
 	sampler2D normalTexture;
 };
 
+// ----------------- Uniform
+
 // 48
 struct PointLight {
     vec3 position;	// 12	0
@@ -31,39 +58,53 @@ struct PointLight {
     float quadratic;// 4	32
 };
 
-const float PI = 3.14159265359;
-
-in VS_OUT {
-    vec3 FragPos;
-    vec3 Normal;
-    vec2 TexCoords;
-    vec3 Tangent;
-} fs_in;
-
-// 144
+// 160
 layout (std140) uniform Camera{
-	mat4 view;			// 64	0
-	mat4 projection;	// 64	64
-	vec3 viewPos;		// 12	128
+	mat4 view;			// 64	0	64
+	mat4 projection;	// 64	64	64
+	vec3 viewPos;		// 12	128	144
+	float nearPlane;	// 4	144	148
+	float farPlane;		// 4	148	152
+	float fov;			// 4	152	156
+	float ar;			// 4	156	160
 };
 
-// 784
+// 400
 layout (std140) uniform PointLights{
 	int numLight;// 16
-	PointLight pointLights[MAX_POINT_LIGHTS];// 48 * MAX_POINT_LIGHTS = 48 * 32
+	PointLight pointLights[MAX_POINT_LIGHTS];// 48 * MAX_POINT_LIGHTS = 48 * 8
 };
 
 uniform BSDF_MetalWorkflow bsdf;
 
+uniform samplerCube pointLightDepthMap0;
+uniform samplerCube pointLightDepthMap1;
+uniform samplerCube pointLightDepthMap2;
+uniform samplerCube pointLightDepthMap3;
+uniform samplerCube pointLightDepthMap4;
+uniform samplerCube pointLightDepthMap5;
+uniform samplerCube pointLightDepthMap6;
+uniform samplerCube pointLightDepthMap7;
+
+uniform float lightFar;
+
+// ----------------- 函数声明
+
 vec3 CalcBumpedNormal(vec3 normal, vec3 tangent, sampler2D normalTexture, vec2 texcoord);
+
 float NDF(vec3 norm, vec3 h, float roughness);
 vec3 Fr(vec3 wi, vec3 h, vec3 albedo, float metallic);
 float G(vec3 norm, vec3 wo, vec3 wi, float roughness);
 vec3 MS_BRDF(vec3 norm, vec3 wo, vec3 wi, vec3 fr, vec3 albedo, float roughness);
 vec3 BRDF(vec3 norm, vec3 wo, vec3 wi, vec3 albedo, float metallic, float roughness, float ao);
 
-void main()
-{
+float Visibility(vec3 lightToFrag, int id);
+float Visibility(vec3 lightToFrag, samplerCube depthMap);
+
+// ----------------- 主函数
+
+void main() {
+	// 获取属性值
 	vec3 albedo = bsdf.albedoColor;
 	if(bsdf.haveAlbedoTexture) {
 		albedo *= texture(bsdf.albedoTexture, fs_in.TexCoords).xyz;
@@ -91,12 +132,17 @@ void main()
 		norm = CalcBumpedNormal(norm, normalize(fs_in.Tangent), bsdf.normalTexture, fs_in.TexCoords);
 	}
 	
+	// 采样光源
 	vec3 result = vec3(0);
     for(int i = 0; i < numLight; i++) {
-		vec3 dirToLight = pointLights[i].position - fs_in.FragPos;
-		float dist2 = dot(dirToLight, dirToLight);
+		vec3 fragToLight = pointLights[i].position - fs_in.FragPos;
+		float dist2 = dot(fragToLight, fragToLight);
 		float dist = sqrt(dist2);
-		vec3 wi = dirToLight / dist;
+		vec3 wi = fragToLight / dist;
+		
+		float visibility = Visibility(-fragToLight, i);
+		if(visibility==0)
+			continue;
 
 		vec3 f = BRDF(norm, wo, wi, albedo, metallic, roughness, ao);
 
@@ -104,11 +150,14 @@ void main()
 		
 		float attenuation = 1.0f + pointLights[i].linear * dist + pointLights[i].quadratic * dist2;
 		
-		result += cosTheta / attenuation * f * pointLights[i].L;
+		result += visibility * cosTheta / attenuation * f * pointLights[i].L;
 	}
 	
+	// gamma 校正
     FragColor = vec4(sqrt(result), 1.0);
 }
+
+// ----------------- 函数定义
 
 float NDF(vec3 norm, vec3 h, float roughness) {
 	float alpha = roughness * roughness;
@@ -160,4 +209,40 @@ vec3 CalcBumpedNormal(vec3 normal, vec3 tangent, sampler2D normalTexture, vec2 t
     vec3 newNormal = TBN * bumpMapNormal;
     newNormal = normalize(newNormal);
     return newNormal;
+}
+
+float Visibility(vec3 lightToFrag, int id){
+	if(id == 0) {
+		return Visibility(lightToFrag, pointLightDepthMap0);
+	} else if(id == 1) {
+		return Visibility(lightToFrag, pointLightDepthMap1);
+	} else if(id == 2) {
+		return Visibility(lightToFrag, pointLightDepthMap2);
+	} else if(id == 3) {
+		return Visibility(lightToFrag, pointLightDepthMap3);
+	} else if(id == 4) {
+		return Visibility(lightToFrag, pointLightDepthMap4);
+	} else if(id == 5) {
+		return Visibility(lightToFrag, pointLightDepthMap5);
+	} else if(id == 6) {
+		return Visibility(lightToFrag, pointLightDepthMap6);
+	} else if(id == 7) {
+		return Visibility(lightToFrag, pointLightDepthMap7);
+	}else 
+		return 1;// not support id
+}
+
+float Visibility(vec3 lightToFrag, samplerCube depthMap) {
+	float currentDepth = length(lightToFrag);
+	float bias = 0.08;
+	int samples = 20;
+	float shadow = 0.0;
+	float viewDistance = length(viewPos - fs_in.FragPos);
+	float diskRadius = (1.0 + (viewDistance / lightFar)) / 50.0;
+	for(int i = 0; i < samples; ++i) {
+		float closestDepth = lightFar * texture(depthMap, lightToFrag + gridSamplingDisk[i] * diskRadius).r;
+		shadow += smoothstep(closestDepth, closestDepth + bias, currentDepth);
+	}
+	shadow /= float(samples);
+	return 1 - shadow;
 }

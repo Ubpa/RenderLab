@@ -93,8 +93,8 @@ void SObjSaver::Visit(Camera::Ptr camera) {
 	NewEle(str::Camera::type, [=]() {
 		NewEle(str::Camera::fov, camera->GetFOV());
 		NewEle(str::Camera::ar, camera->GetAspectRatio());
-		NewEle(str::Camera::nearClipping, camera->nearClipping);
-		NewEle(str::Camera::farClipping, camera->farClipping);
+		NewEle(str::Camera::nearPlane, camera->nearPlane);
+		NewEle(str::Camera::farPlane, camera->farPlane);
 	});
 }
 

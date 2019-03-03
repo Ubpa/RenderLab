@@ -11,6 +11,7 @@
 #include <CppUtil/Engine/Sphere.h>
 #include <CppUtil/Engine/Plane.h>
 #include <CppUtil/Engine/AreaLight.h>
+#include <CppUtil/Engine/PointLight.h>
 
 #include <qmenu.h>
 #include <qdrag.h>
@@ -228,8 +229,12 @@ void Tree::contextMenuEvent(QContextMenuEvent *event) {
 		auto lightTransform = ToPtr(new Transform(sobj));
 		auto lightPlane = ToPtr(new Plane);
 		auto lightGeo = ToPtr(new Geometry(sobj, lightPlane));
-		auto bsdfEmission = ToPtr(new BSDF_Emission(vec3(1)));
-		auto materailEmission = ToPtr(new Material(sobj, bsdfEmission));
+	});
+
+	genLightMenu->addAction("Point Light", this, [=]() {
+		auto sobj = Hierarchy::GetInstance()->CreateSObj("Point Light");
+		auto light = ToPtr(new Light(sobj, ToPtr(new PointLight)));
+		auto transform = ToPtr(new Transform(sobj));
 	});
 
 	mainMenu.addMenu(genLightMenu);

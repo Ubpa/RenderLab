@@ -38,8 +38,8 @@ namespace str {
 
 		const char * const fov = "fov";
 		const char * const ar = "ar";
-		const char * const nearClipping = "nearClipping";
-		const char * const farClipping = "farClipping";
+		const char * const nearPlane = "nearPlane";
+		const char * const farPlane = "farPlane";
 	}
 
 	// ------------- Geometry

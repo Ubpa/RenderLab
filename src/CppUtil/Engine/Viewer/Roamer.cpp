@@ -24,7 +24,7 @@ Roamer::Roamer(RawAPI_OGLW * pOGLW)
 void Roamer::Init() {
 	glGenBuffers(1, &cameraUBO);
 	glBindBuffer(GL_UNIFORM_BUFFER, cameraUBO);
-	glBufferData(GL_UNIFORM_BUFFER, 144, NULL, GL_DYNAMIC_DRAW);
+	glBufferData(GL_UNIFORM_BUFFER, 160, NULL, GL_DYNAMIC_DRAW);
 	glBindBufferBase(GL_UNIFORM_BUFFER, 0, cameraUBO);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
@@ -127,5 +127,13 @@ void Roamer::UpdateCamera() {
 	glBufferSubData(GL_UNIFORM_BUFFER, 0, 64, glm::value_ptr(camera->GetViewMatrix()));
 	glBufferSubData(GL_UNIFORM_BUFFER, 64, 64, glm::value_ptr(camera->GetProjectionMatrix()));
 	glBufferSubData(GL_UNIFORM_BUFFER, 128, 12, glm::value_ptr(camera->GetPos()));
+	float nearPlane = camera->GetNearPlane();
+	float farPlane = camera->GetFarPlane();
+	float fov = camera->GetFOV();
+	float ar = camera->GetAspectRatio();
+	glBufferSubData(GL_UNIFORM_BUFFER, 140, 4, &nearPlane);
+	glBufferSubData(GL_UNIFORM_BUFFER, 144, 4, &farPlane);
+	glBufferSubData(GL_UNIFORM_BUFFER, 148, 4, &fov);
+	glBufferSubData(GL_UNIFORM_BUFFER, 152, 4, &ar);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }

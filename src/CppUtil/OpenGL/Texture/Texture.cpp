@@ -21,7 +21,7 @@ Texture::Texture()
 	: ID(0), type(ENUM_TYPE_NOT_VALID) { }
 
 Texture::Texture(uint ID, ENUM_TYPE type)
-	: ID(0), type(type) { }
+	: ID(ID), type(type) { }
 
 Texture::Texture(ENUM_TYPE type)
 	: Texture(0, type) { }

@@ -8,6 +8,7 @@ public:\
 	typedef CppUtil::Basic::Ptr<CLASS> Ptr;\
 	typedef CppUtil::Basic::WPtr<CLASS> WPtr;\
 	typedef CppUtil::Basic::CPtr<CLASS> CPtr;\
+	typedef CppUtil::Basic::WCPtr<CLASS> WCPtr;\
 protected:\
 	virtual ~CLASS() = default;\
 private:\
@@ -19,6 +20,7 @@ public:\
 	typedef CppUtil::Basic::Ptr<CLASS> Ptr;\
 	typedef CppUtil::Basic::WPtr<CLASS> WPtr;\
 	typedef CppUtil::Basic::CPtr<CLASS> CPtr;\
+	typedef CppUtil::Basic::WCPtr<CLASS> WCPtr;\
 private:\
 	Ptr This(){ return std::dynamic_pointer_cast<CLASS>(HeapObj::This()); }\
 	CPtr CThis() const { return std::dynamic_pointer_cast<const CLASS>(HeapObj::CThis()); }

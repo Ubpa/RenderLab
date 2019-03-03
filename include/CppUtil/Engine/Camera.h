@@ -10,7 +10,7 @@ namespace CppUtil {
 		class Camera : public Component {
 			COMPONENT_SETUP(Camera)
 		public:
-			Camera(Basic::Ptr<SObj> sobj, float fov = 60.f, float ar = 16.f / 9.f, float nearClipping = 0.001f, float farClipping = 1000.f);
+			Camera(Basic::Ptr<SObj> sobj, float fov = 60.f, float ar = 16.f / 9.f, float nearPlane = 0.001f, float farPlane = 1000.f);
 
 			float GetAspectRatio() const { return ar; }
 			void SetAspectRatio(float ar);
@@ -23,8 +23,8 @@ namespace CppUtil {
 			void SetFOV(float fov);
 
 		public:
-			float nearClipping;
-			float farClipping;
+			float nearPlane;
+			float farPlane;
 
 		private:
 			// field of view

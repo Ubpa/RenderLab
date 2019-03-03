@@ -64,18 +64,34 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 		vec3 blue(0.5f, 0.7f, 1.0f);
 		return t * white + (1 - t)*blue;
 	}
+	// 计算碰撞点在灯光空间的位置
+	const vec3 hitPos = ray->At(ray->GetTMax());
+
+	vector<vec3> posInLightSpaceVec;
+
+	vec4 hitPos4 = vec4(hitPos, 1);
+	int lightNum = lights.size();
+	for (int i = 0; i < lightNum; i++)
+		posInLightSpaceVec.push_back(worldToLightVec[i] * hitPos4);
+
+	vec3 emitL(0);
+	auto lightComponent = closestRst.closestSObj->GetComponent<Light>();
+	if (lightComponent) {
+		int idx = lightToIdx[lightComponent->GetLight()];
+		emitL = lightComponent->GetLight()->GetMaxL(worldToLightVec[idx] * vec4(ray->GetOrigin(), 1));
+	}
 
 	auto material = closestRst.closestSObj->GetComponent<Material>();
 	if (material == nullptr)
-		return vec3(1, 0, 1);
+		return emitL;
 
 	auto bsdf = BSDF::Ptr::Cast(material->GetMat());
 	if (bsdf == nullptr)
-		return vec3(1, 0, 1);
+		return emitL;
+
+	emitL += bsdf->GetEmission();
 
 	bsdf->ChangeNormal(closestRst.texcoord, closestRst.tangent, closestRst.n);
-
-	const vec3 hitPos = ray->At(ray->GetTMax());
 
 	auto const surfaceToWorld = Math::GenCoordSpace(closestRst.n);
 	auto const worldToSurface = transpose(surfaceToWorld);
@@ -84,21 +100,6 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 	auto w_out = normalize(worldToSurface * (-ray->GetDir()));
 
 	vec3 sumLightL(0);
-	
-	// 计算碰撞点在灯光空间的位置
-	vector<vec3> posInLightSpaceVec;
-
-	vec4 hitPos4 = vec4(hitPos, 1);
-	int lightNum = lights.size();
-	for (int i = 0; i < lightNum; i++)
-		posInLightSpaceVec.push_back(worldToLightVec[i] * hitPos4);
-
-	vec3 emitL = bsdf->GetEmission();
-	auto lightComponent = closestRst.closestSObj->GetComponent<Light>();
-	if (lightComponent) {
-		int idx = lightToIdx[lightComponent->GetLight()];
-		emitL += lightComponent->GetLight()->GetMaxL(worldToLightVec[idx] * vec4(ray->GetOrigin(), 1));
-	}
 	
 	if (!bsdf->IsDelta()) {
 		vec3 dir_ToLight; // 把变量放在这里减少初始化次数
@@ -156,12 +157,8 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 			}
 		}
 	}
-	if (depth+1 >= maxDepth)
-		return emitL + sumLightL;
-	
-	// 深度，丢弃概率
-	float depthP = depth < maxDepth ? 0.f : 0.5f;
-	if (Math::Rand_F() < depthP)
+	// 超过深度直接丢弃
+	if (depth + 1 >= maxDepth)
 		return emitL + sumLightL;
 
 	// 采样 BSDF
@@ -198,7 +195,7 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 	Ray::Ptr matRay = ToPtr(new Ray(hitPos, matRayDirInWorld));
 	const vec3 matRayColor = Trace(matRay, depth + 1);
 
-	vec3 matL = abs_cosTheta / (sumPD * (1.f - terminateProbability) * (1.f - depthP)) * matF * matRayColor;
+	vec3 matL = abs_cosTheta / (sumPD * (1.f - terminateProbability)) * matF * matRayColor;
 
 	return emitL + sumLightL + matL;
 }

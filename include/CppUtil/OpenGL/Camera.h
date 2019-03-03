@@ -38,6 +38,12 @@ namespace CppUtil {
 
 			void SetRatioWH(float w, float h) { ratioWH = w / h; }
 			void SetRatioWH(float ratioWH) { this->ratioWH = ratioWH; }
+			
+			float GetFOV() const { return fov; }
+			float GetAspectRatio() const { return ratioWH; }
+			float GetNearPlane() const { return nearPlane; }
+			float GetFarPlane() const { return farPlane; }
+
 		private:
 			void updateCameraVectors();
 

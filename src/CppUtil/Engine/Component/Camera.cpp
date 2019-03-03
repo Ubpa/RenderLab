@@ -10,7 +10,7 @@ using namespace CppUtil::Basic::Math;
 using namespace glm;
 
 Camera::Camera(Basic::Ptr<SObj> sobj, float fov, float ar, float near, float far)
-	: Component(sobj), ar(ar), fov(fov), nearClipping(near), farClipping(far) {
+	: Component(sobj), ar(ar), fov(fov), nearPlane(near), farPlane(far) {
 	h = 2 * tanf(fov / 2 / 180  * PI);
 	w = h * ar;
 }

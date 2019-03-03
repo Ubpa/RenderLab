@@ -125,8 +125,8 @@ static void SObjLoader::LoadAndBind(XMLElement * ele, SObj::Ptr sobj, Camera*){
 	Reg(funcMap, str::Camera::fov, camera, &Camera::SetFOV);
 	void (Camera::*f)(float) = &Camera::SetAspectRatio;
 	Reg(funcMap, str::Camera::ar, camera, f);
-	Reg(funcMap, str::Camera::nearClipping, camera->nearClipping);
-	Reg(funcMap, str::Camera::farClipping, camera->farClipping);
+	Reg(funcMap, str::Camera::nearPlane, camera->nearPlane);
+	Reg(funcMap, str::Camera::farPlane, camera->farPlane);
 
 	LoadChildrenEles(ele, funcMap);
 }
