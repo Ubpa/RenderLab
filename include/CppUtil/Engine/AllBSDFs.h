@@ -7,5 +7,6 @@
 #include <CppUtil/Engine/BSDF_Mirror.h>
 #include <CppUtil/Engine/BSDF_CookTorrance.h>
 #include <CppUtil/Engine/BSDF_MetalWorkflow.h>
+#include <CppUtil/Engine/BSDF_FrostedGlass.h>
 
 #endif//!_ENGINE_ALL_BSDFS_H_

@@ -9,6 +9,7 @@ namespace CppUtil {
 		namespace Math {
 			const float EPSILON = 1e-6f;
 			const float PI = 3.14159265358979323f;
+			const float INV_PI = 0.318309886183790672f;
 
 			glm::vec2 RandInCircle();
 

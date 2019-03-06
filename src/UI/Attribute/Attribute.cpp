@@ -54,6 +54,7 @@ public:
 		Reg<BSDF_Emission>();
 		Reg<BSDF_CookTorrance>();
 		Reg<BSDF_MetalWorkflow>();
+		Reg<BSDF_FrostedGlass>();
 
 		Reg<Transform>();
 	}
@@ -77,6 +78,7 @@ private:
 	void Visit(BSDF_Mirror::Ptr bsdf);
 	void Visit(BSDF_CookTorrance::Ptr bsdf);
 	void Visit(BSDF_MetalWorkflow::Ptr bsdf);
+	void Visit(BSDF_FrostedGlass::Ptr bsdf);
 
 
 	void Visit(Transform::Ptr transform);
@@ -298,8 +300,11 @@ void Attribute::ComponentVisitor::Visit(Material::Ptr material) {
 	getTypeStr->Reg<BSDF_MetalWorkflow>([=](BSDF_MetalWorkflow::Ptr) {
 		getTypeStr->RegArg("typeStr", "BSDF_MetalWorkflow");
 	});
+	getTypeStr->Reg<BSDF_FrostedGlass>([=](BSDF_FrostedGlass::Ptr) {
+		getTypeStr->RegArg("typeStr", "BSDF_FrostedGlass");
+	});
 
-	const int bsdfNum = 7;
+	const int bsdfNum = 8;
 	tuple<string, function<BSDF::Ptr()>> bsdfArr[bsdfNum] = {
 		{"None", []()->BSDF::Ptr { return nullptr; } },
 		{"BSDF_Diffuse", []()->BSDF::Ptr { return ToPtr(new BSDF_Diffuse); } },
@@ -308,6 +313,7 @@ void Attribute::ComponentVisitor::Visit(Material::Ptr material) {
 		{"BSDF_Mirror", []()->BSDF::Ptr { return ToPtr(new BSDF_Mirror); } },
 		{"BSDF_CookTorrance", []()->BSDF::Ptr { return ToPtr(new BSDF_CookTorrance(1.5f,0.2f)); } },
 		{"BSDF_MetalWorkflow", []()->BSDF::Ptr { return ToPtr(new BSDF_MetalWorkflow); } },
+		{"BSDF_FrostedGlass", []()->BSDF::Ptr { return ToPtr(new BSDF_FrostedGlass); } },
 	};
 
 	Grid::pSlotMap pSlotMap(new Grid::SlotMap);
@@ -386,6 +392,14 @@ void Attribute::ComponentVisitor::Visit(BSDF_MetalWorkflow::Ptr bsdf) {
 
 	grid->AddEditImage("- Normal Texture", bsdf->GetNormalTexture(),
 		[=](CppUtil::Basic::Ptr<Image> img) {bsdf->SetNormalTexture(img); });
+}
+
+void Attribute::ComponentVisitor::Visit(BSDF_FrostedGlass::Ptr bsdf) {
+	auto grid = GetGrid(attr->componentType2item[typeid(Material)]);
+
+	grid->AddEditColor("- Albedo", bsdf->albedo);
+	grid->AddEditVal("- IOR", bsdf->ior, 0., 20., 200);
+	grid->AddEditVal("- Alpha", bsdf->alpha, 0., 1., 100);
 }
 
 // -------------- Light --------------

@@ -152,8 +152,11 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 				auto checker = ToPtr(new VisibilityChecker(shadowRay, tMax));
 				bvhAccel->Accept(checker);
 				auto shadowRst = checker->GetRst();
-				if (!shadowRst.IsIntersect())
-					sumLightL += (abs_cos_theta / sumPD) * f * lightL;
+				if (!shadowRst.IsIntersect()) {
+					// pd 要接近 cosTheta * f
+					auto weight = (abs_cos_theta / sumPD) * f;
+					sumLightL += weight * lightL;
+				}
 			}
 		}
 	}
@@ -172,13 +175,13 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 		return emitL + sumLightL;
 
 	// 一定概率丢弃
-	float terminateProbability = 0.f;
+	//float terminateProbability = 0.f;
 	// 这里一定要是 illumination * cos(theta)
-	if (!bsdf->IsDelta() && Math::Illum(matF) * abs_cosTheta < 0.0618f)
-		terminateProbability = 0.8f;
+	//if (!bsdf->IsDelta() && Math::Illum(matF) * abs_cosTheta < 0.0618f)
+	//	terminateProbability = 0.8f;
 
-	if (Math::Rand_F() < terminateProbability)
-		return emitL + sumLightL;
+	//if (Math::Rand_F() < terminateProbability)
+	//	return emitL + sumLightL;
 
 	// 重要性采样
 	float sumPD = matPD;
@@ -195,7 +198,7 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 	Ray::Ptr matRay = ToPtr(new Ray(hitPos, matRayDirInWorld));
 	const vec3 matRayColor = Trace(matRay, depth + 1);
 
-	vec3 matL = abs_cosTheta / (sumPD * (1.f - terminateProbability)) * matF * matRayColor;
+	vec3 matL = abs_cosTheta / (sumPD /** (1.f - terminateProbability)*/) * matF * matRayColor;
 
 	return emitL + sumLightL + matL;
 }
