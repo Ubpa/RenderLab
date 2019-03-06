@@ -157,10 +157,15 @@ vec3 BSDF_FrostedGlass::Sample_f(const vec3 & wo, const vec2 & texcoord, vec3 & 
 	else {
 		bool entering = wo.z > 0.f;
 		float etai = 1.f, etat = ior;
-		if (!entering)
+		if (entering) {
+			wi = refract(-wo, h, etat / etai);
+		}
+		if (!entering) {
 			swap(etai, etat);
+			wi = refract(-wo, -h, etat / etai);
+		}
 
-		wi = refract(-wo, h, etat / etai);
+		//wi = refract(-wo, h, etat / etai);
 		if (wi.z * wo.z >= 0 || wi == vec3(0)) {
 			PD = 0;
 			return vec3(0);

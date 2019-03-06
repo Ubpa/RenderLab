@@ -135,8 +135,10 @@ void RayIntersector::Visit(SObj::Ptr sobj) {
 
 	if (transform) {
 		ray->Transform(transform->GetMat());
-		if (rst.closestSObj != origSObj)
+		if (rst.closestSObj != origSObj) {
 			rst.n = normalize(transform->GetNormMat() * rst.n);
+			rst.tangent = normalize(transform->GetNormMat() * rst.tangent);
+		}
 	}
 }
 

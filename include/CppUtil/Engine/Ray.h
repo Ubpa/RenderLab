@@ -21,6 +21,7 @@ namespace CppUtil {
 
 			const glm::vec3 EndPos() const { return At(tMax); }
 
+			void SetTMin(float tMin) { this->tMin = tMin; }
 			void SetTMax(float tMax) { this->tMax = tMax; }
 			void SetOrigin(const glm::vec3 & origin) { this->origin = origin; }
 			void SetDir(const glm::vec3 & dir) {

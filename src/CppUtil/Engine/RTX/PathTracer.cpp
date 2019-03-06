@@ -124,7 +124,7 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 					continue;
 
 				// dirInWorld 应该是单位向量
-				const vec3 dirInWorld = dir_lightToWorldVec[i] * dir_ToLight;
+				const vec3 dirInWorld = normalize(dir_lightToWorldVec[i] * dir_ToLight);
 				// w_in 处于表面坐标系，应该是单位向量
 				const vec3 w_in = normalize(worldToSurface * dirInWorld);
 
@@ -148,6 +148,8 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 
 				// shadowRay 处于世界坐标
 				Ray::Ptr shadowRay = ToPtr(new Ray(shadowOrigin, dirInWorld));
+				if (dot(closestRst.n, ray->GetDir()) > 0)
+					shadowRay->SetOrigin(shadowRay->At(-0.002f));
 				float tMax = dist_ToLight / length(dirInWorld) - 0.001f;
 				auto checker = ToPtr(new VisibilityChecker(shadowRay, tMax));
 				bvhAccel->Accept(checker);
