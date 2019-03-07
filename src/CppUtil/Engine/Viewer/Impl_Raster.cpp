@@ -48,7 +48,7 @@ const string rootPath = ROOT_PATH;
 const int Impl_Raster::maxPointLights = 8;
 
 Impl_Raster::Impl_Raster(Scene::Ptr scene)
-	: scene(scene), pldmGenerator(ToPtr(new PLDM_Generator(this))){
+	: scene(scene), pldmGenerator(ToPtr(new PLDM_Generator(this))) {
 	Reg<SObj>();
 
 	// primitive
@@ -63,6 +63,7 @@ Impl_Raster::Impl_Raster(Scene::Ptr scene)
 	Reg<BSDF_Mirror>();
 	Reg<BSDF_CookTorrance>();
 	Reg<BSDF_MetalWorkflow>();
+	Reg<BSDF_FrostedGlass>();
 
 	// light
 	Reg<AreaLight>();
@@ -114,6 +115,7 @@ void Impl_Raster::InitShaders() {
 	InitShaderBasic();
 	InitShaderDiffuse();
 	InitShaderMetalWorkflow();
+	InitShaderFrostedGlass();
 }
 
 void Impl_Raster::InitShaderBasic() {
@@ -149,13 +151,28 @@ void Impl_Raster::InitShaderMetalWorkflow() {
 	shader_metalWorkflow.SetFloat("lightFar", pldmGenerator->GetLightFar());
 }
 
+void Impl_Raster::InitShaderFrostedGlass() {
+	shader_frostedGlass = Shader(rootPath + str_Basic_P3N3T2T3_vs, rootPath + "data/shaders/Engine/BSDF_FrostedGlass.fs");
+	shader_frostedGlass.UniformBlockBind("Camera", 0);
+	shader_frostedGlass.UniformBlockBind("PointLights", 1);
+
+	shader_frostedGlass.SetInt("bsdf.colorTexture", 0);
+	shader_frostedGlass.SetInt("bsdf.roughnessTexture", 1);
+	shader_frostedGlass.SetInt("bsdf.aoTexture", 2);
+	shader_frostedGlass.SetInt("bsdf.normalTexture", 3);
+	for (int i = 0; i < maxPointLights; i++)
+		shader_frostedGlass.SetInt("pointLightDepthMap" + to_string(i), 4 + i);
+
+	shader_frostedGlass.SetFloat("lightFar", pldmGenerator->GetLightFar());
+}
+
 void Impl_Raster::Draw() {
 	glEnable(GL_DEPTH_TEST);
 	glClearColor(0, 0, 0, 1);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	scene->Init();
-	
+
 	scene->Accept(pldmGenerator);
 
 	modelVec.clear();
@@ -209,7 +226,7 @@ void Impl_Raster::Visit(Engine::Sphere::Ptr sphere) {
 	model = scale(model, vec3(sphere->r));
 
 	curShader.SetMat4f("model", model);
-	
+
 	VAO_P3N3T2T3_Sphere.Draw(curShader);
 }
 
@@ -233,7 +250,8 @@ void Impl_Raster::Visit(BSDF_Diffuse::Ptr bsdf) {
 	if (bsdf->albedoTexture && bsdf->albedoTexture->IsValid()) {
 		shader_diffuse.SetBool(strBSDF + "haveAlbedoTexture", true);
 		GetTex(bsdf->albedoTexture).Use(0);
-	}else
+	}
+	else
 		shader_diffuse.SetBool(strBSDF + "haveAlbedoTexture", false);
 
 	SetPointLightDepthMap(shader_diffuse, 1);
@@ -282,6 +300,32 @@ void Impl_Raster::Visit(BSDF_MetalWorkflow::Ptr bsdf) {
 	}
 
 	SetPointLightDepthMap(shader_metalWorkflow, texNum);
+}
+
+void Impl_Raster::Visit(BSDF_FrostedGlass::Ptr bsdf) {
+	curShader = shader_frostedGlass;
+
+	string strBSDF = "bsdf.";
+	shader_frostedGlass.SetVec3f(strBSDF + "colorFactor", bsdf->colorFactor);
+	shader_frostedGlass.SetFloat(strBSDF + "roughnessFactor", bsdf->roughnessFactor);
+
+	const int texNum = 4;
+	Image::CPtr imgs[texNum] = { bsdf->colorTexture, bsdf->roughnessTexture, bsdf->aoTexture, bsdf->normalTexture };
+	string names[texNum] = { "Color", "Roughness", "AO", "Normal" };
+
+	for (int i = 0; i < texNum; i++) {
+		string wholeName = strBSDF + "have" + names[i] + "Texture";
+		if (imgs[i] && imgs[i]->IsValid()) {
+			shader_frostedGlass.SetBool(wholeName, true);
+			GetTex(imgs[i]).Use(i);
+		}
+		else
+			shader_frostedGlass.SetBool(wholeName, false);
+	}
+
+	shader_frostedGlass.SetFloat(strBSDF + "ior", bsdf->ior);
+
+	SetPointLightDepthMap(shader_frostedGlass, texNum);
 }
 
 void Impl_Raster::Visit(AreaLight::Ptr areaLight) {

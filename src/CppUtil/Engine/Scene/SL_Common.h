@@ -158,6 +158,17 @@ namespace str {
 		const char * const normalTexture = "normalTexture";
 	}
 
+	namespace BSDF_FrostedGlass {
+		const char * const type = "BSDF_FrostedGlass";
+
+		const char * const colorFactor = "colorFactor";
+		const char * const colorTexture = "colorTexture";
+		const char * const roughnessFactor = "roughnessFactor";
+		const char * const roughnessTexture = "roughnessTexture";
+		const char * const aoTexture = "aoTexture";
+		const char * const normalTexture = "normalTexture";
+	}
+
 	namespace BSDF_Mirror {
 		const char * const type = "BSDF_Mirror";
 

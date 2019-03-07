@@ -28,6 +28,7 @@ SObjSaver::SObjSaver() {
 	Reg<BSDF_Glass>();
 	Reg<BSDF_MetalWorkflow>();
 	Reg<BSDF_Mirror>();
+	Reg<BSDF_FrostedGlass>();
 
 	Reg<Transform>();
 }
@@ -215,6 +216,20 @@ void SObjSaver::Visit(BSDF_MetalWorkflow::Ptr bsdf){
 		NewEle(str::BSDF_MetalWorkflow::normalTexture, [=]() {
 			Visit(bsdf->GetNormalTexture());
 		});
+	});
+}
+
+void SObjSaver::Visit(BSDF_FrostedGlass::Ptr bsdf) {
+	NewEle(str::BSDF_FrostedGlass::type, [=]() {
+		NewEle(str::BSDF_FrostedGlass::colorFactor, bsdf->colorFactor);
+		NewEle(str::BSDF_FrostedGlass::colorTexture, bsdf->colorTexture);
+
+		NewEle(str::BSDF_FrostedGlass::roughnessFactor, bsdf->roughnessFactor);
+		NewEle(str::BSDF_FrostedGlass::roughnessTexture, bsdf->roughnessTexture);
+
+		NewEle(str::BSDF_FrostedGlass::aoTexture, bsdf->aoTexture);
+
+		NewEle(str::BSDF_FrostedGlass::normalTexture, bsdf->normalTexture);
 	});
 }
 

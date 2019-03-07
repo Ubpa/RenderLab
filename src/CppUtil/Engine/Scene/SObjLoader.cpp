@@ -246,6 +246,7 @@ static void SObjLoader::LoadAndBind(XMLElement * ele, Material::Ptr material, Ma
 	Reg<BSDF_Glass>(pack, str::BSDF_Glass::type);
 	Reg<BSDF_MetalWorkflow>(pack, str::BSDF_MetalWorkflow::type);
 	Reg<BSDF_Mirror>(pack, str::BSDF_Mirror::type);
+	Reg<BSDF_FrostedGlass>(pack, str::BSDF_FrostedGlass::type);
 
 	LoadChildrenEles(ele, pack.funcMap);
 }
@@ -316,13 +317,13 @@ static BSDF_MetalWorkflow::Ptr SObjLoader::Load(XMLElement * ele, BSDF_MetalWork
 	FuncMap funcMap;
 
 	Reg(funcMap, str::BSDF_MetalWorkflow::albedoColor, bsdf->albedoColor);
-	Reg<Image>(funcMap, str::BSDF_MetalWorkflow::albedoTexture, bsdf, &BSDF_MetalWorkflow::SetAlbedoTexture);
+	RegLoad(funcMap, str::BSDF_MetalWorkflow::albedoTexture, bsdf->albedoTexture);
 	Reg(funcMap, str::BSDF_MetalWorkflow::metallicFactor, bsdf->metallicFactor);
-	Reg<Image>(funcMap, str::BSDF_MetalWorkflow::metallicTexture, bsdf, &BSDF_MetalWorkflow::SetMetallicTexture);
+	RegLoad(funcMap, str::BSDF_MetalWorkflow::metallicTexture, bsdf->metallicTexture);
 	Reg(funcMap, str::BSDF_MetalWorkflow::roughnessFactor, bsdf->roughnessFactor);
-	Reg<Image>(funcMap, str::BSDF_MetalWorkflow::roughnessTexture, bsdf, &BSDF_MetalWorkflow::SetRoughnessTexture);
-	Reg<Image>(funcMap, str::BSDF_MetalWorkflow::aoTexture, bsdf, &BSDF_MetalWorkflow::SetAOTexture);
-	Reg<Image>(funcMap, str::BSDF_MetalWorkflow::normalTexture, bsdf, &BSDF_MetalWorkflow::SetNormalTexture);
+	RegLoad(funcMap, str::BSDF_MetalWorkflow::roughnessTexture, bsdf->roughnessTexture);
+	RegLoad(funcMap, str::BSDF_MetalWorkflow::aoTexture, bsdf->aoTexture);
+	RegLoad(funcMap, str::BSDF_MetalWorkflow::normalTexture, bsdf->normalTexture);
 
 	LoadChildrenEles(ele, funcMap);
 
@@ -336,6 +337,24 @@ static BSDF_Mirror::Ptr SObjLoader::Load(XMLElement * ele, BSDF_Mirror*) {
 	FuncMap funcMap;
 
 	Reg(funcMap, str::BSDF_Mirror::reflectance, bsdf->reflectance);
+
+	LoadChildrenEles(ele, funcMap);
+
+	return bsdf;
+}
+
+template<>
+static BSDF_FrostedGlass::Ptr SObjLoader::Load(XMLElement * ele, BSDF_FrostedGlass*) {
+	auto bsdf = ToPtr(new BSDF_FrostedGlass);
+
+	FuncMap funcMap;
+
+	Reg(funcMap, str::BSDF_FrostedGlass::colorFactor, bsdf->colorFactor);
+	RegLoad(funcMap, str::BSDF_FrostedGlass::colorTexture, bsdf->colorTexture);
+	Reg(funcMap, str::BSDF_FrostedGlass::roughnessFactor, bsdf->roughnessFactor);
+	RegLoad(funcMap, str::BSDF_FrostedGlass::roughnessTexture, bsdf->roughnessTexture);
+	RegLoad(funcMap, str::BSDF_FrostedGlass::aoTexture, bsdf->aoTexture);
+	RegLoad(funcMap, str::BSDF_FrostedGlass::normalTexture, bsdf->normalTexture);
 
 	LoadChildrenEles(ele, funcMap);
 

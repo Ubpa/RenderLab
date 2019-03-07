@@ -33,7 +33,7 @@ float BSDF_FrostedGlass::GGX_G1(const vec3 & v, const vec3 & h, float alpha) {
 }
 
 float BSDF_FrostedGlass::GGX_G(const vec3 & wo, const vec3 & wi, const vec3 & h, float alpha) {
-	// G
+	// Smith
 	return GGX_G1(wo, h, alpha) * GGX_G1(wi, h, alpha);
 }
 

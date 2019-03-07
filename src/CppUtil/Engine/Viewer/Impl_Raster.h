@@ -37,6 +37,7 @@ namespace CppUtil {
 		class BSDF_Emission;
 		class BSDF_CookTorrance;
 		class BSDF_MetalWorkflow;
+		class BSDF_FrostedGlass;
 
 		class AreaLight;
 
@@ -62,6 +63,7 @@ namespace CppUtil {
 			void Visit(Basic::Ptr<BSDF_Emission> bsdf);
 			void Visit(Basic::Ptr<BSDF_CookTorrance> bsdf);
 			void Visit(Basic::Ptr<BSDF_MetalWorkflow> bsdf);
+			void Visit(Basic::Ptr<BSDF_FrostedGlass> bsdf);
 
 			void Visit(Basic::Ptr<AreaLight> areaLight);
 
@@ -74,6 +76,7 @@ namespace CppUtil {
 			void InitShaderBasic();
 			void InitShaderDiffuse();
 			void InitShaderMetalWorkflow();
+			void InitShaderFrostedGlass();
 
 			void UpdateLights() const;
 			void SetPointLightDepthMap(OpenGL::Shader shader, int base);
@@ -93,6 +96,8 @@ namespace CppUtil {
 			OpenGL::Shader shader_basic;
 			OpenGL::Shader shader_diffuse;
 			OpenGL::Shader shader_metalWorkflow;
+			OpenGL::Shader shader_frostedGlass;
+
 			std::map<Basic::WCPtr<Basic::Image>, OpenGL::Texture> img2tex;
 
 			unsigned int lightsUBO;

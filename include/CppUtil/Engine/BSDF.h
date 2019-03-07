@@ -23,7 +23,7 @@ namespace CppUtil {
 
 			virtual bool IsDelta() const = 0;
 
-			virtual void ChangeNormal(const glm::vec2 & texcoord, const glm::vec3 & tangent, glm::vec3 & normal) const;
+			virtual void ChangeNormal(const glm::vec2 & texcoord, const glm::vec3 & tangent, glm::vec3 & normal) const { return; };
 
 		public:
 			static glm::vec3 LocalReflect(const glm::vec3 & w) {
