@@ -34,6 +34,8 @@ namespace CppUtil {
 
 			virtual bool IsDelta() const { return true; }
 
+			virtual glm::vec3 GetMaxL() const { return color * intensity; }
+
 		public:
 			glm::vec3 color;
 			float intensity;

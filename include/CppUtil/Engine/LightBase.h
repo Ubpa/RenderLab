@@ -27,6 +27,9 @@ namespace CppUtil {
 			// 如果 p 不可能被照射到，则返回 vec3(0)
 			virtual glm::vec3 GetMaxL(const glm::vec3 & p) const = 0;
 
+			// 直接返回最大光照
+			virtual glm::vec3 GetMaxL() const = 0;
+
 			// 概率密度函数
 			// !!! p，wi 处于灯的坐标空间中
 			virtual float PDF(const glm::vec3& p, const glm::vec3& wi) const = 0;

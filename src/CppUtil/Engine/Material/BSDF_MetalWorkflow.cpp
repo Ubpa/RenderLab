@@ -73,7 +73,7 @@ vec3 BSDF_MetalWorkflow::MS_BRDF(const vec3 & wo, const vec3 & wi, const vec3 & 
 	return NDF(h, roughness)*Fr(wi, h, albedo, metallic)*G(wo, wi, roughness) / (4 * wo.z*wi.z);
 }
 
-vec3 BSDF_MetalWorkflow::MS_BRDF(const vec3 & wo, const glm::vec3 & wi, const glm::vec3 & fr, const glm::vec3 & albedo, float roughness) {
+vec3 BSDF_MetalWorkflow::MS_BRDF(const vec3 & wo, const vec3 & wi, const vec3 & fr, const vec3 & albedo, float roughness) {
 	vec3 h = normalize(wo + wi);
 	return NDF(h, roughness) * G(wo, wi, roughness) / (4 * wo.z* wi.z) * fr;
 }
@@ -138,7 +138,7 @@ float BSDF_MetalWorkflow::GetRoughness(const vec2 & texcoord) const {
 	return roughnessTexture->Sample(texcoord).x * roughnessFactor;
 }
 
-float BSDF_MetalWorkflow::GetAO(const glm::vec2 & texcoord) const {
+float BSDF_MetalWorkflow::GetAO(const vec2 & texcoord) const {
 	if (!aoTexture || !aoTexture->IsValid())
 		return 1.0f;
 
@@ -149,8 +149,7 @@ void BSDF_MetalWorkflow::ChangeNormal(const vec2 & texcoord, const vec3 tangent,
 	if (!normalTexture || !normalTexture->IsValid())
 		return;
 
-	const vec3 bitangent = cross(tangent, normal);
-	mat3 TBN(tangent, bitangent, normal);
-	vec3 normalSample = 2.0f * normalTexture->Sample(texcoord) - 1.0f;
-	normal = normalize(TBN * normalSample);
+	vec3 tangentSpaceNormal = 2.0f * normalTexture->Sample(texcoord) - 1.0f;
+
+	normal = TangentSpaceNormalToWorld(tangent, normal, tangentSpaceNormal);
 }

@@ -2,6 +2,8 @@
 
 #include <glm/geometric.hpp>
 
+#include <glm/mat3x3.hpp>
+
 using namespace CppUtil::Engine;
 using namespace glm;
 
@@ -18,4 +20,10 @@ bool BSDF::LocalRefract(const vec3& wo, vec3 & wi, float ior) {
 	normalize(wi);
 
 	return true;
+}
+
+vec3 BSDF::TangentSpaceNormalToWorld(const vec3 & worldTangent, const vec3 worldNormal, const vec3 & tangentSpaceNormal) {
+	const vec3 bitangent = cross(worldTangent, worldNormal);
+	mat3 TBN(worldTangent, bitangent, worldNormal);
+	return normalize(TBN * tangentSpaceNormal);
 }

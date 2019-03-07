@@ -397,9 +397,16 @@ void Attribute::ComponentVisitor::Visit(BSDF_MetalWorkflow::Ptr bsdf) {
 void Attribute::ComponentVisitor::Visit(BSDF_FrostedGlass::Ptr bsdf) {
 	auto grid = GetGrid(attr->componentType2item[typeid(Material)]);
 
-	grid->AddEditColor("- Albedo", bsdf->albedo);
-	grid->AddEditVal("- IOR", bsdf->ior, 0., 20., 200);
-	grid->AddEditVal("- Alpha", bsdf->alpha, 0., 1., 100);
+	grid->AddEditVal("- IOR", bsdf->ior, 1., 20., 190);
+
+	grid->AddEditColor("- Color Factor", bsdf->colorFactor);
+	grid->AddEditImage("- Color Texture", bsdf->colorTexture);
+
+	grid->AddEditVal("- Roughness Factor", bsdf->roughnessFactor, 0.02, 1., 98);
+	grid->AddEditImage("- Roughness Texture", bsdf->roughnessTexture);
+
+	grid->AddEditImage("- AO Texture", bsdf->aoTexture);
+	grid->AddEditImage("- Normal Texture", bsdf->normalTexture);
 }
 
 // -------------- Light --------------
