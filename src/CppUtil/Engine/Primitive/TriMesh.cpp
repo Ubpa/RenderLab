@@ -73,8 +73,8 @@ void TriMesh::InitAfterGenSharePtr() {
 }
 
 void TriMesh::GenTangents() {
-	int vertexCount = positions.size();
-	int triangleCount = indice.size() / 3;
+	size_t vertexCount = positions.size();
+	size_t triangleCount = indice.size() / 3;
 
 	vec3 *tan1 = new vec3[vertexCount * 2]();
 	vec3 *tan2 = tan1 + vertexCount;

@@ -2,7 +2,6 @@
 #define _BASIC_FILE_FILE_H_
 
 #include <string>
-#include <cstdio>
 
 namespace CppUtil {
 	namespace Basic {

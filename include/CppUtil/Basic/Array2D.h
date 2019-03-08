@@ -6,27 +6,27 @@ namespace CppUtil {
 		template<typename T>
 		class Array2D {
 		public:
-			Array2D(size_t row, size_t col);
+			Array2D(uint row, uint col);
 			~Array2D();
 			//----------
-			T & At(size_t row, size_t col);
-			T & operator()(size_t row, size_t col);
-			void Copy(size_t row, size_t col, size_t n, const T * src);
-			size_t GetRow() const;
-			size_t GetCol() const;
-			size_t GetArrSize() const;
-			size_t GetMemSize() const;
+			T & At(uint row, uint col);
+			T & operator()(uint row, uint col);
+			void Copy(uint row, uint col, uint n, const T * src);
+			uint GetRow() const;
+			uint GetCol() const;
+			uint GetArrSize() const;
+			uint GetMemSize() const;
 			T * GetData();
 		private:
-			const size_t row;
-			const size_t col;
+			const uint row;
+			const uint col;
 			T * data;
 		};
 
 		//-------------------------------------------------------------------------
 
 		template<typename T>
-		Array2D<T>::Array2D(size_t row, size_t col)
+		Array2D<T>::Array2D(uint row, uint col)
 			:row(row), col(col) {
 			data = new T[row*col];
 		}
@@ -38,28 +38,28 @@ namespace CppUtil {
 		}
 
 		template<typename T>
-		size_t Array2D<T>::GetRow() const {
+		uint Array2D<T>::GetRow() const {
 			return row;
 		}
 
 		template<typename T>
-		size_t Array2D<T>::GetCol() const {
+		uint Array2D<T>::GetCol() const {
 			return col;
 		}
 
 		template<typename T>
-		T & Array2D<T>::At(size_t row, size_t col) {
+		T & Array2D<T>::At(uint row, uint col) {
 			return data[row * this->col + col];
 		}
 
 		template<typename T>
-		T & Array2D<T>::operator()(size_t row, size_t col) {
+		T & Array2D<T>::operator()(uint row, uint col) {
 			return data[row * this->col + col];
 		}
 
 		template<typename T>
-		void Array2D<T>::Copy(size_t row, size_t col, size_t n, const T * src) {
-			for (size_t i = 0; i < n; i++) {
+		void Array2D<T>::Copy(uint row, uint col, uint n, const T * src) {
+			for (uint i = 0; i < n; i++) {
 				At(row, col++) = src[i];
 				if (col == this->col) {
 					row++;
@@ -69,14 +69,15 @@ namespace CppUtil {
 		}
 
 		template<typename T>
-		size_t Array2D<T>::GetArrSize() const {
+		uint Array2D<T>::GetArrSize() const {
 			return row * col;
 		}
 
 		template<typename T>
-		size_t Array2D<T>::GetMemSize() const {
-			return row * col * sizeof(T);
+		uint Array2D<T>::GetMemSize() const {
+			return row * col * static_cast<uint>(sizeof(T));
 		}
+
 		template<typename T>
 		T * Array2D<T>::GetData() {
 			return data;

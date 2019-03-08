@@ -1,7 +1,13 @@
+#ifdef WIN32
+#define _CRT_SECURE_NO_WARNINGS 1
+#endif // WIN32
+
 #include <CppUtil/Basic/File.h>
 
+#include <cstdio>
 #include <cstdlib>
 #include <cstdarg>
+
 
 using namespace std;
 using namespace CppUtil::Basic;

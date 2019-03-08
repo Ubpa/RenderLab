@@ -70,8 +70,8 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 	vector<vec3> posInLightSpaceVec;
 
 	vec4 hitPos4 = vec4(hitPos, 1);
-	int lightNum = lights.size();
-	for (int i = 0; i < lightNum; i++)
+	size_t lightNum = lights.size();
+	for (size_t i = 0; i < lightNum; i++)
 		posInLightSpaceVec.push_back(worldToLightVec[i] * hitPos4);
 
 	vec3 emitL(0);

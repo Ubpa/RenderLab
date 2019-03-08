@@ -39,7 +39,7 @@ bool VisibilityChecker::Intersect(const BBox & bbox, float & t0, float & t1) {
 	float tMin = ray->GetTMin();
 	float tMax = ray->GetTMax();
 
-	for (size_t i = 0; i < 3; i++) {
+	for (int i = 0; i < 3; i++) {
 		float invD = invDir[i];
 		float t0 = (bbox.minP[i] - origin[i]) * invD;
 		float t1 = (bbox.maxP[i] - origin[i]) * invD;

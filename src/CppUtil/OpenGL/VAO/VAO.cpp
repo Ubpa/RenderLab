@@ -35,7 +35,7 @@ VAO::VAO(float const * data, uint dataSize, const std::vector<uint> & attrLen){
 		glEnableVertexAttribArray(i);
 		accu += attrLen[i];
 	}
-	attrNum = attrLen.size();
+	attrNum = static_cast<uint>(attrLen.size());
 	//按照没有索引的情况设置 pointNum
 	this->pointNum = dataSize / (sizeof(float) * patchLen);
 	isValid = true;

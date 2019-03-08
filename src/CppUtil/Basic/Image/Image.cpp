@@ -1,3 +1,7 @@
+#ifdef WIN32
+#define _CRT_SECURE_NO_WARNINGS 1
+#endif // WIN32
+
 #include <CppUtil/Basic/Image.h>
 
 #define STB_IMAGE_IMPLEMENTATION

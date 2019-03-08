@@ -1,6 +1,6 @@
 #include <CppUtil/Basic/OpQueue.h>
 
-#include <vector>
+#include <stack>
 
 using namespace CppUtil::Basic;
 using namespace std;
@@ -26,14 +26,17 @@ size_t OpQueue::Size() const {
 }
 
 void OpQueue::Run() {
-	vector< list<Operation::Ptr>::const_iterator > removeIt;
+	stack< list<Operation::Ptr>::const_iterator > removeIt;
 	for (auto it = opList.cbegin(); it != opList.cend(); ++it) {
 		(*it)->Run();
 		if (!(*it)->IsHold())
-			removeIt.push_back(it);
+			removeIt.push(it);
 	}
-	for (int i = removeIt.size() - 1; i >= 0; i--)
-		opList.erase(removeIt[i]);
+
+	while (!removeIt.empty()) {
+		opList.erase(removeIt.top());
+		removeIt.pop();
+	}
 
 	if (opList.empty())
 		SetIsHold(false);

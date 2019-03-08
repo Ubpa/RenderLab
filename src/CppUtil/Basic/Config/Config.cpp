@@ -109,7 +109,7 @@ bool Config::DecodeLine(const string & data) {
 	}
 	
 	vector<int> idxVec;
-	for (size_t i = 1; i < result.size(); i++) {
+	for (int i = 1; i < result.size(); i++) {
 		if (result[i].str().size() > 0)
 			idxVec.push_back(i);
 	}

@@ -2,7 +2,7 @@ template<typename T, typename HolderT>
 void CppUtil::Engine::BVHNode<T, HolderT>::Build(size_t maxLeafSize) {
 	// Build bvh form start to start + range
 
-	constexpr size_t bucketNum = 8;
+	constexpr int bucketNum = 8;
 
 	for (size_t i = start; i < start + range; i++)
 		bb.Expand(GetBBox(objs[i]));
@@ -16,16 +16,16 @@ void CppUtil::Engine::BVHNode<T, HolderT>::Build(size_t maxLeafSize) {
 	// get best partition
 	vector<T::Ptr> bestPartition[2];
 	double minCost = DBL_MAX;
-	for (size_t dim = 0; dim < 3; dim++) {
+	for (int dim = 0; dim < 3; dim++) {
 		// 1. compute buckets
 		double bucketLen = bb.GetExtent()[dim] / bucketNum;
 		double left = bb.minP[dim];
 		vector<vector<T::Ptr>> buckets(bucketNum);
 		vector<BBox> boxesOfBuckets(bucketNum);
-		for (size_t i = 0; i < range; i++) {
+		for (int i = 0; i < range; i++) {
 			BBox box = GetBBox(objs[i + start]);
 			double center = box.GetCenter()[dim];
-			size_t bucketID = min(static_cast<size_t>((center - left) / bucketLen), bucketNum - 1);
+			int bucketID = min(static_cast<int>((center - left) / bucketLen), bucketNum - 1);
 			buckets[bucketID].push_back(objs[i + start]);
 			boxesOfBuckets[bucketID].Expand(box);
 		}
@@ -37,7 +37,7 @@ void CppUtil::Engine::BVHNode<T, HolderT>::Build(size_t maxLeafSize) {
 		vector<BBox> rightBox(bucketNum);
 		vector<size_t> rightAccNum(bucketNum);
 		rightAccNum[0] = 0;
-		for (size_t i = 1; i <= bucketNum - 1; i++) {
+		for (int i = 1; i <= bucketNum - 1; i++) {
 			leftBox[i] = leftBox[i - 1];
 			leftBox[i].Expand(boxesOfBuckets[i - 1]);
 			leftAccNum[i] = leftAccNum[i - 1] + buckets[i - 1].size();
@@ -47,10 +47,10 @@ void CppUtil::Engine::BVHNode<T, HolderT>::Build(size_t maxLeafSize) {
 		}
 
 		// 3. get best partition of dim
-		size_t bestLeftNum = 0;
+		int bestLeftNum = 0;
 		double minCostDim = DBL_MAX;
-		for (size_t leftNum = 1; leftNum <= bucketNum - 1; leftNum++) {
-			size_t rightNum = bucketNum - leftNum;
+		for (int leftNum = 1; leftNum <= bucketNum - 1; leftNum++) {
+			int rightNum = bucketNum - leftNum;
 			double leftS = leftBox[leftNum].GetSurfaceArea();
 			double rightS = rightBox[rightNum].GetSurfaceArea();
 			double costDim = leftS * leftAccNum[leftNum] + rightS * rightAccNum[rightNum];
@@ -66,11 +66,11 @@ void CppUtil::Engine::BVHNode<T, HolderT>::Build(size_t maxLeafSize) {
 			bestPartition[1].clear();
 
 			minCost = minCostDim;
-			for (size_t i = 0; i < bestLeftNum; i++) {
+			for (int i = 0; i < bestLeftNum; i++) {
 				for (auto primitive : buckets[i])
 					bestPartition[0].push_back(primitive);
 			}
-			for (size_t i = bestLeftNum; i < bucketNum; i++) {
+			for (int i = bestLeftNum; i < bucketNum; i++) {
 				for (auto primitive : buckets[i])
 					bestPartition[1].push_back(primitive);
 			}
