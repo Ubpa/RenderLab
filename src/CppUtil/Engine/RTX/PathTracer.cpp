@@ -33,8 +33,9 @@ void PathTracer::Init() {
 	dir_worldToLightVec.clear();
 	lightToIdx.clear();
 
-	for (int i = 0; i < scene->GetLights().size(); i++) {
-		auto lightComponent = scene->GetLights()[i];
+	auto lightComponents = scene->GetLights();
+	for (int i = 0; i < lightComponents.size(); i++) {
+		auto lightComponent = lightComponents[i];
 		auto light = lightComponent->GetLight();
 
 		lightToIdx[light] = i;
@@ -102,7 +103,6 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 	vec3 sumLightL(0);
 	
 	if (!bsdf->IsDelta()) {
-		vec3 dir_ToLight; // 把变量放在这里减少初始化次数
 		const vec3 shadowOrigin = hitPos;
 
 		for (int i = 0; i < lightNum; i++) {
@@ -113,18 +113,23 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 			for (int j = 0; j < sampleNum; j++) {
 				float dist_ToLight;
 				float PD;// 概率密度
+				vec3 dir_ToLight;
 				// dir_ToLight 是单位向量
 				const vec3 lightL = light->Sample_L(posInLightSpaceVec[i], dir_ToLight, dist_ToLight, PD);
 
-				// 在 MIT 15-462 中为 if (w_in.z < 0) continue;
-				// 理由就是在 BSDF 不为 Delta 的情况下，不应该出现 w_in 到表面下边的情况
-				// 觉得可能有些材质还是允许这种情况发生的
-				// 所以目前认为更合理的是 PD <= 0
 				if (PD <= 0)
 					continue;
 
-				// dirInWorld 应该是单位向量
 				const vec3 dirInWorld = normalize(dir_lightToWorldVec[i] * dir_ToLight);
+
+				// shadowRay 处于世界坐标
+				Ray::Ptr shadowRay = ToPtr(new Ray(shadowOrigin, dirInWorld));
+				auto checker = ToPtr(new VisibilityChecker(shadowRay, dist_ToLight - 0.001f));
+				bvhAccel->Accept(checker);
+				auto shadowRst = checker->GetRst();
+				if (shadowRst.IsIntersect())
+					continue;
+
 				// w_in 处于表面坐标系，应该是单位向量
 				const vec3 w_in = normalize(worldToSurface * dirInWorld);
 
@@ -132,6 +137,7 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 				float sumPD = sampleNum * PD;
 				if (!light->IsDelta()) {
 					sumPD += bsdf->PDF(w_out, w_in, closestRst.texcoord);
+					//sumPD += bsdf->PDF(w_out, w_in, closestRst.texcoord);
 					for (int k = 0; k < lightNum; k++) {
 						if (k != i && !lights[k]->IsDelta()) {
 							vec3 dirInLight = dir_worldToLightVec[k] * dirInWorld;
@@ -141,24 +147,13 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 				}
 
 				// 在碰撞表面的坐标系计算 dot(n, w_in) 很简单，因为 n = (0, 0, 1)
-				const float abs_cos_theta = abs(w_in.z);
+				const float cos_theta = max(w_in.z, 0.f);
 
 				// evaluate surface bsdf
 				const vec3 f = bsdf->F(w_out, w_in, closestRst.texcoord);
 
-				// shadowRay 处于世界坐标
-				Ray::Ptr shadowRay = ToPtr(new Ray(shadowOrigin, dirInWorld));
-				if (dot(closestRst.n, ray->GetDir()) > 0)
-					shadowRay->SetOrigin(shadowRay->At(-0.002f));
-				float tMax = dist_ToLight / length(dirInWorld) - 0.001f;
-				auto checker = ToPtr(new VisibilityChecker(shadowRay, tMax));
-				bvhAccel->Accept(checker);
-				auto shadowRst = checker->GetRst();
-				if (!shadowRst.IsIntersect()) {
-					// pd 要接近 cosTheta * f
-					auto weight = (abs_cos_theta / sumPD) * f;
-					sumLightL += weight * lightL;
-				}
+				auto weight = (cos_theta / sumPD) * f;
+				sumLightL += weight * lightL;
 			}
 		}
 	}

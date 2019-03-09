@@ -84,7 +84,7 @@ namespace CppUtil {
 
 			operator std::shared_ptr<T>() { return std::shared_ptr<T>(*this); }
 
-			inline operator bool() const{
+			explicit operator bool() const {
 				return *this != nullptr;
 			}
 

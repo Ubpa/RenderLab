@@ -63,7 +63,14 @@ namespace str {
 	namespace TriMesh {
 		const char * const type = "TriMesh";
 
-
+		namespace ENUM_TYPE {
+			const char * const INVALID = "invalid";
+			const char * const CODE = "code";
+			const char * const CUBE = "cube";
+			const char * const SPHERE = "sphere";
+			const char * const PLANE = "plane";
+			const char * const FILE = "file";
+		}
 	}
 
 	// ------------- Light
@@ -161,6 +168,7 @@ namespace str {
 	namespace BSDF_FrostedGlass {
 		const char * const type = "BSDF_FrostedGlass";
 
+		const char * const IOR = "IOR";
 		const char * const colorFactor = "colorFactor";
 		const char * const colorTexture = "colorTexture";
 		const char * const roughnessFactor = "roughnessFactor";

@@ -49,6 +49,12 @@ void SObjSaver::Member(XMLElement * parent, const function<void()> & func) {
 	parentEleStack.pop_back();
 }
 
+void SObjSaver::NewEle(const char * const name, Image::CPtr img) {
+	Member(NewEle(name), [=]() {
+		Visit(img);
+	});
+}
+
 void SObjSaver::Visit(Image::CPtr img) {
 	if (!img || !img->IsValid() || img->GetPath().empty())
 		return;
@@ -120,7 +126,37 @@ void SObjSaver::Visit(Plane::Ptr plane) {
 }
 
 void SObjSaver::Visit(TriMesh::Ptr mesh) {
-	// 以后要支持从文件读取网格，所以暂时不写
+	NewEle(str::TriMesh::type, [=]() {
+		if (mesh->GetType() == TriMesh::ENUM_TYPE::INVALID)
+			return;
+
+		map<TriMesh::ENUM_TYPE, function<void()>> type2func;
+		type2func[TriMesh::ENUM_TYPE::INVALID] = [=]() {
+			// do nothing
+		};
+		type2func[TriMesh::ENUM_TYPE::CODE] = [=]() {
+			// not support
+		};
+
+		type2func[TriMesh::ENUM_TYPE::CUBE] = [=]() {
+			NewEle(str::TriMesh::ENUM_TYPE::CUBE);
+		};
+		type2func[TriMesh::ENUM_TYPE::SPHERE] = [=]() {
+			NewEle(str::TriMesh::ENUM_TYPE::SPHERE);
+		};
+		type2func[TriMesh::ENUM_TYPE::PLANE] = [=]() {
+			NewEle(str::TriMesh::ENUM_TYPE::PLANE);
+		};
+		type2func[TriMesh::ENUM_TYPE::FILE] = [=]() {
+			// not support
+		};
+
+		auto target = type2func.find(mesh->GetType());
+		if (target == type2func.end())
+			return;
+
+		target->second();
+	});
 }
 
 void SObjSaver::Visit(Light::Ptr light) {
@@ -221,6 +257,8 @@ void SObjSaver::Visit(BSDF_MetalWorkflow::Ptr bsdf){
 
 void SObjSaver::Visit(BSDF_FrostedGlass::Ptr bsdf) {
 	NewEle(str::BSDF_FrostedGlass::type, [=]() {
+		NewEle(str::BSDF_FrostedGlass::IOR, bsdf->ior);
+
 		NewEle(str::BSDF_FrostedGlass::colorFactor, bsdf->colorFactor);
 		NewEle(str::BSDF_FrostedGlass::colorTexture, bsdf->colorTexture);
 

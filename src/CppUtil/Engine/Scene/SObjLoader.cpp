@@ -149,6 +149,7 @@ static void SObjLoader::LoadAndBind(XMLElement * ele, Geometry::Ptr geometry, Pr
 
 	Reg<Sphere>(pack, str::Sphere::type);
 	Reg<Plane>(pack, str::Plane::type);
+	Reg<TriMesh>(pack, str::TriMesh::type);
 
 	LoadChildrenEles(ele, pack.funcMap);
 }
@@ -170,6 +171,36 @@ template<>
 static Plane::Ptr SObjLoader::Load(XMLElement * ele, Plane*) {
 	auto plane = ToPtr(new Plane);
 	return plane;
+}
+
+template<>
+static TriMesh::Ptr SObjLoader::Load(XMLElement * ele, TriMesh*) {
+	TriMesh::Ptr triMesh;
+	FuncMap funcMap;
+	funcMap[str::TriMesh::ENUM_TYPE::INVALID] = [&](XMLElement * ele) {
+		triMesh = nullptr;
+	};
+	funcMap[str::TriMesh::ENUM_TYPE::CODE] = [&](XMLElement * ele) {
+		triMesh = nullptr;//not supprt now
+	};
+	funcMap[str::TriMesh::ENUM_TYPE::CUBE] = [&](XMLElement * ele) {
+		triMesh = TriMesh::GenCube();
+	};
+	funcMap[str::TriMesh::ENUM_TYPE::PLANE] = [&](XMLElement * ele) {
+		triMesh = TriMesh::GenPlane();
+	};
+	funcMap[str::TriMesh::ENUM_TYPE::SPHERE] = [&](XMLElement * ele) {
+		triMesh = TriMesh::GenSphere();
+	};
+	funcMap[str::TriMesh::ENUM_TYPE::FILE] = [&](XMLElement * ele) {
+		triMesh = nullptr;//not supprt now
+	};
+
+	funcMap[str::TriMesh::ENUM_TYPE::INVALID] = [&](XMLElement * ele) {};
+
+	LoadChildrenEles(ele, funcMap);
+
+	return triMesh;
 }
 
 // ------------ Light ----------------
@@ -349,6 +380,7 @@ static BSDF_FrostedGlass::Ptr SObjLoader::Load(XMLElement * ele, BSDF_FrostedGla
 
 	FuncMap funcMap;
 
+	Reg(funcMap, str::BSDF_FrostedGlass::IOR, bsdf->ior);
 	Reg(funcMap, str::BSDF_FrostedGlass::colorFactor, bsdf->colorFactor);
 	RegLoad(funcMap, str::BSDF_FrostedGlass::colorTexture, bsdf->colorTexture);
 	Reg(funcMap, str::BSDF_FrostedGlass::roughnessFactor, bsdf->roughnessFactor);

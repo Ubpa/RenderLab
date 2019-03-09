@@ -18,22 +18,20 @@ namespace CppUtil {
 		class Scene : public Basic::Element {
 			ELE_SETUP(Scene)
 		public:
-			Scene(Basic::Ptr<SObj> root, const std::string & name = "");
+			Scene(Basic::Ptr<SObj> root, const std::string & name = "")
+				: root(root), name(name) { }
 
 			Basic::Ptr<SObj> GetRoot() const { return root; }
 
-			Basic::Ptr<Camera> GetMainCamera() const { return mainCamera; }
-			const std::vector<Basic::Ptr<Light>> & GetLights() const { return lights; }
+			Basic::Ptr<Camera> GetCamera() const;
 
-			void Init();
+			std::vector<Basic::Ptr<Light>> GetLights() const;
 
 		public:
 			std::string name;
 
 		private:
 			Basic::Ptr<SObj> root;
-			Basic::Ptr<Camera> mainCamera;
-			std::vector<Basic::Ptr<Light>> lights;
 		};
 	}
 }

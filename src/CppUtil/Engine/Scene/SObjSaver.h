@@ -119,6 +119,8 @@ namespace CppUtil {
 				Member(NewEle(name), func);
 			}
 
+			void NewEle(const char * const name, Basic::CPtr<Basic::Image> img);
+
 		private:
 			tinyxml2::XMLDocument doc;
 			std::map<Basic::Ptr<SObj>, tinyxml2::XMLElement *> sobj2ele;

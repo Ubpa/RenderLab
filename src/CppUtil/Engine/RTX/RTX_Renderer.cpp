@@ -30,11 +30,10 @@ void RTX_Renderer::Run(Image::Ptr img) {
 		for (int j = 0; j < h; j++)
 			img->SetPixel(i, j, vec3(0));
 	}
-
-	rayTracer->GetScene()->Init();
+	
 	rayTracer->Init();
 
-	auto camera = rayTracer->GetScene()->GetMainCamera();
+	auto camera = rayTracer->GetScene()->GetCamera();
 	if (camera == nullptr) {
 		curLoop = maxLoop;
 		isStop = true;
@@ -74,6 +73,12 @@ void RTX_Renderer::Run(Image::Ptr img) {
 			auto ray = camera->GenRay(u, v);
 			ray->Transform(cam2world);
 			vec3 rst = rayTracer->Trace(ray);
+
+			// 这一步可以极大的减少白噪点（特别是由点光源产生）
+			float illum = Math::Illum(rst);
+			if (illum > 1.0f)
+				rst /= illum;
+
 			fimg[x][y] += rst;
 
 			img->SetPixel(x, y, sqrt(fimg[x][y] / float(curLoop + 1)));

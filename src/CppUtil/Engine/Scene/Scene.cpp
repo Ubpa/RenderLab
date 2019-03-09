@@ -5,19 +5,22 @@
 #include <CppUtil/Engine/Camera.h>
 #include <CppUtil/Engine/Light.h>
 
+#include <CppUtil/Basic/Math.h>
+
 using namespace CppUtil::Engine;
+using namespace CppUtil::Basic;
 using namespace std;
 
-namespace CppUtil {
-	namespace Engine {
+Camera::Ptr Scene::GetCamera() const {
+	if (!root)
+		return nullptr;
 
-	}
+	return root->GetComponentInChildren<Camera>();
 }
 
-Scene::Scene(SObj::Ptr root, const string & name)
-	: root(root), name(name), mainCamera(nullptr) { }
+vector<Light::Ptr> Scene::GetLights() const {
+	if (!root)
+		return vector<Light::Ptr>();
 
-void Scene::Init() {
-	mainCamera = root->GetComponentInChildren<Camera>();
-	lights = root->GetComponentsInChildren<Light>();
+	return root->GetComponentsInChildren<Light>();
 }

@@ -140,11 +140,11 @@ void main() {
 
 		vec3 f = BSDF(norm, wo, wi, color, roughness, ao, bsdf.ior);
 
-		float abs_cosTheta = abs(dot(wi, norm));
+		float cosTheta = max(dot(wi, norm), 0);
 		
 		float attenuation = 1.0f + pointLights[i].linear * dist + pointLights[i].quadratic * dist2;
 		
-		result += visibility * abs_cosTheta / attenuation * f * pointLights[i].L;
+		result += visibility * cosTheta / attenuation * f * pointLights[i].L;
 	}
 	
 	// gamma 校正

@@ -9,6 +9,6 @@ vec3 PointLight::Sample_L(const vec3& p, vec3 & wi, float & distToLight, float &
 	float dist2 = dot(p, p);
 	distToLight = sqrt(dist2);
 	wi = - p / distToLight;
-	PD = 1.0f;
-	return intensity * color / (1.0f + linear * distToLight + quadratic * dist2);
+	PD = 1.0f + linear * distToLight + quadratic * dist2;
+	return intensity * color;
 }

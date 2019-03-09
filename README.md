@@ -128,9 +128,6 @@ cmake .. -Wno-dev
   - [x] 场景编辑
   - [x] connect 信号槽机制
   - [ ] 统一相机
-  - [ ] 后处理
-    - [ ] Gamma校正
-    - [ ] 降噪
 
 - [ ] UI 界面新增功能
   - [x] 滑动条
@@ -150,10 +147,9 @@ cmake .. -Wno-dev
     - [x] 点光源
       - [x] Diffuse
       - [x] Metal WorkFlow
+      - [x] Frosted Glass
       - [x] 阴影（支持多光源）
     - [ ] 面光源
 
-  - [ ] 基础工具（画线等）
-  - [ ] 画出相机、面光源的辅助物体
 
 

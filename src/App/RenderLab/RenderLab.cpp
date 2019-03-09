@@ -55,7 +55,7 @@ RenderLab::RenderLab(QWidget *parent)
 	const size_t fps = 60;
 	timer->start(1000 / fps);
 
-	auto root = SObj::Load(ROOT_PATH + "data/SObjs/CB_PointLight.xml");
+	auto root = SObj::Load(ROOT_PATH + "data/SObjs/CB_Glass.xml");
 	scene = ToPtr(new Scene(root));
 
 	// viewer

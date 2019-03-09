@@ -18,16 +18,22 @@ using namespace std;
 TriMesh::TriMesh(const std::vector<uint> & indice,
 	const std::vector<glm::vec3> & positions,
 	const std::vector<glm::vec3> & normals,
-	const std::vector<glm::vec2> & texcoords)
+	const std::vector<glm::vec2> & texcoords,
+	ENUM_TYPE type)
 :	indice(indice),
 	positions(positions),
 	normals(normals),
-	texcoords(texcoords)
+	texcoords(texcoords),
+	type(type)
 {
-	assert(indice.size() > 0 && indice.size() % 3 == 0);
-	assert(positions.size() > 0);
-	assert(normals.size() == positions.size());
-	assert(texcoords.size() == positions.size());
+	if (!(indice.size() > 0 && indice.size() % 3 == 0)
+		|| !(positions.size() > 0)
+		|| !(normals.size() == positions.size())
+		|| !(texcoords.size() == positions.size())) {
+		type = ENUM_TYPE::INVALID;
+		printf("ERROR: TriMesh is invalid.\n");
+		return;
+	}
 
 	// traingel 的 mesh 在 init 的时候设置
 	// 因为现在还没有生成 share_ptr
@@ -41,12 +47,15 @@ TriMesh::TriMesh(uint triNum, uint vertexNum,
 	const uint * indice,
 	const float * positions,
 	const float * normals,
-	const float * texcoords)
+	const float * texcoords,
+	ENUM_TYPE type)
+	: type(type)
 {
-	assert(indice != nullptr);
-	assert(positions != nullptr);
-	assert(normals != nullptr);
-	assert(texcoords != nullptr);
+	if (!indice || !positions || !normals || !texcoords) {
+		type = ENUM_TYPE::INVALID;
+		printf("ERROR: TriMesh is invalid.\n");
+		return;
+	}
 
 	for (uint i = 0; i < vertexNum; i++) {
 		this->positions.push_back(vec3(positions[3 * i], positions[3 * i + 1], positions[3 * i + 2]));
@@ -139,20 +148,20 @@ void TriMesh::GenTangents() {
 TriMesh::Ptr TriMesh::GenCube() {
 	Cube cube;
 	auto cubeMesh = ToPtr(new TriMesh(cube.GetTriNum(), cube.GetVertexNum(),
-		cube.GetIndexArr(), cube.GetPosArr(), cube.GetNormalArr(), cube.GetTexCoordsArr()));
+		cube.GetIndexArr(), cube.GetPosArr(), cube.GetNormalArr(), cube.GetTexCoordsArr(), ENUM_TYPE::CUBE));
 	return cubeMesh;
 }
 
 TriMesh::Ptr TriMesh::GenSphere() {
 	Sphere sphere(50);
 	auto sphereMesh = ToPtr(new TriMesh(sphere.GetTriNum(), sphere.GetVertexNum(),
-		sphere.GetIndexArr(), sphere.GetPosArr(), sphere.GetNormalArr(), sphere.GetTexCoordsArr()));
+		sphere.GetIndexArr(), sphere.GetPosArr(), sphere.GetNormalArr(), sphere.GetTexCoordsArr(), ENUM_TYPE::SPHERE));
 	return sphereMesh;
 }
 
 TriMesh::Ptr TriMesh::GenPlane() {
 	Plane plane;
 	auto planeMesh = ToPtr(new TriMesh(plane.GetTriNum(), plane.GetVertexNum(),
-		plane.GetIndexArr(), plane.GetPosArr(), plane.GetNormalArr(), plane.GetTexCoordsArr()));
+		plane.GetIndexArr(), plane.GetPosArr(), plane.GetNormalArr(), plane.GetTexCoordsArr(), ENUM_TYPE::PLANE));
 	return planeMesh;
 }

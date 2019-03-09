@@ -116,7 +116,8 @@ void RayIntersector::Visit(BVHNode<Element, BVHAccel>::Ptr bvhNode) {
 void RayIntersector::Visit(SObj::Ptr sobj) {
 	auto geometry = sobj->GetComponent<Geometry>();
 	auto children = sobj->GetChildren();
-	if (geometry == nullptr && children.size() == 0)
+
+	if ((geometry == nullptr || !geometry->GetPrimitive()) && children.size() == 0)
 		return;
 
 	auto origSObj = rst.closestSObj;
@@ -124,7 +125,7 @@ void RayIntersector::Visit(SObj::Ptr sobj) {
 	if (transform)
 		ray->Transform(transform->GetInv());
 
-	if (geometry) {
+	if (geometry && geometry->GetPrimitive()) {
 		geometry->GetPrimitive()->Accept(This());
 		if (rst.isIntersect)
 			rst.closestSObj = sobj;
