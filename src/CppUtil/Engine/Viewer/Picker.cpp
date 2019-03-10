@@ -7,7 +7,7 @@
 #include <CppUtil/Engine/SObj.h>
 #include <CppUtil/Engine/RayIntersector.h>
 #include <CppUtil/Engine/Ray.h>
-#include "Roamer.h"
+#include <CppUtil/Engine/Roamer.h>
 
 #include <CppUtil/Qt/RawAPI_OGLW.h>
 

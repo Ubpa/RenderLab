@@ -25,7 +25,7 @@ namespace CppUtil {
 			Basic::Ptr<OpenGL::Camera> GetCamera() { return camera; }
 
 		public:
-			bool lock;
+			void SetLock(bool isLock) { lock = isLock; }
 
 		private:
 			void ListenerInit();
@@ -34,6 +34,7 @@ namespace CppUtil {
 			Qt::RawAPI_OGLW * pOGLW;
 			unsigned int cameraUBO;
 			Basic::Ptr<OpenGL::Camera> camera;
+			bool lock;
 		};
 	}
 }

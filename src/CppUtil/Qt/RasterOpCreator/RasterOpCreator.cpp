@@ -526,7 +526,7 @@ RasterOpCreator::SceneOp::Ptr RasterOpCreator::GenScenePaintOp_1() {
 				if (first_iteration)
 					FBO_HDR_Bloom->GetColorTexture(1).Use();
 				else
-					blurFBOs[!horizontal]->GetColorTexture().Use();
+					blurFBOs[!horizontal]->GetColorTexture(0).Use();
 
 				VAO_Screen->Draw(*blurShader);
 				horizontal = !horizontal;
@@ -539,7 +539,7 @@ RasterOpCreator::SceneOp::Ptr RasterOpCreator::GenScenePaintOp_1() {
 
 		auto blendOp = ToPtr(new LambdaOp([&]() {
 			FBO_HDR_Bloom->GetColorTexture(0).Use(0);
-			blurFBOs[0]->GetColorTexture().Use(1);
+			blurFBOs[0]->GetColorTexture(0).Use(1);
 			blendShader->SetFloat("exposure", *exposure);
 			blendShader->SetBool("bloomEnable", *bloomEnable);
 			VAO_Screen->Draw(*blendShader);

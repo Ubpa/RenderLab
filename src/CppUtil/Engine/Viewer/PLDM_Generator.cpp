@@ -59,6 +59,11 @@ void PLDM_Generator::Visit(Scene::Ptr scene) {
 		return;
 	}
 
+	GLint lastFBO;
+	glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &lastFBO);
+	GLint viewport[4];
+	glGetIntegerv(GL_VIEWPORT, viewport);
+
 	modelVec.clear();
 	modelVec.push_back(mat4(1.0f));
 
@@ -75,9 +80,6 @@ void PLDM_Generator::Visit(Scene::Ptr scene) {
 		Texture depthMap(FBO_DepthMap.GetDepthTexture().GetID(), Texture::ENUM_TYPE_CUBE_MAP);
 		lightMap[light] = Val(FBO_DepthMap, depthMap);
 	}
-
-	GLint viewport[4];
-	glGetIntegerv(GL_VIEWPORT, viewport);
 
 	mat4 shadowProj = perspective(radians(90.0f), 1.0f, 0.01f, lightFar);
 	auto nextIt = lightMap.begin();
@@ -118,7 +120,7 @@ void PLDM_Generator::Visit(Scene::Ptr scene) {
 		scene->GetRoot()->Accept(This());
 	}
 
-	FBO::UseDefault();
+	glBindFramebuffer(GL_FRAMEBUFFER, lastFBO);
 	glViewport(viewport[0], viewport[1], viewport[2], viewport[3]);
 }
 

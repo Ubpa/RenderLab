@@ -35,6 +35,7 @@ namespace CppUtil {
 
 			FBO();
 			FBO(uint width, uint height, ENUM_TYPE type = ENUM_TYPE_BASIC);
+			FBO(uint width, uint height, const std::vector<uint> & dimVecForGBuffer);
 			bool PassTo(const FBO & fbo, ENUM_PASS_TYPE passType = ENUM_PASS_COLOR) const;
 			bool PassTo(uint fboID, uint width, uint height, ENUM_PASS_TYPE passType = ENUM_PASS_COLOR) const;
 
@@ -42,7 +43,7 @@ namespace CppUtil {
 			static void UseDefault();
 			static uint DefaultBuffer;
 			uint GetID() const;
-			const Texture & GetColorTexture(uint idx = 0) const;
+			const Texture & GetColorTexture(uint idx) const;
 			const Texture & GetDepthTexture() const;
 			bool IsValid() const;
 		private:

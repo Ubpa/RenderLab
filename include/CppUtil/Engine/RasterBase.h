@@ -36,8 +36,7 @@ namespace CppUtil {
 		public:
 			RasterBase(Basic::Ptr<Scene> scene);
 
-		public:
-			// Get Resources
+		public:// Get Resources
 			OpenGL::VAO GetSphereVAO() const { return VAO_P3N3T2T3_Sphere; }
 			OpenGL::VAO GetPlaneVAO() const { return VAO_P3N3T2T3_Plane; }
 			// get or reg
@@ -45,7 +44,7 @@ namespace CppUtil {
 			// get or reg
 			OpenGL::VAO GetMeshVAO(Basic::CPtr<TriMesh> mesh);
 
-		protected:
+		protected:// Use for SubClass
 			void Draw();
 
 			void Init();
@@ -62,6 +61,8 @@ namespace CppUtil {
 			void BindBlock(const OpenGL::Shader & shader) const;
 
 		protected:
+			virtual void Visit(Basic::Ptr<SObj> sobj);
+
 			// SetCurShader for Primitive
 			virtual void Visit(Basic::Ptr<BSDF_Diffuse> bsdf) {};
 			virtual void Visit(Basic::Ptr<BSDF_Glass> bsdf) {};
@@ -71,9 +72,7 @@ namespace CppUtil {
 			virtual void Visit(Basic::Ptr<BSDF_MetalWorkflow> bsdf) {};
 			virtual void Visit(Basic::Ptr<BSDF_FrostedGlass> bsdf) {};
 
-		private:
-			/*virtual */void Visit(Basic::Ptr<SObj> sobj);
-
+		private: // no need to change
 			/*virtual */void Visit(Basic::Ptr<Sphere> sphere);
 			/*virtual */void Visit(Basic::Ptr<Plane> plane);
 			/*virtual */void Visit(Basic::Ptr<TriMesh> mesh);

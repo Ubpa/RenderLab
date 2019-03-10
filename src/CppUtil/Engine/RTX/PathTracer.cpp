@@ -58,12 +58,13 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 	bvhAccel->Accept(rayIntersector);
 	auto & closestRst = rayIntersector->GetRst();
 	if (!closestRst.closestSObj) {
-		//return vec3(0);
-		
+		return vec3(0);
+		/*
 		float t = 0.5f * (normalize(ray->GetDir()).y + 1.0f);
 		vec3 white(1.0f, 1.0f, 1.0f);
 		vec3 blue(0.5f, 0.7f, 1.0f);
 		return t * white + (1 - t)*blue;
+		*/
 	}
 	// 计算碰撞点在灯光空间的位置
 	const vec3 hitPos = ray->At(ray->GetTMax());

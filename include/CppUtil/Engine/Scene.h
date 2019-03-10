@@ -27,11 +27,15 @@ namespace CppUtil {
 
 			std::vector<Basic::Ptr<Light>> GetLights() const;
 
+			void GenID();
+			int GetID(Basic::Ptr<SObj> sobj) const;
+
 		public:
 			std::string name;
 
 		private:
 			Basic::Ptr<SObj> root;
+			std::map<std::string, int> name2ID;
 		};
 	}
 }

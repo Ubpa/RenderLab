@@ -1,7 +1,7 @@
 #include <CppUtil/Engine/Viewer.h>
 
 #include "Raster.h"
-#include "Roamer.h"
+#include <CppUtil/Engine/Roamer.h>
 #include "Picker.h"
 
 #include <CppUtil/Qt/RawAPI_OGLW.h>
@@ -35,5 +35,5 @@ Viewer::Viewer(RawAPI_OGLW * pOGLW, CppUtil::Basic::Ptr<Scene> scene)
 }
 
 void Viewer::SetLock(bool isLock) {
-	roamer->lock = isLock;
+	roamer->SetLock(isLock);
 }

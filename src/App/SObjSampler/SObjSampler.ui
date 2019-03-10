@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SObjSamplerClass</class>
+ <widget class="QMainWindow" name="SObjSamplerClass">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1050</width>
+    <height>550</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>SObjSampler</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QHBoxLayout" name="horizontalLayout_3">
+    <item>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="0" column="1">
+       <widget class="QLabel" name="title0">
+        <property name="text">
+         <string>Direct Illumination</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QLabel" name="title1">
+        <property name="text">
+         <string>Global Illumination</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="2">
+       <widget class="CppUtil::Qt::RawAPI_OGLW" name="OGLW_RayTracer">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>512</width>
+          <height>512</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="CppUtil::Qt::RawAPI_OGLW" name="OGLW_Raster">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>512</width>
+          <height>512</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>CppUtil::Qt::RawAPI_OGLW</class>
+   <extends>QOpenGLWidget</extends>
+   <header location="global">CppUtil/Qt/RawAPI_OGLW.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="SObjSampler.qrc"/>
+ </resources>
+ <connections/>
+</ui>

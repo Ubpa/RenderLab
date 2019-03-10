@@ -332,32 +332,5 @@
                 </SObj>
             </children>
         </SObj>
-        <SObj>
-            <name>SObj</name>
-            <components/>
-            <children/>
-        </SObj>
-        <SObj>
-            <name>sky</name>
-            <components>
-                <Geometry>
-                    <primitive>
-                        <Sphere>
-                            <center>0.000000 0.000000 0.000000</center>
-                            <radius>100.000000</radius>
-                        </Sphere>
-                    </primitive>
-                </Geometry>
-                <Material>
-                    <materialBase>
-                        <BSDF_Diffuse>
-                            <albedoColor>0.000000 0.000000 0.000000</albedoColor>
-                            <albedoTexture/>
-                        </BSDF_Diffuse>
-                    </materialBase>
-                </Material>
-            </components>
-            <children/>
-        </SObj>
     </children>
 </SObj>

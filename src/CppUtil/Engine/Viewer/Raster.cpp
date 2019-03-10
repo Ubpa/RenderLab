@@ -93,8 +93,8 @@ void Raster::InitShaderMetalWorkflow() {
 
 void Raster::InitShaderFrostedGlass() {
 	shader_frostedGlass = Shader(rootPath + str_Basic_P3N3T2T3_vs, rootPath + "data/shaders/Engine/BSDF_FrostedGlass.fs");
-	shader_frostedGlass.UniformBlockBind("Camera", 0);
-	shader_frostedGlass.UniformBlockBind("PointLights", 1);
+
+	BindBlock(shader_frostedGlass);
 
 	shader_frostedGlass.SetInt("bsdf.colorTexture", 0);
 	shader_frostedGlass.SetInt("bsdf.roughnessTexture", 1);
