@@ -1,6 +1,6 @@
 #include "PLDM_Generator.h"
 
-#include "Impl_Raster.h"
+#include <CppUtil/Engine/RasterBase.h>
 
 #include <CppUtil/Qt/RawAPI_Define.h>
 
@@ -36,7 +36,7 @@ namespace CppUtil {
 	}
 }
 
-PLDM_Generator::PLDM_Generator(Impl_Raster * raster)
+PLDM_Generator::PLDM_Generator(RasterBase * raster)
 	: raster(raster), depthMapSize(1024), lightFar(25.0f)
 {
 	Reg<Scene>();
@@ -151,12 +151,12 @@ void PLDM_Generator::Visit(Sphere::Ptr sphere) {
 
 	shader_genDepth.SetMat4f("model", model);
 
-	raster->VAO_P3N3T2T3_Sphere.Draw(shader_genDepth);
+	raster->GetSphereVAO().Draw(shader_genDepth);
 }
 
 void PLDM_Generator::Visit(Plane::Ptr plane) {
 	shader_genDepth.SetMat4f("model", modelVec.back());
-	raster->VAO_P3N3T2T3_Plane.Draw(shader_genDepth);
+	raster->GetPlaneVAO().Draw(shader_genDepth);
 }
 
 void PLDM_Generator::Visit(TriMesh::Ptr mesh) {
@@ -164,7 +164,7 @@ void PLDM_Generator::Visit(TriMesh::Ptr mesh) {
 	raster->GetMeshVAO(mesh).Draw(shader_genDepth);
 }
 
-Texture PLDM_Generator::GetDepthCubeMap(Light::CPtr light) {
+Texture PLDM_Generator::GetDepthCubeMap(Light::CPtr light) const {
 	auto target = lightMap.find(light);
 	if (target == lightMap.end())
 		return Texture::InValid;

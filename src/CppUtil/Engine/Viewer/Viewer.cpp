@@ -1,22 +1,18 @@
 #include <CppUtil/Engine/Viewer.h>
 
-#include <CppUtil/Engine/Raster.h>
-#include <CppUtil/Engine/Roamer.h>
-#include <CppUtil/Engine/Picker.h>
+#include "Raster.h"
+#include "Roamer.h"
+#include "Picker.h"
 
 #include <CppUtil/Qt/RawAPI_OGLW.h>
 
 #include <CppUtil/Basic/LambdaOp.h>
 
-#include <qdebug.h>
-
 using namespace CppUtil::Engine;
 using namespace CppUtil::Qt;
-using namespace CppUtil::OpenGL;
 using namespace CppUtil::Basic;
-using namespace CppUtil;
 
-Viewer::Viewer(RawAPI_OGLW * pOGLW, Basic::Ptr<Scene> scene)
+Viewer::Viewer(RawAPI_OGLW * pOGLW, CppUtil::Basic::Ptr<Scene> scene)
 	: pOGLW(pOGLW), scene(scene), raster(ToPtr(new Raster(scene))), roamer(ToPtr(new Roamer(pOGLW))), picker(ToPtr(new Picker(this))) {
 	pOGLW->SetInitOp(ToPtr(new LambdaOp([this]() {
 		this->GetRoamer()->Init();

@@ -18,19 +18,19 @@ namespace CppUtil {
 
 		class Light;
 
-		class Impl_Raster;
+		class RasterBase;
 
 
 		// Point Light Depth Map Generator
 		class PLDM_Generator: public Basic::EleVisitor {
 			ELEVISITOR_SETUP(PLDM_Generator)
 		public:
-			PLDM_Generator(Impl_Raster * raster);
+			PLDM_Generator(RasterBase * raster);
 
 			void Init();
 
-			OpenGL::Texture GetDepthCubeMap(Basic::CPtr<Light> light);
-			float GetLightFar()const { return lightFar; }
+			OpenGL::Texture GetDepthCubeMap(Basic::CPtr<Light> light) const;
+			float GetLightFar() const { return lightFar; }
 
 		private:
 			void Visit(Basic::Ptr<Scene> scene);
@@ -41,7 +41,7 @@ namespace CppUtil {
 			void Visit(Basic::Ptr<TriMesh> mesh);
 
 		private:
-			Impl_Raster * raster;
+			RasterBase * raster;
 
 			struct Val {
 				Val(const OpenGL::FBO & fbo = OpenGL::FBO(), const OpenGL::Texture & tex = OpenGL::Texture())

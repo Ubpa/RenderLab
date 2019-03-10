@@ -10,6 +10,7 @@ namespace CppUtil {
 
 	namespace Engine {
 		class Scene;
+
 		class Raster;
 		class Roamer;
 		class Picker;

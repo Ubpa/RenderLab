@@ -39,7 +39,7 @@ namespace CppUtil {
 			void SetMat4f(const std::string &name, const glm::mat4 mat4) const;
 
 			//------------
-			void UniformBlockBind(const std::string &name, uint bindPoint);
+			void UniformBlockBind(const std::string &name, uint bindPoint) const;
 		private:
 			// utility function for checking shader compilation/linking errors.
 			int CheckCompileErrors(uint shader, std::string type);

@@ -168,7 +168,7 @@ void Shader::SetMat4f(const string &name, const glm::mat4 mat4) const{
 	SetMat4f(name, glm::value_ptr(mat4));
 }
 
-void Shader::UniformBlockBind(const string &name, uint bindPoint) {
+void Shader::UniformBlockBind(const string &name, uint bindPoint) const {
 	glUniformBlockBinding(ID, glGetUniformBlockIndex(ID, name.c_str()), bindPoint);
 }
 
