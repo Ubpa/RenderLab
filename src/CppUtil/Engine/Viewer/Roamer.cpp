@@ -44,6 +44,9 @@ void Roamer::SetWH(int w, int h) {
 void Roamer::ListenerInit() {
 	// log mouse pos and track mouse
 	auto MRB_PressOp = ToPtr(new LambdaOp([this]() {
+		if (this->lock)
+			return;
+
 		auto pOGWL = this->GetOGLW();
 
 		pOGWL->setMouseTracking(true);
@@ -61,6 +64,9 @@ void Roamer::ListenerInit() {
 
 	// lock mouse and rotate camera
 	auto mouseMoveOp = ToPtr(new LambdaOp([this]() {
+		if (this->lock)
+			return;
+
 		auto pOGWL = this->GetOGLW();
 
 		bool * lock;
@@ -88,6 +94,9 @@ void Roamer::ListenerInit() {
 
 	// release mouse cursor
 	auto MRB_ReleaseOp = ToPtr(new LambdaOp([this]() {
+		if (this->lock)
+			return;
+
 		auto pOGWL = this->GetOGLW();
 
 		pOGWL->setMouseTracking(false);
@@ -100,6 +109,9 @@ void Roamer::ListenerInit() {
 
 	// wheel
 	auto wheelOp = ToPtr(new LambdaOp([this]() {
+		if (this->lock)
+			return;
+
 		auto pOGWL = this->GetOGLW();
 
 		int angle = pOGWL->angle;
@@ -113,6 +125,9 @@ void Roamer::ListenerInit() {
 	size_t moveKey[] = { ::Qt::Key_W, ::Qt::Key_S, ::Qt::Key_A, ::Qt::Key_D, ::Qt::Key_Q, ::Qt::Key_E };
 	for (size_t i = 0; i < 6; i++) {
 		auto op = ToPtr(new LambdaOp([this, moveKey, i]() {
+			if (this->lock)
+				return;
+
 			auto pOGLW = this->GetOGLW();
 			this->GetCamera()->ProcessKeyboard(OpenGL::Camera::ENUM_Movement(OpenGL::Camera::MOVE_FORWARD + i), 0.015f);
 			UpdateCamera();

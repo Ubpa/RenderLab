@@ -23,6 +23,10 @@ namespace CppUtil {
 
 			Qt::RawAPI_OGLW * GetOGLW() { return pOGLW; }
 			Basic::Ptr<OpenGL::Camera> GetCamera() { return camera; }
+
+		public:
+			bool lock;
+
 		private:
 			void ListenerInit();
 			void UpdateCamera();

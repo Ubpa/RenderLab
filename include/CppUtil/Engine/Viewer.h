@@ -26,6 +26,9 @@ namespace CppUtil {
 			Basic::Ptr<Roamer> GetRoamer() const { return roamer; }
 			Basic::Ptr<Picker> GetPicker() const { return picker; }
 
+		public:
+			void SetLock(bool isLock);
+
 		private:
 			Qt::RawAPI_OGLW * pOGLW;
 			Basic::Ptr<Picker> picker;

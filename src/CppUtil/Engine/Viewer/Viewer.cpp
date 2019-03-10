@@ -37,3 +37,7 @@ Viewer::Viewer(RawAPI_OGLW * pOGLW, Basic::Ptr<Scene> scene)
 		this->GetRoamer()->SetWH(w, h);
 	})));
 }
+
+void Viewer::SetLock(bool isLock) {
+	roamer->lock = isLock;
+}

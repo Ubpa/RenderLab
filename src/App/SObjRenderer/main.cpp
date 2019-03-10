@@ -18,7 +18,12 @@ int main(int argc, char *argv[])
 	else
 		printf("Unable to set stylesheet, file not found\n");
 
-	SObjRenderer w;
+	Qt::WindowFlags flags = 0;
+	flags |= Qt::WindowMinimizeButtonHint;
+	flags |= Qt::WindowCloseButtonHint;
+	flags |= Qt::MSWindowsFixedSizeDialogHint;
+
+	SObjRenderer w(Q_NULLPTR, flags);
 	w.show();
 	return a.exec();
 }
