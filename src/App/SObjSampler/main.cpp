@@ -3,9 +3,40 @@
 
 #include <qfile.h>
 #include <qtextstream.h>
+#include <iostream>
+
+static const char USAGE[] =
+R"(SObjSampler
+
+    Usage:
+      SObjSampler [--notrootpath] --sobj=<sobjPath> [--maxdepth=<maxDepth>] [--samplenum=<sampleNum>] [--notdenoise] --csv==<csvPath>
+
+    Options:
+      -h --help                Show this screen.
+      --version                Show version.
+      --notrootpath            path is not from root path
+      --sobj <sobjPath>        sobj path.
+      --maxdepth <maxDepth>    max depth [default: 5]
+      --samplenum <sampleNum>  sample num [default: 1]
+      --notdenoise             not denoise
+      --cvs                    output file path
+)";
+
+using namespace std;
+using namespace App;
+
+void ShowArgRst(const map<string, docopt::value> & rst);
 
 int main(int argc, char *argv[])
 {
+	vector<string> args{ argv + 1, argv + argc };
+	auto result = docopt::docopt(USAGE, args);
+	ShowArgRst(result);
+
+	SObjSampler::ArgMap argMap;
+	for (auto arg : ENUM_ARG::_values())
+		argMap[arg] = result[string("--") + arg._to_string()];
+
 	QApplication a(argc, argv);
 
 	// load style sheet
@@ -23,7 +54,22 @@ int main(int argc, char *argv[])
 	flags |= Qt::WindowCloseButtonHint;
 	flags |= Qt::MSWindowsFixedSizeDialogHint;
 
-	SObjSampler w(Q_NULLPTR, flags);
+	SObjSampler w(argMap, Q_NULLPTR, flags);
 	w.show();
 	return a.exec();
+}
+
+void ShowArgRst(const map<string, docopt::value> & rst) {
+	cout << "[ Arg Result ]" << endl << endl;
+	cout << "{" << endl;
+	bool first = true;
+	for (auto const & arg : rst) {
+		if (first)
+			first = false;
+		else
+			cout << "," << endl;
+
+		cout << '"' << arg.first << '"' << ": " << arg.second;
+	}
+	cout << endl << "}" << endl << endl;
 }

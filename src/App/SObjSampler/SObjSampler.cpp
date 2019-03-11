@@ -41,12 +41,37 @@ using namespace glm;
 using namespace std;
 using namespace Ui;
 
+template<>
+bool SObjSampler::GetArgAs<bool>(ENUM_ARG arg) const {
+	return GetArg(arg).asBool();
+}
+
+template<>
+long SObjSampler::GetArgAs<long>(ENUM_ARG arg) const {
+	return GetArg(arg).asLong();
+}
+
+template<>
+int SObjSampler::GetArgAs<int>(ENUM_ARG arg) const {
+	return static_cast<int>(GetArg(arg).asLong());
+}
+
+template<>
+std::string SObjSampler::GetArgAs<std::string>(ENUM_ARG arg) const {
+	return GetArg(arg).asString();
+}
+
+template<>
+std::vector<std::string> SObjSampler::GetArgAs<std::vector<std::string>>(ENUM_ARG arg) const {
+	return GetArg(arg).asStringList();
+}
+
 SObjSampler::~SObjSampler() {
 	delete timer;
 }
 
-SObjSampler::SObjSampler(QWidget *parent, Qt::WindowFlags flags)
-	: QMainWindow(parent, flags), timer(nullptr)
+SObjSampler::SObjSampler(const ArgMap & argMap, QWidget *parent, Qt::WindowFlags flags)
+	: argMap(argMap), QMainWindow(parent, flags), timer(nullptr)
 {
 	ui.setupUi(this);
 
@@ -65,7 +90,11 @@ void SObjSampler::Init() {
 }
 
 void SObjSampler::InitScene() {
-	auto root = SObj::Load(ROOT_PATH + "data/SObjs/CB_Glass.xml");
+	bool isNotFromRootPath = GetArgAs<bool>(ENUM_ARG::notrootpath);
+	string path = GetArgAs<string>(ENUM_ARG::sobj);
+	string prefix = isNotFromRootPath ? "" : ROOT_PATH;
+
+	auto root = SObj::Load(prefix + path);
 	scene = ToPtr(new Scene(root, "scene"));
 }
 
@@ -92,21 +121,6 @@ void SObjSampler::InitRaster() {
 		dataMap[ENUM_TYPE::NORMAL] = sampleRaster->GetData(SampleRaster::ENUM_TYPE::NORMAL);
 		dataMap[ENUM_TYPE::MAT_COLOR] = sampleRaster->GetData(SampleRaster::ENUM_TYPE::MAT_COLOR);
 		dataMap[ENUM_TYPE::IOR_ROUGHNESS_ID] = sampleRaster->GetData(SampleRaster::ENUM_TYPE::IOR_ROUGHNESS_ID);
-
-		/*
-		auto imgFragColor = ToPtr(new Image(512, 512, 3));
-		auto fragColors = dataMap[ENUM_TYPE::FRAG_COLOR];
-		for (int row = 0; row < 512; row++) {
-			for (int col = 0; col < 512; col++) {
-				imgFragColor->SetPixel(row, col, glm::vec3(
-					fragColors[(row * 512 + col) * 3 + 0],
-					fragColors[(row * 512 + col) * 3 + 1],
-					fragColors[(row * 512 + col) * 3 + 2]
-				));
-			}
-		}
-		imgFragColor->SaveAsPNG(ROOT_PATH + "data/out/data/fragColors.png");
-		*/
 	}, false)));
 
 	ui.OGLW_Raster->SetPaintOp(paintOp);
@@ -114,20 +128,24 @@ void SObjSampler::InitRaster() {
 
 void SObjSampler::InitRTX() {
 	pathTracer = ToPtr(new PathTracer(scene));
-	pathTracer->maxDepth = 5;
+	pathTracer->maxDepth = GetArgAs<int>(ENUM_ARG::maxdepth);
 
 	PaintImgOpCreator pioc(ui.OGLW_RayTracer);
 	paintImgOp = pioc.GenScenePaintOp();
 	paintImgOp->SetOp(512, 512);
 	auto img = paintImgOp->GetImg();
 	rtxRenderer = ToPtr(new RTX_Renderer(pathTracer));
-	rtxRenderer->maxLoop = 1;
+	rtxRenderer->maxLoop = GetArgAs<int>(ENUM_ARG::samplenum);
 
 	drawImgThread = ToPtr(new OpThread([=]() {
 		rtxRenderer->Run(img);
-		OptixAIDenoiser::GetInstance().Denoise(img);
+		
+		if(!GetArgAs<bool>(ENUM_ARG::notdenoise))
+			OptixAIDenoiser::GetInstance().Denoise(img);
 
 		SaveData();
+
+		QApplication::exit();
 	}));
 	drawImgThread->start();
 }
@@ -146,7 +164,7 @@ void SObjSampler::InitTimer() {
 }
 
 void SObjSampler::SaveData() {
-	vector<string> keys = {
+	static const vector<string> keys = {
 		"DirectIllum_R",
 		"DirectIllum_G",
 		"DirectIllum_B",
@@ -169,6 +187,10 @@ void SObjSampler::SaveData() {
 		"IndirectIllum_G",
 		"IndirectIllum_B",
 	};
+
+	bool isNotFromRootPath = GetArgAs<bool>(ENUM_ARG::notrootpath);
+	string path = GetArgAs<string>(ENUM_ARG::csv);
+	string prefix = isNotFromRootPath ? "" : ROOT_PATH;
 	
 	CSV<float> csv(keys);
 	vector<ENUM_TYPE> enumTypes = {
@@ -214,5 +236,15 @@ void SObjSampler::SaveData() {
 		}
 	}
 
-	csv.Save(ROOT_PATH + "data/out/data/train_data.csv");
+	csv.Save(prefix + path);
+}
+
+const docopt::value & SObjSampler::GetArg(ENUM_ARG arg) const {
+	static const docopt::value invalid;
+
+	auto target = argMap.find(arg);
+	if (target == argMap.cend())
+		return invalid;
+
+	return target->second;
 }
