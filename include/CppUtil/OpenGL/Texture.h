@@ -38,6 +38,7 @@ namespace CppUtil {
 			bool SetImg(const Basic::Image & img);
 
 			bool Use(uint id = 0) const;
+			void Bind() const;
 			void UnBind() const;
 
 			uint GetID() const;

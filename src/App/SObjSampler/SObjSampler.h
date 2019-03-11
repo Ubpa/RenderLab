@@ -6,6 +6,8 @@
 #include <CppUtil/Qt/PaintImgOpCreator.h>
 #include <CppUtil/Basic/Ptr.h>
 
+#include <map>
+
 namespace CppUtil {
 	namespace Basic {
 		class Operation;
@@ -32,6 +34,16 @@ class SObjSampler : public QMainWindow
 	Q_OBJECT
 
 public:
+	enum ENUM_TYPE {
+		FRAG_COLOR,// direct illumination
+		POSITION,
+		VIEW_DIR,
+		NORMAL,
+		MAT_COLOR,
+		IOR_ROUGHNESS_ID,
+	};
+
+public:
 	explicit SObjSampler(QWidget *parent = Q_NULLPTR, Qt::WindowFlags flags = Qt::WindowFlags());
 
 	virtual ~SObjSampler();
@@ -48,6 +60,8 @@ private:
 	void InitRaster();
 	void InitRTX();
 
+	void SaveData();
+
 private:
 	Ui::SObjSamplerClass ui;
 	CppUtil::Basic::Ptr<CppUtil::Qt::PaintImgOpCreator::PaintImgOp> paintImgOp;
@@ -58,4 +72,6 @@ private:
 	CppUtil::Basic::Ptr<App::SampleRaster> sampleRaster;
 	CppUtil::Basic::Ptr<CppUtil::Engine::Roamer> roamer;
 	QTimer * timer;
+
+	std::map<ENUM_TYPE, std::vector<float>> dataMap;
 };

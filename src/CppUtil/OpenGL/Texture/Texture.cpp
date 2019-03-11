@@ -263,6 +263,13 @@ string Texture::Type2Str(ENUM_TYPE type) {
 	}
 }
 
+void Texture::Bind() const {
+	if (!IsValid())
+		return;
+
+	glBindTexture(Type2GL(type), ID);
+}
+
 void Texture::UnBind() const{
 	if (!IsValid())
 		return;

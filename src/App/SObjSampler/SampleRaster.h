@@ -8,10 +8,21 @@ namespace App {
 	class SampleRaster : public CppUtil::Engine::RasterBase {
 		ELEVISITOR_SETUP(SampleRaster)
 	public:
-		SampleRaster(CppUtil::Basic::Ptr<CppUtil::Engine::Scene> scene) : RasterBase(scene) { }
+		SampleRaster(CppUtil::Basic::Ptr<CppUtil::Engine::Scene> scene)
+			: RasterBase(scene), haveSampled(false) { }
 
 		void Draw();
 		void Init();
+
+		enum ENUM_TYPE {
+			FRAG_COLOR,
+			POSITION,
+			VIEW_DIR,
+			NORMAL,
+			MAT_COLOR,
+			IOR_ROUGHNESS_ID,
+		};
+		std::vector<float> GetData(ENUM_TYPE type);
 
 	protected:
 		virtual void Visit(CppUtil::Basic::Ptr<CppUtil::Engine::SObj> sobj);
@@ -29,6 +40,8 @@ namespace App {
 
 		CppUtil::OpenGL::Shader shader_screen;
 		CppUtil::OpenGL::Shader shader_sampleFrostedGlass;
+
+		bool haveSampled;
 	};
 }
 

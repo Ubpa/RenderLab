@@ -60,12 +60,16 @@ void SampleRaster::InitShaderSampleFrostedGlass() {
 }
 
 void SampleRaster::Draw() {
-	gBuffer.Use();
-	GLint lastFBO;
-	glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &lastFBO);
-	RasterBase::Draw();
+	if (!haveSampled) {
+		gBuffer.Use();
+		GLint lastFBO;
+		glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &lastFBO);
+		RasterBase::Draw();
+		FBO::UseDefault();
+
+		haveSampled = true;
+	}
 	
-	FBO::UseDefault();
 	glClearColor(0, 0, 0, 1);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	gBuffer.GetColorTexture(0).Use(0);
@@ -102,4 +106,27 @@ void SampleRaster::Visit(BSDF_FrostedGlass::Ptr bsdf) {
 	shader_sampleFrostedGlass.SetFloat(strBSDF + "ior", bsdf->ior);
 
 	SetPointLightDepthMap(shader_sampleFrostedGlass, texNum);
+}
+
+vector<float> SampleRaster::GetData(ENUM_TYPE type) {
+	int id = static_cast<int>(type);
+
+	if (!haveSampled)
+		return vector<float>();
+
+	vector<float> rst(512 * 512 * 3);
+	gBuffer.GetColorTexture(id).Bind();
+	glGetTexImage(GL_TEXTURE_2D, 0, GL_RGB, GL_FLOAT, rst.data());
+
+	vector<float> replaceRst(512 * 512 * 3);
+	
+	for (int row = 0; row < 512; row++) {
+		for (int col = 0; col < 512; col++) {
+			for (int k = 0; k < 3; k++) {
+				replaceRst[(row * 512 + (512 - 1 - col)) * 3 + k] = rst[(col * 512 + row) * 3 + k];
+			}
+		}
+	}
+
+	return replaceRst;
 }
