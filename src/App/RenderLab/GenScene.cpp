@@ -166,68 +166,7 @@ Scene::Ptr GenScene00() {
 	cubeTransform->SetScale(vec3(0.2f));
 	cubeTransform->SetPosition(vec3(0, 0.15f, 0));
 
-	// wall
-	vec3 posArr[wallNum] = {
-		vec3(0, 1.5f, 0),
-		vec3(0, 0, 0),
-		vec3(-1, 0.75f, 0),
-		vec3(1, 0.75f, 0),
-		vec3(0, 0.75f, -1),
-	};
-
-	vec3 axisArr[wallNum] = {
-		vec3(0, 1, 0),
-		vec3(0, 1, 0),
-		vec3(0, 0, 1),
-		vec3(0, 0, 1),
-		vec3(1, 0, 0),
-	};
-
-	float degreeArr[wallNum] = {
-		0,
-		0,
-		90,
-		90,
-		90,
-	};
-
-	vec3 scaleArr[wallNum] = {
-		vec3(2, 1, 2),
-		vec3(2, 1, 2),
-		vec3(1.5f, 1, 2),
-		vec3(1.5f, 1, 2),
-		vec3(2, 1, 1.5f),
-	};
-
-	vec3 colorArr[wallNum] = {
-		vec3(0.6f),
-		vec3(0.6f),
-		vec3(0.6f, 0.2f, 0.2f),
-		vec3(0.2f, 0.2f, 0.6f),
-		vec3(0.6f),
-	};
-
-	for (int i = 0; i < wallNum; i++) {
-		auto bsdfDiffuse = ToPtr(new BSDF_Diffuse(colorArr[i]));
-		auto materialDiffuse = ToPtr(new Material(sobj_walls[i], bsdfDiffuse));
-
-		auto plane = ToPtr(new Plane);
-		auto geo = ToPtr(new Geometry(sobj_walls[i], plane));
-
-		auto transform = ToPtr(new Transform(sobj_walls[i]));
-		transform->SetPosition(posArr[i]);
-		transform->Rotate(radians(degreeArr[i]), axisArr[i]);
-		transform->SetScale(scaleArr[i]);
-	}
-
-	// sky sphere
-	/*
-	auto sobj_skySphere = ToPtr(new SObj(sobj_Root, "sky"));
-	auto skySphere = ToPtr(new Sphere(vec3(0), 100.0f));
-	auto geoSky = ToPtr(new Geometry(sobj_skySphere, skySphere));
-	auto dark = ToPtr(new BSDF_Diffuse(vec3(0)));
-	auto materialSky = ToPtr(new Material(sobj_skySphere, dark));
-	*/
+	GenBox()->SetParent(sobj_Root);
 
 	auto scene = ToPtr(new Scene(sobj_Root, "scene 00"));
 	return scene;

@@ -1,7 +1,6 @@
 #include <CppUtil/Engine/BSDF.h>
 
 #include <glm/geometric.hpp>
-
 #include <glm/mat3x3.hpp>
 
 using namespace CppUtil::Engine;

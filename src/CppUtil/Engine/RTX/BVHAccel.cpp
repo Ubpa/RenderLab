@@ -15,9 +15,7 @@ using namespace glm;
 using namespace std;
 
 BVHAccel::BVHAccel()
-	: bvhRoot(nullptr) {
-
-}
+	: bvhRoot(nullptr) { }
 
 
 // ------------ BVHInitVisitor ------------
@@ -71,26 +69,6 @@ private:
 
 private:
 	BVHAccel * holder;
-};
-
-// ------------ GetPrimitiveVisitor ------------
-
-class BVHAccel::GetPrimitiveVisitor : public EleVisitor {
-	ELEVISITOR_SETUP(GetPrimitiveVisitor)
-public:
-	GetPrimitiveVisitor() {
-		Reg<Triangle>();
-		Reg<Sphere>();
-		Reg<Plane>();
-		Reg<TriMesh>();
-	}
-private:
-	void Visit(Triangle::Ptr obj) { primitive = obj->GetMesh(); }
-	void Visit(Sphere::Ptr obj) { primitive = obj; }
-	void Visit(Plane::Ptr obj) { primitive = obj; }
-	void Visit(TriMesh::Ptr obj) { primitive = obj; }
-public:
-	Primitive::Ptr primitive;
 };
 
 const mat4 & BVHAccel::GetEleW2LMat(Element::Ptr element) {

@@ -125,7 +125,3 @@ mat3 Math::GenCoordSpace(const vec3 & n) {
 
 	return o2w;
 }
-
-float Math::Illum(const vec3 & color) {
-	return 0.2126f * color.r + 0.7152f * color.g + 0.0722f * color.b;
-}

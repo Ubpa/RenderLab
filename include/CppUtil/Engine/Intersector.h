@@ -12,6 +12,8 @@ namespace CppUtil {
 				Rst(bool isIntersect = false)
 					: isIntersect(false) { }
 
+				bool IsIntersect() const { return isIntersect; }
+
 			protected:
 				bool isIntersect;
 			};

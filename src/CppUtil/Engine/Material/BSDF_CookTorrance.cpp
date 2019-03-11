@@ -1,8 +1,8 @@
 #include <CppUtil/Engine/BSDF_CookTorrance.h>
 
-#include <glm/geometric.hpp>
-
 #include <CppUtil/Basic/Math.h>
+
+#include <glm/geometric.hpp>
 
 using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;

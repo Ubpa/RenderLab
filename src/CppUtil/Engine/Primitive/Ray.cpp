@@ -1,4 +1,5 @@
 #include <CppUtil/Engine/Ray.h>
+
 #include <glm/mat3x3.hpp>
 
 using namespace CppUtil::Engine;

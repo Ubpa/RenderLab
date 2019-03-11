@@ -42,7 +42,7 @@ int main() {
 	auto light = ToPtr(new Light(sobj3, arealight));
 
 	auto scene = ToPtr(new Scene(sobjRoot, "test"));
-	cout << "scene has " << (scene->GetMainCamera() == nullptr ?"not ":"") << "a camera." << endl;
+	cout << "scene has " << (scene->GetCamera() == nullptr ?"not ":"") << "a camera." << endl;
 	cout << "scene has " << scene->GetLights().size() << " lights." << endl;
 
 	return 0;

@@ -1,6 +1,6 @@
 #include <CppUtil/Engine/BSDF_Diffuse.h>
-#include <CppUtil/Basic/Math.h>
 
+#include <CppUtil/Basic/Math.h>
 #include <CppUtil/Basic/Image.h>
 
 using namespace CppUtil::Engine;
