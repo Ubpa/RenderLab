@@ -23,10 +23,16 @@ using namespace CppUtil::Basic;
 using namespace glm;
 using namespace std;
 
-PathTracer::PathTracer(Scene::Ptr scene)
-	: RayTracer(scene), sampleNumForAreaLight(2), maxDepth(20), bvhAccel(ToPtr(new BVHAccel)) { }
+PathTracer::PathTracer()
+	:
+	sampleNumForAreaLight(2),
+	maxDepth(20),
+	bvhAccel(ToPtr(new BVHAccel)),
+	rayIntersector(ToPtr(new RayIntersector)),
+	visibilityChecker(ToPtr(new VisibilityChecker))
+{ }
 
-void PathTracer::Init() {
+void PathTracer::Init(Scene::Ptr scene) {
 	lights.clear();
 	worldToLightVec.clear();
 	dir_lightToWorldVec.clear();
@@ -54,7 +60,7 @@ void PathTracer::Init() {
 }
 
 vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
-	auto rayIntersector = ToPtr(new RayIntersector(ray));
+	rayIntersector->Init(ray);
 	bvhAccel->Accept(rayIntersector);
 	auto & closestRst = rayIntersector->GetRst();
 	if (!closestRst.closestSObj) {
@@ -123,11 +129,11 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 
 				const vec3 dirInWorld = normalize(dir_lightToWorldVec[i] * dir_ToLight);
 
-				// shadowRay 处于世界坐标
-				Ray::Ptr shadowRay = ToPtr(new Ray(shadowOrigin, dirInWorld));
-				auto checker = ToPtr(new VisibilityChecker(shadowRay, dist_ToLight - 0.001f));
-				bvhAccel->Accept(checker);
-				auto shadowRst = checker->GetRst();
+				// shadow ray 处于世界坐标
+				ray->Init(shadowOrigin, dirInWorld);
+				visibilityChecker->Init(ray, dist_ToLight - 0.001f);
+				bvhAccel->Accept(visibilityChecker);
+				auto shadowRst = visibilityChecker->GetRst();
 				if (shadowRst.IsIntersect())
 					continue;
 
@@ -138,7 +144,6 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 				float sumPD = sampleNum * PD;
 				if (!light->IsDelta()) {
 					sumPD += bsdf->PDF(w_out, w_in, closestRst.texcoord);
-					//sumPD += bsdf->PDF(w_out, w_in, closestRst.texcoord);
 					for (int k = 0; k < lightNum; k++) {
 						if (k != i && !lights[k]->IsDelta()) {
 							vec3 dirInLight = dir_worldToLightVec[k] * dirInWorld;
@@ -193,8 +198,9 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 		}
 	}
 
-	Ray::Ptr matRay = ToPtr(new Ray(hitPos, matRayDirInWorld));
-	const vec3 matRayColor = Trace(matRay, depth + 1);
+	// material ray
+	ray->Init(hitPos, matRayDirInWorld);
+	const vec3 matRayColor = Trace(ray, depth + 1);
 
 	vec3 matL = abs_cosTheta / (sumPD /** (1.f - terminateProbability)*/) * matF * matRayColor;
 

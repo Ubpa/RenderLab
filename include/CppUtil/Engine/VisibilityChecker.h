@@ -33,7 +33,9 @@ namespace CppUtil {
 			};
 
 		public:
-			VisibilityChecker(Basic::Ptr<Ray> ray, float tMax);
+			VisibilityChecker();
+
+			void Init(Basic::Ptr<Ray> ray, float tMax);
 
 			Rst & GetRst() { return rst; }
 

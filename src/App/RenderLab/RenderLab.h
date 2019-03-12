@@ -45,6 +45,11 @@ private:
 	CppUtil::Basic::Ptr<CppUtil::Engine::Scene> scene;
 	CppUtil::Basic::Ptr<CppUtil::Engine::Viewer> viewer;
 	CppUtil::Basic::Ptr<CppUtil::Engine::RTX_Renderer> rtxRenderer;
-	CppUtil::Basic::Ptr<CppUtil::Engine::PathTracer> pathTracer;
 
+private:
+	// setting
+	std::vector<CppUtil::Basic::Ptr<CppUtil::Engine::PathTracer>> pathTracers;
+	int maxDepth;
+	int maxLoop;
+	int sampleNumForAreaLight;
 };

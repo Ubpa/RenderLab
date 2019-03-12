@@ -21,14 +21,21 @@ using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
 using namespace glm;
 
-RayIntersector::RayIntersector(Ray::Ptr ray)
-	: ray(ray) {
+RayIntersector::RayIntersector()
+	: ray(nullptr) {
 	Reg<BVHAccel>();
 	Reg<BVHNode<Element, BVHAccel>>();
 	Reg<SObj>();
 	Reg<Sphere>();
 	Reg<Plane>();
 	Reg<Triangle>();
+}
+
+void RayIntersector::Init(Ray::Ptr ray) {
+	this->ray = ray;
+
+	rst.closestSObj = nullptr;
+	rst.isIntersect = false;
 }
 
 bool RayIntersector::Intersect(const BBox & bbox) {

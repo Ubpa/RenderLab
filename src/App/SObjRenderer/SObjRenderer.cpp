@@ -68,18 +68,22 @@ void SObjRenderer::InitRaster() {
 }
 
 void SObjRenderer::InitRTX() {
-	pathTracer = ToPtr(new PathTracer(scene));
-	pathTracer->maxDepth = 5;
+	auto generator = []()->RayTracer::Ptr{
+		auto pathTracer = ToPtr(new PathTracer);
+		pathTracer->maxDepth = 5;
+
+		return pathTracer;
+	};
 
 	PaintImgOpCreator pioc(ui.OGLW_RayTracer);
 	paintImgOp = pioc.GenScenePaintOp();
 	paintImgOp->SetOp(512, 512);
 	auto img = paintImgOp->GetImg();
-	rtxRenderer = ToPtr(new RTX_Renderer(pathTracer));
-	rtxRenderer->maxLoop = 1;
+	rtxRenderer = ToPtr(new RTX_Renderer(generator));
+	rtxRenderer->maxLoop = 10;
 
 	drawImgThread = ToPtr(new OpThread([=]() {
-		rtxRenderer->Run(img);
+		rtxRenderer->Run(scene, img);
 		OptixAIDenoiser::GetInstance().Denoise(img);
 	}));
 	drawImgThread->start();

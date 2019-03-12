@@ -68,9 +68,13 @@ void RenderLab::on_btn_RenderStart_clicked(){
 		auto img = paintImgOp->GetImg();
 
 		auto scene = GenScene();
-		auto pathTracer = ToPtr(new PathTracer(scene));
+		
+		auto generator = [=]()->RayTracer::Ptr {
+			auto pathTracer = ToPtr(new PathTracer);
+			return pathTracer;
+		};
 
-		auto rtxRenderer = ToPtr(new RTX_Renderer(pathTracer));
+		auto rtxRenderer = ToPtr(new RTX_Renderer(generator));
 
 		OpThread::Ptr controller = ToPtr(new OpThread);
 		controller->UIConnect(this, &RenderLab::UI_Op);
@@ -86,7 +90,7 @@ void RenderLab::on_btn_RenderStart_clicked(){
 		controller->SetOp(controllOp);
 		controller->start();
 
-		rtxRenderer->Run(img);
+		rtxRenderer->Run(scene, img);
 		controller->terminate();
 		drawImgThread->UI_Op_Run([this, rtxRenderer]() {
 			ui.btn_RenderStart->setEnabled(true);

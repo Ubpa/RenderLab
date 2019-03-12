@@ -3,6 +3,9 @@
 
 #include <CppUtil/Engine/Component.h>
 
+#include <glm/vec3.hpp>
+#include <glm/mat4x4.hpp>
+
 namespace CppUtil {
 	namespace Engine {
 		class Ray;
@@ -19,8 +22,16 @@ namespace CppUtil {
 
 			Basic::Ptr<Ray> GenRay(float u, float v);
 
+			bool InitCoordinate();
+
+			// right, up, front are normalized vector
+			// !!! need call InitCoordinate() first !!!
+			void SetRay(Basic::Ptr<Ray> ray, float u, float v);
+
 			float GetFOV() const { return fov; }
 			void SetFOV(float fov);
+
+		public:
 
 		public:
 			float nearPlane;
@@ -35,6 +46,16 @@ namespace CppUtil {
 
 			float w;
 			float h;
+			
+			struct Coordinate {
+				void Init(const glm::mat4 & matrix);
+
+				glm::vec3 pos;
+				glm::vec3 right;
+				glm::vec3 up;
+				glm::vec3 front;
+			};
+			Coordinate coordinate;
 		};
 	}
 }

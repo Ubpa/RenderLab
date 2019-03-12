@@ -11,18 +11,39 @@
 #include <CppUtil/Basic/ImgPixelSet.h>
 #include <CppUtil/Basic/Math.h>
 
+#include <thread>
+
 #include <omp.h>
+
+#ifdef NDEBUG
+#define THREAD_NUM omp_get_num_procs() - 1
+#else
+#define THREAD_NUM 1
+#endif //  NDEBUG
 
 using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
 using namespace glm;
+using namespace std;
 
-RTX_Renderer::RTX_Renderer(CppUtil::Basic::Ptr<RayTracer> rayTracer)
-	: rayTracer(rayTracer), isStop(false), maxLoop(200), curLoop(0) { }
+RTX_Renderer::RTX_Renderer(const function<RayTracer::Ptr()> & generator)
+	:
+	generator(generator),
+	state(RendererState::Stop),
+	maxLoop(200),
+	curLoop(0),
+	threadNum(THREAD_NUM)
+{
+	for (int i = 0; i < threadNum; i++) {
+		auto rayTracer = generator();
+		rayTracers.push_back(rayTracer);
+	}
+}
 
-void RTX_Renderer::Run(Image::Ptr img) {
-	isStop = false;
+void RTX_Renderer::Run(Scene::Ptr scene, Image::Ptr img) {
+	state = RendererState::Running;
 
+	// init rst image
 	int w = img->GetWidth();
 	int h = img->GetHeight();
 
@@ -31,18 +52,21 @@ void RTX_Renderer::Run(Image::Ptr img) {
 			img->SetPixel(i, j, vec3(0));
 	}
 	
-	rayTracer->Init();
+	// init ray tracer
+	for (auto rayTracer : rayTracers)
+		rayTracer->Init(scene);
 
-	auto camera = rayTracer->GetScene()->GetCamera();
+	// init camera
+	auto camera = scene->GetCamera();
 	if (camera == nullptr) {
-		curLoop = maxLoop;
-		isStop = true;
+		// curLoop = maxLoop;
+		state = RendererState::Stop;
 		return;
 	}
-
 	camera->SetAspectRatio(w, h);
-	auto cam2world = camera->GetSObj()->GetLocalToWorldMatrix();
+	camera->InitCoordinate();
 
+	// init float image
 	int imgSize = w * h;
 	std::vector<std::vector<vec3>> fimg;
 	for (int i = 0; i < w; i++) {
@@ -51,27 +75,33 @@ void RTX_Renderer::Run(Image::Ptr img) {
 			fimg[i].push_back(vec3(0));
 	}
 
-#ifdef NDEBUG
-	omp_set_num_threads(omp_get_num_procs() - 1);
-#else
-	omp_set_num_threads(1);
-#endif //  NDEBUG
+	// jobs
+	ImgPixelSet pixSet(w, h);
+	const int pixelsNum = w * h / threadNum;
+	vector<vector<uvec2>> pixelSets;
+	for (int i = 0; i < threadNum - 1; i++)
+		pixelSets.push_back(pixSet.RandPick(pixelsNum));
 
-	for (curLoop = 0; curLoop < maxLoop; ++curLoop) {
-		ImgPixelSet pixSet(w, h);
-		auto randSet = pixSet.PickAll();
+	pixelSets.push_back(pixSet.PickAll());
 
-#pragma omp parallel for schedule(dynamic, 2048)
-		for (int pixelIdx = 0; pixelIdx < imgSize; pixelIdx++) {
-			auto xy = randSet[pixelIdx];
-			int x = xy.x;
-			int y = xy.y;
+	// rays
+	vector<Ray::Ptr> rays;
+	for (int i = 0; i < threadNum; i++)
+		rays.push_back(ToPtr(new Ray));
+
+	auto renderPartImg = [&](int id) {
+		auto & ray = rays[id];
+		auto & rayTracer = rayTracers[id];
+		auto const & pixelSet = pixelSets[id];
+
+		for (auto const & pixel : pixelSet) {
+			int x = pixel.x;
+			int y = pixel.y;
 
 			float u = (x + Math::Rand_F()) / (float)w;
 			float v = (y + Math::Rand_F()) / (float)h;
 
-			auto ray = camera->GenRay(u, v);
-			ray->Transform(cam2world);
+			camera->SetRay(ray, u, v);
 			vec3 rst = rayTracer->Trace(ray);
 
 			// 这一步可以极大的减少白噪点（特别是由点光源产生）
@@ -82,17 +112,28 @@ void RTX_Renderer::Run(Image::Ptr img) {
 			fimg[x][y] += rst;
 
 			img->SetPixel(x, y, sqrt(fimg[x][y] / float(curLoop + 1)));
-		}
 
-		if (isStop)
-			return;
+			if (state._value == RendererState::Stop )
+				return;
+		}
+	};
+
+	for (curLoop = 0; curLoop < maxLoop; ++curLoop) {
+		// init all workers first
+		vector<thread> workers;
+		for (int i = 0; i < threadNum; i++)
+			workers.push_back(thread(renderPartImg, i));
+
+		// let workers to work
+		for (auto & worker : workers)
+			worker.join();
 	}
 
-	isStop = true;
+	state = RendererState::Stop;
 }
 
 void RTX_Renderer::Stop() {
-	isStop = true;
+	state = RendererState::Stop;
 }
 
 float RTX_Renderer::ProgressRate() {

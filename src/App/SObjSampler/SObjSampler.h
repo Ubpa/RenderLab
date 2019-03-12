@@ -78,7 +78,6 @@ namespace App{
 		CppUtil::Basic::Ptr<CppUtil::Qt::PaintImgOpCreator::PaintImgOp> paintImgOp;
 		CppUtil::Basic::Ptr<CppUtil::Engine::Scene> scene;
 		CppUtil::Basic::Ptr<CppUtil::Engine::RTX_Renderer> rtxRenderer;
-		CppUtil::Basic::Ptr<CppUtil::Engine::PathTracer> pathTracer;
 		CppUtil::Basic::Ptr<CppUtil::Qt::OpThread> drawImgThread;
 		CppUtil::Basic::Ptr<App::SampleRaster> sampleRaster;
 		CppUtil::Basic::Ptr<CppUtil::Engine::Roamer> roamer;

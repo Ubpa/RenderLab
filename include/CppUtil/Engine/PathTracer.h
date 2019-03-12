@@ -14,12 +14,16 @@ namespace CppUtil {
 		class LightBase;
 		class BVHAccel;
 
+		class RayIntersector;
+		class VisibilityChecker;
+
+		// 只能用于单线程
 		class PathTracer : public RayTracer {
 			HEAP_OBJ_SETUP(PathTracer)
 		public:
-			PathTracer(Basic::Ptr<Scene> scene);
+			PathTracer();
 
-			virtual void Init();
+			virtual void Init(Basic::Ptr<Scene> scene);
 
 		protected:
 			// ray 处于世界坐标系
@@ -37,6 +41,9 @@ namespace CppUtil {
 			std::vector<glm::mat3> dir_lightToWorldVec;// 只需要旋转方向，所以使用 mat3
 
 			Basic::Ptr<BVHAccel> bvhAccel;
+
+			Basic::Ptr<RayIntersector> rayIntersector;
+			Basic::Ptr<VisibilityChecker> visibilityChecker;
 		};
 	}
 }

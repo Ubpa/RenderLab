@@ -103,7 +103,7 @@ cmake .. -Wno-dev
   - [x] 降噪（OptixAIDenoiser）
   - [x] 场景BVH（因为在编辑时场景是动态的，所以在光线追踪任务开始时才建立 BVH）
   - [ ] 块化渲染
-  - [ ] 线程化（不要用OpenMP）
+  - [x] 线程化（不要用OpenMP）
 
 - [ ] 光线追踪新增功能
   - [x] Cook Torrance BRDF

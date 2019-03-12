@@ -16,15 +16,22 @@ using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
 using namespace glm;
 
-VisibilityChecker::VisibilityChecker(Ray::Ptr ray, float tMax)
-	: ray(ray), rst(false) {
-	ray->SetTMax(tMax);
-	
+VisibilityChecker::VisibilityChecker()
+	: ray(nullptr), rst(false)
+{
 	Reg<BVHAccel>();
 	Reg<BVHNode<Element, BVHAccel>>();
 	Reg<Sphere>();
 	Reg<Plane>();
 	Reg<Triangle>();
+}
+
+void VisibilityChecker::Init(Ray::Ptr ray, float tMax) {
+	this->ray = ray;
+
+	ray->SetTMax(tMax);
+
+	rst.isIntersect = false;
 }
 
 bool VisibilityChecker::Intersect(const BBox & bbox) {

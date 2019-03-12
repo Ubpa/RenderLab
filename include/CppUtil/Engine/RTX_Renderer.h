@@ -3,22 +3,30 @@
 
 #include <CppUtil/Basic/HeapObj.h>
 
+#include <3rdParty/enum.h>
+
+#include <functional>
+#include <vector>
+
 namespace CppUtil {
 	namespace Basic {
 		class Image;
 	}
 
 	namespace Engine {
-		class RayTracer;
 		class Scene;
+
+		class RayTracer;
+
+		BETTER_ENUM(RendererState, int, Running, Stop)
 
 		class RTX_Renderer : public Basic::HeapObj {
 			HEAP_OBJ_SETUP(RTX_Renderer)
 		public:
-			RTX_Renderer(Basic::Ptr<RayTracer> rayTracer);
+			RTX_Renderer(const std::function<Basic::Ptr<RayTracer>()> & generator);
 
 		public:
-			void Run(Basic::Ptr<Basic::Image> img);
+			void Run(Basic::Ptr<Scene> scene, Basic::Ptr<Basic::Image> img);
 			void Stop();
 			float ProgressRate();
 
@@ -26,10 +34,13 @@ namespace CppUtil {
 			volatile int maxLoop;
 
 		private:
-			Basic::Ptr<RayTracer> rayTracer;
+			std::function<Basic::Ptr<RayTracer>()> generator;
+			std::vector<Basic::Ptr<RayTracer>> rayTracers;
 
-			volatile bool isStop;
+			RendererState state;
 			int curLoop;
+
+			const int threadNum;
 		};
 	}
 }

@@ -42,7 +42,9 @@ namespace CppUtil {
 			};
 
 		public:
-			RayIntersector(Basic::Ptr<Ray> ray);
+			RayIntersector();
+
+			void Init(Basic::Ptr<Ray> ray);
 
 		public:
 			Rst & GetRst() { return rst; }

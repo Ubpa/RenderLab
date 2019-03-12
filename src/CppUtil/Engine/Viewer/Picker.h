@@ -21,6 +21,9 @@ namespace CppUtil {
 		class Viewer;
 		class SObj;
 
+		class Ray;
+		class RayIntersector;
+
 		class Picker : public Basic::HeapObj {
 			HEAP_OBJ_SETUP(Picker)
 		public:
@@ -31,6 +34,9 @@ namespace CppUtil {
 			Viewer * GetViewer() const { return viewer; }
 		private:
 			Viewer * viewer;
+
+			Basic::Ptr<Ray> ray;
+			Basic::Ptr<RayIntersector> rayIntersector;
 		};
 	}
 }

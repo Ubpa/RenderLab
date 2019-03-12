@@ -23,8 +23,7 @@ using namespace CppUtil::Basic;
 using namespace glm;
 
 Picker::Picker(Viewer * viewer)
-	: viewer(viewer) {
-}
+	: viewer(viewer), ray(ToPtr(new Ray(vec3(0),vec3(1)))), rayIntersector(ToPtr(new RayIntersector)) { }
 
 void Picker::Init() {
 	auto MRB_PressOp = ToPtr(new LambdaOp([this]() {
@@ -42,8 +41,8 @@ void Picker::Init() {
 		vec3 posInWorld = vec3(posInWorldQ) / posInWorldQ.w;
 
 		vec3 dir = posInWorld - camera->GetPos();
-		auto ray = ToPtr(new Ray(camera->GetPos(), dir));
-		auto rayIntersector = ToPtr(new RayIntersector(ray));
+		ray->Init(camera->GetPos(), dir);
+		rayIntersector->Init(ray);
 		viewer->GetScene()->GetRoot()->Accept(rayIntersector);
 		auto closestRst = rayIntersector->GetRst();
 		if (closestRst.closestSObj)

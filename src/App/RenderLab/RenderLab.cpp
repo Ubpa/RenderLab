@@ -35,7 +35,7 @@ using namespace std;
 using namespace Ui;
 
 RenderLab::RenderLab(QWidget *parent)
-	: QMainWindow(parent)
+	: QMainWindow(parent), maxDepth(5), maxLoop(20), sampleNumForAreaLight(1)
 {
 	ui.setupUi(this);
 
@@ -65,9 +65,16 @@ RenderLab::RenderLab(QWidget *parent)
 	PaintImgOpCreator pioc(ui.OGLW_RayTracer);
 	paintImgOp = pioc.GenScenePaintOp();
 
-	pathTracer = ToPtr(new PathTracer(scene));
+	auto generator = [&]()->PathTracer::Ptr{
+		auto pathTracer = ToPtr(new PathTracer);
+		pathTracers.push_back(pathTracer);
+		pathTracer->maxDepth = maxDepth;
+		pathTracer->sampleNumForAreaLight = sampleNumForAreaLight;
 
-	rtxRenderer = ToPtr(new RTX_Renderer(pathTracer));
+		return pathTracer;
+	};
+
+	rtxRenderer = ToPtr(new RTX_Renderer(generator));
 	
 	// init ui
 
@@ -104,7 +111,8 @@ void RenderLab::on_btn_RenderStart_clicked(){
 		controller->SetOp(controllOp);
 		controller->start();
 
-		rtxRenderer->Run(img);
+		rtxRenderer->Run(scene, img);
+
 		controller->terminate();
 		drawImgThread->UI_Op_Run([=]() {
 			ui.btn_RenderStart->setEnabled(true);
@@ -160,9 +168,18 @@ void RenderLab::InitSetting() {
 	setting->Init(ui.frame_Setting);
 
 	setting->AddTitle("[ RTX_Renderer ]");
-	setting->AddEditVal("- Sample Num", rtxRenderer->maxLoop, 1, 400);
+	setting->AddEditVal("- Sample Num", maxLoop, 1, 400, [&](int val) {
+		rtxRenderer->maxLoop = val;
+	});
 	
 	setting->AddTitle("[ PathTracer ]");
-	setting->AddEditVal("- Max Depth", pathTracer->maxDepth, 1, 20);
-	setting->AddEditVal("- Samples On Light", pathTracer->sampleNumForAreaLight, 1, 16);
+	setting->AddEditVal("- Max Depth", maxDepth, 1, 20, [&](int val) {
+		for (auto pathTracer : pathTracers)
+			pathTracer->maxDepth = val;
+	});
+
+	setting->AddEditVal("- Samples On Light", sampleNumForAreaLight, 1, 16, [&](int val) {
+		for (auto pathTracer : pathTracers)
+			pathTracer->sampleNumForAreaLight = val;
+	});
 }

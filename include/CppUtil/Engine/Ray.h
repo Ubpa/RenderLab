@@ -10,7 +10,7 @@ namespace CppUtil {
 		class Ray : public Basic::HeapObj {
 			HEAP_OBJ_SETUP(Ray)
 		public:
-			Ray(const glm::vec3 & origin, const glm::vec3 dir, float tMin = 0.001f, float tMax = FLT_MAX)
+			Ray(const glm::vec3 & origin = glm::vec3(0), const glm::vec3 dir = glm::vec3(1), float tMin = 0.001f, float tMax = FLT_MAX)
 				: origin(origin), dir(dir), invDir(1.0f/dir.x, 1.0f/dir.y, 1.0f/dir.z), tMin(tMin), tMax(tMax) { }
 
 			void Init(const glm::vec3 & origin, const glm::vec3 & dir) {

@@ -127,18 +127,23 @@ void SObjSampler::InitRaster() {
 }
 
 void SObjSampler::InitRTX() {
-	pathTracer = ToPtr(new PathTracer(scene));
-	pathTracer->maxDepth = GetArgAs<int>(ENUM_ARG::maxdepth);
+	int maxDepth = GetArgAs<int>(ENUM_ARG::maxdepth);
+	auto generator = [=]()->RayTracer::Ptr {
+		auto pathTracer = ToPtr(new PathTracer);
+		pathTracer->maxDepth = maxDepth;
+
+		return pathTracer;
+	};
 
 	PaintImgOpCreator pioc(ui.OGLW_RayTracer);
 	paintImgOp = pioc.GenScenePaintOp();
 	paintImgOp->SetOp(512, 512);
 	auto img = paintImgOp->GetImg();
-	rtxRenderer = ToPtr(new RTX_Renderer(pathTracer));
+	rtxRenderer = ToPtr(new RTX_Renderer(generator));
 	rtxRenderer->maxLoop = GetArgAs<int>(ENUM_ARG::samplenum);
 
 	drawImgThread = ToPtr(new OpThread([=]() {
-		rtxRenderer->Run(img);
+		rtxRenderer->Run(scene, img);
 		
 		if(!GetArgAs<bool>(ENUM_ARG::notdenoise))
 			OptixAIDenoiser::GetInstance().Denoise(img);
