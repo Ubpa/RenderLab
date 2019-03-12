@@ -14,12 +14,8 @@ namespace CppUtil {
 			HEAP_OBJ_SETUP(RayTracer)
 		public:
 			// ray 处于世界坐标系
-			glm::vec3 Trace(Basic::Ptr<Ray> ray) { return Trace(ray, 0); }
+			virtual glm::vec3 Trace(Basic::Ptr<Ray> ray) = 0;
 			virtual void Init(Basic::Ptr<Scene> scene) {}
-
-		protected:
-			// ray 处于世界坐标系
-			virtual glm::vec3 Trace(Basic::Ptr<Ray> ray, int depth) = 0;
 		};
 	}
 }

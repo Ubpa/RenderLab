@@ -23,15 +23,16 @@ namespace CppUtil {
 		public:
 			PathTracer();
 
+			virtual glm::vec3 Trace(Basic::Ptr<Ray> ray) { return Trace(ray, 0, glm::vec3(1)); }
+
 			virtual void Init(Basic::Ptr<Scene> scene);
 
 		protected:
 			// ray 处于世界坐标系
-			virtual glm::vec3 Trace(Basic::Ptr<Ray> ray, int depth);
+			glm::vec3 Trace(Basic::Ptr<Ray> ray, int depth, glm::vec3 pathThroughput);
 		
 		public:
-			volatile int sampleNumForAreaLight;
-			volatile int maxDepth;
+			int maxDepth;
 
 		private:
 			std::vector<Basic::Ptr<LightBase>> lights;

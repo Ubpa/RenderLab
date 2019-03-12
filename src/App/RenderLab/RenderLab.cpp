@@ -35,7 +35,7 @@ using namespace std;
 using namespace Ui;
 
 RenderLab::RenderLab(QWidget *parent)
-	: QMainWindow(parent), maxDepth(5), maxLoop(20), sampleNumForAreaLight(1)
+	: QMainWindow(parent), maxDepth(5), maxLoop(20)
 {
 	ui.setupUi(this);
 
@@ -69,7 +69,6 @@ RenderLab::RenderLab(QWidget *parent)
 		auto pathTracer = ToPtr(new PathTracer);
 		pathTracers.push_back(pathTracer);
 		pathTracer->maxDepth = maxDepth;
-		pathTracer->sampleNumForAreaLight = sampleNumForAreaLight;
 
 		return pathTracer;
 	};
@@ -176,10 +175,5 @@ void RenderLab::InitSetting() {
 	setting->AddEditVal("- Max Depth", maxDepth, 1, 20, [&](int val) {
 		for (auto pathTracer : pathTracers)
 			pathTracer->maxDepth = val;
-	});
-
-	setting->AddEditVal("- Samples On Light", sampleNumForAreaLight, 1, 16, [&](int val) {
-		for (auto pathTracer : pathTracers)
-			pathTracer->sampleNumForAreaLight = val;
 	});
 }

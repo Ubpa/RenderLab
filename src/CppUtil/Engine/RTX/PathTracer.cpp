@@ -25,7 +25,6 @@ using namespace std;
 
 PathTracer::PathTracer()
 	:
-	sampleNumForAreaLight(2),
 	maxDepth(20),
 	bvhAccel(ToPtr(new BVHAccel)),
 	rayIntersector(ToPtr(new RayIntersector)),
@@ -59,7 +58,7 @@ void PathTracer::Init(Scene::Ptr scene) {
 	bvhAccel->Init(scene->GetRoot());
 }
 
-vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
+vec3 PathTracer::Trace(Ray::Ptr ray, int depth, vec3 pathThroughput) {
 	rayIntersector->Init(ray);
 	bvhAccel->Accept(rayIntersector);
 	auto & closestRst = rayIntersector->GetRst();
@@ -107,17 +106,63 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 	// w_out 处于表面坐标系，向外
 	auto w_out = normalize(worldToSurface * (-ray->GetDir()));
 
-	vec3 sumLightL(0);
+	vec3 weightedLightL(0);
 	
 	if (!bsdf->IsDelta()) {
 		const vec3 shadowOrigin = hitPos;
 
-		for (int i = 0; i < lightNum; i++) {
-			auto const light = lights[i];
+		if (depth > 0) {
+			int lightID = Math::Rand_I() % lightNum;
 
-			const int sampleNum = light->IsDelta() ? 1 : sampleNumForAreaLight;
+			auto const light = lights[lightID];
+			auto const & posInLightSpace = posInLightSpaceVec[lightID];
+			auto const & dir_lightToWorld = dir_lightToWorldVec[lightID];
 
-			for (int j = 0; j < sampleNum; j++) {
+			float dist_ToLight;
+			float PD;// 概率密度
+			vec3 dir_ToLight;
+			// dir_ToLight 是单位向量
+			const vec3 lightL = light->Sample_L(posInLightSpace, dir_ToLight, dist_ToLight, PD);
+			if (PD != 0) {
+				PD /= lightNum;
+
+				const vec3 dirInWorld = normalize(dir_lightToWorld * dir_ToLight);
+
+				// shadow ray 处于世界坐标
+				ray->Init(shadowOrigin, dirInWorld);
+				visibilityChecker->Init(ray, dist_ToLight - 0.001f);
+				bvhAccel->Accept(visibilityChecker);
+				auto shadowRst = visibilityChecker->GetRst();
+				if (!shadowRst.IsIntersect()) {
+					// w_in 处于表面坐标系，应该是单位向量
+					const vec3 w_in = normalize(worldToSurface * dirInWorld);
+
+					// 多重重要性采样 Multiple Importance Sampling (MIS)
+					if (!light->IsDelta()) {
+						for (int k = 0; k < lightNum; k++) {
+							if (k != lightID && !lights[k]->IsDelta()) {
+								vec3 dirInLight = dir_worldToLightVec[k] * dirInWorld;
+								PD += lights[k]->PDF(posInLightSpace, dirInLight) / lightNum;
+							}
+						}
+						PD += bsdf->PDF(w_out, w_in, closestRst.texcoord);
+					}
+
+					// 在碰撞表面的坐标系计算 dot(n, w_in) 很简单，因为 n = (0, 0, 1)
+					const float cos_theta = max(w_in.z, 0.f);
+
+					// evaluate surface bsdf
+					const vec3 f = bsdf->F(w_out, w_in, closestRst.texcoord);
+
+					auto weight = (cos_theta / PD) * f;
+					weightedLightL = weight * lightL;
+				}
+			}
+		}
+		else {
+			for (int i = 0; i < lightNum; i++) {
+				auto const light = lights[i];
+
 				float dist_ToLight;
 				float PD;// 概率密度
 				vec3 dir_ToLight;
@@ -141,13 +186,12 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 				const vec3 w_in = normalize(worldToSurface * dirInWorld);
 
 				// 多重重要性采样 Multiple Importance Sampling (MIS)
-				float sumPD = sampleNum * PD;
 				if (!light->IsDelta()) {
-					sumPD += bsdf->PDF(w_out, w_in, closestRst.texcoord);
+					PD += bsdf->PDF(w_out, w_in, closestRst.texcoord);
 					for (int k = 0; k < lightNum; k++) {
 						if (k != i && !lights[k]->IsDelta()) {
 							vec3 dirInLight = dir_worldToLightVec[k] * dirInWorld;
-							sumPD += sampleNumForAreaLight * lights[k]->PDF(posInLightSpaceVec[i], dirInLight);
+							PD += lights[k]->PDF(posInLightSpaceVec[i], dirInLight);
 						}
 					}
 				}
@@ -158,14 +202,14 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 				// evaluate surface bsdf
 				const vec3 f = bsdf->F(w_out, w_in, closestRst.texcoord);
 
-				auto weight = (cos_theta / sumPD) * f;
-				sumLightL += weight * lightL;
+				auto weight = (cos_theta / PD) * f;
+				weightedLightL += weight * lightL;
 			}
 		}
 	}
 	// 超过深度直接丢弃
 	if (depth + 1 >= maxDepth)
-		return emitL + sumLightL;
+		return emitL + weightedLightL;
 
 	// 采样 BSDF
 	vec3 mat_w_in;
@@ -175,34 +219,32 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth) {
 	const float abs_cosTheta = abs(mat_w_in.z);
 
 	if (matPD <= 0)
-		return emitL + sumLightL;
+		return emitL + weightedLightL;
 
-	// 一定概率丢弃
-	//float terminateProbability = 0.f;
-	// 这里一定要是 illumination * cos(theta)
-	//if (!bsdf->IsDelta() && Math::Illum(matF) * abs_cosTheta < 0.0618f)
-	//	terminateProbability = 0.8f;
-
-	//if (Math::Rand_F() < terminateProbability)
-	//	return emitL + sumLightL;
+	// russian roulette
+	float continueP = min(1.f, Math::Illum(pathThroughput));
+	if(Math::Rand_F() > continueP)
+		return emitL + weightedLightL;
 
 	// 重要性采样
 	float sumPD = matPD;
+	float scaleFactor = depth == 0 ? 1.0f : 1.f / lightNum;
 	if (!bsdf->IsDelta()) {
 		for (int i = 0; i < lightNum; i++) {
 			if (lights[i]->IsDelta())
 				continue;
 
 			vec3 dirInLight = dir_worldToLightVec[i] * matRayDirInWorld;
-			sumPD += sampleNumForAreaLight * lights[i]->PDF(posInLightSpaceVec[i], dirInLight);
+			sumPD += lights[i]->PDF(posInLightSpaceVec[i], dirInLight) * scaleFactor;
 		}
 	}
 
 	// material ray
 	ray->Init(hitPos, matRayDirInWorld);
-	const vec3 matRayColor = Trace(ray, depth + 1);
+	vec3 matWeight = abs_cosTheta * continueP / sumPD * matF;
+	const vec3 matRayColor = Trace(ray, depth + 1, pathThroughput * matWeight);
 
-	vec3 matL = abs_cosTheta / (sumPD /** (1.f - terminateProbability)*/) * matF * matRayColor;
+	vec3 weightedMatL = matWeight * matRayColor;
 
-	return emitL + sumLightL + matL;
+	return emitL + weightedLightL + weightedMatL;
 }

@@ -43,6 +43,8 @@ RTX_Renderer::RTX_Renderer(const function<RayTracer::Ptr()> & generator)
 void RTX_Renderer::Run(Scene::Ptr scene, Image::Ptr img) {
 	state = RendererState::Running;
 
+	const float lightNum = static_cast<float>(scene->GetLights().size());
+
 	// init rst image
 	int w = img->GetWidth();
 	int h = img->GetHeight();
@@ -106,8 +108,8 @@ void RTX_Renderer::Run(Scene::Ptr scene, Image::Ptr img) {
 
 			// 这一步可以极大的减少白噪点（特别是由点光源产生）
 			float illum = Math::Illum(rst);
-			if (illum > 1.0f)
-				rst /= illum;
+			if (illum > lightNum)
+				rst *= lightNum / illum;
 
 			fimg[x][y] += rst;
 

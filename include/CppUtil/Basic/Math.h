@@ -23,6 +23,8 @@ namespace CppUtil {
 
 			// [0.0f, 1.0f]
 			float Rand_F();
+			// [0.0f, 1.0f]
+			float Rand_F_exclude1();
 
 			// [0.0, 1.0]
 			double Rand_D();
