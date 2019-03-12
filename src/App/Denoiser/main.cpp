@@ -30,12 +30,14 @@ int main(int argc, char *argv[]) {
 	auto result = docopt::docopt(USAGE, args);
 	ShowArgRst(result);
 
-	bool isNotFromRootPath = result["notrpptpath"].asBool();
-	string imgpath = result["imgpath"].asString();
+	bool isNotFromRootPath = result["--notrootpath"].asBool();
+	string imgpath = result["--imgpath"].asString();
 	string prefix = isNotFromRootPath ? "" : ROOT_PATH;
-	string outpath = result["outpath"].asString();
-	if (outpath.empty())
-		outpath = imgpath + "_denoised.png";
+	string outpath;
+	if (result["--outpath"])
+		outpath = result["--outpath"].asString();
+	else
+		outpath = imgpath.substr(0, imgpath.rfind('.')) + "_denoised.png";
 
 	auto img = ToPtr(new Image((prefix+imgpath).c_str()));
 	

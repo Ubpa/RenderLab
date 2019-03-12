@@ -1,5 +1,7 @@
 #include "RenderLab.h"
 
+#include "GenScene.h"
+
 #include <UI/Hierarchy.h>
 #include <UI/Attribute.h>
 #include <UI/Setting.h>
@@ -10,9 +12,9 @@
 #include <CppUtil/Engine/RTX_Renderer.h>
 #include <CppUtil/Engine/PathTracer.h>
 #include <CppUtil/Engine/Viewer.h>
-#include "GenScene.h"
 #include <CppUtil/Engine/Scene.h>
 #include <CppUtil/Engine/SObj.h>
+#include <CppUtil/Engine/OptixAIDenoiser.h>
 
 #include <CppUtil/Basic/Image.h>
 #include <CppUtil/Basic/LambdaOp.h>
@@ -74,6 +76,7 @@ RenderLab::RenderLab(QWidget *parent)
 	};
 
 	rtxRenderer = ToPtr(new RTX_Renderer(generator));
+	rtxRenderer->maxLoop = maxLoop;
 	
 	// init ui
 
@@ -88,6 +91,11 @@ void RenderLab::on_btn_RenderStart_clicked(){
 	ui.btn_RenderStart->setEnabled(false);
 	ui.btn_RenderStop->setEnabled(true);
 	ui.btn_SaveRayTracerImg->setEnabled(true);
+	ui.btn_Denoise->setEnabled(false);
+
+	ui.tree_Hierarchy->setEnabled(false);
+	ui.frame_Setting->setEnabled(false);
+	ui.tbox_Attribute->setEnabled(false);
 
 	OpThread::Ptr drawImgThread = ToPtr(new OpThread);
 	drawImgThread->UIConnect(this, &RenderLab::UI_Op);
@@ -116,7 +124,12 @@ void RenderLab::on_btn_RenderStart_clicked(){
 		drawImgThread->UI_Op_Run([=]() {
 			ui.btn_RenderStart->setEnabled(true);
 			ui.btn_RenderStop->setEnabled(false);
-			ui.rtxProgress->setValue(rtxRenderer->ProgressRate() * ui.rtxProgress->maximum());
+
+			ui.tree_Hierarchy->setEnabled(true);
+			ui.frame_Setting->setEnabled(true);
+			ui.tbox_Attribute->setEnabled(true);
+			ui.btn_Denoise->setEnabled(true);
+			//ui.rtxProgress->setValue(rtxRenderer->ProgressRate() * ui.rtxProgress->maximum());
 		});
 	}));
 	drawImgThread->SetOp(drawImgOp);
@@ -156,6 +169,25 @@ void RenderLab::on_btn_SaveRasterImg_clicked() {
 		return;
 
 	ui.OGLW_Raster->grabFramebuffer().save(fileName);
+}
+
+void RenderLab::on_btn_Denoise_clicked() {
+	ui.btn_RenderStart->setEnabled(false);
+	ui.btn_SaveRayTracerImg->setEnabled(false);
+	ui.btn_Denoise->setEnabled(false);
+
+	auto denoiseThread = ToPtr(new OpThread);
+	denoiseThread->UIConnect(this, &RenderLab::UI_Op);
+	auto denoiseOp = [=]() {
+		OptixAIDenoiser::GetInstance().Denoise(paintImgOp->GetImg());
+		denoiseThread->UI_Op(ToPtr(new LambdaOp([&]() {
+			ui.btn_RenderStart->setEnabled(true);
+			ui.btn_SaveRayTracerImg->setEnabled(true);
+			ui.btn_Denoise->setEnabled(true);
+		})));
+	};
+	denoiseThread->SetOp(denoiseOp);
+	denoiseThread->start();
 }
 
 void RenderLab::UI_Op(Operation::Ptr op) {

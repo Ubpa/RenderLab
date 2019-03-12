@@ -42,6 +42,7 @@ RTX_Renderer::RTX_Renderer(const function<RayTracer::Ptr()> & generator)
 
 void RTX_Renderer::Run(Scene::Ptr scene, Image::Ptr img) {
 	state = RendererState::Running;
+	curLoop = 0;
 
 	const float lightNum = static_cast<float>(scene->GetLights().size());
 
@@ -129,6 +130,9 @@ void RTX_Renderer::Run(Scene::Ptr scene, Image::Ptr img) {
 		// let workers to work
 		for (auto & worker : workers)
 			worker.join();
+
+		if (state._value == RendererState::Stop)
+			break;
 	}
 
 	state = RendererState::Stop;

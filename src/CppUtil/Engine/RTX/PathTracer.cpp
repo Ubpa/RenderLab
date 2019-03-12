@@ -222,11 +222,6 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth, vec3 pathThroughput) {
 	if (matPD <= 0)
 		return emitL + weightedLightL;
 
-	// russian roulette
-	float continueP = min(1.f, Math::Illum(pathThroughput));
-	if(Math::Rand_F() > continueP)
-		return emitL + weightedLightL;
-
 	// 重要性采样
 	float sumPD = matPD;
 	float scaleFactor = depth == 0 ? 1.0f : 1.f / lightNum;
@@ -242,10 +237,17 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth, vec3 pathThroughput) {
 
 	// material ray
 	ray->Init(hitPos, matRayDirInWorld);
-	vec3 matWeight = abs_cosTheta * continueP / sumPD * matF;
-	const vec3 matRayColor = Trace(ray, depth + 1, pathThroughput * matWeight);
 
-	vec3 weightedMatL = matWeight * matRayColor;
+	// russian roulette
+	vec3 matWeight = abs_cosTheta / sumPD * matF;
+	pathThroughput *= matWeight;
+	float continueP = bsdf->IsDelta() ? 1.f : min(1.f, Math::Illum(pathThroughput));
+	if (Math::Rand_F() > continueP)
+		return emitL + weightedLightL;
+
+	const vec3 matRayColor = Trace(ray, depth + 1, pathThroughput / continueP);
+
+	vec3 weightedMatL = matWeight / continueP * matRayColor;
 
 	return emitL + weightedLightL + weightedMatL;
 }

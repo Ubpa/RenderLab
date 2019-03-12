@@ -337,7 +337,23 @@ font: 15pt &quot;Consolas&quot;;
         </sizepolicy>
        </property>
        <property name="text">
-        <string>Pause</string>
+        <string>Stop</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btn_Denoise">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>Denoise</string>
        </property>
       </widget>
      </item>
