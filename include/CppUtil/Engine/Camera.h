@@ -20,8 +20,6 @@ namespace CppUtil {
 			template<typename numT>
 			void SetAspectRatio(numT w, numT h) { SetAspectRatio(static_cast<float>(w) / static_cast<float>(h)); }
 
-			Basic::Ptr<Ray> GenRay(float u, float v);
-
 			bool InitCoordinate();
 
 			// right, up, front are normalized vector

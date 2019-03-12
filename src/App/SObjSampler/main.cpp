@@ -12,14 +12,12 @@ R"(SObjSampler
       SObjSampler [--notrootpath] --sobj=<sobjPath> [--maxdepth=<maxDepth>] [--samplenum=<sampleNum>] [--notdenoise] --csv==<csvPath>
 
     Options:
-      -h --help                Show this screen.
-      --version                Show version.
       --notrootpath            path is not from root path
       --sobj <sobjPath>        sobj path.
-      --maxdepth <maxDepth>    max depth [default: 5]
-      --samplenum <sampleNum>  sample num [default: 1]
+      --maxdepth <maxDepth>    max depth [default: 20]
+      --samplenum <sampleNum>  sample num [default: 16]
       --notdenoise             not denoise
-      --cvs                    output file path
+      --csv <csvPath>          output file path
 )";
 
 using namespace std;

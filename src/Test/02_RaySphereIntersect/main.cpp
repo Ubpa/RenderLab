@@ -14,7 +14,8 @@ using namespace glm;
 
 int main() {
 	auto ray = ToPtr(new Ray(vec3(0, 0, 2), vec3(0, 0, -1)));
-	auto intersector = ToPtr(new RayIntersector(ray));
+	auto intersector = ToPtr(new RayIntersector);
+	intersector->Init(ray);
 
 	auto sphere = ToPtr(new Sphere(vec3(0), 1));
 	sphere->Accept(intersector);

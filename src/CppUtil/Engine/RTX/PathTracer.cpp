@@ -74,6 +74,7 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth, vec3 pathThroughput) {
 	// 计算碰撞点在灯光空间的位置
 	const vec3 hitPos = ray->At(ray->GetTMax());
 
+	//TODO 不是所有光源都需要计算
 	vector<vec3> posInLightSpaceVec;
 
 	vec4 hitPos4 = vec4(hitPos, 1);

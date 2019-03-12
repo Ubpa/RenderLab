@@ -57,12 +57,12 @@ int SObjSampler::GetArgAs<int>(ENUM_ARG arg) const {
 }
 
 template<>
-std::string SObjSampler::GetArgAs<std::string>(ENUM_ARG arg) const {
+string SObjSampler::GetArgAs<string>(ENUM_ARG arg) const {
 	return GetArg(arg).asString();
 }
 
 template<>
-std::vector<std::string> SObjSampler::GetArgAs<std::vector<std::string>>(ENUM_ARG arg) const {
+vector<string> SObjSampler::GetArgAs<vector<string>>(ENUM_ARG arg) const {
 	return GetArg(arg).asStringList();
 }
 
@@ -144,8 +144,8 @@ void SObjSampler::InitRTX() {
 
 	drawImgThread = ToPtr(new OpThread([=]() {
 		rtxRenderer->Run(scene, img);
-		
-		if(!GetArgAs<bool>(ENUM_ARG::notdenoise))
+
+		if (!GetArgAs<bool>(ENUM_ARG::notdenoise))
 			OptixAIDenoiser::GetInstance().Denoise(img);
 
 		SaveData();
@@ -164,7 +164,7 @@ void SObjSampler::InitTimer() {
 		ui.OGLW_RayTracer->update();
 	});
 
-	const size_t fps = 10;
+	const size_t fps = 30;
 	timer->start(1000 / fps);
 }
 
@@ -196,7 +196,7 @@ void SObjSampler::SaveData() {
 	bool isNotFromRootPath = GetArgAs<bool>(ENUM_ARG::notrootpath);
 	string path = GetArgAs<string>(ENUM_ARG::csv);
 	string prefix = isNotFromRootPath ? "" : ROOT_PATH;
-	
+
 	CSV<float> csv(keys);
 	vector<ENUM_TYPE> enumTypes = {
 		//ENUM_TYPE::FRAG_COLOR,

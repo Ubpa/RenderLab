@@ -24,6 +24,7 @@ endforeach(SOURCE ${ALL_SOURCES})
 #如：set(STR_TARGET_LIBS "lib1.lib lib2.lib")
 set(STR_TARGET_LIBS "Qt5::Widgets RasterOpCreator PaintImgOpCreator RawAPI_OGLW OpThread Shape Component Intersector Light Material Primitive RTX Scene Viewer OptixAIDenoiser")
 set(STR_TARGET_LIBS "${STR_TARGET_LIBS} Hierarchy Attribute Setting")
+set(STR_TARGET_LIBS "${STR_TARGET_LIBS} docopt")
 SETUP_PROJECT(${MODE} ${TARGET_NAME} ${STR_TARGET_SOURCES} ${STR_TARGET_LIBS})
 
 set(CMAKE_AUTOMOC OFF)

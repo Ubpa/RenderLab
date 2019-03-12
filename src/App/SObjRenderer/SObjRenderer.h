@@ -6,6 +6,9 @@
 #include <CppUtil/Qt/PaintImgOpCreator.h>
 #include <CppUtil/Basic/Ptr.h>
 
+#include <3rdParty/enum.h>
+#include <3rdParty/docopt/docopt.h>
+
 namespace CppUtil {
 	namespace Basic {
 		class Operation;
@@ -23,12 +26,29 @@ namespace CppUtil {
 	}
 }
 
+BETTER_ENUM(ENUM_ARG, int,
+	notrootpath,
+	sobj,
+	maxdepth,
+	samplenum,
+	notdenoise,
+	outpath)
+
+BETTER_ENUM(ENUM_TYPE, int,
+	FRAG_COLOR,
+	POSITION,
+	VIEW_DIR,
+	NORMAL,
+	MAT_COLOR,
+	IOR_ROUGHNESS_ID)
+
 class SObjRenderer : public QMainWindow
 {
 	Q_OBJECT
 
 public:
-	explicit SObjRenderer(QWidget *parent = Q_NULLPTR, Qt::WindowFlags flags = Qt::WindowFlags());
+	typedef std::map<ENUM_ARG, docopt::value> ArgMap;
+	explicit SObjRenderer(const ArgMap & argMap, QWidget *parent = Q_NULLPTR, Qt::WindowFlags flags = Qt::WindowFlags());
 
 	virtual ~SObjRenderer();
 
@@ -53,4 +73,10 @@ private:
 	CppUtil::Basic::Ptr<CppUtil::Engine::PathTracer> pathTracer;
 	CppUtil::Basic::Ptr<CppUtil::Qt::OpThread> drawImgThread;
 	QTimer * timer;
+
+private:
+	const docopt::value & GetArg(ENUM_ARG arg) const;
+	template<typename T>
+	T GetArgAs(ENUM_ARG arg) const;
+	const ArgMap argMap;
 };

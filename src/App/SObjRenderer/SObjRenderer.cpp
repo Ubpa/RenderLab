@@ -34,12 +34,38 @@ using namespace CppUtil::Qt;
 using namespace std;
 using namespace Ui;
 
+template<>
+bool SObjRenderer::GetArgAs<bool>(ENUM_ARG arg) const {
+	return GetArg(arg).asBool();
+}
+
+template<>
+long SObjRenderer::GetArgAs<long>(ENUM_ARG arg) const {
+	return GetArg(arg).asLong();
+}
+
+template<>
+int SObjRenderer::GetArgAs<int>(ENUM_ARG arg) const {
+	return static_cast<int>(GetArg(arg).asLong());
+}
+
+template<>
+string SObjRenderer::GetArgAs<string>(ENUM_ARG arg) const {
+	return GetArg(arg).asString();
+}
+
+template<>
+vector<string> SObjRenderer::GetArgAs<vector<string>>(ENUM_ARG arg) const {
+	return GetArg(arg).asStringList();
+}
+
+
 SObjRenderer::~SObjRenderer() {
 	delete timer;
 }
 
-SObjRenderer::SObjRenderer(QWidget *parent, Qt::WindowFlags flags)
-	: QMainWindow(parent, flags), timer(nullptr)
+SObjRenderer::SObjRenderer(const ArgMap & argMap, QWidget *parent, Qt::WindowFlags flags)
+	: argMap(argMap), QMainWindow(parent, flags), timer(nullptr)
 {
 	ui.setupUi(this);
 
@@ -58,7 +84,11 @@ void SObjRenderer::Init() {
 }
 
 void SObjRenderer::InitScene() {
-	auto root = SObj::Load(ROOT_PATH + "data/SObjs/CB_Glass.xml");
+	bool isNotFromRootPath = GetArgAs<bool>(ENUM_ARG::notrootpath);
+	string path = GetArgAs<string>(ENUM_ARG::sobj);
+	string prefix = isNotFromRootPath ? "" : ROOT_PATH;
+
+	auto root = SObj::Load(prefix + path);
 	scene = ToPtr(new Scene(root, "scene"));
 }
 
@@ -68,9 +98,10 @@ void SObjRenderer::InitRaster() {
 }
 
 void SObjRenderer::InitRTX() {
-	auto generator = []()->RayTracer::Ptr{
+	int maxDepth = GetArgAs<int>(ENUM_ARG::maxdepth);
+	auto generator = [=]()->RayTracer::Ptr{
 		auto pathTracer = ToPtr(new PathTracer);
-		pathTracer->maxDepth = 5;
+		pathTracer->maxDepth = maxDepth;
 
 		return pathTracer;
 	};
@@ -80,11 +111,20 @@ void SObjRenderer::InitRTX() {
 	paintImgOp->SetOp(512, 512);
 	auto img = paintImgOp->GetImg();
 	rtxRenderer = ToPtr(new RTX_Renderer(generator));
-	rtxRenderer->maxLoop = 10;
+	rtxRenderer->maxLoop = GetArgAs<int>(ENUM_ARG::samplenum);
 
 	drawImgThread = ToPtr(new OpThread([=]() {
 		rtxRenderer->Run(scene, img);
-		OptixAIDenoiser::GetInstance().Denoise(img);
+		if (!GetArgAs<bool>(ENUM_ARG::notdenoise))
+			OptixAIDenoiser::GetInstance().Denoise(img);
+
+		string path = GetArgAs<string>(ENUM_ARG::outpath);
+		if (path.empty())
+			return;
+
+		bool isNotFromRootPath = GetArgAs<bool>(ENUM_ARG::notrootpath);
+		string prefix = isNotFromRootPath ? "" : ROOT_PATH;
+		img->SaveAsPNG(prefix + path);
 	}));
 	drawImgThread->start();
 }
@@ -98,6 +138,16 @@ void SObjRenderer::InitTimer() {
 		ui.OGLW_RayTracer->update();
 	});
 
-	const size_t fps = 10;
+	const size_t fps = 30;
 	timer->start(1000 / fps);
+}
+
+const docopt::value & SObjRenderer::GetArg(ENUM_ARG arg) const {
+	static const docopt::value invalid;
+
+	auto target = argMap.find(arg);
+	if (target == argMap.cend())
+		return invalid;
+
+	return target->second;
 }

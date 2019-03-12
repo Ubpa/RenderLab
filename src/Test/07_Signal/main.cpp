@@ -42,7 +42,7 @@ int main()
 
 	sender.numChanged.connect(&receiver, &Receiver::Repeater);
 	sender.numChanged.connect([&](int) {
-		printf("num change! id is %d\n", sender.id);
+		printf("num change!\nid is %d\n", sender.id);
 	});
 	sender.numChanged.connect(pow2);
 

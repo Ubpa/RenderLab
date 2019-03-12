@@ -42,8 +42,10 @@ void Camera::SetAspectRatio(float ar) {
 }
 
 bool Camera::InitCoordinate() {
-	if (!GetSObj())
+	if (!GetSObj()) {
+		coordinate.Init(mat4(1.f));
 		return false;
+	}
 
 	coordinate.Init(GetSObj()->GetLocalToWorldMatrix());
 	return true;

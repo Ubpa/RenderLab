@@ -7,10 +7,10 @@ using namespace CppUtil::Engine;
 using namespace std;
 
 int main() {
-	auto img = ToPtr(new Image((ROOT_PATH + "/data/out/frastedGlass6.png").c_str()));
+	auto img = ToPtr(new Image((ROOT_PATH + "/data/out/frastedGlass8.png").c_str()));
 	
 	OptixAIDenoiser::GetInstance().Denoise(img);
 	
-	img->SaveAsPNG(ROOT_PATH + "/data/out/frastedGlass6_denoised.png");
+	img->SaveAsPNG(ROOT_PATH + "/data/out/frastedGlass8_denoised.png");
 	return 0;
 }

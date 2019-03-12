@@ -39,6 +39,14 @@ namespace App{
 		notdenoise,
 		csv)
 
+	BETTER_ENUM(ENUM_TYPE, int,
+		FRAG_COLOR,
+		POSITION,
+		VIEW_DIR,
+		NORMAL,
+		MAT_COLOR,
+		IOR_ROUGHNESS_ID)
+
 	class SObjSampler : public QMainWindow
 	{
 		Q_OBJECT
