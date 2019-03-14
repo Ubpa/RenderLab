@@ -3,6 +3,8 @@
 
 #include <glm/glm.hpp>
 #include <vector>
+#include <sstream>
+#include <string>
 
 namespace CppUtil {
 	namespace Basic {
@@ -81,6 +83,14 @@ namespace CppUtil {
 
 			inline float Illum(const glm::vec3 & color) {
 				return 0.2126f * color.r + 0.7152f * color.g + 0.0722f * color.b;
+			}
+
+			template<typename Type>
+			Type CastTo(const std::string & str) {
+				std::istringstream iss(str);
+				Type num;
+				iss >> num;
+				return num;
 			}
 
 #include <CppUtil/Basic/Math.inl>

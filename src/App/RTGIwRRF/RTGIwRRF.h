@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QtWidgets/QMainWindow>
-#include "ui_SObjSampler.h"
+#include "ui_RTGIwRRF.h"
 
 #include <CppUtil/Qt/PaintImgOpCreator.h>
 #include <CppUtil/Basic/Ptr.h>
@@ -29,7 +29,7 @@ namespace CppUtil {
 }
 
 namespace App{
-	class SampleRaster;
+	class RRF_Raster;
 
 	BETTER_ENUM(ENUM_ARG, int,
 		notrootpath,
@@ -47,7 +47,7 @@ namespace App{
 		MAT_COLOR,
 		IOR_ROUGHNESS_ID)
 
-	class SObjSampler : public QMainWindow
+	class RTGIwRRF : public QMainWindow
 	{
 		Q_OBJECT
 
@@ -63,9 +63,9 @@ namespace App{
 
 	public:
 		typedef std::map<ENUM_ARG, docopt::value> ArgMap;
-		explicit SObjSampler(const ArgMap & argMap, QWidget *parent = Q_NULLPTR, Qt::WindowFlags flags = Qt::WindowFlags());
+		explicit RTGIwRRF(const ArgMap & argMap, QWidget *parent = Q_NULLPTR, Qt::WindowFlags flags = Qt::WindowFlags());
 
-		virtual ~SObjSampler();
+		virtual ~RTGIwRRF();
 
 	public:
 		CppUtil::Basic::Ptr<CppUtil::Engine::Scene> GetScene()const { return scene; }
@@ -77,18 +77,14 @@ namespace App{
 		void InitTimer();
 		void InitScene();
 		void InitRaster();
-		void InitRTX();
 
 		void SaveData();
 
 	private:
-		Ui::SObjSamplerClass ui;
+		Ui::RTGIwRRFClass ui;
 		CppUtil::Basic::Ptr<CppUtil::Qt::PaintImgOpCreator::PaintImgOp> paintImgOp;
 		CppUtil::Basic::Ptr<CppUtil::Engine::Scene> scene;
-		CppUtil::Basic::Ptr<CppUtil::Engine::RTX_Renderer> rtxRenderer;
-		CppUtil::Basic::Ptr<CppUtil::Qt::OpThread> drawImgThread;
-		CppUtil::Basic::Ptr<CppUtil::Qt::OpThread> printProgressThread;
-		CppUtil::Basic::Ptr<App::SampleRaster> sampleRaster;
+		CppUtil::Basic::Ptr<App::RRF_Raster> rrfRaster;
 		CppUtil::Basic::Ptr<CppUtil::Engine::Roamer> roamer;
 		QTimer * timer;
 

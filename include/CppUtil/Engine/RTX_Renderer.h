@@ -28,6 +28,7 @@ namespace CppUtil {
 		public:
 			void Run(Basic::Ptr<Scene> scene, Basic::Ptr<Basic::Image> img);
 			void Stop();
+			RendererState GetState() const { return state; }
 			float ProgressRate();
 
 		public:

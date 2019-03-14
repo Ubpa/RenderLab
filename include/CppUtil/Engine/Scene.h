@@ -27,8 +27,14 @@ namespace CppUtil {
 
 			std::vector<Basic::Ptr<Light>> GetLights() const;
 
-			void GenID();
+			// sobjs have no same name
+			// ID >= 0
+			bool GenID();
+
+			// ID >= 0, return -1 if error
 			int GetID(Basic::Ptr<SObj> sobj) const;
+			// name >= 0, return "" if error
+			std::string GetName(int ID) const;
 
 		public:
 			std::string name;
@@ -36,6 +42,7 @@ namespace CppUtil {
 		private:
 			Basic::Ptr<SObj> root;
 			std::map<std::string, int> name2ID;
+			std::map<int, std::string> ID2name;
 		};
 	}
 }

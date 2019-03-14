@@ -1,6 +1,6 @@
-#include "SObjSampler.h"
+#include "RTGIwRRF.h"
 
-#include "SampleRaster.h"
+#include "RRF_Raster.h"
 
 #include <UI/Hierarchy.h>
 #include <UI/Attribute.h>
@@ -42,35 +42,35 @@ using namespace std;
 using namespace Ui;
 
 template<>
-bool SObjSampler::GetArgAs<bool>(ENUM_ARG arg) const {
+bool RTGIwRRF::GetArgAs<bool>(ENUM_ARG arg) const {
 	return GetArg(arg).asBool();
 }
 
 template<>
-long SObjSampler::GetArgAs<long>(ENUM_ARG arg) const {
+long RTGIwRRF::GetArgAs<long>(ENUM_ARG arg) const {
 	return GetArg(arg).asLong();
 }
 
 template<>
-int SObjSampler::GetArgAs<int>(ENUM_ARG arg) const {
+int RTGIwRRF::GetArgAs<int>(ENUM_ARG arg) const {
 	return static_cast<int>(GetArg(arg).asLong());
 }
 
 template<>
-string SObjSampler::GetArgAs<string>(ENUM_ARG arg) const {
+string RTGIwRRF::GetArgAs<string>(ENUM_ARG arg) const {
 	return GetArg(arg).asString();
 }
 
 template<>
-vector<string> SObjSampler::GetArgAs<vector<string>>(ENUM_ARG arg) const {
+vector<string> RTGIwRRF::GetArgAs<vector<string>>(ENUM_ARG arg) const {
 	return GetArg(arg).asStringList();
 }
 
-SObjSampler::~SObjSampler() {
+RTGIwRRF::~RTGIwRRF() {
 	delete timer;
 }
 
-SObjSampler::SObjSampler(const ArgMap & argMap, QWidget *parent, Qt::WindowFlags flags)
+RTGIwRRF::RTGIwRRF(const ArgMap & argMap, QWidget *parent, Qt::WindowFlags flags)
 	: argMap(argMap), QMainWindow(parent, flags), timer(nullptr)
 {
 	ui.setupUi(this);
@@ -78,18 +78,17 @@ SObjSampler::SObjSampler(const ArgMap & argMap, QWidget *parent, Qt::WindowFlags
 	Init();
 }
 
-void SObjSampler::UI_Op(Operation::Ptr op) {
+void RTGIwRRF::UI_Op(Operation::Ptr op) {
 	op->Run();
 }
 
-void SObjSampler::Init() {
+void RTGIwRRF::Init() {
 	InitScene();
 	InitRaster();
-	InitRTX();
 	InitTimer();
 }
 
-void SObjSampler::InitScene() {
+void RTGIwRRF::InitScene() {
 	bool isNotFromRootPath = GetArgAs<bool>(ENUM_ARG::notrootpath);
 	string path = GetArgAs<string>(ENUM_ARG::sobj);
 	string prefix = isNotFromRootPath ? "" : ROOT_PATH;
@@ -98,94 +97,48 @@ void SObjSampler::InitScene() {
 	scene = ToPtr(new Scene(root, "scene"));
 }
 
-void SObjSampler::InitRaster() {
-	sampleRaster = ToPtr(new SampleRaster(scene));
+void RTGIwRRF::InitRaster() {
+	rrfRaster = ToPtr(new RRF_Raster(scene));
 	roamer = ToPtr(new Roamer(ui.OGLW_Raster));
 	roamer->SetLock(true);
 
 	ui.OGLW_Raster->SetInitOp(ToPtr(new LambdaOp([=]() {
 		roamer->Init();
-		sampleRaster->Init();
+		rrfRaster->Init();
 	})));
 
 	auto paintOp = ToPtr(new OpQueue);
 
 	paintOp->Push(ToPtr(new LambdaOp([=]() {
-		sampleRaster->Draw();
+		rrfRaster->Draw();
 	})));
 
 	paintOp->Push(ToPtr(new LambdaOp([=]() {
-		dataMap[ENUM_TYPE::FRAG_COLOR] = sampleRaster->GetData(SampleRaster::ENUM_TYPE::FRAG_COLOR);
-		dataMap[ENUM_TYPE::POSITION] = sampleRaster->GetData(SampleRaster::ENUM_TYPE::POSITION);
-		dataMap[ENUM_TYPE::VIEW_DIR] = sampleRaster->GetData(SampleRaster::ENUM_TYPE::VIEW_DIR);
-		dataMap[ENUM_TYPE::NORMAL] = sampleRaster->GetData(SampleRaster::ENUM_TYPE::NORMAL);
-		dataMap[ENUM_TYPE::MAT_COLOR] = sampleRaster->GetData(SampleRaster::ENUM_TYPE::MAT_COLOR);
-		dataMap[ENUM_TYPE::IOR_ROUGHNESS_ID] = sampleRaster->GetData(SampleRaster::ENUM_TYPE::IOR_ROUGHNESS_ID);
+		dataMap[ENUM_TYPE::FRAG_COLOR] = rrfRaster->GetData(RRF_Raster::ENUM_TYPE::FRAG_COLOR);
+		dataMap[ENUM_TYPE::POSITION] = rrfRaster->GetData(RRF_Raster::ENUM_TYPE::POSITION);
+		dataMap[ENUM_TYPE::VIEW_DIR] = rrfRaster->GetData(RRF_Raster::ENUM_TYPE::VIEW_DIR);
+		dataMap[ENUM_TYPE::NORMAL] = rrfRaster->GetData(RRF_Raster::ENUM_TYPE::NORMAL);
+		dataMap[ENUM_TYPE::MAT_COLOR] = rrfRaster->GetData(RRF_Raster::ENUM_TYPE::MAT_COLOR);
+		dataMap[ENUM_TYPE::IOR_ROUGHNESS_ID] = rrfRaster->GetData(RRF_Raster::ENUM_TYPE::IOR_ROUGHNESS_ID);
 	}, false)));
 
 	ui.OGLW_Raster->SetPaintOp(paintOp);
 }
 
-void SObjSampler::InitRTX() {
-	int maxDepth = GetArgAs<int>(ENUM_ARG::maxdepth);
-	auto generator = [=]()->RayTracer::Ptr {
-		auto pathTracer = ToPtr(new PathTracer);
-		pathTracer->maxDepth = maxDepth;
-
-		return pathTracer;
-	};
-
-	PaintImgOpCreator pioc(ui.OGLW_RayTracer);
-	paintImgOp = pioc.GenScenePaintOp();
-	paintImgOp->SetOp(512, 512);
-	auto img = paintImgOp->GetImg();
-	rtxRenderer = ToPtr(new RTX_Renderer(generator));
-	rtxRenderer->maxLoop = GetArgAs<int>(ENUM_ARG::samplenum);
-
-	drawImgThread = ToPtr(new OpThread([=]() {
-		rtxRenderer->Run(scene, img);
-
-		if (!GetArgAs<bool>(ENUM_ARG::notdenoise))
-			OptixAIDenoiser::GetInstance().Denoise(img);
-
-		SaveData();
-
-		QApplication::exit();
-	}));
-	drawImgThread->start();
-
-	printProgressThread = ToPtr(new OpThread([=]() {
-		int dotNum = 0;
-		while (rtxRenderer->ProgressRate() != 1.f) {
-			string dotStr;
-			for (int i = 0; i < 6; i++)
-				dotStr += i < dotNum % 6 ? "." : " ";
-			printf("\rprogress rate : %d%% %s", static_cast<int>(rtxRenderer->ProgressRate() * 100), dotStr.c_str());
-
-			dotNum++;
-			Sleep(500);
-		}
-		printf("\rprogress rate : 100%%\nRender complete!\n\n");
-	}));
-	printProgressThread->start();
-}
-
-void SObjSampler::InitTimer() {
+void RTGIwRRF::InitTimer() {
 	delete timer;
 
 	timer = new QTimer;
 	timer->callOnTimeout([this]() {
 		ui.OGLW_Raster->update();
-		ui.OGLW_RayTracer->update();
 	});
 
 	const size_t fps = 30;
 	timer->start(1000 / fps);
 }
 
-void SObjSampler::SaveData() {
+void RTGIwRRF::SaveData() {
 	static const vector<string> keys = {
-		"ID",
 		"DirectIllum_R",
 		"DirectIllum_G",
 		"DirectIllum_B",
@@ -203,6 +156,7 @@ void SObjSampler::SaveData() {
 		"MatColor_B",
 		"IOR",
 		"Roughness",
+		"ID",
 		"IndirectIllum_R",
 		"IndirectIllum_G",
 		"IndirectIllum_B",
@@ -219,21 +173,13 @@ void SObjSampler::SaveData() {
 		ENUM_TYPE::VIEW_DIR,
 		ENUM_TYPE::NORMAL,
 		ENUM_TYPE::MAT_COLOR,
-		//ENUM_TYPE::IOR_ROUGHNESS_ID,
+		ENUM_TYPE::IOR_ROUGHNESS_ID,
 	};
 
-	map<int, string> ID2name;
 	for (int row = 0; row < 512; row++) {
 		for (int col = 0; col < 512; col++) {
 			vector<float> lineVals;
 			int idx = (row * 512 + col) * 3;
-
-			float ID = dataMap[ENUM_TYPE::IOR_ROUGHNESS_ID][idx + 2];
-			ID2name[ID] = scene->GetName(ID);
-
-			float ior = dataMap[ENUM_TYPE::IOR_ROUGHNESS_ID][idx + 0];
-			float roughness = dataMap[ENUM_TYPE::IOR_ROUGHNESS_ID][idx + 1];
-			lineVals.push_back(ID);
 
 			vec3 localIllum(
 				dataMap[ENUM_TYPE::FRAG_COLOR][idx + 0],
@@ -256,9 +202,6 @@ void SObjSampler::SaveData() {
 
 			vec3 indirectIllum = max(globalIllum - localIllum, 0.f);
 
-			lineVals.push_back(ior);
-			lineVals.push_back(roughness);
-
 			lineVals.push_back(indirectIllum.x);
 			lineVals.push_back(indirectIllum.y);
 			lineVals.push_back(indirectIllum.z);
@@ -268,13 +211,9 @@ void SObjSampler::SaveData() {
 	}
 
 	csv.Save(prefix + path);
-	File idMapFile(prefix + path + "_ID_name.txt", File::WRITE);
-	for (auto & pair : ID2name)
-		idMapFile.Printf("%d : %s\n", pair.first, pair.second);
-	idMapFile.Close();
 }
 
-const docopt::value & SObjSampler::GetArg(ENUM_ARG arg) const {
+const docopt::value & RTGIwRRF::GetArg(ENUM_ARG arg) const {
 	static const docopt::value invalid;
 
 	auto target = argMap.find(arg);

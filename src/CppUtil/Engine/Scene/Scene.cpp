@@ -25,33 +25,60 @@ vector<Light::Ptr> Scene::GetLights() const {
 	return root->GetComponentsInChildren<Light>();
 }
 
-void Scene::GenID() {
+bool Scene::GenID() {
 	name2ID.clear();
+	ID2name.clear();
 
+	bool isFailed = false;
 	auto visitor = ToPtr(new EleVisitor);
 	visitor->Reg<SObj>([&](SObj::Ptr sobj) {
 		auto target = name2ID.find(sobj->name);
-		if (target != name2ID.end())
-			printf("WARNING: two sobjs have same name.\n");
+		if (target != name2ID.end()) {
+			printf("ERROR: two sobjs have same name.\n");
+			isFailed = true;
+			return;
+		}
 
 		name2ID[sobj->name] = -1;//tmp invalid ID
-		for (auto child : sobj->GetChildren())
+		for (auto child : sobj->GetChildren()) {
 			child->Accept(visitor);
+			if (isFailed)
+				return;
+		}
 	});
 
 	root->Accept(visitor);
+
+	if (isFailed) {
+		name2ID.clear();
+		ID2name.clear();
+		return false;
+	}
 
 	int curID = 0;
 	for (auto & pair : name2ID) {
 		pair.second = curID;
 		++curID;
 	}
+
+	for (auto & pair : name2ID)
+		ID2name[pair.second] = pair.first;
+
+	return true;
 }
 
 int Scene::GetID(SObj::Ptr sobj) const {
 	auto target = name2ID.find(sobj->name);
 	if (target == name2ID.cend())
 		return -1;
+
+	return target->second;
+}
+
+string Scene::GetName(int ID) const {
+	auto target = ID2name.find(ID);
+	if (target == ID2name.cend())
+		return "";
 
 	return target->second;
 }
