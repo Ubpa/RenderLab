@@ -4,6 +4,7 @@
 #include "Layer.h"
 #include "Unit.h"
 
+#include <CppUtil/Basic/File.h>
 #include <CppUtil/Basic/Math.h>
 #include <CppUtil/Basic/Error.h>
 
@@ -16,7 +17,9 @@ using namespace CppUtil::Basic;
 using namespace jay::util;
 using namespace std;
 
-const string GenFS::Call(const string & meanAndStdPath,
+const string GenFS::Call(
+	const std::string & templateFSPath,
+	const string & meanAndStdPath,
 	const string & dense0Path, const Activation & activation0,
 	const string & dense1Path, const Activation & activation1,
 	const string & dense2Path, const Activation & activation2)
@@ -25,6 +28,16 @@ const string GenFS::Call(const string & meanAndStdPath,
 
 	constexpr int inputDim = 17;
 	constexpr int outputDim = 3;
+
+	const string modelName = "FNN";
+	const string funcname = "$funcname$";
+
+	File templateFS(templateFSPath, File::READ);
+	if (!templateFS.IsValid()) {
+		printf("ERROR: template FS open error\n");
+		return ERROR;
+	}
+	string fs = templateFS.ReadAll();
 
 	auto meanAndStd = LoadMatrix(meanAndStdPath);
 	if (IsError(meanAndStd))
@@ -35,7 +48,7 @@ const string GenFS::Call(const string & meanAndStdPath,
 		return ERROR;
 	}
 
-	auto model = ToPtr(new Model("Model"));
+	auto model = ToPtr(new Model(modelName, 17, 3, meanAndStd[0], meanAndStd[1]));
 
 	auto dense0 = LoadLayer(dense0Path, Connection::Dense, activation0);
 	if (IsError(dense0))
@@ -52,7 +65,15 @@ const string GenFS::Call(const string & meanAndStdPath,
 		return ERROR;
 	dense2->SetModel(model);
 
+	while (fs.find(funcname) != string::npos) {
+		auto pos = fs.find(funcname);
+		fs.erase(fs.begin() + pos, fs.begin() + pos + funcname.length());
+		fs.insert(pos, model->GetFuncName().c_str());
+	}
+
 	stringstream shader;
+
+	shader << fs;
 	
 	shader << model->GenFunc() << endl;
 

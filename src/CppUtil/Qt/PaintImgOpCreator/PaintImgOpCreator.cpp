@@ -67,7 +67,7 @@ PaintImgOpCreator::PaintImgOp::Ptr PaintImgOpCreator::GenScenePaintOp() {
 
 		//------------ Screen Shader
 		string screen_vs = rootPath + str_Screen_vs;
-		string screen_fs = rootPath + str_Screen_fs;
+		string screen_fs = rootPath + str_Gamma_fs;
 		Shader screenShader(screen_vs, screen_fs);
 		if (!screenShader.IsValid()) {
 			qDebug() << "ERROR: screenShader load fail";

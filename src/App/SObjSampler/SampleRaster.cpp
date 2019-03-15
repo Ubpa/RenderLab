@@ -40,7 +40,7 @@ void SampleRaster::InitShaders() {
 }
 
 void SampleRaster::InitShaderScreen() {
-	shader_screen = Shader(ROOT_PATH + str_Screen_vs, ROOT_PATH + str_Screen_fs);
+	shader_screen = Shader(ROOT_PATH + str_Screen_vs, ROOT_PATH + str_Gamma_fs);
 
 	shader_screen.SetInt("texture0", 0);
 }

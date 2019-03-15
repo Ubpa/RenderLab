@@ -12,15 +12,18 @@ namespace App {
 	class Model : public CppUtil::Basic::HeapObj {
 		HEAP_OBJ_SETUP(Model)
 	public:
-		explicit Model(const std::string & name = "")
-			: name(name) { }
+		explicit Model(const std::string & name = "",
+			const int inputDim = -1, const int outputDim = -1,
+			const std::vector<float> & means = std::vector<float>(),
+			const std::vector<float> & stds = std::vector<float>());
 
 	public:
 		const std::string GetFuncName() const { return name; }
 		const std::vector<CppUtil::Basic::CPtr<Layer>> & GetLayers() const { return layers; }
-		int GetInputDim() const;
-		int GetOutputDim() const;
+		int GetInputDim() const { return inputDim; }
+		int GetOutputDim() const { return outputDim; }
 		int GetIDof(CppUtil::Basic::CPtr<Layer> layer) const;
+		bool IsValid() const;
 
 	public:
 		bool AddLayer(CppUtil::Basic::CPtr<Layer> layer) const;
@@ -28,6 +31,12 @@ namespace App {
 
 	private:
 		mutable std::vector<CppUtil::Basic::CPtr<Layer>> layers;
+
+		int inputDim;
+		int outputDim;
+		std::vector<float> means;
+		std::vector<float> stds;
+
 		std::string name;
 	};
 }

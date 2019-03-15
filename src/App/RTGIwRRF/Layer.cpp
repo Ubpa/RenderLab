@@ -102,8 +102,8 @@ bool Layer::AddUnit(Unit::CPtr unit) const {
 const string Layer::GenFunc(bool genUnits) const {
 	static auto const & ERROR = ErrorRetVal(&Layer::GenFunc);
 
-	if (model.expired()) {
-		printf("ERROR: model is expired\n");
+	if (!IsValid()) {
+		printf("ERROR: layer is not valid\n");
 		return ERROR;
 	}
 
@@ -169,4 +169,17 @@ const string Layer::GenFunc(bool genUnits) const {
 	rst << "}" << endl;
 
 	return rst.str();
+}
+
+bool Layer::IsValid() const {
+	static constexpr bool ERROR = false;
+
+	if (model.expired()
+		|| units.size() == 0
+		|| inputDim == -1)
+	{
+		return ERROR;
+	}
+
+	return true;
 }

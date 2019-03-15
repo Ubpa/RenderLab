@@ -25,6 +25,7 @@ namespace App {
 		int GetID() const;
 		const CppUtil::Basic::CPtr<Layer> GetLayer() const { return layer.lock(); }
 		bool SetLayer(CppUtil::Basic::CPtr<Layer> layer) const;
+		bool IsValid() const;
 
 	public:
 		const std::string GenFunc() const;

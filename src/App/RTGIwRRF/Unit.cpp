@@ -53,11 +53,12 @@ int Unit::GetID() const {
 	return layer.lock()->GetIDof(CThis());
 }
 
-const std::string Unit::GenFunc() const {
+const string Unit::GenFunc() const {
 	static auto const & ERROR = ErrorRetVal(&Unit::GenFunc);
 
-	if (layer.expired()) {
-		printf("ERROR: layer is expired\n");
+	if (!IsValid())
+	{
+		printf("ERROR: unit is not valid\n");
 		return ERROR;
 	}
 
@@ -125,4 +126,16 @@ const std::string Unit::GenFunc() const {
 	unitFunc << "}" << endl;
 
 	return unitFunc.str();
+}
+
+bool Unit::IsValid() const {
+	static constexpr bool ERROR = false;
+
+	if (layer.expired()
+		|| weights.size() == 0)
+	{
+		return ERROR;
+	}
+
+	return true;
 }

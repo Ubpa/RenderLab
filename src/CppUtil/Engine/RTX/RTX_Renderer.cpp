@@ -114,7 +114,7 @@ void RTX_Renderer::Run(Scene::Ptr scene, Image::Ptr img) {
 
 			fimg[x][y] += rst;
 
-			img->SetPixel(x, y, sqrt(fimg[x][y] / float(curLoop + 1)));
+			img->SetPixel(x, y, fimg[x][y] / float(curLoop + 1));
 
 			if (state._value == RendererState::Stop )
 				return;

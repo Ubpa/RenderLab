@@ -115,7 +115,7 @@ void SObjSampler::InitRaster() {
 	})));
 
 	paintOp->Push(ToPtr(new LambdaOp([=]() {
-		dataMap[ENUM_TYPE::FRAG_COLOR] = sampleRaster->GetData(SampleRaster::ENUM_TYPE::FRAG_COLOR);
+		dataMap[ENUM_TYPE::DirectIllum] = sampleRaster->GetData(SampleRaster::ENUM_TYPE::DirectIllum);
 		dataMap[ENUM_TYPE::POSITION] = sampleRaster->GetData(SampleRaster::ENUM_TYPE::POSITION);
 		dataMap[ENUM_TYPE::VIEW_DIR] = sampleRaster->GetData(SampleRaster::ENUM_TYPE::VIEW_DIR);
 		dataMap[ENUM_TYPE::NORMAL] = sampleRaster->GetData(SampleRaster::ENUM_TYPE::NORMAL);
@@ -214,7 +214,7 @@ void SObjSampler::SaveData() {
 
 	CSV<float> csv(keys);
 	vector<ENUM_TYPE> enumTypes = {
-		//ENUM_TYPE::FRAG_COLOR,
+		//ENUM_TYPE::DirectIllum,
 		ENUM_TYPE::POSITION,
 		ENUM_TYPE::VIEW_DIR,
 		ENUM_TYPE::NORMAL,
@@ -236,11 +236,10 @@ void SObjSampler::SaveData() {
 			lineVals.push_back(ID);
 
 			vec3 localIllum(
-				dataMap[ENUM_TYPE::FRAG_COLOR][idx + 0],
-				dataMap[ENUM_TYPE::FRAG_COLOR][idx + 1],
-				dataMap[ENUM_TYPE::FRAG_COLOR][idx + 2]
+				dataMap[ENUM_TYPE::DirectIllum][idx + 0],
+				dataMap[ENUM_TYPE::DirectIllum][idx + 1],
+				dataMap[ENUM_TYPE::DirectIllum][idx + 2]
 			);
-			localIllum = sqrt(localIllum);
 
 			lineVals.push_back(localIllum.r);
 			lineVals.push_back(localIllum.g);
@@ -252,7 +251,6 @@ void SObjSampler::SaveData() {
 			}
 
 			vec3 globalIllum = paintImgOp->GetImg()->GetPixel_F(row, col);
-			globalIllum = sqrt(globalIllum);
 
 			vec3 indirectIllum = max(globalIllum - localIllum, 0.f);
 

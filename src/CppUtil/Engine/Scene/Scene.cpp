@@ -39,7 +39,7 @@ bool Scene::GenID() {
 			return;
 		}
 
-		name2ID[sobj->name] = -1;//tmp invalid ID
+		name2ID[sobj->name] = 0;//tmp invalid ID
 		for (auto child : sobj->GetChildren()) {
 			child->Accept(visitor);
 			if (isFailed)
@@ -55,7 +55,7 @@ bool Scene::GenID() {
 		return false;
 	}
 
-	int curID = 0;
+	int curID = 1;
 	for (auto & pair : name2ID) {
 		pair.second = curID;
 		++curID;
@@ -70,7 +70,7 @@ bool Scene::GenID() {
 int Scene::GetID(SObj::Ptr sobj) const {
 	auto target = name2ID.find(sobj->name);
 	if (target == name2ID.cend())
-		return -1;
+		return 0;
 
 	return target->second;
 }

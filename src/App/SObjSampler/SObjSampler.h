@@ -53,7 +53,7 @@ namespace App{
 
 	public:
 		enum ENUM_TYPE {
-			FRAG_COLOR,// direct illumination
+			DirectIllum,
 			POSITION,
 			VIEW_DIR,
 			NORMAL,

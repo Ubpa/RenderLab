@@ -6,7 +6,9 @@
 namespace App {
 	class GenFS {
 	public:
-		static const std::string Call(const std::string & meanAndStdPath,
+		static const std::string Call(
+			const std::string & templateFSPath,
+			const std::string & meanAndStdPath,
 			const std::string & dense0Path, const Activation & activation0,
 			const std::string & dense1Path, const Activation & activation1,
 			const std::string & dense2Path, const Activation & activation2);

@@ -23,7 +23,7 @@ namespace App {
 		HEAP_OBJ_SETUP(Layer)
 	public:
 		explicit Layer(CppUtil::Basic::CPtr<Model> model = nullptr,
-			int inputDim = -1,
+			const int inputDim = -1,
 			const Connection & connection = Connection::Dense,
 			const Activation & activation = Activation::Identity)
 			: model(model), inputDim(inputDim), connection(connection), activation(activation) { }
@@ -40,6 +40,8 @@ namespace App {
 		int GetIDof(CppUtil::Basic::CPtr<Unit> unit) const;
 		int GetID() const;
 		const std::string GetFuncName() const;
+		
+		bool IsValid() const;
 
 	public:
 		bool AddUnit(CppUtil::Basic::CPtr<Unit> unit) const;

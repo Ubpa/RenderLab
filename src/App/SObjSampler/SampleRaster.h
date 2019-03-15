@@ -15,7 +15,7 @@ namespace App {
 		void Init();
 
 		enum ENUM_TYPE {
-			FRAG_COLOR,
+			DirectIllum,
 			POSITION,
 			VIEW_DIR,
 			NORMAL,
