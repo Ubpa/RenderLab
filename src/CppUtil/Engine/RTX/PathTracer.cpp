@@ -72,15 +72,14 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth, vec3 pathThroughput) {
 		*/
 	}
 
-	// 计算碰撞点在灯光空间的位置
 	const vec3 hitPos = ray->At(ray->GetTMax());
 
-	vector<vec3> posInLightSpaceVec;
+	const size_t lightNum = lights.size();
+	vector<vec3> posInLightSpaceVec(lightNum);
 
-	vec4 hitPos4 = vec4(hitPos, 1);
-	size_t lightNum = lights.size();
+	const vec4 hitPos4 = vec4(hitPos, 1);
 	for (size_t i = 0; i < lightNum; i++)
-		posInLightSpaceVec.push_back(worldToLightVec[i] * hitPos4);
+		posInLightSpaceVec[i] = worldToLightVec[i] * hitPos4;
 
 	vec3 emitL(0);
 	auto lightComponent = closestRst.closestSObj->GetComponent<Light>();
@@ -108,50 +107,11 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth, vec3 pathThroughput) {
 	auto w_out = normalize(worldToSurface * (-ray->GetDir()));
 
 	SampleLightMode mode = depth > 0 ? SampleLightMode::RandomOne : SampleLightMode::ALL;
-	vec3 weightedLightL = SampleLight(ray, hitPos, posInLightSpaceVec, worldToSurface, bsdf, w_out, closestRst.texcoord, SampleLightMode::RandomOne);
+	const vec3 lightL = SampleLight(ray, hitPos, posInLightSpaceVec, worldToSurface, bsdf, w_out, closestRst.texcoord, SampleLightMode::RandomOne);
 
-	// 超过深度直接丢弃
-	if (depth + 1 >= maxDepth)
-		return emitL + weightedLightL;
+	const vec3 matL = SampleBSDF(bsdf, mode, w_out, surfaceToWorld, closestRst.texcoord, posInLightSpaceVec, ray, hitPos, depth, pathThroughput);
 
-	// 采样 BSDF
-	vec3 mat_w_in;
-	float matPD;
-	const vec3 matF = bsdf->Sample_f(w_out, closestRst.texcoord, mat_w_in, matPD);
-	const vec3 matRayDirInWorld = surfaceToWorld * mat_w_in;
-	const float abs_cosTheta = abs(mat_w_in.z);
-
-	if (matPD <= 0)
-		return emitL + weightedLightL;
-
-	// 重要性采样
-	float sumPD = matPD;
-	float scaleFactor = depth == 0 ? 1.0f : 1.f / lightNum;
-	if (!bsdf->IsDelta()) {
-		for (int i = 0; i < lightNum; i++) {
-			if (lights[i]->IsDelta())
-				continue;
-
-			vec3 dirInLight = dir_worldToLightVec[i] * matRayDirInWorld;
-			sumPD += lights[i]->PDF(posInLightSpaceVec[i], dirInLight) * scaleFactor;
-		}
-	}
-
-	// material ray
-	ray->Init(hitPos, matRayDirInWorld);
-
-	// russian roulette
-	vec3 matWeight = abs_cosTheta / sumPD * matF;
-	pathThroughput *= matWeight;
-	float continueP = bsdf->IsDelta() ? 1.f : min(1.f, Math::Illum(pathThroughput));
-	if (Math::Rand_F() > continueP)
-		return emitL + weightedLightL;
-
-	const vec3 matRayColor = Trace(ray, depth + 1, pathThroughput / continueP);
-
-	vec3 weightedMatL = matWeight / continueP * matRayColor;
-
-	return emitL + weightedLightL + weightedMatL;
+	return emitL + lightL + matL;
 }
 
 vec3 PathTracer::SampleLightImpl(
@@ -246,9 +206,71 @@ vec3 PathTracer::SampleLight(
 		rst = SampleLightImpl(ray, lightID, posInWorldSpace, posInLightSpace, worldToSurface, bsdf, w_out, texcoord, 1.f / lightNum);
 		break;
 	}
-	default:
-		break;
 	}
 
 	return rst;
+}
+
+vec3 PathTracer::SampleBSDF(
+	const BSDF::Ptr bsdf,
+	const SampleLightMode mode,
+	const vec3 & w_out,
+	const mat3 & surfaceToWorld,
+	const vec2 & texcoord,
+	const vector<vec3> & posInLightSpaceVec,
+	const Ray::Ptr ray,
+	const vec3 & hitPos,
+	const int depth,
+	vec3 pathThroughput
+)
+{
+	if (depth + 1 > maxDepth)
+		return vec3(0);
+
+	vec3 mat_w_in;
+	float matPD;
+	const vec3 matF = bsdf->Sample_f(w_out, texcoord, mat_w_in, matPD);
+	const vec3 matRayDirInWorld = surfaceToWorld * mat_w_in;
+	const float abs_cosTheta = abs(mat_w_in.z);
+	const int lightNum = static_cast<int>(lights.size());
+
+	if (matPD <= 0)
+		return vec3(0);
+
+	// MSI
+	float sumPD = matPD;
+	if (!bsdf->IsDelta()) {
+		float scaleFactor;
+		switch (mode)
+		{
+		case SampleLightMode::ALL:
+			scaleFactor = 1.f;
+			break;
+		case SampleLightMode::RandomOne:
+			scaleFactor = 1.f / lightNum;
+			break;
+		}
+
+		for (int i = 0; i < lightNum; i++) {
+			if (lights[i]->IsDelta())
+				continue;
+
+			vec3 dirInLight = dir_worldToLightVec[i] * matRayDirInWorld;
+			sumPD += lights[i]->PDF(posInLightSpaceVec[i], dirInLight) * scaleFactor;
+		}
+	}
+
+	// material ray
+	ray->Init(hitPos, matRayDirInWorld);
+
+	// Russian Roulette
+	vec3 matWeight = abs_cosTheta / sumPD * matF;
+	pathThroughput *= matWeight;
+	float continueP = bsdf->IsDelta() ? 1.f : min(1.f, Math::Illum(pathThroughput));
+	if (Math::Rand_F() > continueP)
+		return vec3(0);
+
+	const vec3 matRayColor = Trace(ray, depth + 1, pathThroughput / continueP);
+
+	return matWeight / continueP * matRayColor;
 }

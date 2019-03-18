@@ -38,6 +38,7 @@ namespace CppUtil {
 				ALL,
 				RandomOne,
 			};
+
 			glm::vec3 SampleLight(
 				const Basic::Ptr<Ray> ray,
 				const glm::vec3 & posInWorldSpace,
@@ -60,6 +61,19 @@ namespace CppUtil {
 				const glm::vec2 & texcoord,
 				const float factorPD
 			) const;
+
+			glm::vec3 SampleBSDF(
+				const Basic::Ptr<BSDF> bsdf,
+				const SampleLightMode mode,
+				const glm::vec3 & w_out,
+				const glm::mat3 & surfaceToWorld,
+				const glm::vec2 & texcoord,
+				const std::vector<glm::vec3> & posInLightSpaceVec,
+				const Basic::Ptr<Ray> ray,
+				const glm::vec3 & hitPos,
+				const int depth,
+				glm::vec3 pathThroughput
+			);
 		
 		public:
 			int maxDepth;
