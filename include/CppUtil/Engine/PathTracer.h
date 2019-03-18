@@ -17,6 +17,8 @@ namespace CppUtil {
 		class RayIntersector;
 		class VisibilityChecker;
 
+		class BSDF;
+
 		// 只能用于单线程
 		class PathTracer : public RayTracer {
 			HEAP_OBJ_SETUP(PathTracer)
@@ -30,6 +32,34 @@ namespace CppUtil {
 		protected:
 			// ray 处于世界坐标系
 			glm::vec3 Trace(Basic::Ptr<Ray> ray, int depth, glm::vec3 pathThroughput);
+
+		private:
+			enum SampleLightMode {
+				ALL,
+				RandomOne,
+			};
+			glm::vec3 SampleLight(
+				const Basic::Ptr<Ray> ray,
+				const glm::vec3 & posInWorldSpace,
+				const std::vector<glm::vec3> & posInLightSpaceVec,
+				const glm::mat3 & worldToSurface,
+				const Basic::Ptr<BSDF> bsdf,
+				const glm::vec3 & w_out,
+				const glm::vec2 & texcoord,
+				const SampleLightMode mode
+			) const;
+
+			glm::vec3 SampleLightImpl(
+				const Basic::Ptr<Ray> ray,
+				const int lightID,
+				const glm::vec3 & posInWorldSpace,
+				const glm::vec3 & posInLightSpace,
+				const glm::mat3 & worldToSurface,
+				const Basic::Ptr<BSDF> bsdf,
+				const glm::vec3 & w_out,
+				const glm::vec2 & texcoord,
+				const float factorPD
+			) const;
 		
 		public:
 			int maxDepth;

@@ -71,10 +71,10 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth, vec3 pathThroughput) {
 		return t * white + (1 - t)*blue;
 		*/
 	}
+
 	// 计算碰撞点在灯光空间的位置
 	const vec3 hitPos = ray->At(ray->GetTMax());
 
-	//TODO 不是所有光源都需要计算
 	vector<vec3> posInLightSpaceVec;
 
 	vec4 hitPos4 = vec4(hitPos, 1);
@@ -107,107 +107,9 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth, vec3 pathThroughput) {
 	// w_out 处于表面坐标系，向外
 	auto w_out = normalize(worldToSurface * (-ray->GetDir()));
 
-	vec3 weightedLightL(0);
-	
-	if (!bsdf->IsDelta()) {
-		const vec3 shadowOrigin = hitPos;
+	SampleLightMode mode = depth > 0 ? SampleLightMode::RandomOne : SampleLightMode::ALL;
+	vec3 weightedLightL = SampleLight(ray, hitPos, posInLightSpaceVec, worldToSurface, bsdf, w_out, closestRst.texcoord, SampleLightMode::RandomOne);
 
-		if (depth > 0) {
-			int lightID = Math::Rand_I() % lightNum;
-
-			auto const light = lights[lightID];
-			auto const & posInLightSpace = posInLightSpaceVec[lightID];
-			auto const & dir_lightToWorld = dir_lightToWorldVec[lightID];
-
-			float dist_ToLight;
-			float PD;// 概率密度
-			vec3 dir_ToLight;
-			// dir_ToLight 是单位向量
-			const vec3 lightL = light->Sample_L(posInLightSpace, dir_ToLight, dist_ToLight, PD);
-			if (PD != 0) {
-				PD /= lightNum;
-
-				const vec3 dirInWorld = normalize(dir_lightToWorld * dir_ToLight);
-
-				// shadow ray 处于世界坐标
-				ray->Init(shadowOrigin, dirInWorld);
-				visibilityChecker->Init(ray, dist_ToLight - 0.001f);
-				bvhAccel->Accept(visibilityChecker);
-				auto shadowRst = visibilityChecker->GetRst();
-				if (!shadowRst.IsIntersect()) {
-					// w_in 处于表面坐标系，应该是单位向量
-					const vec3 w_in = normalize(worldToSurface * dirInWorld);
-
-					// 多重重要性采样 Multiple Importance Sampling (MIS)
-					if (!light->IsDelta()) {
-						for (int k = 0; k < lightNum; k++) {
-							if (k != lightID && !lights[k]->IsDelta()) {
-								vec3 dirInLight = dir_worldToLightVec[k] * dirInWorld;
-								PD += lights[k]->PDF(posInLightSpace, dirInLight) / lightNum;
-							}
-						}
-						PD += bsdf->PDF(w_out, w_in, closestRst.texcoord);
-					}
-
-					// 在碰撞表面的坐标系计算 dot(n, w_in) 很简单，因为 n = (0, 0, 1)
-					const float cos_theta = max(w_in.z, 0.f);
-
-					// evaluate surface bsdf
-					const vec3 f = bsdf->F(w_out, w_in, closestRst.texcoord);
-
-					auto weight = (cos_theta / PD) * f;
-					weightedLightL = weight * lightL;
-				}
-			}
-		}
-		else {
-			for (int i = 0; i < lightNum; i++) {
-				auto const light = lights[i];
-
-				float dist_ToLight;
-				float PD;// 概率密度
-				vec3 dir_ToLight;
-				// dir_ToLight 是单位向量
-				const vec3 lightL = light->Sample_L(posInLightSpaceVec[i], dir_ToLight, dist_ToLight, PD);
-
-				if (PD <= 0)
-					continue;
-
-				const vec3 dirInWorld = normalize(dir_lightToWorldVec[i] * dir_ToLight);
-
-				// shadow ray 处于世界坐标
-				ray->Init(shadowOrigin, dirInWorld);
-				visibilityChecker->Init(ray, dist_ToLight - 0.001f);
-				bvhAccel->Accept(visibilityChecker);
-				auto shadowRst = visibilityChecker->GetRst();
-				if (shadowRst.IsIntersect())
-					continue;
-
-				// w_in 处于表面坐标系，应该是单位向量
-				const vec3 w_in = normalize(worldToSurface * dirInWorld);
-
-				// 多重重要性采样 Multiple Importance Sampling (MIS)
-				if (!light->IsDelta()) {
-					PD += bsdf->PDF(w_out, w_in, closestRst.texcoord);
-					for (int k = 0; k < lightNum; k++) {
-						if (k != i && !lights[k]->IsDelta()) {
-							vec3 dirInLight = dir_worldToLightVec[k] * dirInWorld;
-							PD += lights[k]->PDF(posInLightSpaceVec[i], dirInLight);
-						}
-					}
-				}
-
-				// 在碰撞表面的坐标系计算 dot(n, w_in) 很简单，因为 n = (0, 0, 1)
-				const float cos_theta = max(w_in.z, 0.f);
-
-				// evaluate surface bsdf
-				const vec3 f = bsdf->F(w_out, w_in, closestRst.texcoord);
-
-				auto weight = (cos_theta / PD) * f;
-				weightedLightL += weight * lightL;
-			}
-		}
-	}
 	// 超过深度直接丢弃
 	if (depth + 1 >= maxDepth)
 		return emitL + weightedLightL;
@@ -250,4 +152,103 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth, vec3 pathThroughput) {
 	vec3 weightedMatL = matWeight / continueP * matRayColor;
 
 	return emitL + weightedLightL + weightedMatL;
+}
+
+vec3 PathTracer::SampleLightImpl(
+	const Ray::Ptr ray,
+	const int lightID,
+	const vec3 & posInWorldSpace,
+	const vec3 & posInLightSpace,
+	const mat3 & worldToSurface,
+	const BSDF::Ptr bsdf,
+	const vec3 & w_out,
+	const vec2 & texcoord,
+	const float factorPD
+) const
+{
+	auto const light = lights[lightID];
+	auto const & dir_lightToWorld = dir_lightToWorldVec[lightID];
+	const int lightNum = static_cast<int>(lights.size());
+
+	float dist_ToLight;
+	float PD;// 概率密度
+	vec3 dir_ToLight;
+	// dir_ToLight 是单位向量
+	const vec3 lightL = light->Sample_L(posInLightSpace, dir_ToLight, dist_ToLight, PD);
+	if (PD == 0)
+		return vec3(0);
+
+	PD *= factorPD;
+
+	const vec3 dirInWorld = normalize(dir_lightToWorld * dir_ToLight);
+
+	// shadow ray 处于世界坐标
+	ray->Init(posInWorldSpace, dirInWorld);
+	visibilityChecker->Init(ray, dist_ToLight - 0.001f);
+	bvhAccel->Accept(visibilityChecker);
+	auto shadowRst = visibilityChecker->GetRst();
+	if (shadowRst.IsIntersect())
+		return vec3(0);
+
+	// w_in 处于表面坐标系，应该是单位向量
+	const vec3 w_in = normalize(worldToSurface * dirInWorld);
+
+	// 多重重要性采样 Multiple Importance Sampling (MIS)
+	if (!light->IsDelta()) {
+		for (int k = 0; k < lightNum; k++) {
+			if (k != lightID && !lights[k]->IsDelta()) {
+				vec3 dirInLight = dir_worldToLightVec[k] * dirInWorld;
+				PD += lights[k]->PDF(posInLightSpace, dirInLight) * factorPD;
+			}
+		}
+		PD += bsdf->PDF(w_out, w_in, texcoord);
+	}
+
+	// 在碰撞表面的坐标系计算 dot(n, w_in) 很简单，因为 n = (0, 0, 1)
+	const float cos_theta = max(w_in.z, 0.f);
+
+	// evaluate surface bsdf
+	const vec3 f = bsdf->F(w_out, w_in, texcoord);
+
+	auto weight = (cos_theta / PD) * f;
+	return weight * lightL;
+}
+
+vec3 PathTracer::SampleLight(
+	const Ray::Ptr ray,
+	const vec3 & posInWorldSpace,
+	const vector<vec3> & posInLightSpaceVec,
+	const mat3 & worldToSurface,
+	const BSDF::Ptr bsdf,
+	const vec3 & w_out,
+	const vec2 & texcoord,
+	const SampleLightMode mode
+) const
+{
+	if (bsdf->IsDelta())
+		return vec3(0);
+
+	int lightNum = static_cast<int>(lights.size());
+	vec3 rst = vec3(0);
+
+	switch (mode)
+	{
+	case SampleLightMode::ALL: {
+		for (int i = 0; i < lightNum; i++)
+			rst += SampleLightImpl(ray, i, posInWorldSpace, posInLightSpaceVec[i], worldToSurface, bsdf, w_out, texcoord, 1.f);
+
+		break;
+	}
+	case SampleLightMode::RandomOne: {
+		int lightID = Math::Rand_I() % lightNum;
+		auto const & posInLightSpace = posInLightSpaceVec[lightID];
+
+		rst = SampleLightImpl(ray, lightID, posInWorldSpace, posInLightSpace, worldToSurface, bsdf, w_out, texcoord, 1.f / lightNum);
+		break;
+	}
+	default:
+		break;
+	}
+
+	return rst;
 }
