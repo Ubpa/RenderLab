@@ -69,23 +69,14 @@ void RTX_Renderer::Run(Scene::Ptr scene, Image::Ptr img) {
 	camera->SetAspectRatio(w, h);
 	camera->InitCoordinate();
 
+	// jobs
+	const int tileSize = 32;
+	const int rowTiles = w / tileSize;
+	const int tileNum = w * h / (tileSize*tileSize);
+
 	// init float image
 	int imgSize = w * h;
-	std::vector<std::vector<vec3>> fimg;
-	for (int i = 0; i < w; i++) {
-		fimg.push_back(std::vector<vec3>());
-		for (int j = 0; j < w; j++)
-			fimg[i].push_back(vec3(0));
-	}
-
-	// jobs
-	ImgPixelSet pixSet(w, h);
-	const int pixelsNum = w * h / threadNum;
-	vector<vector<uvec2>> pixelSets;
-	for (int i = 0; i < threadNum - 1; i++)
-		pixelSets.push_back(pixSet.RandPick(pixelsNum));
-
-	pixelSets.push_back(pixSet.PickAll());
+	vector<vector<vec3>> imgTiles(tileNum, vector<vec3>(tileSize*tileSize,vec3(0)));
 
 	// rays
 	vector<Ray::Ptr> rays;
@@ -95,11 +86,19 @@ void RTX_Renderer::Run(Scene::Ptr scene, Image::Ptr img) {
 	auto renderPartImg = [&](int id) {
 		auto & ray = rays[id];
 		auto & rayTracer = rayTracers[id];
-		auto const & pixelSet = pixelSets[id];
 
-		for (auto const & pixel : pixelSet) {
-			int x = pixel.x;
-			int y = pixel.y;
+		int tileID = id;
+		int tileRow = tileID / rowTiles;
+		int tileCol = tileID - tileRow * rowTiles;
+		int baseX = tileCol * tileSize;
+		int baseY = tileRow * tileSize;
+		int idxInTile = 0;
+		int xInTile = 0;
+		int yInTile = 0;
+
+		while (tileID < tileNum) {
+			int x = baseX + xInTile;
+			int y = baseY + yInTile;
 
 			float u = (x + Math::Rand_F()) / (float)w;
 			float v = (y + Math::Rand_F()) / (float)h;
@@ -112,12 +111,33 @@ void RTX_Renderer::Run(Scene::Ptr scene, Image::Ptr img) {
 			if (illum > lightNum)
 				rst *= lightNum / illum;
 
-			fimg[x][y] += rst;
+			imgTiles[tileID][idxInTile] += rst;
 
-			img->SetPixel(x, y, fimg[x][y] / float(curLoop + 1));
-
-			if (state._value == RendererState::Stop )
+			if (state._value == RendererState::Stop)
 				return;
+
+			xInTile++;
+			idxInTile++;
+			if (xInTile == tileSize) {
+				xInTile = 0;
+				yInTile++;
+				if (yInTile == tileSize) {
+					for (int j = 0; j < tileSize; j++) {
+						for (int i = 0; i < tileSize; i++) {
+							img->SetPixel(i + baseX, j + baseY,
+								imgTiles[tileID][j*tileSize + i] / float(curLoop + 1));
+						}
+					}
+
+					tileID += threadNum;
+					tileRow = tileID / rowTiles;
+					tileCol = tileID - tileRow * rowTiles;
+					baseX = tileCol * tileSize;
+					baseY = tileRow * tileSize;
+					yInTile = 0;
+					idxInTile = 0;
+				}
+			}
 		}
 	};
 

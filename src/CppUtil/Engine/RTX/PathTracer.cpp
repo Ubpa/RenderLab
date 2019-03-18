@@ -106,7 +106,8 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth, vec3 pathThroughput) {
 	// w_out 处于表面坐标系，向外
 	auto w_out = normalize(worldToSurface * (-ray->GetDir()));
 
-	SampleLightMode mode = depth > 0 ? SampleLightMode::RandomOne : SampleLightMode::ALL;
+	// SampleLightMode mode = depth > 0 ? SampleLightMode::RandomOne : SampleLightMode::ALL;
+	SampleLightMode mode = SampleLightMode::RandomOne;
 	const vec3 lightL = SampleLight(ray, hitPos, posInLightSpaceVec, worldToSurface, bsdf, w_out, closestRst.texcoord, SampleLightMode::RandomOne);
 
 	const vec3 matL = SampleBSDF(bsdf, mode, w_out, surfaceToWorld, closestRst.texcoord, posInLightSpaceVec, ray, hitPos, depth, pathThroughput);
