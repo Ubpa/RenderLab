@@ -9,14 +9,14 @@ static const char USAGE[] =
 R"(SObjSampler
 
     Usage:
-      SObjSampler [--notrootpath] --sobj=<sobjPath> [--maxdepth=<maxDepth>] [--samplenum=<sampleNum>] [--notdenoise] --csv==<csvPath>
+      SObjSampler [--notrootpath] --sobj=<sobjPath> [--maxdepth=<maxDepth>] [--maxloop=<maxLoop>] [--samplenum=<sampleNum>] --csv==<csvPath>
 
     Options:
       --notrootpath            path is not from root path
       --sobj <sobjPath>        sobj path.
       --maxdepth <maxDepth>    max depth [default: 20]
-      --samplenum <sampleNum>  sample num [default: 16]
-      --notdenoise             not denoise
+      --maxloop <maxLoop>      max loop [default: 32]
+      --samplenum <sampleNum>  sample num [default: 6000]
       --csv <csvPath>          output file path
 )";
 

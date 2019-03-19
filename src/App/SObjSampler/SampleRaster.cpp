@@ -123,7 +123,7 @@ vector<float> SampleRaster::GetData(ENUM_TYPE type) {
 	for (int row = 0; row < 512; row++) {
 		for (int col = 0; col < 512; col++) {
 			for (int k = 0; k < 3; k++) {
-				replaceRst[(row * 512 + (512 - 1 - col)) * 3 + k] = rst[(col * 512 + row) * 3 + k];
+				replaceRst[((512 - 1 - row) * 512 + (512 - 1 - col)) * 3 + k] = rst[(col * 512 + row) * 3 + k];
 			}
 		}
 	}

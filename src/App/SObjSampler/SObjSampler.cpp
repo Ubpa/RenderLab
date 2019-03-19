@@ -1,6 +1,7 @@
 #include "SObjSampler.h"
 
 #include "SampleRaster.h"
+#include "RTX_Sampler.h"
 
 #include <UI/Hierarchy.h>
 #include <UI/Attribute.h>
@@ -10,12 +11,10 @@
 #include <CppUtil/Qt/OpThread.h>
 
 #include <CppUtil/Engine/Roamer.h>
-#include <CppUtil/Engine/RTX_Renderer.h>
 #include <CppUtil/Engine/PathTracer.h>
 #include <CppUtil/Engine/Viewer.h>
 #include <CppUtil/Engine/Scene.h>
 #include <CppUtil/Engine/SObj.h>
-#include <CppUtil/Engine/OptixAIDenoiser.h>
 
 #include <CppUtil/Basic/CSV.h>
 #include <CppUtil/Basic/Image.h>
@@ -99,6 +98,8 @@ void SObjSampler::InitScene() {
 }
 
 void SObjSampler::InitRaster() {
+	initDataMap = false;
+
 	sampleRaster = ToPtr(new SampleRaster(scene));
 	roamer = ToPtr(new Roamer(ui.OGLW_Raster));
 	roamer->SetLock(true);
@@ -121,6 +122,7 @@ void SObjSampler::InitRaster() {
 		dataMap[ENUM_TYPE::NORMAL] = sampleRaster->GetData(SampleRaster::ENUM_TYPE::NORMAL);
 		dataMap[ENUM_TYPE::MAT_COLOR] = sampleRaster->GetData(SampleRaster::ENUM_TYPE::MAT_COLOR);
 		dataMap[ENUM_TYPE::IOR_ROUGHNESS_ID] = sampleRaster->GetData(SampleRaster::ENUM_TYPE::IOR_ROUGHNESS_ID);
+		initDataMap = true;
 	}, false)));
 
 	ui.OGLW_Raster->SetPaintOp(paintOp);
@@ -138,29 +140,30 @@ void SObjSampler::InitRTX() {
 	PaintImgOpCreator pioc(ui.OGLW_RayTracer);
 	paintImgOp = pioc.GenScenePaintOp();
 	paintImgOp->SetOp(512, 512);
-	auto img = paintImgOp->GetImg();
-	rtxRenderer = ToPtr(new RTX_Renderer(generator));
-	rtxRenderer->maxLoop = GetArgAs<int>(ENUM_ARG::samplenum);
+	int maxLoop = GetArgAs<int>(ENUM_ARG::maxloop);
+	int sampleNum = GetArgAs<int>(ENUM_ARG::samplenum);
+	rtxSampler = ToPtr(new RTX_Sampler(generator, maxLoop, sampleNum));
 
 	drawImgThread = ToPtr(new OpThread([=]() {
-		rtxRenderer->Run(scene, img);
-
-		if (!GetArgAs<bool>(ENUM_ARG::notdenoise))
-			OptixAIDenoiser::GetInstance().Denoise(img);
+		rtxSampler->Run(scene, paintImgOp->GetImg());
+		while (!GetInitDataMap())
+			;
 
 		SaveData();
 
+		while (!printProgressThread->isFinished())
+			;
 		QApplication::exit();
 	}));
 	drawImgThread->start();
 
 	printProgressThread = ToPtr(new OpThread([=]() {
 		int dotNum = 0;
-		while (rtxRenderer->ProgressRate() != 1.f) {
+		while (rtxSampler->ProgressRate() != 1.f) {
 			string dotStr;
 			for (int i = 0; i < 6; i++)
 				dotStr += i < dotNum % 6 ? "." : " ";
-			printf("\rprogress rate : %d%% %s", static_cast<int>(rtxRenderer->ProgressRate() * 100), dotStr.c_str());
+			printf("\rprogress rate : %d%% %s", static_cast<int>(rtxSampler->ProgressRate() * 100), dotStr.c_str());
 
 			dotNum++;
 			Sleep(500);
@@ -223,36 +226,46 @@ void SObjSampler::SaveData() {
 	};
 
 	map<int, string> ID2name;
-	for (int row = 0; row < 512; row++) {
-		for (int col = 0; col < 512; col++) {
+	for (auto & job : rtxSampler->GetJobs()) {
+		for (auto & pixel : job) {
+			int row = pixel.x;
+			int col = pixel.y;
+
+			vec3 globalIllum = paintImgOp->GetImg()->GetPixel_F(row, col);
+			if (globalIllum == vec3(0))
+				continue;
+
 			vector<float> lineVals;
 			int idx = (row * 512 + col) * 3;
 
 			float ID = dataMap[ENUM_TYPE::IOR_ROUGHNESS_ID][idx + 2];
-			ID2name[ID] = scene->GetName(ID);
+			const string name = scene->GetName(ID);
+			if (name == "")
+				continue;
+
+			
+			ID2name[ID] = name;
 
 			float ior = dataMap[ENUM_TYPE::IOR_ROUGHNESS_ID][idx + 0];
 			float roughness = dataMap[ENUM_TYPE::IOR_ROUGHNESS_ID][idx + 1];
 			lineVals.push_back(ID);
 
-			vec3 localIllum(
+			vec3 directIllum(
 				dataMap[ENUM_TYPE::DirectIllum][idx + 0],
 				dataMap[ENUM_TYPE::DirectIllum][idx + 1],
 				dataMap[ENUM_TYPE::DirectIllum][idx + 2]
 			);
 
-			lineVals.push_back(localIllum.r);
-			lineVals.push_back(localIllum.g);
-			lineVals.push_back(localIllum.b);
+			lineVals.push_back(directIllum.r);
+			lineVals.push_back(directIllum.g);
+			lineVals.push_back(directIllum.b);
 
 			for (auto enumType : enumTypes) {
 				for (int channel = 0; channel < 3; channel++)
 					lineVals.push_back(dataMap[enumType][idx + channel]);
 			}
 
-			vec3 globalIllum = paintImgOp->GetImg()->GetPixel_F(row, col);
-
-			vec3 indirectIllum = max(globalIllum - localIllum, 0.f);
+			vec3 indirectIllum = max(globalIllum - directIllum, 0.f);
 
 			lineVals.push_back(ior);
 			lineVals.push_back(roughness);

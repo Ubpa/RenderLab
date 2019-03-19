@@ -19,7 +19,6 @@ namespace CppUtil {
 	namespace Engine {
 		class Scene;
 		class Roamer;
-		class RTX_Renderer;
 		class PathTracer;
 	}
 
@@ -30,13 +29,14 @@ namespace CppUtil {
 
 namespace App{
 	class SampleRaster;
+	class RTX_Sampler;
 
 	BETTER_ENUM(ENUM_ARG, int,
 		notrootpath,
 		sobj,
 		maxdepth,
+		maxloop,
 		samplenum,
-		notdenoise,
 		csv)
 
 	BETTER_ENUM(ENUM_TYPE, int,
@@ -72,6 +72,8 @@ namespace App{
 
 		void UI_Op(CppUtil::Basic::Ptr<CppUtil::Basic::Operation> op);
 
+		bool GetInitDataMap() const { return initDataMap; }
+
 	private:
 		void Init();
 		void InitTimer();
@@ -85,13 +87,14 @@ namespace App{
 		Ui::SObjSamplerClass ui;
 		CppUtil::Basic::Ptr<CppUtil::Qt::PaintImgOpCreator::PaintImgOp> paintImgOp;
 		CppUtil::Basic::Ptr<CppUtil::Engine::Scene> scene;
-		CppUtil::Basic::Ptr<CppUtil::Engine::RTX_Renderer> rtxRenderer;
+		CppUtil::Basic::Ptr<RTX_Sampler> rtxSampler;
 		CppUtil::Basic::Ptr<CppUtil::Qt::OpThread> drawImgThread;
 		CppUtil::Basic::Ptr<CppUtil::Qt::OpThread> printProgressThread;
 		CppUtil::Basic::Ptr<App::SampleRaster> sampleRaster;
 		CppUtil::Basic::Ptr<CppUtil::Engine::Roamer> roamer;
 		QTimer * timer;
 
+		bool initDataMap;
 		std::map<ENUM_TYPE, std::vector<float>> dataMap;
 
 		const docopt::value & GetArg(ENUM_ARG arg) const;
