@@ -3,21 +3,48 @@
 
 #include "Layer.h"
 
+#include <3rdParty/rapidjson/document.h>
+
 namespace App {
+	class Model;
+	class ModelKDTree;
+
 	class GenFS {
 	public:
 		static const std::string Call(
-			const std::string & templateFSPath,
-			const std::string & meanAndStdPath,
-			const std::string & dense0Path, const Activation & activation0,
-			const std::string & dense1Path, const Activation & activation1,
-			const std::string & dense2Path, const Activation & activation2);
+			const int ID,
+			const std::string dir,
+			const std::vector<Connection> & connections,
+			const std::vector<Activation> & activations);
 	private:
 		typedef std::vector<std::vector<float>> Matf;
 
 		static const std::vector<std::vector<float>> LoadCSV(const std::string & path);
+
 		static const Matf LoadMatrix(const std::string & path);
-		static const Layer::CPtr LoadLayer(const std::string & path, const Connection & connection, const Activation & activation);
+
+		static const Layer::Ptr LoadLayer(const std::string & path, const Connection & connection, const Activation & activation);
+
+		static const CppUtil::Basic::Ptr<Model> LoadModel(
+			const int ID,
+			const int secID,
+			const std::string & dir,
+			const std::vector<Connection> & connections,
+			const std::vector<Activation> & activations);
+
+		static const CppUtil::Basic::Ptr<ModelKDTree> LoadModelKDTree(
+			const int id,
+			const std::string & dir,
+			const std::vector<Connection> & connections,
+			const std::vector<Activation> & activations);
+
+		static const CppUtil::Basic::Ptr<ModelKDTree> LoadModelKDTreeFromJson(
+			const int id,
+			const std::string & dir,
+			rapidjson::Value::MemberIterator begin,
+			rapidjson::Value::MemberIterator end,
+			const std::vector<Connection> & connections,
+			const std::vector<Activation> & activations);
 
 	private:
 		GenFS() = default;

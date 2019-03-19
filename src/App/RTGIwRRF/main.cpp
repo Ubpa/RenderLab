@@ -1,4 +1,7 @@
 #include "RTGIwRRF.h"
+
+#include <CppUtil/Basic/File.h>
+
 #include <QtWidgets/QApplication>
 
 #include <qfile.h>
@@ -23,18 +26,24 @@ R"(RTGIwRRF
       --csv <csvPath>          output file path
 )";
 
-using namespace std;
 using namespace App;
+using namespace CppUtil::Basic;
+using namespace std;
 
 void ShowArgRst(const map<string, docopt::value> & rst);
 
 int main(int argc, char *argv[])
 {
-	string meanAndStd = ROOT_PATH + "data/FNN/2_mean_and_std.csv";
-	string dense0 = ROOT_PATH + "data/FNN/2_dense0.csv";
-	string dense1 = ROOT_PATH + "data/FNN/2_dense1.csv";
-	string dense2 = ROOT_PATH + "data/FNN/2_dense2.csv";
-	cout << GenFS::Call(meanAndStd, dense0, Activation::ReLU, dense1, Activation::ReLU, dense2, Activation::Identity) << endl;
+	string rst = GenFS::Call(
+		3, // ID
+		ROOT_PATH + "data/FNN/", // DIR
+		{ Connection::Dense,Connection::Dense, Connection::Dense }, // connections
+		{ Activation::tanh, Activation::tanh, Activation::Identity } // activatios
+	);
+
+	File file(ROOT_PATH + "data/FNN/modelKDTree.fs", File::WRITE);
+	file.Printf("%s", rst.c_str());
+	file.Close();
 	return 0;
 
 	/*

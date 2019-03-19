@@ -17,7 +17,8 @@ namespace App {
 
 	BETTER_ENUM(Activation, int,
 		Identity,
-		ReLU)
+		ReLU,
+		tanh)
 
 	class Layer : public CppUtil::Basic::HeapObj {
 		HEAP_OBJ_SETUP(Layer)
@@ -54,9 +55,9 @@ namespace App {
 		mutable CppUtil::Basic::WCPtr<Model> model;
 		mutable std::vector<CppUtil::Basic::CPtr<Unit>> units;
 
-		const int inputDim;
-		const Connection connection;
-		const Activation activation;
+		int inputDim;
+		Connection connection;
+		Activation activation;
 	};
 }
 
