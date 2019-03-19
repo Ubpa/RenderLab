@@ -22,14 +22,6 @@ const std::string ModelKDTree::GenFunc(bool genModels) const {
 
 	SStreams sstreams;
 
-	if (genModels && GetData() != nullptr) {
-		auto model = GetData()->GenFunc();
-		if (IsError(model))
-			return ERROR;
-
-		sstreams.models << model;
-	}
-
 	// func declaration
 	sstreams.kdTree << "void ModelKDTree";
 	sstreams.kdTree << endl << "(" << endl;

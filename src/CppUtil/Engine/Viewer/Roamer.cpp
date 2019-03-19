@@ -18,7 +18,7 @@ using namespace CppUtil::OpenGL;
 using namespace glm;
 
 Roamer::Roamer(RawAPI_OGLW * pOGLW)
-	: pOGLW(pOGLW), camera(new Camera(vec3(0,0.75,2.3))) {
+	: pOGLW(pOGLW), camera(new Camera(vec3(0,0.75,2.3))), lock(false) {
 }
 
 void Roamer::Init() {

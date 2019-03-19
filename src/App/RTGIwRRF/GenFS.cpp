@@ -24,15 +24,11 @@ using namespace std;
 const string GenFS::Call(
 	const int ID,
 	const std::string dir,
+	const std::string templateFSPath,
 	const std::vector<Connection> & connections,
 	const std::vector<Activation> & activations)
 {
 	static auto const & ERROR = ErrorRetVal(Call);
-
-	constexpr int inputDim = 17;
-	constexpr int outputDim = 3;
-
-	const string templateFSPath = dir + "template.fs";
 
 	auto modelKDTree = LoadModelKDTree(ID, dir, connections, activations);
 	if (IsError(modelKDTree))
@@ -163,7 +159,7 @@ const Model::Ptr GenFS::LoadModel(
 		return ERROR;
 	}
 
-	auto model = ToPtr(new Model(modelName, 17, 3, meanAndStd[0], meanAndStd[1]));
+	auto model = ToPtr(new Model(modelName, inputDim, outputDim, meanAndStd[0], meanAndStd[1]));
 
 	auto dense0 = LoadLayer(dense0Path, connections[0], activations[0]);
 	if (IsError(dense0))
@@ -217,6 +213,9 @@ const ModelKDTree::Ptr GenFS::LoadModelKDTreeFromJson(
 	const vector<Connection> & connections,
 	const vector<Activation> & activations)
 {
+	constexpr int inputDim = 17;
+	constexpr int outputDim = 3;
+
 	int axis = -1;
 	float spiltVal = 0;
 	Model::Ptr model = nullptr;
@@ -234,7 +233,7 @@ const ModelKDTree::Ptr GenFS::LoadModelKDTreeFromJson(
 			continue;
 	}
 
-	auto modelKDTree = ToPtr(new ModelKDTree(nullptr, 17, 3, axis, spiltVal, model));
+	auto modelKDTree = ToPtr(new ModelKDTree(nullptr, inputDim, outputDim, axis, spiltVal, model));
 	for (auto it = begin; it != end; ++it) {
 		string name = it->name.GetString();
 		if (name == "left") {

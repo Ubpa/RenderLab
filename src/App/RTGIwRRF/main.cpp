@@ -11,49 +11,21 @@
 #include "GenFS.h"
 #include <ROOT_PATH.h>
 
-static const char USAGE[] =
-R"(RTGIwRRF
-
-    Usage:
-      RTGIwRRF [--notrootpath] --sobj=<sobjPath> [--maxdepth=<maxDepth>] [--samplenum=<sampleNum>] [--notdenoise] --csv==<csvPath>
-
-    Options:
-      --notrootpath            path is not from root path
-      --sobj <sobjPath>        sobj path.
-      --maxdepth <maxDepth>    max depth [default: 20]
-      --samplenum <sampleNum>  sample num [default: 16]
-      --notdenoise             not denoise
-      --csv <csvPath>          output file path
-)";
-
 using namespace App;
 using namespace CppUtil::Basic;
 using namespace std;
 
 void ShowArgRst(const map<string, docopt::value> & rst);
+bool InitShaders(const vector<int>  & IDs);
 
 int main(int argc, char *argv[])
 {
-	string rst = GenFS::Call(
-		3, // ID
-		ROOT_PATH + "data/FNN/", // DIR
-		{ Connection::Dense,Connection::Dense, Connection::Dense }, // connections
-		{ Activation::tanh, Activation::tanh, Activation::Identity } // activatios
-	);
-
-	File file(ROOT_PATH + "data/FNN/modelKDTree.fs", File::WRITE);
-	file.Printf("%s", rst.c_str());
-	file.Close();
-	return 0;
-
-	/*
-	vector<string> args{ argv + 1, argv + argc };
-	auto result = docopt::docopt(USAGE, args);
-	ShowArgRst(result);
-
-	RTGIwRRF::ArgMap argMap;
-	for (auto arg : ENUM_ARG::_values())
-		argMap[arg] = result[string("--") + arg._to_string()];
+	cout << "Init shaders ..." << endl;
+	if (!InitShaders({ 3,12,13,14,15,16 })) {
+		cout << "Init shaders failed." << endl;
+		return 1;
+	}
+	cout << "Init shaders completed!" << endl;
 
 	QApplication a(argc, argv);
 
@@ -72,10 +44,9 @@ int main(int argc, char *argv[])
 	flags |= Qt::WindowCloseButtonHint;
 	flags |= Qt::MSWindowsFixedSizeDialogHint;
 
-	RTGIwRRF w(argMap, Q_NULLPTR, flags);
+	RTGIwRRF w(Q_NULLPTR, flags);
 	w.show();
 	return a.exec();
-	*/
 }
 
 void ShowArgRst(const map<string, docopt::value> & rst) {
@@ -91,4 +62,28 @@ void ShowArgRst(const map<string, docopt::value> & rst) {
 		cout << '"' << arg.first << '"' << ": " << arg.second;
 	}
 	cout << endl << "}" << endl << endl;
+}
+
+bool InitShaders(const vector<int>  & IDs) {
+	vector<Connection> connections = { Connection::Dense,Connection::Dense, Connection::Dense };
+	vector<Activation> activations = { Activation::tanh, Activation::tanh, Activation::Identity };
+	const string dirBase = ROOT_PATH + "data/FNN/";
+	for (auto ID : IDs) {
+		string rst = GenFS::Call(ID, dirBase + to_string(ID) + "/", dirBase + "template.fs", connections, activations);
+		if (rst.empty()) {
+			printf("ERROR: GenFS for ID %d error\n", ID);
+			return false;
+		}
+
+		string filePath = ROOT_PATH + "data/shaders/App/RTGIwRRF/" + to_string(ID) + "_modelKDTree.fs";
+		File file(filePath, File::WRITE);
+		if (!file.IsValid()) {
+			printf("ERROR: file[%s] open failed\n", filePath.c_str());
+			return false;
+		}
+		file.Printf("%s", rst.c_str());
+		file.Close();
+	}
+
+	return true;
 }

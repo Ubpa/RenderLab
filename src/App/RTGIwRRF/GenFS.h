@@ -14,6 +14,7 @@ namespace App {
 		static const std::string Call(
 			const int ID,
 			const std::string dir,
+			const std::string templateFSPath,
 			const std::vector<Connection> & connections,
 			const std::vector<Activation> & activations);
 	private:

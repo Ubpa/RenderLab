@@ -4,6 +4,8 @@
 
 #include <CppUtil/Engine/Scene.h>
 #include <CppUtil/Engine/SObj.h>
+#include <CppUtil/Engine/Material.h>
+#include <CppUtil/Engine/Geometry.h>
 #include <CppUtil/Engine/BSDF_FrostedGlass.h>
 
 #include <CppUtil/Basic/Image.h>
@@ -26,68 +28,70 @@ void RRF_Raster::Init() {
 
 	InitShaders();
 
-	vector<uint> dimVec = { 3,3,3,3,3,3 };
-	gBuffer = FBO(512, 512, dimVec);
-
-	screen = VAO(&(data_ScreenVertices[0]), sizeof(data_ScreenVertices), { 2,2 });
-
 	glViewport(0, 0, 512, 512);
 }
 
 void RRF_Raster::InitShaders() {
-	InitShaderSampleFrostedGlass();
-	InitShaderScreen();
+	vector<int> IDs;
+	auto visitor = ToPtr(new EleVisitor);
+	visitor->Reg<SObj>([&](SObj::Ptr sobj) {
+		auto material = sobj->GetComponent<Material>();
+		auto geometry = sobj->GetComponent<Geometry>();
+		if (!material || !geometry)
+			return;
+
+		auto bsdf = BSDF_FrostedGlass::Ptr::Cast(material->GetMat());
+		if (bsdf == nullptr)
+			return;
+
+		IDs.push_back(scene->GetID(sobj));
+	});
+	scene->GetRoot()->TraverseAccept(visitor);
+
+	for (auto ID : IDs)
+		InitShader(ID);
 }
 
-void RRF_Raster::InitShaderScreen() {
-	shader_screen = Shader(ROOT_PATH + str_Screen_vs, ROOT_PATH + str_Screen_fs);
+void RRF_Raster::InitShader(int ID) {
+	string fsPath = ROOT_PATH + "data/shaders/App/RTGIwRRF/" + to_string(ID) + "_modelKDTree.fs";
+	auto shader = Shader(ROOT_PATH + str_Basic_P3N3T2T3_vs, fsPath);
+	if (!shader.IsValid())
+		return;
 
-	shader_screen.SetInt("texture0", 0);
-}
+	id2shader[ID] = shader;
+	BindBlock(shader);
 
-void RRF_Raster::InitShaderSampleFrostedGlass() {
-	string fsName = "data/shaders/App/Sample_BSDF_FrostedGlass.fs";
-	shader_sampleFrostedGlass = Shader(ROOT_PATH + str_Basic_P3N3T2T3_vs, ROOT_PATH + fsName);
+	shader.SetInt("bsdf.colorTexture", 0);
+	shader.SetInt("bsdf.roughnessTexture", 1);
+	shader.SetInt("bsdf.aoTexture", 2);
+	shader.SetInt("bsdf.normalTexture", 3);
 
-	BindBlock(shader_sampleFrostedGlass);
-
-	shader_sampleFrostedGlass.SetInt("bsdf.colorTexture", 0);
-	shader_sampleFrostedGlass.SetInt("bsdf.roughnessTexture", 1);
-	shader_sampleFrostedGlass.SetInt("bsdf.aoTexture", 2);
-	shader_sampleFrostedGlass.SetInt("bsdf.normalTexture", 3);
-
-	SetShaderForShadow(shader_sampleFrostedGlass, 4);
+	SetShaderForShadow(shader, 4);
 }
 
 void RRF_Raster::Draw() {
-	if (!haveSampled) {
-		gBuffer.Use();
-		GLint lastFBO;
-		glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &lastFBO);
-		RasterBase::Draw();
-		FBO::UseDefault();
-
-		haveSampled = true;
-	}
-	
-	glClearColor(0, 0, 0, 1);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	gBuffer.GetColorTexture(0).Use(0);
-	screen.Draw(shader_screen);
+	RasterBase::Draw();
 }
 
 void RRF_Raster::Visit(SObj::Ptr sobj) {
-	shader_sampleFrostedGlass.SetInt("ID", scene->GetID(sobj));
+	curID = scene->GetID(sobj);
 
 	RasterBase::Visit(sobj);
 }
 
 void RRF_Raster::Visit(BSDF_FrostedGlass::Ptr bsdf) {
-	SetCurShader(shader_sampleFrostedGlass);
+	auto target = id2shader.find(curID);
+	if (target == id2shader.end()) {
+		printf("ERROR: shader of ID[%d] not found\n", curID);
+		return;
+	}
+
+	auto & shader = target->second;
+	SetCurShader(shader);
 
 	string strBSDF = "bsdf.";
-	shader_sampleFrostedGlass.SetVec3f(strBSDF + "colorFactor", bsdf->colorFactor);
-	shader_sampleFrostedGlass.SetFloat(strBSDF + "roughnessFactor", bsdf->roughnessFactor);
+	shader.SetVec3f(strBSDF + "colorFactor", bsdf->colorFactor);
+	shader.SetFloat(strBSDF + "roughnessFactor", bsdf->roughnessFactor);
 
 	const int texNum = 4;
 	Image::CPtr imgs[texNum] = { bsdf->colorTexture, bsdf->roughnessTexture, bsdf->aoTexture, bsdf->normalTexture };
@@ -96,37 +100,14 @@ void RRF_Raster::Visit(BSDF_FrostedGlass::Ptr bsdf) {
 	for (int i = 0; i < texNum; i++) {
 		string wholeName = strBSDF + "have" + names[i] + "Texture";
 		if (imgs[i] && imgs[i]->IsValid()) {
-			shader_sampleFrostedGlass.SetBool(wholeName, true);
+			shader.SetBool(wholeName, true);
 			GetTex(imgs[i]).Use(i);
 		}
 		else
-			shader_sampleFrostedGlass.SetBool(wholeName, false);
+			shader.SetBool(wholeName, false);
 	}
 
-	shader_sampleFrostedGlass.SetFloat(strBSDF + "ior", bsdf->ior);
+	shader.SetFloat(strBSDF + "ior", bsdf->ior);
 
-	SetPointLightDepthMap(shader_sampleFrostedGlass, texNum);
-}
-
-vector<float> RRF_Raster::GetData(ENUM_TYPE type) {
-	int id = static_cast<int>(type);
-
-	if (!haveSampled)
-		return vector<float>();
-
-	vector<float> rst(512 * 512 * 3);
-	gBuffer.GetColorTexture(id).Bind();
-	glGetTexImage(GL_TEXTURE_2D, 0, GL_RGB, GL_FLOAT, rst.data());
-
-	vector<float> replaceRst(512 * 512 * 3);
-	
-	for (int row = 0; row < 512; row++) {
-		for (int col = 0; col < 512; col++) {
-			for (int k = 0; k < 3; k++) {
-				replaceRst[(row * 512 + (512 - 1 - col)) * 3 + k] = rst[(col * 512 + row) * 3 + k];
-			}
-		}
-	}
-
-	return replaceRst;
+	SetPointLightDepthMap(shader, texNum);
 }
