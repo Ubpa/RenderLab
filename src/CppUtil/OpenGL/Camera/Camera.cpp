@@ -120,3 +120,10 @@ void Camera::ProcessKeyboard(ENUM_Movement direction, float deltaTime) {
 	if (direction == MOVE_DOWN)
 		position -= up * velocity;
 }
+
+void Camera::SetPose(const glm::vec3 & pos, float yaw, float pitch) {
+	position = pos;
+	this->yaw = yaw;
+	this->pitch = pitch;
+	updateCameraVectors();
+}

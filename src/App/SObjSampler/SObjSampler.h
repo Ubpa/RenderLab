@@ -72,8 +72,6 @@ namespace App{
 
 		void UI_Op(CppUtil::Basic::Ptr<CppUtil::Basic::Operation> op);
 
-		bool GetInitDataMap() const { return initDataMap; }
-
 	private:
 		void Init();
 		void InitTimer();
@@ -94,7 +92,7 @@ namespace App{
 		CppUtil::Basic::Ptr<CppUtil::Engine::Roamer> roamer;
 		QTimer * timer;
 
-		bool initDataMap;
+		volatile bool initDataMap;
 		std::map<ENUM_TYPE, std::vector<float>> dataMap;
 
 		const docopt::value & GetArg(ENUM_ARG arg) const;

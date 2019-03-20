@@ -22,27 +22,32 @@ namespace CppUtil {
 				PROJECTION_ORTHO
 			};
 
+		public:
 			Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 4.0f), float yaw = YAW, float pitch = PITCH, float ratioWH = RATIO_WH, float nearPlane = NEAR_PLANE, float farPlane = FAR_PLANE, glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), ENUM_Projection projectionMode = PROJECTION_MODE);
 
-			void ProcessKeyboard(ENUM_Movement direction, float deltaTime);
-			void ProcessMouseMovement(float xoffset, float yoffset, bool constrainPitch = true);
-			void ProcessMouseScroll(float yoffset);
-
+		public:
 			glm::mat4 GetViewMatrix();
 			glm::mat4 GetProjectionMatrix();
-
-			void SetPerspective();
-			void SetOrtho();
 			glm::vec3 & GetPos();
 			glm::vec3 GetFront() const { return front; }
 
-			void SetRatioWH(float w, float h) { ratioWH = w / h; }
-			void SetRatioWH(float ratioWH) { this->ratioWH = ratioWH; }
-			
 			float GetFOV() const { return fov; }
 			float GetAspectRatio() const { return ratioWH; }
 			float GetNearPlane() const { return nearPlane; }
 			float GetFarPlane() const { return farPlane; }
+
+		public:
+			void ProcessKeyboard(ENUM_Movement direction, float deltaTime);
+			void ProcessMouseMovement(float xoffset, float yoffset, bool constrainPitch = true);
+			void ProcessMouseScroll(float yoffset);
+
+			void SetPerspective();
+			void SetOrtho();
+
+			void SetRatioWH(float w, float h) { ratioWH = w / h; }
+			void SetRatioWH(float ratioWH) { this->ratioWH = ratioWH; }
+
+			void SetPose(const glm::vec3 & pos, float yaw, float pitch);
 
 		private:
 			void updateCameraVectors();

@@ -64,6 +64,7 @@ void RTX_Renderer::Run(Scene::Ptr scene, Image::Ptr img) {
 	if (camera == nullptr) {
 		// curLoop = maxLoop;
 		state = RendererState::Stop;
+		printf("ERROR: no camera\n");
 		return;
 	}
 	camera->SetAspectRatio(w, h);

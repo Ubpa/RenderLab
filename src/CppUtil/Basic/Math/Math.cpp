@@ -1,6 +1,8 @@
 #include <CppUtil/Basic/Math.h>
 #include <random>
 
+#include <ctime>
+
 using namespace CppUtil::Basic;
 using namespace glm;
 using namespace std;
@@ -30,6 +32,10 @@ float Math::Rand_F_exclude1() {
 
 double Math::Rand_D() {
 	return dMap(engine);
+}
+
+void Math::RandSetSeedByCurTime() {
+	engine.seed(clock());
 }
 
 vec2 Math::RandInCircle() {

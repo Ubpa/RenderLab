@@ -15,6 +15,10 @@
 #include <CppUtil/Engine/Viewer.h>
 #include <CppUtil/Engine/Scene.h>
 #include <CppUtil/Engine/SObj.h>
+#include <CppUtil/Engine/Camera.h>
+#include <CppUtil/Engine/Transform.h>
+
+#include <CppUtil/OpenGL/Camera.h>
 
 #include <CppUtil/Basic/CSV.h>
 #include <CppUtil/Basic/Image.h>
@@ -103,6 +107,10 @@ void SObjSampler::InitRaster() {
 	sampleRaster = ToPtr(new SampleRaster(scene));
 	roamer = ToPtr(new Roamer(ui.OGLW_Raster));
 	roamer->SetLock(true);
+	auto camera = scene->GetCamera();
+	auto transform = camera->GetSObj()->GetComponent<Transform>();
+	auto eulerAngle = degrees(transform->GetEulerRoatation());
+	roamer->GetCamera()->SetPose(transform->GetPosition(), - eulerAngle.y - 90, eulerAngle.x);
 
 	ui.OGLW_Raster->SetInitOp(ToPtr(new LambdaOp([=]() {
 		roamer->Init();
@@ -144,16 +152,19 @@ void SObjSampler::InitRTX() {
 	int sampleNum = GetArgAs<int>(ENUM_ARG::samplenum);
 	rtxSampler = ToPtr(new RTX_Sampler(generator, maxLoop, sampleNum));
 
-	drawImgThread = ToPtr(new OpThread([=]() {
+	drawImgThread = ToPtr(new OpThread([&]() {
 		rtxSampler->Run(scene, paintImgOp->GetImg());
-		while (!GetInitDataMap())
-			;
-
-		SaveData();
 
 		while (!printProgressThread->isFinished())
 			;
-		QApplication::exit();
+
+		while (!initDataMap)
+			;
+		SaveData();
+
+		// must close
+		while(true)
+			QApplication::exit();
 	}));
 	drawImgThread->start();
 
@@ -283,6 +294,8 @@ void SObjSampler::SaveData() {
 	for (auto & pair : ID2name)
 		idMapFile.Printf("%d : %s\n", pair.first, pair.second);
 	idMapFile.Close();
+
+	printf("Save data complete\n");
 }
 
 const docopt::value & SObjSampler::GetArg(ENUM_ARG arg) const {

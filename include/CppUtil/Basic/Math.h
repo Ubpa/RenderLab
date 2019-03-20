@@ -31,6 +31,8 @@ namespace CppUtil {
 			// [0.0, 1.0]
 			double Rand_D();
 
+			void RandSetSeedByCurTime();
+
 			// dor( (0.299, 0.587, 0.114), color )
 			float Gray(const glm::vec3 & color);
 
