@@ -283,7 +283,9 @@ float Visibility(vec3 lightToFrag, samplerCube depthMap) {
 	float diskRadius = (1.0 + (viewDistance / lightFar)) / 50.0;
 	for(int i = 0; i < samples; ++i) {
 		float closestDepth = lightFar * texture(depthMap, lightToFrag + gridSamplingDisk[i] * diskRadius).r;
-		shadow += smoothstep(closestDepth, closestDepth + bias, currentDepth);
+		if(closestDepth < currentDepth - bias)
+			shadow += 1;
+		//shadow += smoothstep(closestDepth, closestDepth + bias, currentDepth);
 	}
 	shadow /= float(samples);
 	return 1 - shadow;

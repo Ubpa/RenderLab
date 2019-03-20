@@ -154,16 +154,31 @@ void SObjSampler::InitRTX() {
 
 	drawImgThread = ToPtr(new OpThread([&]() {
 		rtxSampler->Run(scene, paintImgOp->GetImg());
+		Sleep(100);
 
 		while (!printProgressThread->isFinished())
 			;
 
 		while (!initDataMap)
 			;
+		
+		/*
+		auto img = ToPtr(new Image(512, 512, 3));
+		auto directIllum = dataMap[ENUM_TYPE::DirectIllum];
+		for (int row = 0; row < 512; row++) {
+			for (int col = 0; col < 512; col++) {
+				for (int c = 0; c < 3; c++) {
+					img->At(col, row, c) = clamp<uByte>(255 * directIllum[(row * 512 + col) * 3 + c], 0, 255);
+				}
+			}
+		}
+		img->SaveAsPNG(ROOT_PATH + "data/out/directIllum.png");
+		paintImgOp->GetImg()->SaveAsPNG(ROOT_PATH + "data/out/globalIllum.png");
+		*/
+
 		SaveData();
 
-		while(true)
-			QApplication::quit();
+		QApplication::quit();
 	}));
 	drawImgThread->start();
 
@@ -235,11 +250,14 @@ void SObjSampler::SaveData() {
 		//ENUM_TYPE::IOR_ROUGHNESS_ID,
 	};
 
+	//auto indirectImg = ToPtr(new Image(512, 512, 3));
+	//auto directImg = ToPtr(new Image(512, 512, 3));
+	//auto globalImg = ToPtr(new Image(512, 512, 3));
 	map<int, string> ID2name;
 	for (auto & job : rtxSampler->GetJobs()) {
 		for (auto & pixel : job) {
-			int row = pixel.x;
-			int col = pixel.y;
+			int col = pixel.x;
+			int row = pixel.y;
 
 			vector<float> lineVals;
 			int idx = (row * 512 + col) * 3;
@@ -271,9 +289,13 @@ void SObjSampler::SaveData() {
 					lineVals.push_back(dataMap[enumType][idx + channel]);
 			}
 
-			vec3 globalIllum = paintImgOp->GetImg()->GetPixel_F(row, col);
+			vec3 globalIllum = paintImgOp->GetImg()->GetPixel_F(col, row);
 
 			vec3 indirectIllum = max(globalIllum - directIllum, 0.f);
+
+			//indirectImg->SetPixel(col, row, 10.f*indirectIllum);
+			//directImg->SetPixel(col, row, directIllum);
+			//globalImg->SetPixel(col, row, globalIllum);
 
 			lineVals.push_back(ior);
 			lineVals.push_back(roughness);
@@ -285,6 +307,9 @@ void SObjSampler::SaveData() {
 			csv.AddLine(lineVals);
 		}
 	}
+	//indirectImg->SaveAsPNG(ROOT_PATH + "data/out/indirectIllum.png");
+	//directImg->SaveAsPNG(ROOT_PATH + "data/out/directIllum.png");
+	//globalImg->SaveAsPNG(ROOT_PATH + "data/out/global.png");
 
 	csv.Save(prefix + path);
 	File idMapFile(prefix + path + "_ID_name.txt", File::WRITE);

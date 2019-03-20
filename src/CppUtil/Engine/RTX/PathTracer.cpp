@@ -225,7 +225,7 @@ vec3 PathTracer::SampleBSDF(
 	vec3 pathThroughput
 )
 {
-	if (depth + 1 > maxDepth)
+	if (depth + 1 >= maxDepth)
 		return vec3(0);
 
 	vec3 mat_w_in;

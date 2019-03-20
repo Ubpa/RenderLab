@@ -118,15 +118,5 @@ vector<float> SampleRaster::GetData(ENUM_TYPE type) {
 	gBuffer.GetColorTexture(id).Bind();
 	glGetTexImage(GL_TEXTURE_2D, 0, GL_RGB, GL_FLOAT, rst.data());
 
-	vector<float> replaceRst(512 * 512 * 3);
-	
-	for (int row = 0; row < 512; row++) {
-		for (int col = 0; col < 512; col++) {
-			for (int k = 0; k < 3; k++) {
-				replaceRst[((512 - 1 - row) * 512 + (512 - 1 - col)) * 3 + k] = rst[(col * 512 + row) * 3 + k];
-			}
-		}
-	}
-
-	return replaceRst;
+	return rst;
 }

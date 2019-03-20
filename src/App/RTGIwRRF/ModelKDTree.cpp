@@ -86,7 +86,7 @@ bool ModelKDTree::IsValid() const {
 		|| (GetRight() != nullptr && !GetRight()->IsValid())
 		|| inputDim < 0
 		|| outputDim < 0
-		|| (!IsLeaf() && (GetData() || GetAxis() < 0 || GetAxis() > 2))
+		|| (!IsLeaf() && (GetData() || GetAxis() < 0 || GetAxis() > 2 || !GetLeft() || !GetRight()))
 		|| (IsLeaf() && !GetData())
 		)
 	{
