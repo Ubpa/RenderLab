@@ -162,9 +162,8 @@ void SObjSampler::InitRTX() {
 			;
 		SaveData();
 
-		// must close
 		while(true)
-			QApplication::exit();
+			QApplication::quit();
 	}));
 	drawImgThread->start();
 
@@ -242,10 +241,6 @@ void SObjSampler::SaveData() {
 			int row = pixel.x;
 			int col = pixel.y;
 
-			vec3 globalIllum = paintImgOp->GetImg()->GetPixel_F(row, col);
-			if (globalIllum == vec3(0))
-				continue;
-
 			vector<float> lineVals;
 			int idx = (row * 512 + col) * 3;
 
@@ -275,6 +270,8 @@ void SObjSampler::SaveData() {
 				for (int channel = 0; channel < 3; channel++)
 					lineVals.push_back(dataMap[enumType][idx + channel]);
 			}
+
+			vec3 globalIllum = paintImgOp->GetImg()->GetPixel_F(row, col);
 
 			vec3 indirectIllum = max(globalIllum - directIllum, 0.f);
 

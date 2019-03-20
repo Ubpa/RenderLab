@@ -18,9 +18,6 @@ float BSDF_FrostedGlass::GGX_D(const vec3 & h, float alpha) {
 
 	float root = alpha / (cos2 * (alpha2 - 1) + 1);
 
-	//if (isnan(root))
-	//	printf("root is nan\n");
-
 	return Math::INV_PI * root * root;
 }
 
@@ -36,9 +33,7 @@ float BSDF_FrostedGlass::GGX_G1(const vec3 & v, const vec3 & h, float alpha) {
 }
 
 float BSDF_FrostedGlass::GGX_G(const vec3 & wo, const vec3 & wi, const vec3 & h, float alpha) {
-	float rst = GGX_G1(wo, h, alpha) * GGX_G1(wi, h, alpha);
-
-	return rst;
+	return GGX_G1(wo, h, alpha) * GGX_G1(wi, h, alpha);
 }
 
 float BSDF_FrostedGlass::Fr(const vec3 & v, const vec3 & h, float ior) {

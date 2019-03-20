@@ -1,6 +1,6 @@
 #version 330 core
 
-// ----------------- 输入输出
+// ----------------- in out
 
 out vec4 FragColor;
 
@@ -11,7 +11,7 @@ in VS_OUT {
     vec3 Tangent;
 } fs_in;
 
-// ----------------- 常量
+// ----------------- const
 
 #define MAX_POINT_LIGHTS 8
 const float PI = 3.14159265359;
@@ -27,7 +27,7 @@ const vec3 gridSamplingDisk[20] = vec3[]
    vec3(0, 1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0, 1, -1)
 );
 
-// ----------------- 结构
+// ----------------- struct
 
 struct BSDF_FrostedGlass {
 	vec3 colorFactor;
@@ -87,7 +87,7 @@ uniform samplerCube pointLightDepthMap7;
 
 uniform float lightFar;
 
-// ----------------- 函数声明
+// ----------------- declaration
 
 vec3 CalcBumpedNormal(vec3 normal, vec3 tangent, sampler2D normalTexture, vec2 texcoord);
 
@@ -100,10 +100,36 @@ vec3 BSDF(vec3 norm, vec3 wo, vec3 wi, vec3 color, float roughness, float ao, fl
 float Visibility(vec3 lightToFrag, int id);
 float Visibility(vec3 lightToFrag, samplerCube depthMap);
 
-// ----------------- 主函数
+// template declaration
+void $funcname$
+(
+	in float directIllum_R,
+	in float directIllum_G,
+	in float directIllum_B,
+	in float pos_x,
+	in float pos_y,
+	in float pos_z,
+	in float viewDir_x,
+	in float viewDir_y,
+	in float viewDir_z,
+	in float normal_x,
+	in float normal_y,
+	in float normal_z,
+	in float matColor_R,
+	in float matColor_G,
+	in float matColor_B,
+	in float IOR,
+	in float roughness,
+	
+	out float indirectIllum_R,
+	out float indirectIllum_G,
+	out float indirectIllum_B
+);
+
+// ----------------- main
 
 void main() {
-	// 获取属性值
+	// get attr
 	vec3 color = bsdf.colorFactor;
 	if(bsdf.haveColorTexture) {
 		color *= texture(bsdf.colorTexture, fs_in.TexCoords).xyz;
@@ -126,7 +152,7 @@ void main() {
 		norm = CalcBumpedNormal(norm, normalize(fs_in.Tangent), bsdf.normalTexture, fs_in.TexCoords);
 	}
 	
-	// 采样光源
+	// sample point light
 	vec3 result = vec3(0);
     for(int i = 0; i < numLight; i++) {
 		vec3 fragToLight = pointLights[i].position - fs_in.FragPos;
@@ -144,14 +170,45 @@ void main() {
 		
 		float attenuation = 1.0f + pointLights[i].linear * dist + pointLights[i].quadratic * dist2;
 		
-		result += visibility * cosTheta / attenuation * pointLights[i].L * f;
+		result += visibility * cosTheta / attenuation * f * pointLights[i].L;
 	}
 	
-	// gamma 校正
-    FragColor = vec4(sqrt(result), 1.0);
+	vec3 indirectIllum;
+	
+	$funcname$
+	(
+		// input
+		result.r,
+		result.g,
+		result.b,
+		fs_in.FragPos.x,
+		fs_in.FragPos.y,
+		fs_in.FragPos.z,
+		wo.x,
+		wo.y,
+		wo.z,
+		norm.x,
+		norm.y,
+		norm.z,
+		color.r,
+		color.g,
+		color.b,
+		bsdf.ior,
+		roughness,
+		
+		// output
+		indirectIllum.r,
+		indirectIllum.g,
+		indirectIllum.b
+	);
+	
+	indirectIllum = clamp(indirectIllum, 0, 1);
+	
+	// gamma correction
+    FragColor = vec4(sqrt(result + indirectIllum), 1.0);
 }
 
-// ----------------- 函数定义
+// ----------------- definition
 
 float GGX_D(vec3 norm, vec3 h, float alpha) {
 	float HoN = dot(h, norm);
@@ -288,3 +345,4 @@ float Visibility(vec3 lightToFrag, samplerCube depthMap) {
 	shadow /= float(samples);
 	return 1 - shadow;
 }
+

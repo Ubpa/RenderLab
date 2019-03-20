@@ -13,6 +13,7 @@
 #include <iostream>
 #include <sstream>
 #include <cstdlib>
+#include <thread>
 
 using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
@@ -23,12 +24,13 @@ static const char USAGE[] =
 R"(Test_11_sample
 
     Usage:
-      Test_11_sample [--base=<base>] [--samplenum=<samplenum>] [--loop=<loop>]
+      Test_11_sample [--threadNum=<threadNum>] [--base=<base>] [--samplenum=<samplenum>] [--loop=<loop>]
 
     Options:
       --base <base>            base [default: 0]
       --samplenum <samplenum>  sample num [default: 100]
       --loop <loop>            pixel sample loop [default: 64]
+      --threadNum <threadNum>  thread num [default: 2]
 )";
 
 string GenCmd(int maxLoop, int csvID, const string & sobjPath);
@@ -45,24 +47,32 @@ int main(int argc, const char** argv)
 	const int base = static_cast<int>(result["--base"].asLong());
 	const int sampleNum = static_cast<int>(result["--samplenum"].asLong());
 	const int loop = static_cast<int>(result["--loop"].asLong());
+	const int threadNum = static_cast<int>(result["--threadNum"].asLong());
 
-	auto root = SObj::Load(ROOT_PATH + "data/SObjs/App/RTGIwRRF/CB_Glass.xml");
-	auto camera = root->GetComponentInChildren<Camera>();
-	auto transform = camera->GetSObj()->GetComponent<Transform>();
+	vector<thread> workers;
+	for (int k = 0; k < threadNum; k++)
+		workers.push_back(thread([=](int id) {
+		auto root = SObj::Load(ROOT_PATH + "data/SObjs/App/RTGIwRRF/CB_Glass.xml");
+		auto camera = root->GetComponentInChildren<Camera>();
+		auto transform = camera->GetSObj()->GetComponent<Transform>();
 
-	for (int i = 0; i < sampleNum; i++) {
-		vec3 eye = vec3(2 * Math::Rand_F() - 1, Math::Rand_F()*1.5, 2 * Math::Rand_F() - 1);
-		vec3 center = vec3(2 * Math::Rand_F() - 1, Math::Rand_F()*1.5, 2 * Math::Rand_F() - 1);
-		transform->LookAt(eye, center);
+		for (int i = id; i < sampleNum; i += threadNum) {
+			vec3 eye = vec3(2 * Math::Rand_F() - 1, Math::Rand_F()*1.5, 2 * Math::Rand_F() - 1);
+			vec3 center = vec3(2 * Math::Rand_F() - 1, Math::Rand_F()*1.5, 2 * Math::Rand_F() - 1);
+			transform->LookAt(eye, center);
 
-		string sobjPath = "data/SObjs/App/RTGIwRRF/CB_Glass_tmp.xml";
-		root->Save(ROOT_PATH + sobjPath);
+			string sobjPath = "data/SObjs/App/RTGIwRRF/CB_Glass_tmp" + to_string(id) + ".xml";
+			root->Save(ROOT_PATH + sobjPath);
 
-		string cmd = GenCmd(loop, base + i, sobjPath);
-		printf("%s\n", cmd.c_str());
+			string cmd = GenCmd(loop, base + i, sobjPath);
+			printf("%s\n", cmd.c_str());
 
-		system(cmd.c_str());
-	}
+			system(cmd.c_str());
+		}
+	}, k));
+
+	for (auto & worker : workers)
+		worker.join();
 
 	return 0;
 }

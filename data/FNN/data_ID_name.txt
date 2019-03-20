@@ -1,0 +1,6 @@
+3 : Cube
+12 : wall back
+13 : wall ceil
+14 : wall down
+15 : wall left
+16 : wall right
