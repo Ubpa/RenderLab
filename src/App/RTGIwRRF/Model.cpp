@@ -10,23 +10,6 @@ using namespace App;
 using namespace CppUtil::Basic;
 using namespace std;
 
-Model::Model(const std::string & name,
-	const int inputDim, const int outputDim,
-	const std::vector<float> & means,
-	const std::vector<float> & stds)
-	: name(name), inputDim(inputDim), outputDim(outputDim), means(means), stds(stds)
-{
-	int sumDim = inputDim + outputDim;
-	if (sumDim != means.size() || sumDim != stds.size()) {
-		this->means.clear();
-		this->stds.clear();
-		this->inputDim = -1;
-		this->outputDim = -1;
-		this->name = "";
-		return;
-	}
-}
-
 int Model::GetIDof(Layer::CPtr layer) const {
 	static constexpr int ERROR = -1;
 
@@ -116,14 +99,6 @@ const string Model::GenFunc(bool genLayers) const {
 	// func definition
 	rst << "{" << endl;
 
-	// normalization
-	rst << indent << "// normalization" << endl << endl;
-	for (int i = 0; i < inputDim; i++) {
-		rst << indent << "float h_0_" << i << " = ";
-		rst << "(x" << i << " - (" << means[i] << ")) / (" << stds[i] << ");" << endl;
-	}
-	rst << endl;
-
 	// layer
 	for (int i = 0; i < layers.size(); i++) {
 		auto const layer = layers[i];
@@ -140,9 +115,19 @@ const string Model::GenFunc(bool genLayers) const {
 		// call layer func
 		rst << indent << layer->GetFuncName() << endl;
 		rst << indent << "(" << endl;
+
+		// input
 		rst << indent << indent << "// input" << endl;
-		for (int j = 0; j < layer->GetInputDim(); j++)
-			rst << indent << indent << "h_" << i << "_" << j << "," << endl;
+		if (i == 0) {
+			for (int j = 0; j < layer->GetInputDim(); j++)
+				rst << indent << indent << "x" << j << "," << endl;
+		}
+		else {
+			for (int j = 0; j < layer->GetInputDim(); j++)
+				rst << indent << indent << "h_" << i << "_" << j << "," << endl;
+		}
+
+		// output
 		rst << indent << indent << endl;
 		rst << indent << indent << "// output" << endl;
 		for (int j = 0; j < layer->GetOutputDim(); j++) {
@@ -152,15 +137,8 @@ const string Model::GenFunc(bool genLayers) const {
 			else
 				rst << endl;
 		}
-		rst << indent << ");" << endl << endl;
-	}
 
-	// de nomalization
-	rst << indent << "// Denormalization" << endl << endl;
-	for (int i = 0; i < outputDim; i++) {
-		rst << indent << "h_" << layers.size() << "_" << i << " = ";
-		rst << "h_" << layers.size() << "_" << i << " * (" << stds[inputDim + i] << ") + (" << means[inputDim + i] << ")";
-		rst << ";" << endl;
+		rst << indent << ");" << endl << endl;
 	}
 
 	rst << "}" << endl;

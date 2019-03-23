@@ -30,6 +30,189 @@
             </components>
             <children>
                 <SObj>
+                    <name>Walls</name>
+                    <components/>
+                    <children>
+                        <SObj>
+                            <name>wall ceil</name>
+                            <components>
+                                <Material>
+                                    <materialBase>
+                                        <BSDF_FrostedGlass>
+                                            <IOR>20.000000</IOR>
+                                            <colorFactor>1.000000 1.000000 1.000000</colorFactor>
+                                            <colorTexture/>
+                                            <roughnessFactor>1.000000</roughnessFactor>
+                                            <roughnessTexture/>
+                                            <aoTexture/>
+                                            <normalTexture/>
+                                        </BSDF_FrostedGlass>
+                                    </materialBase>
+                                </Material>
+                                <Geometry>
+                                    <primitive>
+                                        <Plane/>
+                                    </primitive>
+                                </Geometry>
+                                <Transform>
+                                    <Position>0.000000 1.500000 0.000000</Position>
+                                    <Rotation>-3.141592 3.141592 0.000000</Rotation>
+                                    <Scale>2.000000 1.000000 2.000000</Scale>
+                                </Transform>
+                            </components>
+                            <children/>
+                        </SObj>
+                        <SObj>
+                            <name>wall back</name>
+                            <components>
+                                <Material>
+                                    <materialBase>
+                                        <BSDF_FrostedGlass>
+                                            <IOR>20.000000</IOR>
+                                            <colorFactor>0.200000 0.600000 0.200000</colorFactor>
+                                            <colorTexture/>
+                                            <roughnessFactor>1.000000</roughnessFactor>
+                                            <roughnessTexture/>
+                                            <aoTexture/>
+                                            <normalTexture/>
+                                        </BSDF_FrostedGlass>
+                                    </materialBase>
+                                </Material>
+                                <Geometry>
+                                    <primitive>
+                                        <Plane/>
+                                    </primitive>
+                                </Geometry>
+                                <Transform>
+                                    <Position>0.000000 0.750000 -1.000000</Position>
+                                    <Rotation>1.570796 -0.000000 0.000000</Rotation>
+                                    <Scale>2.000000 1.000000 1.500000</Scale>
+                                </Transform>
+                            </components>
+                            <children/>
+                        </SObj>
+                        <SObj>
+                            <name>wall left</name>
+                            <components>
+                                <Material>
+                                    <materialBase>
+                                        <BSDF_FrostedGlass>
+                                            <IOR>20.000000</IOR>
+                                            <colorFactor>0.600000 0.200000 0.200000</colorFactor>
+                                            <colorTexture/>
+                                            <roughnessFactor>1.000000</roughnessFactor>
+                                            <roughnessTexture/>
+                                            <aoTexture/>
+                                            <normalTexture/>
+                                        </BSDF_FrostedGlass>
+                                    </materialBase>
+                                </Material>
+                                <Geometry>
+                                    <primitive>
+                                        <Plane/>
+                                    </primitive>
+                                </Geometry>
+                                <Transform>
+                                    <Position>-1.000000 0.750000 0.000000</Position>
+                                    <Rotation>0.000000 0.000000 -1.570796</Rotation>
+                                    <Scale>1.500000 1.000000 2.000000</Scale>
+                                </Transform>
+                            </components>
+                            <children>
+                                <SObj>
+                                    <name>wall down</name>
+                                    <components>
+                                        <Material>
+                                            <materialBase>
+                                                <BSDF_FrostedGlass>
+                                                    <IOR>20.000000</IOR>
+                                                    <colorFactor>1.000000 1.000000 1.000000</colorFactor>
+                                                    <colorTexture/>
+                                                    <roughnessFactor>1.000000</roughnessFactor>
+                                                    <roughnessTexture/>
+                                                    <aoTexture/>
+                                                    <normalTexture/>
+                                                </BSDF_FrostedGlass>
+                                            </materialBase>
+                                        </Material>
+                                        <Geometry>
+                                            <primitive>
+                                                <Plane/>
+                                            </primitive>
+                                        </Geometry>
+                                        <Transform>
+                                            <Position>0.500000 1.000000 0.000000</Position>
+                                            <Rotation>0.000000 -0.000000 1.570796</Rotation>
+                                            <Scale>2.000000 0.666667 1.000000</Scale>
+                                        </Transform>
+                                    </components>
+                                    <children/>
+                                </SObj>
+                            </children>
+                        </SObj>
+                        <SObj>
+                            <name>wall right</name>
+                            <components>
+                                <Material>
+                                    <materialBase>
+                                        <BSDF_FrostedGlass>
+                                            <IOR>20.000000</IOR>
+                                            <colorFactor>0.200000 0.200000 0.600000</colorFactor>
+                                            <colorTexture/>
+                                            <roughnessFactor>1.000000</roughnessFactor>
+                                            <roughnessTexture/>
+                                            <aoTexture/>
+                                            <normalTexture/>
+                                        </BSDF_FrostedGlass>
+                                    </materialBase>
+                                </Material>
+                                <Geometry>
+                                    <primitive>
+                                        <Plane/>
+                                    </primitive>
+                                </Geometry>
+                                <Transform>
+                                    <Position>1.000000 0.750000 0.000000</Position>
+                                    <Rotation>0.000000 -0.000000 1.570796</Rotation>
+                                    <Scale>1.500000 1.000000 2.000000</Scale>
+                                </Transform>
+                            </components>
+                            <children/>
+                        </SObj>
+                    </children>
+                </SObj>
+                <SObj>
+                    <name>Cube</name>
+                    <components>
+                        <Transform>
+                            <Position>0.000000 0.750000 0.000000</Position>
+                            <Rotation>0.000000 -0.000000 0.000000</Rotation>
+                            <Scale>0.750000 0.750000 0.025000</Scale>
+                        </Transform>
+                        <Geometry>
+                            <primitive>
+                                <TriMesh>
+                                    <cube/>
+                                </TriMesh>
+                            </primitive>
+                        </Geometry>
+                        <Material>
+                            <materialBase>
+                                <BSDF_FrostedGlass>
+                                    <IOR>1.500000</IOR>
+                                    <colorFactor>1.000000 1.000000 1.000000</colorFactor>
+                                    <colorTexture/>
+                                    <roughnessFactor>0.300000</roughnessFactor>
+                                    <roughnessTexture/>
+                                    <aoTexture/>
+                                    <normalTexture/>
+                                </BSDF_FrostedGlass>
+                            </materialBase>
+                        </Material>
+                    </components>
+                    <children/>
+                </SObj>
+                <SObj>
                     <name>point light</name>
                     <components>
                         <Light>
@@ -51,37 +234,6 @@
                     <children/>
                 </SObj>
                 <SObj>
-                    <name>Cube</name>
-                    <components>
-                        <Transform>
-                            <Position>0.000000 0.750000 0.000000</Position>
-                            <Rotation>0.000000 -0.000000 0.000000</Rotation>
-                            <Scale>1.000000 1.000000 0.050000</Scale>
-                        </Transform>
-                        <Geometry>
-                            <primitive>
-                                <TriMesh>
-                                    <cube/>
-                                </TriMesh>
-                            </primitive>
-                        </Geometry>
-                        <Material>
-                            <materialBase>
-                                <BSDF_FrostedGlass>
-                                    <IOR>1.500000</IOR>
-                                    <colorFactor>1.000000 1.000000 1.000000</colorFactor>
-                                    <colorTexture/>
-                                    <roughnessFactor>0.200000</roughnessFactor>
-                                    <roughnessTexture/>
-                                    <aoTexture/>
-                                    <normalTexture/>
-                                </BSDF_FrostedGlass>
-                            </materialBase>
-                        </Material>
-                    </components>
-                    <children/>
-                </SObj>
-                <SObj>
                     <name>FrontLights</name>
                     <components>
                         <Transform>
@@ -91,27 +243,6 @@
                         </Transform>
                     </components>
                     <children>
-                        <SObj>
-                            <name>RD</name>
-                            <components>
-                                <Light>
-                                    <lightBase>
-                                        <Point_Light>
-                                            <color>1.000000 1.000000 1.000000</color>
-                                            <intensity>8.000000</intensity>
-                                            <linear>0.700000</linear>
-                                            <quadratic>1.800000</quadratic>
-                                        </Point_Light>
-                                    </lightBase>
-                                </Light>
-                                <Transform>
-                                    <Position>0.750000 0.250000 1.000000</Position>
-                                    <Rotation>0.000000 -0.000000 0.000000</Rotation>
-                                    <Scale>1.000000 1.000000 1.000000</Scale>
-                                </Transform>
-                            </components>
-                            <children/>
-                        </SObj>
                         <SObj>
                             <name>RU</name>
                             <components>
@@ -155,6 +286,27 @@
                             <children/>
                         </SObj>
                         <SObj>
+                            <name>RD</name>
+                            <components>
+                                <Light>
+                                    <lightBase>
+                                        <Point_Light>
+                                            <color>1.000000 1.000000 1.000000</color>
+                                            <intensity>8.000000</intensity>
+                                            <linear>0.700000</linear>
+                                            <quadratic>1.800000</quadratic>
+                                        </Point_Light>
+                                    </lightBase>
+                                </Light>
+                                <Transform>
+                                    <Position>0.750000 0.250000 1.000000</Position>
+                                    <Rotation>0.000000 -0.000000 0.000000</Rotation>
+                                    <Scale>1.000000 1.000000 1.000000</Scale>
+                                </Transform>
+                            </components>
+                            <children/>
+                        </SObj>
+                        <SObj>
                             <name>LU</name>
                             <components>
                                 <Light>
@@ -171,159 +323,6 @@
                                     <Position>-0.750000 1.250000 1.000000</Position>
                                     <Rotation>0.000000 -0.000000 0.000000</Rotation>
                                     <Scale>1.000000 1.000000 1.000000</Scale>
-                                </Transform>
-                            </components>
-                            <children/>
-                        </SObj>
-                    </children>
-                </SObj>
-                <SObj>
-                    <name>Walls</name>
-                    <components/>
-                    <children>
-                        <SObj>
-                            <name>wall ceil</name>
-                            <components>
-                                <Material>
-                                    <materialBase>
-                                        <BSDF_FrostedGlass>
-                                            <IOR>20.000000</IOR>
-                                            <colorFactor>1.000000 1.000000 1.000000</colorFactor>
-                                            <colorTexture/>
-                                            <roughnessFactor>1.000000</roughnessFactor>
-                                            <roughnessTexture/>
-                                            <aoTexture/>
-                                            <normalTexture/>
-                                        </BSDF_FrostedGlass>
-                                    </materialBase>
-                                </Material>
-                                <Geometry>
-                                    <primitive>
-                                        <Plane/>
-                                    </primitive>
-                                </Geometry>
-                                <Transform>
-                                    <Position>0.000000 1.500000 0.000000</Position>
-                                    <Rotation>-3.141592 3.141592 0.000000</Rotation>
-                                    <Scale>2.000000 1.000000 2.000000</Scale>
-                                </Transform>
-                            </components>
-                            <children/>
-                        </SObj>
-                        <SObj>
-                            <name>wall back</name>
-                            <components>
-                                <Material>
-                                    <materialBase>
-                                        <BSDF_FrostedGlass>
-                                            <IOR>20.000000</IOR>
-                                            <colorFactor>1.000000 1.000000 1.000000</colorFactor>
-                                            <colorTexture>
-                                                <path>D:/CS/GithubRepository/RenderLab/data/textures/tex_square.png</path>
-                                            </colorTexture>
-                                            <roughnessFactor>1.000000</roughnessFactor>
-                                            <roughnessTexture/>
-                                            <aoTexture/>
-                                            <normalTexture/>
-                                        </BSDF_FrostedGlass>
-                                    </materialBase>
-                                </Material>
-                                <Geometry>
-                                    <primitive>
-                                        <Plane/>
-                                    </primitive>
-                                </Geometry>
-                                <Transform>
-                                    <Position>0.000000 0.750000 -1.000000</Position>
-                                    <Rotation>1.570796 -0.000000 0.000000</Rotation>
-                                    <Scale>2.000000 1.000000 1.500000</Scale>
-                                </Transform>
-                            </components>
-                            <children/>
-                        </SObj>
-                        <SObj>
-                            <name>wall down</name>
-                            <components>
-                                <Material>
-                                    <materialBase>
-                                        <BSDF_FrostedGlass>
-                                            <IOR>20.000000</IOR>
-                                            <colorFactor>1.000000 1.000000 1.000000</colorFactor>
-                                            <colorTexture/>
-                                            <roughnessFactor>1.000000</roughnessFactor>
-                                            <roughnessTexture/>
-                                            <aoTexture/>
-                                            <normalTexture/>
-                                        </BSDF_FrostedGlass>
-                                    </materialBase>
-                                </Material>
-                                <Geometry>
-                                    <primitive>
-                                        <Plane/>
-                                    </primitive>
-                                </Geometry>
-                                <Transform>
-                                    <Position>0.000000 0.000000 0.000000</Position>
-                                    <Rotation>0.000000 -0.000000 0.000000</Rotation>
-                                    <Scale>2.000000 1.000000 2.000000</Scale>
-                                </Transform>
-                            </components>
-                            <children/>
-                        </SObj>
-                        <SObj>
-                            <name>wall left</name>
-                            <components>
-                                <Material>
-                                    <materialBase>
-                                        <BSDF_FrostedGlass>
-                                            <IOR>20.000000</IOR>
-                                            <colorFactor>0.600000 0.200000 0.200000</colorFactor>
-                                            <colorTexture/>
-                                            <roughnessFactor>1.000000</roughnessFactor>
-                                            <roughnessTexture/>
-                                            <aoTexture/>
-                                            <normalTexture/>
-                                        </BSDF_FrostedGlass>
-                                    </materialBase>
-                                </Material>
-                                <Geometry>
-                                    <primitive>
-                                        <Plane/>
-                                    </primitive>
-                                </Geometry>
-                                <Transform>
-                                    <Position>-1.000000 0.750000 0.000000</Position>
-                                    <Rotation>0.000000 0.000000 -1.570796</Rotation>
-                                    <Scale>1.500000 1.000000 2.000000</Scale>
-                                </Transform>
-                            </components>
-                            <children/>
-                        </SObj>
-                        <SObj>
-                            <name>wall right</name>
-                            <components>
-                                <Material>
-                                    <materialBase>
-                                        <BSDF_FrostedGlass>
-                                            <IOR>20.000000</IOR>
-                                            <colorFactor>0.200000 0.200000 0.600000</colorFactor>
-                                            <colorTexture/>
-                                            <roughnessFactor>1.000000</roughnessFactor>
-                                            <roughnessTexture/>
-                                            <aoTexture/>
-                                            <normalTexture/>
-                                        </BSDF_FrostedGlass>
-                                    </materialBase>
-                                </Material>
-                                <Geometry>
-                                    <primitive>
-                                        <Plane/>
-                                    </primitive>
-                                </Geometry>
-                                <Transform>
-                                    <Position>1.000000 0.750000 0.000000</Position>
-                                    <Rotation>0.000000 -0.000000 1.570796</Rotation>
-                                    <Scale>1.500000 1.000000 2.000000</Scale>
                                 </Transform>
                             </components>
                             <children/>

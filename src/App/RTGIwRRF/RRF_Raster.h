@@ -4,9 +4,16 @@
 #include <CppUtil/Engine/RasterBase.h>
 #include <CppUtil/OpenGL/FBO.h>
 
+#include <3rdParty/enum.h>
+
 #include <map>
 
 namespace App {
+	BETTER_ENUM(MODE, int,
+		DIRECT,
+		INDIRECT,
+		GLOBAL)
+
 	class RRF_Raster : public CppUtil::Engine::RasterBase {
 		ELEVISITOR_SETUP(RRF_Raster)
 	public:
@@ -22,6 +29,7 @@ namespace App {
 		virtual void Visit(CppUtil::Basic::Ptr<CppUtil::Engine::BSDF_FrostedGlass> bsdf);
 
 	private:
+		void InitListeners();
 		void InitShaders();
 		void InitShader(int ID);
 

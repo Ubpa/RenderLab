@@ -19,10 +19,18 @@ void EventMngr::_Reg(size_t event, Operation::Ptr op) {
 
 void EventMngr::_Reg(size_t event, void * target, Operation::Ptr op) {
 	auto tuple2 = std::make_tuple(event, target);
-	if (directory2.find(tuple2) == directory2.end())
-		directory2[tuple2] = ToPtr(new OpQueue);
+	if (directory20.find(tuple2) == directory20.end())
+		directory20[tuple2] = ToPtr(new OpQueue);
 
-	directory2[tuple2]->Push(op);
+	directory20[tuple2]->Push(op);
+}
+
+void EventMngr::_Reg(size_t event, ENUM_EVENT_TYPE eventType, Ptr<Operation> op) {
+	auto tuple2 = std::make_tuple(event, eventType);
+	if (directory21.find(tuple2) == directory21.end())
+		directory21[tuple2] = ToPtr(new OpQueue);
+
+	directory21[tuple2]->Push(op);
 }
 
 void EventMngr::_Reg(size_t event, void * target, ENUM_EVENT_TYPE eventType, Operation::Ptr op) {
@@ -39,11 +47,22 @@ void EventMngr::_Response(size_t event) {
 		it->second->Run();
 }
 
+void EventMngr::_Response(size_t event, ENUM_EVENT_TYPE eventType) {
+	auto tuple2 = std::make_tuple(event, eventType);
+	auto it = directory21.find(tuple2);
+	if (it != directory21.end())
+		it->second->Run();
+
+	_Response(event);
+}
+
 void EventMngr::_Response(size_t event, void * target) {
 	auto tuple2 = std::make_tuple( event,target );
-	auto it = directory2.find(tuple2);
-	if (it != directory2.end())
+	auto it = directory20.find(tuple2);
+	if (it != directory20.end())
 		it->second->Run();
+
+	_Response(event);
 }
 
 void EventMngr::_Response(size_t event, void * target, ENUM_EVENT_TYPE eventType) {
@@ -51,4 +70,7 @@ void EventMngr::_Response(size_t event, void * target, ENUM_EVENT_TYPE eventType
 	auto it = directory3.find(tuple3);
 	if (it != directory3.end())
 		it->second->Run();
+
+	_Response(event, target);
+	_Response(event, eventType);
 }

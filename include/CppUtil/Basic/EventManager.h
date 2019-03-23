@@ -29,15 +29,18 @@ namespace CppUtil {
 			static EventMngr * GetInstance();
 			//------------
 			void _Reg(size_t event, Ptr<Operation> op);
+			void _Reg(size_t event, ENUM_EVENT_TYPE eventType, Ptr<Operation> op);
 			void _Reg(size_t event, void * target, Ptr<Operation> op);
 			void _Reg(size_t event, void * target, ENUM_EVENT_TYPE eventType, Ptr<Operation> op);
 
 			void _Response(size_t event);
+			void _Response(size_t event, ENUM_EVENT_TYPE eventType);
 			void _Response(size_t event, void * target);
 			void _Response(size_t event, void * target, ENUM_EVENT_TYPE eventType);
 		public:
 			static void Reg(size_t event, Ptr<Operation> op) { GetInstance()->_Reg(event, op); }
 			static void Reg(size_t event, void * target, Ptr<Operation> op) { GetInstance()->_Reg(event, target, op); }
+			static void Reg(size_t event, ENUM_EVENT_TYPE eventType, Ptr<Operation> op) { GetInstance()->_Reg(event, eventType, op); }
 			static void Reg(size_t event, void * target, ENUM_EVENT_TYPE eventType, Ptr<Operation> op) { GetInstance()->_Reg(event, target, eventType, op); }
 
 			static void Response(size_t event) { GetInstance()->_Response(event); }
@@ -51,7 +54,10 @@ namespace CppUtil {
 		private:
 			//------------
 			std::map<size_t, Ptr<OpQueue> > directory;
-			std::map<std::tuple<size_t, void*>, Ptr<OpQueue> > directory2;
+
+			std::map<std::tuple<size_t, void*>, Ptr<OpQueue> > directory20;
+			std::map<std::tuple<size_t, ENUM_EVENT_TYPE>, Ptr<OpQueue> > directory21;
+
 			std::map<std::tuple<size_t, void*, ENUM_EVENT_TYPE>, Ptr<OpQueue> > directory3;
 		};
 	}

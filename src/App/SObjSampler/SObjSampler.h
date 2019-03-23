@@ -87,7 +87,6 @@ namespace App{
 		CppUtil::Basic::Ptr<CppUtil::Engine::Scene> scene;
 		CppUtil::Basic::Ptr<RTX_Sampler> rtxSampler;
 		CppUtil::Basic::Ptr<CppUtil::Qt::OpThread> drawImgThread;
-		CppUtil::Basic::Ptr<CppUtil::Qt::OpThread> printProgressThread;
 		CppUtil::Basic::Ptr<App::SampleRaster> sampleRaster;
 		CppUtil::Basic::Ptr<CppUtil::Engine::Roamer> roamer;
 		QTimer * timer;

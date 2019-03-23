@@ -30,6 +30,9 @@ const string GenFS::Call(
 {
 	static auto const & ERROR = ErrorRetVal(Call);
 
+	constexpr int inputDim = 17;
+	constexpr int outputDim = 3;
+
 	auto modelKDTree = LoadModelKDTree(ID, dir, connections, activations);
 	if (IsError(modelKDTree))
 		return ERROR;
@@ -39,6 +42,13 @@ const string GenFS::Call(
 		printf("ERROR: template FS open error\n");
 		return ERROR;
 	}
+
+	auto minValAndExtent = LoadMatrix(dir + to_string(ID) + "_minVal_and_extent.csv");
+	if (minValAndExtent.size() != 2 || minValAndExtent[0].size() != inputDim + outputDim) {
+		printf("ERROR: minValAndExtent.size() != 2 || minValAndExtent[0].size() != %d", inputDim + outputDim);
+		return ERROR;
+	}
+
 	string fs = templateFS.ReadAll();
 
 	const string funcname = "$funcname$";
@@ -52,7 +62,7 @@ const string GenFS::Call(
 
 	shader << fs;
 	
-	shader << modelKDTree->GenFunc() << endl;
+	shader << modelKDTree->GenFunc(minValAndExtent[0], minValAndExtent[1]) << endl;
 
 	return shader.str();
 }
@@ -145,21 +155,11 @@ const Model::Ptr GenFS::LoadModel(
 	const string wholeID = to_string(ID) + "_" + to_string(secID);
 	const string modelName = "FNN_" + wholeID;
 
-	const string meanAndStdPath = dir + wholeID + "_mean_and_std.csv";
 	const string dense0Path = dir + wholeID + "_dense0.csv";
 	const string dense1Path = dir + wholeID + "_dense1.csv";
 	const string dense2Path = dir + wholeID + "_dense2.csv";
 
-	auto meanAndStd = LoadMatrix(meanAndStdPath);
-	if (IsError(meanAndStd))
-		return ERROR;
-
-	if (meanAndStd.size() != 2 || meanAndStd[0].size() != inputDim + outputDim) {
-		printf("ERROR: row col error [meanAndStdPath]\n");
-		return ERROR;
-	}
-
-	auto model = ToPtr(new Model(modelName, inputDim, outputDim, meanAndStd[0], meanAndStd[1]));
+	auto model = ToPtr(new Model(modelName, inputDim, outputDim));
 
 	auto dense0 = LoadLayer(dense0Path, connections[0], activations[0]);
 	if (IsError(dense0))
@@ -216,39 +216,46 @@ const ModelKDTree::Ptr GenFS::LoadModelKDTreeFromJson(
 	constexpr int inputDim = 17;
 	constexpr int outputDim = 3;
 
+	ModelKDTree::Ptr leftChild = nullptr;
+	ModelKDTree::Ptr rightChild = nullptr;
+
+	for (auto it = begin; it != end; ++it) {
+		string name = it->name.GetString();
+		if (name == KEY::_names()[KEY::left] && !it->value.IsNull()) {
+			auto jsonTree = it->value.GetObject();
+			leftChild = LoadModelKDTreeFromJson(id, dir, jsonTree.MemberBegin(), jsonTree.MemberEnd(), connections, activations);
+		}
+		else if (name == KEY::_names()[KEY::right] && !it->value.IsNull()) {
+			auto jsonTree = it->value.GetObject();
+			rightChild = LoadModelKDTreeFromJson(id, dir, jsonTree.MemberBegin(), jsonTree.MemberEnd(), connections, activations);
+		}
+		else
+			continue;
+	}
+
+	bool needModel = leftChild == nullptr || rightChild == nullptr;
+
 	int axis = -1;
 	float spiltVal = 0;
 	Model::Ptr model = nullptr;
 	for (auto it = begin; it != end; ++it) {
 		string name = it->name.GetString();
-		if (name == "spiltAxis")
+		if (name == KEY::_names()[KEY::spiltAxis])
 			axis = it->value.GetInt();
-		else if (name == "spiltVal")
+		else if (name == KEY::_names()[KEY::spiltVal])
 			spiltVal = it->value.GetFloat();
-		else if (name == "secID") {
-			int secID = it->value.GetInt();
-			string modelName = to_string(id) + "_" + to_string(secID);
-			model = LoadModel(id, secID, dir, connections, activations);
+		else if (needModel && name == KEY::_names()[KEY::nodeID]) {
+			int nodeID = it->value.GetInt();
+			string modelName = to_string(id) + "_" + to_string(nodeID);
+			model = LoadModel(id, nodeID, dir, connections, activations);
 		}else
 			continue;
 	}
 
 	auto modelKDTree = ToPtr(new ModelKDTree(nullptr, inputDim, outputDim, axis, spiltVal, model));
-	for (auto it = begin; it != end; ++it) {
-		string name = it->name.GetString();
-		if (name == "left") {
-			auto jsonTree = it->value.GetObject();
-			auto leftChild = LoadModelKDTreeFromJson(id, dir, jsonTree.MemberBegin(), jsonTree.MemberEnd(), connections, activations);
-			modelKDTree->SetLeft(leftChild);
-		}
-		else if (name == "right") {
-			auto jsonTree = it->value.GetObject();
-			auto rightChild = LoadModelKDTreeFromJson(id, dir, jsonTree.MemberBegin(), jsonTree.MemberEnd(), connections, activations);
-			modelKDTree->SetRight(rightChild);
-		}
-		else
-			continue;
-	}
+
+	modelKDTree->SetLeft(leftChild);
+	modelKDTree->SetRight(rightChild);
 
 	return modelKDTree;
 }

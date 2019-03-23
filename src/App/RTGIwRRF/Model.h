@@ -13,9 +13,8 @@ namespace App {
 		HEAP_OBJ_SETUP(Model)
 	public:
 		explicit Model(const std::string & name = "",
-			const int inputDim = -1, const int outputDim = -1,
-			const std::vector<float> & means = std::vector<float>(),
-			const std::vector<float> & stds = std::vector<float>());
+			const int inputDim = -1, const int outputDim = -1)
+			: name(name), inputDim(inputDim), outputDim(outputDim) { }
 
 	public:
 		const std::string GetFuncName() const { return name; }
@@ -34,8 +33,6 @@ namespace App {
 
 		int inputDim;
 		int outputDim;
-		std::vector<float> means;
-		std::vector<float> stds;
 
 		std::string name;
 	};

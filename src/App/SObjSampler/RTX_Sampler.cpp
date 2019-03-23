@@ -32,8 +32,7 @@ RTX_Sampler::RTX_Sampler(const function<RayTracer::Ptr()> & generator, int maxLo
 	generator(generator),
 	threadNum(THREAD_NUM),
 	maxLoop(maxLoop),
-	sampleNum(sampleNum),
-	curLoop(0)
+	sampleNum(sampleNum)
 {
 	for (int i = 0; i < threadNum; i++) {
 		auto rayTracer = generator();
@@ -54,7 +53,7 @@ void RTX_Sampler::Run(Scene::Ptr scene, Image::Ptr img) {
 		for (int j = 0; j < h; j++)
 			img->SetPixel(i, j, vec3(0));
 	}
-	
+
 	// init ray tracer
 	for (auto rayTracer : rayTracers)
 		rayTracer->Init(scene);
@@ -89,35 +88,31 @@ void RTX_Sampler::Run(Scene::Ptr scene, Image::Ptr img) {
 			int x = job[i].x;
 			int y = job[i].y;
 
-			float u = (x + Math::Rand_F()) / (float)w;
-			float v = (y + Math::Rand_F()) / (float)h;
+			for (int k = 0; k < maxLoop; ++k) {
+				float u = (x + Math::Rand_F()) / (float)w;
+				float v = (y + Math::Rand_F()) / (float)h;
 
-			camera->SetRay(ray, u, v);
-			vec3 rst = rayTracer->Trace(ray);
+				camera->SetRay(ray, u, v);
+				vec3 rst = rayTracer->Trace(ray);
 
-			// 这一步可以极大的减少白噪点（特别是由点光源产生）
-			float illum = Math::Illum(rst);
-			if (illum > lightNum)
-				rst *= lightNum / illum;
+				// 这一步可以极大的减少白噪点（特别是由点光源产生）
+				float illum = Math::Illum(rst);
+				if (illum > lightNum)
+					rst *= lightNum / illum;
 
-			fimg[x][y] += rst;
+				fimg[x][y] += rst;
+			}
 
-			img->SetPixel(x, y, fimg[x][y] / float(curLoop + 1));
+			img->SetPixel(x, y, fimg[x][y] / float(maxLoop));
 		}
 	};
 
-	for (curLoop = 0; curLoop < maxLoop; ++curLoop) {
-		// init all workers first
-		vector<thread> workers;
-		for (int i = 0; i < threadNum; i++)
-			workers.push_back(thread(renderPartImg, i));
+	// init all workers first
+	vector<thread> workers;
+	for (int i = 0; i < threadNum; i++)
+		workers.push_back(thread(renderPartImg, i));
 
-		// let workers to work
-		for (auto & worker : workers)
-			worker.join();
-	}
-}
-
-float RTX_Sampler::ProgressRate() const {
-	return clamp((float(curLoop) + 0.5f) / float(maxLoop), 0.f, 1.f);
+	// let workers to work
+	for (auto & worker : workers)
+		worker.join();
 }

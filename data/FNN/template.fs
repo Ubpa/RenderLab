@@ -87,6 +87,8 @@ uniform samplerCube pointLightDepthMap7;
 
 uniform float lightFar;
 
+uniform int mode;
+
 // ----------------- declaration
 
 vec3 CalcBumpedNormal(vec3 normal, vec3 tangent, sampler2D normalTexture, vec2 texcoord);
@@ -205,7 +207,15 @@ void main() {
 	indirectIllum = clamp(indirectIllum, 0, 1);
 	
 	// gamma correction
-    FragColor = vec4(sqrt(result + indirectIllum), 1.0);
+	vec3 finalColor;
+	if(mode==0)
+		finalColor = result;
+	else if(mode==1)
+		finalColor = indirectIllum;
+	else
+		finalColor = result + indirectIllum;
+		
+    FragColor = vec4(sqrt(finalColor), 1.0);
 }
 
 // ----------------- definition

@@ -58,14 +58,16 @@ int main(int argc, const char** argv)
 
 		for (int i = id; i < sampleNum; i += threadNum) {
 			vec3 eye = vec3(2 * Math::Rand_F() - 1, Math::Rand_F()*1.5, 2 * Math::Rand_F() - 1);
-			vec3 center = vec3(2 * Math::Rand_F() - 1, Math::Rand_F()*1.5, 2 * Math::Rand_F() - 1);
+
+			// 靠近中心位置
+			vec3 center = vec3(1.5 * Math::Rand_F() - 0.75, Math::Rand_F()*1.125+0.1875, 1.5 * Math::Rand_F() - 0.75);
 			transform->LookAt(eye, center);
 
 			string sobjPath = "data/SObjs/App/RTGIwRRF/CB_Glass_tmp" + to_string(id) + ".xml";
 			root->Save(ROOT_PATH + sobjPath);
 
 			string cmd = GenCmd(loop, base + i, sobjPath);
-			printf("%s\n", cmd.c_str());
+			printf("%s\n\n", cmd.c_str());
 
 			system(cmd.c_str());
 		}
@@ -82,7 +84,8 @@ string GenCmd(int maxLoop, int csvID, const string & sobjPath) {
 	cmd << ROOT_PATH << "bin/SObjSampler.exe ";
 	cmd << "--maxloop " << maxLoop <<" ";
 	cmd << "--sobj " << sobjPath << " ";
-	cmd << "--csv data/SObjs/App/RTGIwRRF/datas/data" << csvID << ".csv";
+	cmd << "--csv data/SObjs/App/RTGIwRRF/datas/data" << csvID << ".csv ";
+	cmd << "> nul ";
 
 	return cmd.str();
 }

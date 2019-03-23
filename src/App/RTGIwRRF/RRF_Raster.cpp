@@ -9,6 +9,8 @@
 #include <CppUtil/Engine/BSDF_FrostedGlass.h>
 
 #include <CppUtil/Basic/Image.h>
+#include <CppUtil/Basic/EventManager.h>
+#include <CppUtil/Basic/LambdaOp.h>
 
 #include <CppUtil/OpenGL/CommonDefine.h>
 
@@ -26,9 +28,31 @@ void RRF_Raster::Init() {
 
 	scene->GenID();
 
+	InitListeners();
 	InitShaders();
 
 	glViewport(0, 0, 512, 512);
+}
+
+void RRF_Raster::InitListeners() {
+	EventMngr::Reg(static_cast<size_t>(Qt::Key_1), EventMngr::ENUM_EVENT_TYPE::KB_PRESS, 
+		ToPtr(new LambdaOp([=]() {
+		for (auto & pair : id2shader) {
+			pair.second.SetInt("mode", MODE::DIRECT);
+		}
+	})));
+	EventMngr::Reg(static_cast<size_t>(Qt::Key_2), EventMngr::ENUM_EVENT_TYPE::KB_PRESS,
+		ToPtr(new LambdaOp([=]() {
+		for (auto & pair : id2shader) {
+			pair.second.SetInt("mode", MODE::INDIRECT);
+		}
+	})));
+	EventMngr::Reg(static_cast<size_t>(Qt::Key_3), EventMngr::ENUM_EVENT_TYPE::KB_PRESS,
+		ToPtr(new LambdaOp([=]() {
+		for (auto & pair : id2shader) {
+			pair.second.SetInt("mode", MODE::GLOBAL);
+		}
+	})));
 }
 
 void RRF_Raster::InitShaders() {
@@ -65,6 +89,8 @@ void RRF_Raster::InitShader(int ID) {
 	shader.SetInt("bsdf.roughnessTexture", 1);
 	shader.SetInt("bsdf.aoTexture", 2);
 	shader.SetInt("bsdf.normalTexture", 3);
+
+	shader.SetInt("mode", MODE::GLOBAL);
 
 	SetShaderForShadow(shader, 4);
 }

@@ -13,13 +13,15 @@ namespace CppUtil {
 				: parent(parent), axis(axis), spiltVal(spiltVal), data(data) { }
 
 		public:
-			const int GetAxis() const { return axis; }
-			const float GetSpiltVal() const { return spiltVal; }
+			int GetAxis() const { return axis; }
+			float GetSpiltVal() const { return spiltVal; }
 			const DataT & GetData() const { return data; }
 			const Basic::Ptr<NodeT> GetParent() const { return parent.lock(); }
 			const Basic::Ptr<NodeT> GetLeft() const { return left; }
 			const Basic::Ptr<NodeT> GetRight() const { return right; }
-			const bool IsLeaf() const { return left == nullptr && right == nullptr; }
+			bool IsLeaf() const { return left == nullptr && right == nullptr; }
+			bool HasTwoChild() const { return left != nullptr && right != nullptr; }
+			bool HasSingleChild() const { return (left == nullptr && right != nullptr) || (left != nullptr && right == nullptr); }
 
 		public:
 			bool SetParent(const Basic::Ptr<NodeT> parent);
@@ -49,7 +51,7 @@ namespace CppUtil {
 
 		template <typename NodeT, typename DataT>
 		bool KDTree<NodeT, DataT>::SetLeft(const Basic::Ptr<NodeT> child) {
-			if (!child->SetParent(Basic::Ptr<NodeT>::Cast(This())))
+			if (child != nullptr && !child->SetParent(Basic::Ptr<NodeT>::Cast(This())))
 				return false;
 
 			left = child;
@@ -58,7 +60,7 @@ namespace CppUtil {
 
 		template <typename NodeT, typename DataT>
 		bool KDTree<NodeT, DataT>::SetRight(const Basic::Ptr<NodeT> child) {
-			if (!child->SetParent(Basic::Ptr<NodeT>::Cast(This())))
+			if (child != nullptr && !child->SetParent(Basic::Ptr<NodeT>::Cast(This())))
 				return false;
 
 			right = child;

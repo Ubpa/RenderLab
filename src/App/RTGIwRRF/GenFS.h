@@ -5,9 +5,19 @@
 
 #include <3rdParty/rapidjson/document.h>
 
+#include <3rdParty/enum.h>
+
 namespace App {
 	class Model;
 	class ModelKDTree;
+
+	BETTER_ENUM(KEY, int,
+		nodeID,
+		spiltAxis,
+		spiltVal,
+		left,
+		right
+	)
 
 	class GenFS {
 	public:

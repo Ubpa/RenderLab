@@ -28,7 +28,6 @@ namespace App {
 
 	public:
 		void Run(CppUtil::Basic::Ptr<CppUtil::Engine::Scene> scene, CppUtil::Basic::Ptr<CppUtil::Basic::Image> img);
-		float RTX_Sampler::ProgressRate() const;
 
 		const std::vector<std::vector<glm::uvec2>> & GetJobs() const { return jobs; }
 
@@ -38,9 +37,9 @@ namespace App {
 
 		std::vector<std::vector<glm::uvec2>> jobs;
 
-		int curLoop;
 		int maxLoop;
 		int sampleNum;
+
 		const int threadNum;
 	};
 }

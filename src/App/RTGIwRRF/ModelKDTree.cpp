@@ -10,7 +10,11 @@ using namespace App;
 using namespace CppUtil::Basic;
 using namespace std;
 
-const std::string ModelKDTree::GenFunc(bool genModels) const {
+const std::string ModelKDTree::GenFunc(
+	const vector<float> & minVal,
+	const vector<float> & extent,
+	bool genModels) const
+{
 	static auto const & ERROR = ErrorRetVal(&ModelKDTree::GenFunc);
 
 	if (!IsValid()) {
@@ -40,7 +44,28 @@ const std::string ModelKDTree::GenFunc(bool genModels) const {
 
 	// func definition
 	sstreams.kdTree << "{" << endl;
+
+	// map to unit hyperbox
+	sstreams.kdTree << indent << "// map to unit hyperbox" << endl;
+	for (int i = 0; i < inputDim; i++) {
+		sstreams.kdTree << indent << "x" << i << " = ";
+		sstreams.kdTree << "(x" << i << " - (" << minVal[i] << ")) / (" << extent[i] << ");" << endl;
+	}
+	sstreams.kdTree << endl;
+
+	// kdTree
+	sstreams.kdTree << indent << "// KDTree" << endl;
 	GenFuncRecursion(genModels, sstreams, indent);
+	sstreams.kdTree << endl;
+
+	// map back
+	sstreams.kdTree << indent << "// map back" << endl;
+	for (int i = 0; i < outputDim; i++) {
+		sstreams.kdTree << indent << "h" << i << " = ";
+		sstreams.kdTree << "h" << i << " * (" << extent[i] << ") + (" << minVal[i] << ")";
+		sstreams.kdTree << ";" << endl;
+	}
+
 	sstreams.kdTree << "}" << endl;
 
 	return sstreams.models.str() + "\n" + sstreams.kdTree.str();
@@ -57,22 +82,40 @@ bool ModelKDTree::GenFuncRecursion(bool genModels, ModelKDTree::SStreams & sstre
 		sstreams.models << model;
 	}
 
-	if (IsLeaf()) {
-		sstreams.kdTree << indent << GetData()->GetFuncName() << "(";
+	stringstream callFunc;
+
+	if (!HasTwoChild()) {
+		callFunc << indent << "    " << GetData()->GetFuncName() << "(";
 		for (int i = 0; i < inputDim; i++)
-			sstreams.kdTree << "x" << i << ",";
+			callFunc << "x" << i << ",";
 		for (int i = 0; i < outputDim; i++)
-			sstreams.kdTree << "h" << i << (i != outputDim - 1 ? "," : "");
-		sstreams.kdTree << ");" << endl;
+			callFunc << "h" << i << (i != outputDim - 1 ? "," : "");
+		callFunc << ");" << endl;
+	}
+
+	if (IsLeaf()) {
+		sstreams.kdTree << callFunc.str();
 	}
 	else {
-		sstreams.kdTree << indent << "if ( x" << (3 + GetAxis()) << " < " << GetSpiltVal() << " ) {" << endl;
-		if (!GetLeft()->GenFuncRecursion(genModels, sstreams, indent + "    "))
-			return ERROR;
+		sstreams.kdTree << indent << "if ( x" << GetAxis() << " < " << GetSpiltVal() << " ) {" << endl;
+		if (GetLeft()) {
+			auto rst = static_cast<bool>(GetLeft()->GenFuncRecursion(genModels, sstreams, indent + "    "));
+			if (rst == false)
+				return ERROR;
+		}
+		else
+			sstreams.kdTree << callFunc.str();
+
 		sstreams.kdTree << indent << "}" << endl;
 		sstreams.kdTree << indent << "else {" << endl;
-		if (!GetRight()->GenFuncRecursion(genModels, sstreams, indent + "    "))
-			return ERROR;
+
+		if (GetRight()) {
+			auto rst = static_cast<bool>(GetRight()->GenFuncRecursion(genModels, sstreams, indent + "    "));
+			if (rst == false)
+				return ERROR;
+		}else
+			sstreams.kdTree << callFunc.str();
+
 		sstreams.kdTree << indent << "}" << endl;
 	}
 
@@ -86,12 +129,13 @@ bool ModelKDTree::IsValid() const {
 		|| (GetRight() != nullptr && !GetRight()->IsValid())
 		|| inputDim < 0
 		|| outputDim < 0
-		|| (!IsLeaf() && (GetData() || GetAxis() < 0 || GetAxis() > 2 || !GetLeft() || !GetRight()))
+		|| (HasSingleChild() && !GetData())
+		|| (HasTwoChild() && (GetData() || GetAxis() < 0 || GetAxis() >= inputDim || GetSpiltVal() < 0 || GetSpiltVal() > 1))
 		|| (IsLeaf() && !GetData())
 		)
 	{
 		return ERROR;
 	}
-	
+
 	return true;
 }

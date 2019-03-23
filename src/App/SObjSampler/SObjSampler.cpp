@@ -156,9 +156,6 @@ void SObjSampler::InitRTX() {
 		rtxSampler->Run(scene, paintImgOp->GetImg());
 		Sleep(100);
 
-		while (!printProgressThread->isFinished())
-			;
-
 		while (!initDataMap)
 			;
 		
@@ -181,21 +178,6 @@ void SObjSampler::InitRTX() {
 		QApplication::quit();
 	}));
 	drawImgThread->start();
-
-	printProgressThread = ToPtr(new OpThread([=]() {
-		int dotNum = 0;
-		while (rtxSampler->ProgressRate() != 1.f) {
-			string dotStr;
-			for (int i = 0; i < 6; i++)
-				dotStr += i < dotNum % 6 ? "." : " ";
-			printf("\rprogress rate : %d%% %s", static_cast<int>(rtxSampler->ProgressRate() * 100), dotStr.c_str());
-
-			dotNum++;
-			Sleep(500);
-		}
-		printf("\rprogress rate : 100%%\nRender complete!\n\n");
-	}));
-	printProgressThread->start();
 }
 
 void SObjSampler::InitTimer() {
@@ -241,14 +223,6 @@ void SObjSampler::SaveData() {
 	string prefix = isNotFromRootPath ? "" : ROOT_PATH;
 
 	CSV<float> csv(keys);
-	vector<ENUM_TYPE> enumTypes = {
-		//ENUM_TYPE::DirectIllum,
-		ENUM_TYPE::POSITION,
-		ENUM_TYPE::VIEW_DIR,
-		ENUM_TYPE::NORMAL,
-		ENUM_TYPE::MAT_COLOR,
-		//ENUM_TYPE::IOR_ROUGHNESS_ID,
-	};
 
 	//auto indirectImg = ToPtr(new Image(512, 512, 3));
 	//auto directImg = ToPtr(new Image(512, 512, 3));
@@ -284,10 +258,26 @@ void SObjSampler::SaveData() {
 			lineVals.push_back(directIllum.g);
 			lineVals.push_back(directIllum.b);
 
-			for (auto enumType : enumTypes) {
-				for (int channel = 0; channel < 3; channel++)
-					lineVals.push_back(dataMap[enumType][idx + channel]);
+			for (int channel = 0; channel < 3; channel++)
+				lineVals.push_back(dataMap[ENUM_TYPE::POSITION][idx + channel]);
+
+			for (int channel = 0; channel < 3; channel++)
+				lineVals.push_back(dataMap[ENUM_TYPE::VIEW_DIR][idx + channel]);
+
+			for (int channel = 0; channel < 3; channel++) {
+				float val = dataMap[ENUM_TYPE::NORMAL][idx + channel];
+				
+				// Ïû³ý¹Ø¼üÎó²î
+				if (abs(val) > 0.999f)
+					val = sign(val);
+				else if (abs(val) < 0.001f)
+					val = 0;
+
+				lineVals.push_back(val);
 			}
+
+			for (int channel = 0; channel < 3; channel++)
+				lineVals.push_back(dataMap[ENUM_TYPE::MAT_COLOR][idx + channel]);
 
 			vec3 globalIllum = paintImgOp->GetImg()->GetPixel_F(col, row);
 

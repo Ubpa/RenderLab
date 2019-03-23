@@ -3,6 +3,7 @@
 
 #include <CppUtil/Basic/KDTree.h>
 
+#include <vector>
 #include <string>
 #include <sstream>
 
@@ -34,7 +35,10 @@ namespace App {
 		bool IsValid() const;
 
 	public:
-		const std::string GenFunc(bool genModels = true) const;
+		const std::string GenFunc(
+			const std::vector<float> & minVal,
+			const std::vector<float> & extent,
+			bool genModels = true) const;
 
 	private:
 		struct SStreams {
