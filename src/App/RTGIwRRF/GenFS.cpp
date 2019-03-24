@@ -55,7 +55,7 @@ const string GenFS::Call(
 	while (fs.find(funcname) != string::npos) {
 		auto pos = fs.find(funcname);
 		fs.erase(fs.begin() + pos, fs.begin() + pos + funcname.length());
-		fs.insert(pos, "ModelKDTree");
+		fs.insert(pos, "Model");
 	}
 
 	stringstream shader;
@@ -237,6 +237,7 @@ const ModelKDTree::Ptr GenFS::LoadModelKDTreeFromJson(
 
 	int axis = -1;
 	float spiltVal = 0;
+	int nodeID = -1;
 	Model::Ptr model = nullptr;
 	for (auto it = begin; it != end; ++it) {
 		string name = it->name.GetString();
@@ -244,15 +245,17 @@ const ModelKDTree::Ptr GenFS::LoadModelKDTreeFromJson(
 			axis = it->value.GetInt();
 		else if (name == KEY::_names()[KEY::spiltVal])
 			spiltVal = it->value.GetFloat();
-		else if (needModel && name == KEY::_names()[KEY::nodeID]) {
-			int nodeID = it->value.GetInt();
-			string modelName = to_string(id) + "_" + to_string(nodeID);
-			model = LoadModel(id, nodeID, dir, connections, activations);
+		else if (name == KEY::_names()[KEY::nodeID]) {
+			nodeID = it->value.GetInt();
+			if (needModel) {
+				string modelName = to_string(id) + "_" + to_string(nodeID);
+				model = LoadModel(id, nodeID, dir, connections, activations);
+			}
 		}else
 			continue;
 	}
 
-	auto modelKDTree = ToPtr(new ModelKDTree(nullptr, inputDim, outputDim, axis, spiltVal, model));
+	auto modelKDTree = ToPtr(new ModelKDTree(nodeID, nullptr, inputDim, outputDim, axis, spiltVal, model));
 
 	modelKDTree->SetLeft(leftChild);
 	modelKDTree->SetRight(rightChild);

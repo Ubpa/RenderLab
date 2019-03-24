@@ -18,14 +18,16 @@ namespace App {
 
 	public:
 		explicit ModelKDTree (
+			const int ID = -1,
 			ModelKDTree::Ptr parent = nullptr,
 			const int inputDim = -1,
 			const int outputDim = -1,
-			int axis = -1,
-			float spiltVal = 0,
+			const int axis = -1,
+			const float spiltVal = 0,
 			ModelPtr modelPtr = nullptr
 		) :
 			BaseT(parent, axis, spiltVal, modelPtr),
+			ID(ID),
 			inputDim(inputDim),
 			outputDim(outputDim) { }
 
@@ -33,23 +35,26 @@ namespace App {
 		int GetInputDim() const { return inputDim; }
 		int GetOutputDim() const { return outputDim; }
 		bool IsValid() const;
+		float GetSpiltAxisExtent() const;
+		const std::string GetFuncName() const;
 
 	public:
 		const std::string GenFunc(
 			const std::vector<float> & minVal,
-			const std::vector<float> & extent,
-			bool genModels = true) const;
+			const std::vector<float> & extent) const;
 
 	private:
-		struct SStreams {
-			std::stringstream models;
-			std::stringstream kdTree;
-		};
-		bool GenFuncRecursion(bool genModels, SStreams & sstreams, const std::string & indent) const;
+		const std::string GenFuncRecursion() const;
+
+		// (x0, x1, ..., xn, h0, h1, ..., hm);
+		const std::string GenCallArgList(const std::string & xName, const std::string & hName) const;
 
 	private:
 		int inputDim;
 		int outputDim;
+		int ID;
+
+		static const float interpolateRatio;
 	};
 }
 

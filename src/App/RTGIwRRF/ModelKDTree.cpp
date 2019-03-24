@@ -10,10 +10,11 @@ using namespace App;
 using namespace CppUtil::Basic;
 using namespace std;
 
+const float ModelKDTree::interpolateRatio = 0.2f;
+
 const std::string ModelKDTree::GenFunc(
 	const vector<float> & minVal,
-	const vector<float> & extent,
-	bool genModels) const
+	const vector<float> & extent) const
 {
 	static auto const & ERROR = ErrorRetVal(&ModelKDTree::GenFunc);
 
@@ -24,102 +25,164 @@ const std::string ModelKDTree::GenFunc(
 
 	const string indent = "    ";
 
-	SStreams sstreams;
+	stringstream rst;
+
+	rst << GenFuncRecursion();
 
 	// func declaration
-	sstreams.kdTree << "void ModelKDTree";
-	sstreams.kdTree << endl << "(" << endl;
-	sstreams.kdTree << indent << "// input" << endl;
+	rst << "void Model";
+	rst << endl << "(" << endl;
+	rst << indent << "// input" << endl;
 	for (int i = 0; i < inputDim; i++)
-		sstreams.kdTree << indent << "in float x" << i << "," << endl;
-	sstreams.kdTree << indent << endl;
-	sstreams.kdTree << indent << "// output" << endl;
+		rst << indent << "in float x" << i << "," << endl;
+	rst << indent << endl;
+	rst << indent << "// output" << endl;
 	for (int i = 0; i < outputDim; i++) {
-		sstreams.kdTree << indent << "out float h" << i;
+		rst << indent << "out float h" << i;
 		if (i == outputDim - 1)
-			sstreams.kdTree << endl << ")" << endl;
+			rst << endl << ")" << endl;
 		else
-			sstreams.kdTree << "," << endl;
+			rst << "," << endl;
 	}
 
 	// func definition
-	sstreams.kdTree << "{" << endl;
+	rst << "{" << endl;
 
 	// map to unit hyperbox
-	sstreams.kdTree << indent << "// map to unit hyperbox" << endl;
+	rst << indent << "// map to unit hyperbox" << endl;
 	for (int i = 0; i < inputDim; i++) {
-		sstreams.kdTree << indent << "x" << i << " = ";
-		sstreams.kdTree << "(x" << i << " - (" << minVal[i] << ")) / (" << extent[i] << ");" << endl;
+		rst << indent << "x" << i << " = ";
+		rst << "(x" << i << " - (" << minVal[i] << ")) / (" << extent[i] << ");" << endl;
 	}
-	sstreams.kdTree << endl;
+	rst << endl;
 
-	// kdTree
-	sstreams.kdTree << indent << "// KDTree" << endl;
-	GenFuncRecursion(genModels, sstreams, indent);
-	sstreams.kdTree << endl;
+	// call root
+	rst << indent << GetFuncName() << GenCallArgList("x", "h") << endl;
 
 	// map back
-	sstreams.kdTree << indent << "// map back" << endl;
+	rst << indent << "// map back" << endl;
 	for (int i = 0; i < outputDim; i++) {
-		sstreams.kdTree << indent << "h" << i << " = ";
-		sstreams.kdTree << "h" << i << " * (" << extent[i] << ") + (" << minVal[i] << ")";
-		sstreams.kdTree << ";" << endl;
+		rst << indent << "h" << i << " = ";
+		rst << "h" << i << " * (" << extent[i] << ") + (" << minVal[i] << ")";
+		rst << ";" << endl;
 	}
 
-	sstreams.kdTree << "}" << endl;
+	rst << "}" << endl;
 
-	return sstreams.models.str() + "\n" + sstreams.kdTree.str();
+	return rst.str();
 }
 
-bool ModelKDTree::GenFuncRecursion(bool genModels, ModelKDTree::SStreams & sstreams, const string & indent) const {
-	static constexpr bool ERROR = false;
+const string ModelKDTree::GenFuncRecursion() const {
+	static const auto & ERROR = ErrorRetVal(&ModelKDTree::GenFuncRecursion);
 
-	if (genModels && GetData() != nullptr) {
-		auto model = GetData()->GenFunc();
-		if (IsError(model))
+	if (!IsValid()) {
+		printf("ERROR: Model KDTree is not valid\n");
+		return ERROR;
+	}
+
+	const string indent = "    ";
+
+	stringstream rst;
+
+	if (GetLeft()) {
+		auto leftStr = GetLeft()->GenFuncRecursion();
+		if (IsError(leftStr))
 			return ERROR;
 
-		sstreams.models << model;
+		rst << leftStr << endl;
 	}
 
-	stringstream callFunc;
+	if (GetRight()) {
+		auto rightStr = GetRight()->GenFuncRecursion();
+		if (IsError(rightStr))
+			return ERROR;
 
-	if (!HasTwoChild()) {
-		callFunc << indent << "    " << GetData()->GetFuncName() << "(";
-		for (int i = 0; i < inputDim; i++)
-			callFunc << "x" << i << ",";
-		for (int i = 0; i < outputDim; i++)
-			callFunc << "h" << i << (i != outputDim - 1 ? "," : "");
-		callFunc << ");" << endl;
+		rst << rightStr << endl;
 	}
 
+	if (GetData()) {
+		auto modelStr = GetData()->GenFunc();
+		if (IsError(modelStr))
+			return ERROR;
+
+		rst << modelStr << endl;
+	}
+
+	// func declaration
+	rst << "void " << GetFuncName();
+	rst << endl << "(" << endl;
+	rst << indent << "// input" << endl;
+	for (int i = 0; i < inputDim; i++)
+		rst << indent << "in float x" << i << "," << endl;
+	rst << indent << endl;
+	rst << indent << "// output" << endl;
+	for (int i = 0; i < outputDim; i++) {
+		rst << indent << "out float h" << i;
+		if (i == outputDim - 1)
+			rst << endl << ")" << endl;
+		else
+			rst << "," << endl;
+	}
+
+	// func definition
+	rst << "{" << endl;
+
+	// kdTree
+	rst << indent << "// KDTree" << endl;
 	if (IsLeaf()) {
-		sstreams.kdTree << callFunc.str();
+		rst << indent << GetData()->GetFuncName() << "(";
+		for (int i = 0; i < inputDim; i++)
+			rst << "x" << i << ",";
+		for (int i = 0; i < outputDim; i++)
+			rst << "h" << i << (i != outputDim - 1 ? "," : "");
+		rst << ");" << endl;
 	}
 	else {
-		sstreams.kdTree << indent << "if ( x" << GetAxis() << " < " << GetSpiltVal() << " ) {" << endl;
-		if (GetLeft()) {
-			auto rst = static_cast<bool>(GetLeft()->GenFuncRecursion(genModels, sstreams, indent + "    "));
-			if (rst == false)
-				return ERROR;
+		const float axisExtent = GetSpiltAxisExtent();
+		const float delta = axisExtent / 2 * interpolateRatio;
+		const float lowBound = GetSpiltVal() - delta;
+		const float highBound = GetSpiltVal() + delta;
+
+		// left
+		rst << indent << "if ( x" << GetAxis() << " < " << lowBound << " ) {" << endl;
+		rst << indent << indent << GetLeft()->GetFuncName() << GenCallArgList("x", "h") << endl;
+		rst << indent << "}" << endl;
+
+		// interpolate
+		const string leftPrefix = "left_h";
+		const string rightPrefix = "right_h";
+		rst << indent << "else if ( x" << GetAxis() << " < " << highBound << " ) {" << endl;
+		// declare output
+		for (int i = 0; i < outputDim; i++)
+			rst << indent << indent << "float " << leftPrefix << i << ";" << endl;
+		for (int i = 0; i < outputDim; i++)
+			rst << indent << indent << "float " << rightPrefix << i << ";" << endl;
+		rst << indent << indent << endl;
+		// evaluate left and right
+		rst << indent << indent << GetLeft()->GetFuncName() << GenCallArgList("x", leftPrefix) << endl;
+		rst << indent << indent << GetRight()->GetFuncName() << GenCallArgList("x", rightPrefix) << endl;
+		// smootherstep
+		rst << indent << indent << endl;
+		// ((6x-15)x+10)x^3
+		rst << indent << indent << "float t = 0.5 + ( x" << GetAxis() << " - " << GetSpiltVal() << " ) / " << (axisExtent*interpolateRatio) << ";" << endl;
+		rst << indent << indent << "t = ((6*t - 15)*t + 10) * t*t*t;" << endl;
+		for (int i = 0; i < outputDim; i++) {
+			rst << indent << indent << "h" << i <<
+				" = ( 1 - t ) * " << leftPrefix << i << " + t * " << rightPrefix << i << ";" << endl;
 		}
-		else
-			sstreams.kdTree << callFunc.str();
+		rst << indent << "}" << endl;
 
-		sstreams.kdTree << indent << "}" << endl;
-		sstreams.kdTree << indent << "else {" << endl;
-
-		if (GetRight()) {
-			auto rst = static_cast<bool>(GetRight()->GenFuncRecursion(genModels, sstreams, indent + "    "));
-			if (rst == false)
-				return ERROR;
-		}else
-			sstreams.kdTree << callFunc.str();
-
-		sstreams.kdTree << indent << "}" << endl;
+		// right
+		rst << indent << "else {" << endl;
+		rst << indent << indent << GetRight()->GetFuncName() << GenCallArgList("x", "h") << endl;
+		rst << indent << "}" << endl;
 	}
 
-	return true;
+	rst << endl;
+
+	rst << "}" << endl;
+
+	return rst.str();
 }
 
 bool ModelKDTree::IsValid() const {
@@ -129,13 +192,40 @@ bool ModelKDTree::IsValid() const {
 		|| (GetRight() != nullptr && !GetRight()->IsValid())
 		|| inputDim < 0
 		|| outputDim < 0
-		|| (HasSingleChild() && !GetData())
+		|| HasSingleChild()
 		|| (HasTwoChild() && (GetData() || GetAxis() < 0 || GetAxis() >= inputDim || GetSpiltVal() < 0 || GetSpiltVal() > 1))
 		|| (IsLeaf() && !GetData())
+		|| ID < 0
 		)
 	{
 		return ERROR;
 	}
 
 	return true;
+}
+
+float ModelKDTree::GetSpiltAxisExtent() const {
+	float extent = 1.f;
+	for (auto ptr = GetParent(); ptr != nullptr; ptr = ptr->GetParent()) {
+		if (ptr->GetAxis() == GetAxis())
+			extent /= 2;
+	}
+	return extent;
+}
+
+const string ModelKDTree::GetFuncName() const {
+	return string("ModelKDTree_") + to_string(ID);
+}
+
+const string ModelKDTree::GenCallArgList(const string & xName, const string & hName) const {
+	stringstream rst;
+
+	rst << "(";
+	for (int i = 0; i < inputDim; i++)
+		rst << xName << i << ",";
+	for (int i = 0; i < outputDim; i++)
+		rst << hName << i << (i != outputDim - 1 ? "," : "");
+	rst << ");";
+
+	return rst.str();
 }
