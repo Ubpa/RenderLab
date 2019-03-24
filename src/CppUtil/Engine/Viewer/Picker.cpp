@@ -48,5 +48,5 @@ void Picker::Init() {
 		if (closestRst.closestSObj)
 			Ui::Attribute::GetInstance()->SetSObj(closestRst.closestSObj);
 	}));
-	EventMngr::Reg(::Qt::LeftButton, (void*)viewer->GetOGLW(), EventMngr::MOUSE_PRESS, MRB_PressOp);
+	EventMngr::GetInstance().Reg(::Qt::LeftButton, (void*)viewer->GetOGLW(), EventMngr::MOUSE_PRESS, MRB_PressOp);
 }

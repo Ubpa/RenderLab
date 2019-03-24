@@ -60,7 +60,7 @@ void Roamer::ListenerInit() {
 
 		QApplication::setOverrideCursor(::Qt::BlankCursor);
 	}));
-	EventMngr::Reg(::Qt::RightButton, (void*)this->GetOGLW(), EventMngr::MOUSE_PRESS, MRB_PressOp);
+	EventMngr::GetInstance().Reg(::Qt::RightButton, (void*)this->GetOGLW(), EventMngr::MOUSE_PRESS, MRB_PressOp);
 
 	// lock mouse and rotate camera
 	auto mouseMoveOp = ToPtr(new LambdaOp([this]() {
@@ -90,7 +90,7 @@ void Roamer::ListenerInit() {
 
 		QCursor::setPos(pOGWL->mapToGlobal(QPoint(lockX, lockY)));
 	}));
-	EventMngr::Reg(::Qt::NoButton, (void*)this->GetOGLW(), EventMngr::MOUSE_MOVE, mouseMoveOp);
+	EventMngr::GetInstance().Reg(::Qt::NoButton, (void*)this->GetOGLW(), EventMngr::MOUSE_MOVE, mouseMoveOp);
 
 	// release mouse cursor
 	auto MRB_ReleaseOp = ToPtr(new LambdaOp([this]() {
@@ -105,7 +105,7 @@ void Roamer::ListenerInit() {
 
 		QApplication::restoreOverrideCursor();
 	}));
-	EventMngr::Reg(::Qt::RightButton, (void*)this->GetOGLW(), EventMngr::MOUSE_RELEASE, MRB_ReleaseOp);
+	EventMngr::GetInstance().Reg(::Qt::RightButton, (void*)this->GetOGLW(), EventMngr::MOUSE_RELEASE, MRB_ReleaseOp);
 
 	// wheel
 	auto wheelOp = ToPtr(new LambdaOp([this]() {
@@ -119,7 +119,7 @@ void Roamer::ListenerInit() {
 		this->GetCamera()->ProcessMouseScroll(angle*0.1f);
 		UpdateCamera();
 	}));
-	EventMngr::Reg(::Qt::NoButton, (void*)this->GetOGLW(), EventMngr::MOUSE_WHEEL, wheelOp);
+	EventMngr::GetInstance().Reg(::Qt::NoButton, (void*)this->GetOGLW(), EventMngr::MOUSE_WHEEL, wheelOp);
 
 	// Move
 	size_t moveKey[] = { ::Qt::Key_W, ::Qt::Key_S, ::Qt::Key_A, ::Qt::Key_D, ::Qt::Key_Q, ::Qt::Key_E };
@@ -133,7 +133,7 @@ void Roamer::ListenerInit() {
 			UpdateCamera();
 		}));
 
-		EventMngr::Reg(moveKey[i], (void*)this->GetOGLW(), EventMngr::KB_PRESS, op);
+		EventMngr::GetInstance().Reg(moveKey[i], (void*)this->GetOGLW(), EventMngr::KB_PRESS, op);
 	}
 }
 

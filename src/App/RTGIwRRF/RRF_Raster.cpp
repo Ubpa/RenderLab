@@ -35,19 +35,19 @@ void RRF_Raster::Init() {
 }
 
 void RRF_Raster::InitListeners() {
-	EventMngr::Reg(static_cast<size_t>(Qt::Key_1), EventMngr::ENUM_EVENT_TYPE::KB_PRESS, 
+	EventMngr::GetInstance().Reg(static_cast<size_t>(Qt::Key_1), EventMngr::ENUM_EVENT_TYPE::KB_PRESS, 
 		ToPtr(new LambdaOp([=]() {
 		for (auto & pair : id2shader) {
 			pair.second.SetInt("mode", MODE::DIRECT);
 		}
 	})));
-	EventMngr::Reg(static_cast<size_t>(Qt::Key_2), EventMngr::ENUM_EVENT_TYPE::KB_PRESS,
+	EventMngr::GetInstance().Reg(static_cast<size_t>(Qt::Key_2), EventMngr::ENUM_EVENT_TYPE::KB_PRESS,
 		ToPtr(new LambdaOp([=]() {
 		for (auto & pair : id2shader) {
 			pair.second.SetInt("mode", MODE::INDIRECT);
 		}
 	})));
-	EventMngr::Reg(static_cast<size_t>(Qt::Key_3), EventMngr::ENUM_EVENT_TYPE::KB_PRESS,
+	EventMngr::GetInstance().Reg(static_cast<size_t>(Qt::Key_3), EventMngr::ENUM_EVENT_TYPE::KB_PRESS,
 		ToPtr(new LambdaOp([=]() {
 		for (auto & pair : id2shader) {
 			pair.second.SetInt("mode", MODE::GLOBAL);

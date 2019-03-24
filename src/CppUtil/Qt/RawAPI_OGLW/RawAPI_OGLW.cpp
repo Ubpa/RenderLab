@@ -58,34 +58,34 @@ void RawAPI_OGLW::paintGL() {
 }
 
 void RawAPI_OGLW::keyPressEvent(QKeyEvent *event) {
-	EventMngr::Response(event->key(), (void*)this, EventMngr::KB_PRESS);
+	EventMngr::GetInstance().Response(event->key(), (void*)this, EventMngr::KB_PRESS);
 }
 
 void RawAPI_OGLW::keyReleaseEvent(QKeyEvent *event) {
-	EventMngr::Response(event->key(), (void*)this, EventMngr::KB_RELEASE);
+	EventMngr::GetInstance().Response(event->key(), (void*)this, EventMngr::KB_RELEASE);
 }
 
 void RawAPI_OGLW::mouseMoveEvent(QMouseEvent *event) {
 	x = event->x();
 	y = event->y();
 	// event->button() is Qt::NoButton	0x00000000
-	EventMngr::Response(event->button(), (void*)this, EventMngr::MOUSE_MOVE);
+	EventMngr::GetInstance().Response(event->button(), (void*)this, EventMngr::MOUSE_MOVE);
 }
 
 void RawAPI_OGLW::mousePressEvent(QMouseEvent *event) {
 	x = event->x();
 	y = event->y();
-	EventMngr::Response(event->button(), (void*)this, EventMngr::MOUSE_PRESS);
+	EventMngr::GetInstance().Response(event->button(), (void*)this, EventMngr::MOUSE_PRESS);
 }
 
 void RawAPI_OGLW::mouseReleaseEvent(QMouseEvent *event) {
 	x = event->x();
 	y = event->y();
-	EventMngr::Response(event->button(), (void*)this, EventMngr::MOUSE_RELEASE);
+	EventMngr::GetInstance().Response(event->button(), (void*)this, EventMngr::MOUSE_RELEASE);
 }
 
 void RawAPI_OGLW::wheelEvent(QWheelEvent *event) {
 	// 15 degree
 	angle = event->angleDelta().y() / 8;
-	EventMngr::Response(::Qt::NoButton, (void*)this, EventMngr::MOUSE_WHEEL);
+	EventMngr::GetInstance().Response(::Qt::NoButton, (void*)this, EventMngr::MOUSE_WHEEL);
 }
