@@ -28,7 +28,7 @@ namespace App {
 		bool IsValid() const;
 
 	public:
-		const std::string GenFunc() const;
+		const std::string GenComputeExpr() const;
 
 	public:
 		void InitAfterGenSharePtr();

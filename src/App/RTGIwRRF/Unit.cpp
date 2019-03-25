@@ -53,8 +53,8 @@ int Unit::GetID() const {
 	return layer.lock()->GetIDof(CThis());
 }
 
-const string Unit::GenFunc() const {
-	static auto const & ERROR = ErrorRetVal(&Unit::GenFunc);
+const string Unit::GenComputeExpr() const {
+	static auto const & ERROR = ErrorRetVal(&Unit::GenComputeExpr);
 
 	if (!IsValid())
 	{
@@ -62,40 +62,30 @@ const string Unit::GenFunc() const {
 		return ERROR;
 	}
 
-	const string indent = "    ";
-
-	stringstream unitFunc;
-	unitFunc << "float " << GetFuncName();
+	stringstream rst;
 
 	switch (layer.lock()->GetConnection())
 	{
 	case Connection::Dense: {
-		// args list
-		unitFunc << endl << "(" << endl;
-		for (int i = 0; i < weights.size() - 1; i++) {
-			unitFunc << indent << "float x" << i;
-			if (i < weights.size() - 2)
-				unitFunc << "," << endl;
-			else
-				unitFunc << endl << ")" << endl;
+		stringstream computeZ;
+		for (int i = 0; i < GetInputDim(); i++)
+			computeZ << "x" << i << "*(" << weights[i] << ")+";
+		computeZ << "(" << weights.back() << ")";
+
+		switch (layer.lock()->GetActivation())
+		{
+		case Activation::Identity: {
+			rst << computeZ.str();
+			break;
 		}
-
-		// define
-		unitFunc << "{" << endl;
-
-		// z = dot(weights, [x,1]);
-		unitFunc << indent << "float z =" << endl;
-		for (int i = 0; i < weights.size(); i++) {
-			unitFunc << indent << indent;
-			if (i == 0)
-				unitFunc << "  ";
-			else
-				unitFunc << "+ ";
-
-			if (i < weights.size() - 1)
-				unitFunc << "x" << i << " * (" << weights[i] << ")" << endl;
-			else
-				unitFunc << "(" << weights[i] << ")" << ";" << endl << endl;
+		case Activation::ReLU: {
+			rst << "max(0, "<< computeZ.str() <<")";
+			break;
+		}
+		case Activation::tanh: {
+			rst << "tanh(" << computeZ.str() << ")";
+			break;
+		}
 		}
 		break;
 	}
@@ -105,36 +95,7 @@ const string Unit::GenFunc() const {
 	}
 	}
 
-	// h = activation(z);
-	unitFunc << indent << "// Activation: " << layer.lock()->GetActivation()._to_string() << endl;
-	switch (layer.lock()->GetActivation())
-	{
-	case Activation::Identity: {
-		unitFunc << indent << "float h = z;" << endl << endl;
-		break;
-	}
-	case Activation::ReLU: {
-		unitFunc << indent << "float h = max(0, z);" << endl << endl;
-		break;
-	}
-	case Activation::tanh: {
-		unitFunc
-			<< indent << "float expZ = exp(z);" << endl
-			<< indent << "float invExpZ = 1 / expZ;" << endl
-			<< indent << "float h = (expZ - invExpZ) / (expZ + invExpZ);" << endl << endl;
-		break;
-	}
-	default: {
-		printf("ERROR: Activation is not supported.\n");
-		return ERROR;
-		break;
-	}
-	}
-
-	unitFunc << indent << "return h;" << endl;
-	unitFunc << "}" << endl;
-
-	return unitFunc.str();
+	return rst.str();
 }
 
 bool Unit::IsValid() const {

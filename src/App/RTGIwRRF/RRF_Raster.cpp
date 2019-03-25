@@ -77,6 +77,8 @@ void RRF_Raster::InitShaders() {
 }
 
 void RRF_Raster::InitShader(int ID) {
+	printf("init shader of ID %d ...\n", ID);
+
 	string fsPath = ROOT_PATH + "data/shaders/App/RTGIwRRF/" + to_string(ID) + "_modelKDTree.fs";
 	auto shader = Shader(ROOT_PATH + str_Basic_P3N3T2T3_vs, fsPath);
 	if (!shader.IsValid())
@@ -93,6 +95,7 @@ void RRF_Raster::InitShader(int ID) {
 	shader.SetInt("mode", MODE::GLOBAL);
 
 	SetShaderForShadow(shader, 4);
+	printf("init shader of ID %d success\n", ID);
 }
 
 void RRF_Raster::Draw() {

@@ -27,23 +27,19 @@ const std::string ModelKDTree::GenFunc(
 
 	stringstream rst;
 
-	rst << GenFuncRecursion();
+	rst << GenFuncRecursion() << endl;
 
 	// func declaration
-	rst << "void Model";
-	rst << endl << "(" << endl;
-	rst << indent << "// input" << endl;
+	rst << "void Model" << "(";
 	for (int i = 0; i < inputDim; i++)
-		rst << indent << "in float x" << i << "," << endl;
+		rst << "float x" << i << ",";
 	rst << indent << endl;
-	rst << indent << "// output" << endl;
 	for (int i = 0; i < outputDim; i++) {
-		rst << indent << "out float h" << i;
-		if (i == outputDim - 1)
-			rst << endl << ")" << endl;
-		else
-			rst << "," << endl;
+		rst << "out float h" << i;
+		if (i < outputDim - 1)
+			rst << ",";
 	}
+	rst << ")" << endl;
 
 	// func definition
 	rst << "{" << endl;
@@ -57,7 +53,7 @@ const std::string ModelKDTree::GenFunc(
 	rst << endl;
 
 	// call root
-	rst << indent << GetFuncName() << GenCallArgList("x", "h") << endl;
+	rst << indent << GetFuncName() << GenCallArgList("x", "h") << endl << endl;
 
 	// map back
 	rst << indent << "// map back" << endl;
@@ -81,6 +77,7 @@ const string ModelKDTree::GenFuncRecursion() const {
 	}
 
 	const string indent = "    ";
+	const string indent2 = indent + indent;
 
 	stringstream rst;
 
@@ -109,35 +106,22 @@ const string ModelKDTree::GenFuncRecursion() const {
 	}
 
 	// func declaration
-	rst << "void " << GetFuncName();
-	rst << endl << "(" << endl;
-	rst << indent << "// input" << endl;
+	rst << "void " << GetFuncName() << "(";
 	for (int i = 0; i < inputDim; i++)
-		rst << indent << "in float x" << i << "," << endl;
-	rst << indent << endl;
-	rst << indent << "// output" << endl;
+		rst << "float x" << i << ",";
+	rst << endl << indent;
 	for (int i = 0; i < outputDim; i++) {
-		rst << indent << "out float h" << i;
-		if (i == outputDim - 1)
-			rst << endl << ")" << endl;
-		else
-			rst << "," << endl;
+		rst << "out float h" << i;
+		if (i < outputDim - 1)
+			rst << ",";
 	}
+	rst << ")" << endl;
 
 	// func definition
 	rst << "{" << endl;
 
 	// kdTree
-	rst << indent << "// KDTree" << endl;
-	if (IsLeaf()) {
-		rst << indent << GetData()->GetFuncName() << "(";
-		for (int i = 0; i < inputDim; i++)
-			rst << "x" << i << ",";
-		for (int i = 0; i < outputDim; i++)
-			rst << "h" << i << (i != outputDim - 1 ? "," : "");
-		rst << ");" << endl;
-	}
-	else {
+	if (HasTwoChild()) {
 		const float axisExtent = GetSpiltAxisExtent();
 		const float delta = axisExtent / 2 * interpolateRatio;
 		const float lowBound = GetSpiltVal() - delta;
@@ -145,7 +129,7 @@ const string ModelKDTree::GenFuncRecursion() const {
 
 		// left
 		rst << indent << "if ( x" << GetAxis() << " < " << lowBound << " ) {" << endl;
-		rst << indent << indent << GetLeft()->GetFuncName() << GenCallArgList("x", "h") << endl;
+		rst << indent2 << GetLeft()->GetFuncName() << GenCallArgList("x", "h") << endl;
 		rst << indent << "}" << endl;
 
 		// interpolate
@@ -154,31 +138,34 @@ const string ModelKDTree::GenFuncRecursion() const {
 		rst << indent << "else if ( x" << GetAxis() << " < " << highBound << " ) {" << endl;
 		// declare output
 		for (int i = 0; i < outputDim; i++)
-			rst << indent << indent << "float " << leftPrefix << i << ";" << endl;
+			rst << indent2 << "float " << leftPrefix << i << ";" << endl;
 		for (int i = 0; i < outputDim; i++)
-			rst << indent << indent << "float " << rightPrefix << i << ";" << endl;
-		rst << indent << indent << endl;
+			rst << indent2 << "float " << rightPrefix << i << ";" << endl;
+		rst << indent2 << endl;
 		// evaluate left and right
-		rst << indent << indent << GetLeft()->GetFuncName() << GenCallArgList("x", leftPrefix) << endl;
-		rst << indent << indent << GetRight()->GetFuncName() << GenCallArgList("x", rightPrefix) << endl;
+		rst << indent2 << GetLeft()->GetFuncName() << GenCallArgList("x", leftPrefix) << endl;
+		rst << indent2 << GetRight()->GetFuncName() << GenCallArgList("x", rightPrefix) << endl;
 		// smootherstep
-		rst << indent << indent << endl;
-		// ((6x-15)x+10)x^3
-		rst << indent << indent << "float t = 0.5 + ( x" << GetAxis() << " - " << GetSpiltVal() << " ) / " << (axisExtent*interpolateRatio) << ";" << endl;
-		rst << indent << indent << "t = ((6*t - 15)*t + 10) * t*t*t;" << endl;
+		rst << indent2 << endl;
+		rst << indent2 << "float t = 0.5 + ( x" << GetAxis() << " - " << GetSpiltVal() << " ) / " << (axisExtent*interpolateRatio) << ";" << endl;
+		rst << indent2 << "t = ((6*t - 15)*t + 10) * t*t*t;" << endl;
 		for (int i = 0; i < outputDim; i++) {
-			rst << indent << indent << "h" << i <<
+			rst << indent2 << "h" << i <<
 				" = ( 1 - t ) * " << leftPrefix << i << " + t * " << rightPrefix << i << ";" << endl;
 		}
 		rst << indent << "}" << endl;
 
 		// right
 		rst << indent << "else {" << endl;
-		rst << indent << indent << GetRight()->GetFuncName() << GenCallArgList("x", "h") << endl;
+		rst << indent2 << GetRight()->GetFuncName() << GenCallArgList("x", "h") << endl;
 		rst << indent << "}" << endl;
 	}
-
-	rst << endl;
+	else if (IsLeaf())
+		rst << indent << GetData()->GetFuncName() << GenCallArgList("x","h") << endl;
+	else {
+		printf("ERROR: current not support single child");
+		return ERROR;
+	}
 
 	rst << "}" << endl;
 

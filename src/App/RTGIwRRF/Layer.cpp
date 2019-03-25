@@ -107,37 +107,26 @@ const string Layer::GenFunc(bool genUnits) const {
 		return ERROR;
 	}
 
+	const string indent = "    ";
+
 	stringstream rst;
 
-	if (genUnits) {
-		for (auto unit : units) {
-			auto unitFunc = unit->GenFunc();
-			if (IsError(unitFunc))
-				return ERROR;
-
-			rst << unitFunc << endl;
-		}
-	}
-
 	// layer func declaration
-	rst << "void " << GetFuncName();
-	rst << endl << "(" << endl;
+	rst << "void " << GetFuncName() << "(";
 	for (int i = 0; i < GetInputDim(); i++)
-		rst << "    in float x" << i << "," << endl;
-	rst << "    " << endl;
+		rst << "float x" << i << ",";
+	rst << endl << indent;
 	for (int i = 0; i < GetOutputDim(); i++) {
-		rst << "    out float h" << i;
-		if (i == GetOutputDim() - 1)
-			rst << endl << ")" << endl;
-		else
-			rst << "," << endl;
+		rst << "out float h" << i;
+		if (i < GetOutputDim() - 1)
+			rst << ",";
 	}
+	rst << ")" << endl;
 
 	// layer func definition
 
 	rst << "{" << endl;
 
-	// compute unit
 	switch (connection)
 	{
 	case Connection::Dense: {
@@ -153,8 +142,8 @@ const string Layer::GenFunc(bool genUnits) const {
 
 		// compute h
 		for (int i = 0; i < GetOutputDim(); i++) {
-			rst << "    h" << i << " = "
-				<< units[i]->GetFuncName() << inArgList.str() << "; "
+			rst << indent << "h" << i << " = "
+				<< units[i]->GenComputeExpr() << "; "
 				<< endl;
 		}
 

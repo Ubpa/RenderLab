@@ -20,12 +20,14 @@ bool InitShaders(const vector<int>  & IDs);
 
 int main(int argc, char *argv[])
 {
-	cout << "Init shaders ..." << endl;
-	if (!InitShaders({ 3,12,13,14,15,16 })) {
-		cout << "Init shaders failed." << endl;
+	cout << "Gen shaders ..." << endl;
+	if (!InitShaders({ 3, 14 })) {
+		cout << "Gen shaders failed." << endl;
 		return 1;
 	}
-	cout << "Init shaders completed!" << endl;
+	cout << "Gen shaders completed!" << endl;
+
+	//return 0;
 
 	QApplication a(argc, argv);
 

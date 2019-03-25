@@ -83,17 +83,16 @@ const string Model::GenFunc(bool genLayers) const {
 	const string indent = "    ";
 
 	// func declaration
-	rst << "void " << GetFuncName();
-	rst << endl << "(" << endl;
+	rst << "void " << GetFuncName() << "(";
 	for (int i = 0; i < inputDim; i++)
-		rst << indent << "in float x" << i << "," << endl;
-	rst << "    " << endl;
+		rst << "float x" << i << ",";
+	rst << endl << indent;
 	for (int i = 0; i < outputDim; i++) {
-		rst << indent << "out float h_" << layers.size() << "_" << i;
+		rst << "out float h_" << layers.size() << "_" << i;
 		if (i == outputDim - 1)
-			rst << endl << ")" << endl;
+			rst << ")" << endl;
 		else
-			rst << "," << endl;
+			rst << ",";
 	}
 
 	// func definition
@@ -103,42 +102,35 @@ const string Model::GenFunc(bool genLayers) const {
 	for (int i = 0; i < layers.size(); i++) {
 		auto const layer = layers[i];
 
-		rst << indent << "// ------------------------ [ layer " << i << " ]" << endl << endl;
-
-		// output
+		// declare output
 		if (i < layers.size() - 1) {
+			rst << indent << "float ";
 			for (int j = 0; j < layer->GetOutputDim(); j++)
-				rst << indent << "float h_" << (i + 1) << "_" << j << ";" << endl;
-			rst << indent << endl;
+				rst << "h_" << (i + 1) << "_" << j << (j<layer->GetOutputDim()-1?",":";");
+			rst << endl;
 		}
 
 		// call layer func
-		rst << indent << layer->GetFuncName() << endl;
-		rst << indent << "(" << endl;
+		rst << indent << layer->GetFuncName() << "(";
 
-		// input
-		rst << indent << indent << "// input" << endl;
+		// call layer func -- input
 		if (i == 0) {
 			for (int j = 0; j < layer->GetInputDim(); j++)
-				rst << indent << indent << "x" << j << "," << endl;
+				rst << "x" << j << ",";
 		}
 		else {
 			for (int j = 0; j < layer->GetInputDim(); j++)
-				rst << indent << indent << "h_" << i << "_" << j << "," << endl;
+				rst << "h_" << i << "_" << j << ",";
 		}
 
-		// output
-		rst << indent << indent << endl;
-		rst << indent << indent << "// output" << endl;
+		// call layer func -- output
 		for (int j = 0; j < layer->GetOutputDim(); j++) {
-			rst << indent << indent << "h_" << (i + 1) << "_" << j;
+			rst << "h_" << (i + 1) << "_" << j;
 			if (j < layer->GetOutputDim() - 1)
-				rst << "," << endl;
-			else
-				rst << endl;
+				rst << ",";
 		}
 
-		rst << indent << ");" << endl << endl;
+		rst << ");" << endl << endl;
 	}
 
 	rst << "}" << endl;

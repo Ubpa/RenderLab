@@ -102,6 +102,12 @@ vec3 BSDF(vec3 norm, vec3 wo, vec3 wi, vec3 color, float roughness, float ao, fl
 float Visibility(vec3 lightToFrag, int id);
 float Visibility(vec3 lightToFrag, samplerCube depthMap);
 
+float tanh(float x) {
+	float expZ = exp(x);
+    float invExpZ = 1 / expZ;
+    return (expZ - invExpZ) / (expZ + invExpZ);
+}
+
 // template declaration
 void $funcname$
 (
