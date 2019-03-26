@@ -1,0 +1,120 @@
+{
+    "nodeID": 0,
+    "rrmse": 0.21584062795522294,
+    "spiltAxis": 9,
+    "spiltVal": 0.5,
+    "left": {
+        "nodeID": 1,
+        "rrmse": 0.20045357236722852,
+        "spiltAxis": 5,
+        "spiltVal": 0.5,
+        "left": {
+            "nodeID": 2,
+            "rrmse": 0.19466819962857176,
+            "spiltAxis": 7,
+            "spiltVal": 0.5,
+            "left": {
+                "nodeID": 3,
+                "rrmse": 0.2096699263036597,
+                "spiltAxis": -1,
+                "spiltVal": -1,
+                "left": null,
+                "right": null
+            },
+            "right": {
+                "nodeID": 4,
+                "rrmse": 0.20399053179269705,
+                "spiltAxis": 6,
+                "spiltVal": 0.5,
+                "left": {
+                    "nodeID": 5,
+                    "rrmse": 0.2073203281977129,
+                    "spiltAxis": -1,
+                    "spiltVal": -1,
+                    "left": null,
+                    "right": null
+                },
+                "right": {
+                    "nodeID": 6,
+                    "rrmse": 0.21128361188062486,
+                    "spiltAxis": -1,
+                    "spiltVal": 0.5,
+                    "left": null,
+                    "right": null
+                }
+            }
+        },
+        "right": {
+            "nodeID": 7,
+            "rrmse": 0.18905543082926096,
+            "spiltAxis": -1,
+            "spiltVal": -1,
+            "left": null,
+            "right": null
+        }
+    },
+    "right": {
+        "nodeID": 8,
+        "rrmse": 0.20993025687190625,
+        "spiltAxis": 5,
+        "spiltVal": 0.5,
+        "left": {
+            "nodeID": 9,
+            "rrmse": 0.19130999736658624,
+            "spiltAxis": 6,
+            "spiltVal": 0.5,
+            "left": {
+                "nodeID": 10,
+                "rrmse": 0.1862624325885908,
+                "spiltAxis": -1,
+                "spiltVal": -1,
+                "left": null,
+                "right": null
+            },
+            "right": {
+                "nodeID": 11,
+                "rrmse": 0.2058625109260878,
+                "spiltAxis": 4,
+                "spiltVal": 0.5,
+                "left": {
+                    "nodeID": 12,
+                    "rrmse": 0.198720167208294,
+                    "spiltAxis": -1,
+                    "spiltVal": 0.25,
+                    "left": null,
+                    "right": null
+                },
+                "right": {
+                    "nodeID": 13,
+                    "rrmse": 0.2053635495101842,
+                    "spiltAxis": -1,
+                    "spiltVal": 0.5,
+                    "left": null,
+                    "right": null
+                }
+            }
+        },
+        "right": {
+            "nodeID": 14,
+            "rrmse": 0.19311735408965838,
+            "spiltAxis": 6,
+            "spiltVal": 0.5,
+            "left": {
+                "nodeID": 15,
+                "rrmse": 0.1760355366229829,
+                "spiltAxis": -1,
+                "spiltVal": -1,
+                "left": null,
+                "right": null
+            },
+            "right": {
+                "nodeID": 16,
+                "rrmse": 0.178083109320196,
+                "spiltAxis": -1,
+                "spiltVal": 0.5,
+                "left": null,
+                "right": null
+            }
+        }
+    }
+}

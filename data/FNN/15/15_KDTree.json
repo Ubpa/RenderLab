@@ -1,0 +1,22 @@
+{
+    "nodeID": 0,
+    "rrmse": 0.2962923664238017,
+    "spiltAxis": 8,
+    "spiltVal": 0.5,
+    "left": {
+        "nodeID": 1,
+        "rrmse": 0.28609795048944187,
+        "spiltAxis": -1,
+        "spiltVal": 0.5,
+        "left": null,
+        "right": null
+    },
+    "right": {
+        "nodeID": 2,
+        "rrmse": 0.29037191206497526,
+        "spiltAxis": -1,
+        "spiltVal": 0.5,
+        "left": null,
+        "right": null
+    }
+}

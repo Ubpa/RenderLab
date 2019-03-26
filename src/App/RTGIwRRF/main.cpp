@@ -2,6 +2,8 @@
 
 #include <CppUtil/Basic/File.h>
 
+#include <3rdParty/docopt/docopt.h>
+
 #include <QtWidgets/QApplication>
 
 #include <qfile.h>
@@ -18,16 +20,30 @@ using namespace std;
 void ShowArgRst(const map<string, docopt::value> & rst);
 bool InitShaders(const vector<int>  & IDs);
 
+static const char USAGE[] =
+R"(RTGIwRRF
+
+    Usage:
+      RTGIwRRF [-g]
+
+    Options:
+      -g   generate shader
+)";
+
 int main(int argc, char *argv[])
 {
-	cout << "Gen shaders ..." << endl;
-	if (!InitShaders({ 3, 12, 13, 14, 15, 16 })) {
-		cout << "Gen shaders failed." << endl;
-		return 1;
-	}
-	cout << "Gen shaders completed!" << endl;
+	vector<string> args{ argv + 1, argv + argc };
+	auto result = docopt::docopt(USAGE, args);
+	ShowArgRst(result);
 
-	//return 0;
+	if (result.find("-g") != result.end()) {
+		cout << "Gen shaders ..." << endl;
+		if (!InitShaders({ 3, 12, 13, 14, 15, 16 })) {
+			cout << "Gen shaders failed." << endl;
+			return 1;
+		}
+		cout << "Gen shaders completed!" << endl;
+	}
 
 	QApplication a(argc, argv);
 
