@@ -21,7 +21,7 @@ bool InitShaders(const vector<int>  & IDs);
 int main(int argc, char *argv[])
 {
 	cout << "Gen shaders ..." << endl;
-	if (!InitShaders({ 3, 14 })) {
+	if (!InitShaders({ 3, 12, 13, 14, 15, 16 })) {
 		cout << "Gen shaders failed." << endl;
 		return 1;
 	}
