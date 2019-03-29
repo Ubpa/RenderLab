@@ -9,9 +9,21 @@
 namespace CppUtil {
 	namespace Basic {
 		namespace Math {
-			const float EPSILON = 1e-6f;
-			const float PI = 3.14159265358979323f;
-			const float INV_PI = 0.318309886183790672f;
+			constexpr float EPSILON = 1e-6f;
+			constexpr float PI = 3.14159265358979323f;
+			constexpr float INV_PI = 0.318309886183790672f;
+
+			template<typename T, typename U>
+			inline T Lerp(T v0, T v1, U t) {
+				return (static_cast<U>(1) - t)*v0 + t * v1;
+			}
+
+			inline float Radians(const float degree) {
+				return (PI / 180) * degree;
+			}
+			inline float Degrees(const float radians) {
+				return (180 / PI) * radians;
+			}
 
 			glm::vec2 RandInCircle();
 

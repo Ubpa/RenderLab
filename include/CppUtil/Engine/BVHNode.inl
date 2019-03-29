@@ -18,13 +18,13 @@ void CppUtil::Engine::BVHNode<T, HolderT>::Build(size_t maxLeafSize) {
 	double minCost = DBL_MAX;
 	for (int dim = 0; dim < 3; dim++) {
 		// 1. compute buckets
-		double bucketLen = bb.GetExtent()[dim] / bucketNum;
+		double bucketLen = bb.Diagonal()[dim] / bucketNum;
 		double left = bb.minP[dim];
 		vector<vector<T::Ptr>> buckets(bucketNum);
 		vector<BBox> boxesOfBuckets(bucketNum);
 		for (int i = 0; i < range; i++) {
 			BBox box = GetBBox(objs[i + start]);
-			double center = box.GetCenter()[dim];
+			double center = box.Center()[dim];
 			int bucketID = min(static_cast<int>((center - left) / bucketLen), bucketNum - 1);
 			buckets[bucketID].push_back(objs[i + start]);
 			boxesOfBuckets[bucketID].Expand(box);
@@ -51,8 +51,8 @@ void CppUtil::Engine::BVHNode<T, HolderT>::Build(size_t maxLeafSize) {
 		double minCostDim = DBL_MAX;
 		for (int leftNum = 1; leftNum <= bucketNum - 1; leftNum++) {
 			int rightNum = bucketNum - leftNum;
-			double leftS = leftBox[leftNum].GetSurfaceArea();
-			double rightS = rightBox[rightNum].GetSurfaceArea();
+			double leftS = leftBox[leftNum].SurfaceArea();
+			double rightS = rightBox[rightNum].SurfaceArea();
 			double costDim = leftS * leftAccNum[leftNum] + rightS * rightAccNum[rightNum];
 			if (costDim < minCostDim) {
 				bestLeftNum = leftNum;
