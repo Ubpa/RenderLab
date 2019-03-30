@@ -7,15 +7,11 @@ namespace CppUtil {
 	namespace Basic {
 		template <typename T>
 		class Vector;
-		template <typename T>
-		class Normal;
 
 		template <typename T>
 		class Point : public Val3<T> {
 		public:
 			using Val3::Val3;
-			//explicit Point(const Vector<T> &v) : x(v.x), y(v.y), z(v.z) { }
-			//explicit Point(const Normal<T> &n) : x(n.x), y(n.y), z(n.z) { }
 
 		public:
 			static float Distance2(const Point<T> & p0, const Point<T> & p1) {
@@ -40,11 +36,17 @@ namespace CppUtil {
 			}
 
 			static Point<T> Min(const Point<T> & p0, const Point<T> & p1) {
-				return Point<T>(std::min(p0.x,p1.x), std::min(p0.y, p1.y), std::min(p0.z, p1.z))
+				return Point<T>(std::min(p0.x, p1.x), std::min(p0.y, p1.y), std::min(p0.z, p1.z));
+			}
+			const Point<T> MinWith(const Point<T> & p) const{
+				return Point<T>(std::min(x, p.x), std::min(y, p.y), std::min(z, p.z));
 			}
 
 			static Point<T> Max(const Point<T> & p0, const Point<T> & p1) {
 				return Point<T>(std::max(p0.x, p1.x), std::max(p0.y, p1.y), std::max(p0.z, p1.z));
+			}
+			const Point<T> MaxWith(const Point<T> & p) const {
+				return Point<T>(std::max(x, p.x), std::max(y, p.y), std::max(z, p.z));
 			}
 
 		public:

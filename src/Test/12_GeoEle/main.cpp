@@ -2,6 +2,7 @@
 #include <CppUtil/Basic/Point.h>
 #include <CppUtil/Basic/Normal.h>
 #include <CppUtil/Basic/Transform.h>
+#include <CppUtil/Basic/EulerYXZ.h>
 
 using namespace CppUtil::Basic;
 using namespace std;
@@ -12,12 +13,13 @@ int main() {
 	Normalf n(1, 2, 3);
 	Mat4f mat(2);
 	Transform tsf(1.f);
+	Quatf q(v, 45);
+	EulerYXZf euler(-90, 270, 100);
 
 	auto view = Transform::LookAt(p0, p1);
 	auto perspective = Transform::Perspcetive(60, 16.f / 9.f, 0.01f, 100.f);
 	auto w2n = perspective * view;
 	auto orthographic = Transform::Orthographic(1, 1, 0.01f, 100.f);
-
 
 	cout << 3 * v << endl;
 	cout << p0 << endl
@@ -25,7 +27,7 @@ int main() {
 		<< typeid(p1 - p0).name() << endl;
 	cout << n << endl;
 	cout << Pointf::Lerp(p0, p1, 0.5) << endl;
-	cout << p0.Distance(p1) << endl;
+	cout << p0.DistanceWith(p1) << endl;
 	cout << v.Cross(p1 - p0) << endl;
 	cout << mat << endl;
 	cout << mat.Inverse() << endl;
@@ -46,6 +48,16 @@ int main() {
 	cout << perspective(Pointf(0, 0, -100.f)) << endl;
 	cout << orthographic(Pointf(0, 0, -0.01f)) << endl;
 	cout << orthographic(Pointf(0, 0, -100.f)) << endl;
+
+	cout << q << endl;
+	cout << q.Inverse() * q << endl;
+	cout << q * Pointf(1, 1, 1) << endl;
+	cout << Transform::Rotate(q).ToQuat() << endl;
+	cout << euler << endl;
+	auto e2m2e = Transform::Rotate(euler).ToEulerYXZ();
+	cout << e2m2e << endl;
+	cout << euler.ToQuat() << endl;
+	cout << e2m2e.ToQuat() << endl;
 
 	return 0;
 }

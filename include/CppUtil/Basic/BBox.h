@@ -24,10 +24,6 @@ namespace CppUtil {
 			BBox(const BBox & bbox) : minP(bbox.minP), maxP(bbox.maxP) { }
 
 		public:
-			const Point<T> & GetMinP() const { return minP; }
-			Point<T> & GetMinP() { return minP; }
-			const Point<T> & GetMaxP() const { return maxP; }
-			Point<T> & GetMaxP() { return maxP; }
 			const Point<T> & operator[](int zeroOrOne) const { return data[zeroOrOne]; }
 			Point<T> & operator[](int zeroOrOne) { return data[zeroOrOne]; }
 
@@ -35,9 +31,9 @@ namespace CppUtil {
 			bool HasNaN() const { return minP.HasNaN() || maxP.HasNaN(); }
 			Point<T> Corner(int i) const {
 				return Point<T>(
-					data[(corner & 1)].x,
-					data[(corner & 2)].y,
-					data[(corner & 4)].z);
+					_data[(i & 1)].x,
+					_data[(i & 2)].y,
+					_data[(i & 4)].z);
 			}
 
 
@@ -96,13 +92,13 @@ namespace CppUtil {
 				return *this;
 			}
 			const BBox Union(const Point<T> & p) const {
-				const auto minP = Union(minP, p);
-				const auto maxP = Union(maxP, p);
+				const auto minP = Point<T>::Min(minP, p);
+				const auto maxP = Point<T>::Max(maxP, p);
 				return BBox(minP, maxP);
 			}
 			BBox & UnionWith(const Point<T> & p) {
-				minP = Union(minP, p);
-				maxP = Union(maxP, p);
+				minP = Point<T>::Min(minP, p);
+				maxP = Point<T>::Max(maxP, p);
 				return *this;
 			}
 
@@ -137,10 +133,10 @@ namespace CppUtil {
 				return os;
 			}
 
-		private:
+		public:
 			union
 			{
-				Point<T> data;
+				Point<T> _data[2];
 				struct
 				{
 					Point<T> minP, maxP;

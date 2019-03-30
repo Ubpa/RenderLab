@@ -39,8 +39,8 @@ namespace CppUtil {
 			}
 
 		public:
-			T operator[](int i) const { return data[i]; }
-			T & operator[](int i) { return data[i]; }
+			T operator[](int i) const { return _data[i]; }
+			T & operator[](int i) { return _data[i]; }
 
 			bool operator==(const Val3<T> & rhs) const {
 				return x == rhs.x && y == rhs.y && z == rhs.z;

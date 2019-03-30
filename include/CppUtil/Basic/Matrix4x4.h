@@ -48,6 +48,8 @@ namespace CppUtil {
 					&& m[3][0] == zero && m[3][1] == zero && m[3][2] == zero && m[3][3] == one);
 			}
 
+			T Tr() const { return m[0][0] + m[1][1] + m[2][2] + m[3][3]; }
+
 			Matrix4x4 Transpose() const {
 				return Matrix4x4(m[0][0], m[1][0], m[2][0], m[3][0], m[0][1],
 					m[1][1], m[2][1], m[3][1], m[0][2], m[1][2],

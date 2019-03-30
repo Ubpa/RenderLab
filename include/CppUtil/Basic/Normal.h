@@ -1,15 +1,10 @@
 #ifndef _CPPUTIL_BASIC_MATH_NORMAL_H_
 #define _CPPUTIL_BASIC_MATH_NORMAL_H_
 
-#include <iostream>
+#include <CppUtil/Basic/Vector.h>
 
 namespace CppUtil {
 	namespace Basic {
-		template <typename T>
-		class Vector;
-		template <typename T>
-		class Point;
-
 		template <typename T>
 		class Normal : public Vector<T> {
 		public:

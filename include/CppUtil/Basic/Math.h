@@ -19,10 +19,10 @@ namespace CppUtil {
 			}
 
 			inline float Radians(const float degree) {
-				return (PI / 180) * degree;
+				return (PI / 180.f) * degree;
 			}
 			inline float Degrees(const float radians) {
-				return (180 / PI) * radians;
+				return (180.f / PI) * radians;
 			}
 
 			glm::vec2 RandInCircle();

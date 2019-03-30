@@ -4,6 +4,8 @@
 #include <CppUtil/Basic/Point.h>
 #include <CppUtil/Basic/Vector.h>
 #include <CppUtil/Basic/Normal.h>
+#include <CppUtil/Basic/Quat.h>
+#include <CppUtil/Basic/EulerYXZ.h>
 #include <CppUtil/Basic/Matrix4x4.h>
 #include <CppUtil/Basic/BBox.h>
 #include <CppUtil/Basic/Ray.h>
@@ -26,11 +28,11 @@ namespace CppUtil {
 			const Mat4f & GetInverseMatrix() const { return mInv; }
 
 		public:
-			Transform Inverse() const {
+			const Transform Inverse() const {
 				return Transform(mInv, m);
 			}
 
-			Transform Transpose() const {
+			const Transform Transpose() const {
 				return Transform(m.Transpose(), mInv.Transpose());
 			}
 
@@ -48,7 +50,16 @@ namespace CppUtil {
 			static const Transform RotateX(float theta);
 			static const Transform RotateY(float theta);
 			static const Transform RotateZ(float theta);
+
+			// first Y, then X, final Z
+			static const Transform Rotate(const EulerYXZf & euler) {
+				return RotateZ(euler.z) * RotateX(euler.x) * RotateY(euler.y);
+			}
+			
 			static const Transform Rotate(const Vectorf &axis, float theta);
+			static const Transform Rotate(const Quatf & q) {
+				return Rotate(q.GetAxis(), q.GetTheta());
+			}
 
 			/*
 			将世界坐标转换到相机坐标
@@ -76,6 +87,9 @@ namespace CppUtil {
 				zFar: 远平面 z
 			*/
 			static const Transform Perspcetive(float fovy, float aspect, float zNear, float zFar);
+
+			const Quatf ToQuat() const;
+			const EulerYXZf ToEulerYXZ() const;
 
 		public:
 			const Pointf operator()(const Pointf & p) const;
