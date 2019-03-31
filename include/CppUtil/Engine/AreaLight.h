@@ -1,15 +1,15 @@
 #ifndef _ENGINE_LIGHT_AREA_LIGHT_H_
 #define _ENGINE_LIGHT_AREA_LIGHT_H_
 
-#include <CppUtil/Engine/LightBase.h>
+#include <CppUtil/Engine/Light.h>
 #include <CppUtil/Basic/UniformGridSampler2D.h>
 
 namespace CppUtil {
 	namespace Engine {
-		class AreaLight : public LightBase {
+		class AreaLight : public Light {
 			ELE_SETUP(AreaLight)
 		public:
-			AreaLight(const glm::vec3 &color = glm::vec3(1), float intensity = 1, float width = 1, float height = 1)
+			AreaLight(const RGBf &color = RGBf(1), float intensity = 1, float width = 1, float height = 1)
 				: color(color), intensity(intensity), width(width), height(height) { }
 
 			// 采样 L 函数
@@ -18,33 +18,34 @@ namespace CppUtil {
 			// @arg1 out，wi 起点为灯，为单位向量
 			// @arg2 out，p 点到灯光采样点的距离
 			// @arg3 out，概率密度 probability density
-			virtual glm::vec3 Sample_L(const glm::vec3 & p, glm::vec3 & wi, float & distToLight, float & pd) const;
+			virtual RGBf Sample_L(const Pointf & p, Normalf & wi, float & distToLight, float & PD) const;
 
 			// 获取 L
-			// 如果不能击中光源，则返回 vec3(0)
-			virtual glm::vec3 GetL(const glm::vec3& p, const glm::vec3 & dirToLight, float & distToLight);
+			// 如果不能击中光源，则返回 0
+			virtual RGBf GetL(const Pointf & p, const Vectorf & dirToLight, float & distToLight);
 
 			// 获取 L
 			// 如果 p 不可能被照射到，则返回 vec3(0)
-			virtual glm::vec3 GetMaxL(const glm::vec3 & p) const;
+			virtual RGBf GetMaxL(const Pointf & p) const = 0;
+
+			// 直接返回最大光照
+			virtual RGBf GetMaxL() const { return color * intensity; }
 
 			// 概率密度函数
 			// !!! p，wi 处于灯的坐标空间中
-			virtual float PDF(const glm::vec3& p, const glm::vec3& wi) const;
+			virtual float PDF(const Pointf & p, const Normalf & wi) const;
 
 			virtual bool IsDelta() const { return false; }
 
-			virtual glm::vec3 GetMaxL() const { return color * intensity; }
-
 		public:
-			glm::vec3 color;
+			RGBf color;
 			float intensity;
 			float width;
 			float height;
 
 		private:
 			// dirToLight 不必是 单位向量
-			bool Hit(const glm::vec3& p, const glm::vec3 & dirToLight, glm::vec3 & hitPos) const;
+			bool Hit(const Pointf & p, const Vectorf & dirToLight, Pointf & hitPos) const;
 
 			Basic::UniformGridSampler2D sampler;
 		};

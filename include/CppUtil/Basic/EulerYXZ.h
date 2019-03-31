@@ -18,9 +18,9 @@ namespace CppUtil {
 				return Quat<T>::Rotate(*this);
 			}
 		};
-
-		using EulerYXZf = EulerYXZ<float>;
 	}
+
+	using EulerYXZf = Basic::EulerYXZ<float>;
 }
 
 #endif // !_CPPUTIL_BASIC_MATH_EULER_YXZ_H_

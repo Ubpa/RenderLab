@@ -29,10 +29,8 @@ namespace CppUtil {
 				return Normal(cos(phi), 0, -sin(phi));
 			}
 		};
-
-		using Normalf = Normal<float>;
-		using Normali = Normal<int>;
 	}
+	using Normalf = Basic::Normal<float>;
 }
 
 #endif // !_CPPUTIL_BASIC_MATH_NORMAL_H_

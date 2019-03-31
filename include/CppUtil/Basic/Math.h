@@ -90,10 +90,6 @@ namespace CppUtil {
 			// n 是单位向量
 			glm::mat3 GenCoordSpace(const glm::vec3 & n);
 
-			inline float Illum(const glm::vec3 & color) {
-				return 0.2126f * color.r + 0.7152f * color.g + 0.0722f * color.b;
-			}
-
 			template<typename Type>
 			Type CastTo(const std::string & str) {
 				std::istringstream iss(str);

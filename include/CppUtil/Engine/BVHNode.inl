@@ -5,7 +5,7 @@ void CppUtil::Engine::BVHNode<T, HolderT>::Build(size_t maxLeafSize) {
 	constexpr int bucketNum = 8;
 
 	for (size_t i = start; i < start + range; i++)
-		bb.Expand(GetBBox(objs[i]));
+		bb.UnionWith(GetBBox(objs[i]));
 
 	if (range < maxLeafSize) {
 		l = nullptr;
@@ -21,28 +21,28 @@ void CppUtil::Engine::BVHNode<T, HolderT>::Build(size_t maxLeafSize) {
 		double bucketLen = bb.Diagonal()[dim] / bucketNum;
 		double left = bb.minP[dim];
 		std::vector<std::vector<T::Ptr>> buckets(bucketNum);
-		std::vector<BBox> boxesOfBuckets(bucketNum);
+		std::vector<BBoxf> boxesOfBuckets(bucketNum);
 		for (int i = 0; i < range; i++) {
-			BBox box = GetBBox(objs[i + start]);
+			BBoxf box = GetBBox(objs[i + start]);
 			double center = box.Center()[dim];
 			int bucketID = min(static_cast<int>((center - left) / bucketLen), bucketNum - 1);
 			buckets[bucketID].push_back(objs[i + start]);
-			boxesOfBuckets[bucketID].Expand(box);
+			boxesOfBuckets[bucketID].UnionWith(box);
 		}
 
 		// 2. accumulate buckets
-		std::vector<BBox> leftBox(bucketNum);
+		std::vector<BBoxf> leftBox(bucketNum);
 		std::vector<size_t> leftAccNum(bucketNum);
 		leftAccNum[0] = 0;
-		std::vector<BBox> rightBox(bucketNum);
+		std::vector<BBoxf> rightBox(bucketNum);
 		std::vector<size_t> rightAccNum(bucketNum);
 		rightAccNum[0] = 0;
 		for (int i = 1; i <= bucketNum - 1; i++) {
 			leftBox[i] = leftBox[i - 1];
-			leftBox[i].Expand(boxesOfBuckets[i - 1]);
+			leftBox[i].UnionWith(boxesOfBuckets[i - 1]);
 			leftAccNum[i] = leftAccNum[i - 1] + buckets[i - 1].size();
 			rightBox[i] = rightBox[i - 1];
-			rightBox[i].Expand(boxesOfBuckets[bucketNum - i]);
+			rightBox[i].UnionWith(boxesOfBuckets[bucketNum - i]);
 			rightAccNum[i] = rightAccNum[i - 1] + buckets[bucketNum - i].size();
 		}
 

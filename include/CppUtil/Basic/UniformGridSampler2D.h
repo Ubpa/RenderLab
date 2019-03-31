@@ -7,7 +7,7 @@ namespace CppUtil {
 	namespace Basic {
 		class UniformGridSampler2D : public Sampler2D {
 		public:
-			glm::vec2 GetSample() const;
+			virtual const Point2f GetSample() const;
 		};
 	}
 }

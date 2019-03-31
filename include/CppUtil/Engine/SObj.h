@@ -52,8 +52,8 @@ namespace CppUtil {
 			Basic::Transform GetWorldToLocalMatrix() {
 				return GetLocalToWorldMatrix().Inverse();
 			}
-			Basic::Pointf GetWorldPos() {
-				return GetLocalToWorldMatrix()(Basic::Pointf(0));
+			Pointf GetWorldPos() {
+				return GetLocalToWorldMatrix()(Pointf(0));
 			}
 
 		public:

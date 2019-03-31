@@ -177,9 +177,9 @@ namespace CppUtil {
 			os << "[" << q.x << ", " << q.y << ", " << q.z << ", " << q.w << "]";
 			return os;
 		}
-
-		using Quatf = Quat<float>;
 	}
+
+	using Quatf = Basic::Quat<float>;
 }
 
 #endif // !_CPPUTIL_BASIC_MATH_QUAT_H_

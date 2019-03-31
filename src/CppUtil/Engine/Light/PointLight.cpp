@@ -1,14 +1,15 @@
 #include <CppUtil/Engine/PointLight.h>
 
+using namespace CppUtil;
 using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
-using namespace glm;
 using namespace std;
 
-vec3 PointLight::Sample_L(const vec3& p, vec3 & wi, float & distToLight, float & PD) const {
-	float dist2 = dot(p, p);
+RGBf PointLight::Sample_L(const Pointf & p, Normalf & wi, float & distToLight, float & PD) const {
+	const auto d = Vectorf(p);
+	float dist2 = d.Length2();
 	distToLight = sqrt(dist2);
-	wi = - p / distToLight;
+	wi = - d / distToLight;
 	PD = 1.0f + linear * distToLight + quadratic * dist2;
 	return intensity * color;
 }

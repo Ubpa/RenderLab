@@ -4,7 +4,7 @@
 
 #include <CppUtil/Basic/EleVisitor.h>
 
-#include <CppUtil/Engine/Geometry.h>
+#include <CppUtil/Engine/CmptGeometry.h>
 #include <CppUtil/Engine/Sphere.h>
 #include <CppUtil/Engine/Plane.h>
 #include <CppUtil/Engine/TriMesh.h>
@@ -23,13 +23,13 @@ class BVHAccel::BVHInitVisitor : public EleVisitor {
 public:
 	BVHInitVisitor(BVHAccel * holder)
 		: holder(holder) {
-		Reg<Geometry>();
+		Reg<CmptGeometry>();
 		Reg<Sphere>();
 		Reg<Plane>();
 		Reg<TriMesh>();
 	}
 private:
-	void Visit(Geometry::Ptr geo) {
+	void Visit(CmptGeometry::Ptr geo) {
 		auto primitive = geo->GetPrimitive();
 		if (!primitive)
 			return;
@@ -99,7 +99,7 @@ void BVHAccel::Init(SObj::Ptr root) {
 	elements.clear();
 	ele2bbox.clear();
 
-	auto geos = root->GetComponentsInChildren<Geometry>();
+	auto geos = root->GetComponentsInChildren<CmptGeometry>();
 	auto initVisitor = ToPtr(new BVHInitVisitor(this));
 	for (auto geo : geos)
 		geo->Accept(initVisitor);

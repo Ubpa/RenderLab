@@ -21,10 +21,9 @@ namespace CppUtil {
 				y(static_cast<T>(y)),
 				z(static_cast<T>(z)) { }
 
-			template<typename U>
-			explicit Val3(U val) : Val3(val, val, val) { }
+			Val3(T val) : Val3(val, val, val) { }
 
-			Val3() : Val3(0) { }
+			Val3() : Val3(static_cast<T>(0)) { }
 
 			template<typename U, typename V>
 			Val3(const Val2<U> & xy, V z) : Val3(xy.x, xy.y, z) { }
@@ -90,10 +89,9 @@ namespace CppUtil {
 			os << "[" << val3.x << ", " << val3.y << ", " << val3.z << "]";
 			return os;
 		}
-
-		using Val3f = Val3<float>;
-		using Val3i = Val3<int>;
 	}
+
+	using Val3f = Basic::Val3<float>;
 }
 
 #endif // !_CPPUTIL_BASIC_MATH_VAL3_H_

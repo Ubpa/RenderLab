@@ -22,7 +22,7 @@ void CmptTransform::SetRotation(const Quatf & rotation) {
 	this->rotation = rotation;
 }
 
-void CmptTransform::SetScale(const Val3f & scale) {
+void CmptTransform::SetScale(const Vectorf & scale) {
 	dirtyTransform = true;
 	this->scale = scale;
 }

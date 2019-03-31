@@ -23,9 +23,9 @@ namespace CppUtil {
 			};
 		public:
 			TriMesh(const std::vector<uint> & indice,
-				const std::vector<Basic::Pointf> & positions,
-				const std::vector<Basic::Normalf> & normals,
-				const std::vector<Basic::Point2f> & texcoords,
+				const std::vector<Pointf> & positions,
+				const std::vector<Normalf> & normals,
+				const std::vector<Point2f> & texcoords,
 				ENUM_TYPE type = ENUM_TYPE::CODE);
 
 			TriMesh(uint triNum, uint vertexNum,
@@ -42,10 +42,10 @@ namespace CppUtil {
 		public:
 			ENUM_TYPE GetType() const { return type; }
 
-			const std::vector<Basic::Pointf> & GetPositions() const { return positions; }
-			const std::vector<Basic::Normalf> & GetNormals() const { return normals; }
-			const std::vector<Basic::Point2f> & GetTexcoords() const { return texcoords; }
-			const std::vector<Basic::Normalf> & GetTangents() const { return tangents; }
+			const std::vector<Pointf> & GetPositions() const { return positions; }
+			const std::vector<Normalf> & GetNormals() const { return normals; }
+			const std::vector<Point2f> & GetTexcoords() const { return texcoords; }
+			const std::vector<Normalf> & GetTangents() const { return tangents; }
 			const std::vector<uint> & GetIndice() const { return indice; }
 			const std::vector<Triangle::Ptr> & GetTriangles() const { return triangles; }
 
@@ -61,10 +61,10 @@ namespace CppUtil {
 			ENUM_TYPE type;
 
 			std::vector<uint> indice;
-			std::vector<Basic::Pointf> positions;
-			std::vector<Basic::Normalf> normals;
-			std::vector<Basic::Point2f> texcoords;
-			std::vector<Basic::Normalf> tangents;
+			std::vector<Pointf> positions;
+			std::vector<Normalf> normals;
+			std::vector<Point2f> texcoords;
+			std::vector<Normalf> tangents;
 
 			std::vector<Triangle::Ptr> triangles;
 		};

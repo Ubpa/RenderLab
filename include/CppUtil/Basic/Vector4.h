@@ -93,10 +93,9 @@ namespace CppUtil {
 		const Vector4<T> operator * (U a, const Vector4<T> & v) {
 			return v * a;
 		}
-
-		using Vector4f = Vector4<float>;
-		using Vector4i = Vector4<int>;
 	}
+
+	using Vector4f = Basic::Vector4<float>;
 }
 
 #endif // !_CPPUTIL_BASIC_MATH_VECTOR4_H_

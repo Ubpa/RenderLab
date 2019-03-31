@@ -180,7 +180,7 @@ namespace CppUtil {
 			friend std::ostream & operator<<(std::ostream & os, const Mat3x3 & mat) {
 				os << "[" << mat(0, 0) << ", " << mat(0, 1) << ", " << mat(0, 2) << endl;
 				os << mat(1, 0) << ", " << mat(1, 1) << ", " << mat(1, 2) << endl;
-				os << mat(2, 0) << ", " << mat(2, 1) << ", " << mat(2, 2) << "]" << endl;
+				os << mat(2, 0) << ", " << mat(2, 1) << ", " << mat(2, 2) << "]";
 				return os;
 			}
 
@@ -190,10 +190,9 @@ namespace CppUtil {
 			// m[i][j] 为第 j 行第 j 列
 			Vector<T> m[3];
 		};
-
-		using Mat3f = Mat3x3<float>;
-		// using Mat3d = Mat3x3<double>;
 	}
+
+	using Mat3f = Basic::Mat3x3<float>;
 
 }
 

@@ -31,7 +31,7 @@ namespace CppUtil {
 			Basic::Ptr<BVHNode<Basic::Element, BVHAccel>> GetBVHRoot() const { return bvhRoot; }
 			const Basic::Transform & GetEleW2LMat(Basic::Ptr<Basic::Element> element);
 			const Basic::Transform & GetEleL2WMat(Basic::Ptr<Basic::Element> element);
-			const Basic::BBoxf & GetBBox(Basic::Ptr<Basic::Element> element) { return ele2bbox[element]; }
+			const BBoxf & GetBBox(Basic::Ptr<Basic::Element> element) { return ele2bbox[element]; }
 			const Basic::Ptr<SObj> GetSObj(Basic::Ptr<Basic::Element> element);
 
 		private:
@@ -47,7 +47,7 @@ namespace CppUtil {
 			class BVHInitVisitor;
 			friend class BVHInitVisitor;
 			std::vector<Basic::Ptr<Basic::Element>> elements;
-			std::map<Basic::Ptr<Basic::Element>, Basic::BBoxf> ele2bbox;
+			std::map<Basic::Ptr<Basic::Element>, BBoxf> ele2bbox;
 
 		};
 	}

@@ -11,8 +11,6 @@ namespace CppUtil {
 
 		template<typename T, typename HolderT>
 		class BVHNode : public Basic::Element {
-			using BBox = Basic::BBoxf;
-
 			ELE_SETUP(BVHNode)
 		public:
 			BVHNode(HolderT * holder, std::vector<Basic::Ptr<T>> & objs, size_t start, size_t range, size_t maxLeafSize = 4)
@@ -24,14 +22,14 @@ namespace CppUtil {
 
 			HolderT * GetHolder()const { return holder; }
 			const std::vector<Basic::Ptr<T>> & GetObjs() const { return objs; }
-			const BBox & GetBBox() const { return bb; }
+			const BBoxf & GetBBox() const { return bb; }
 			size_t GetStart() const { return start; }
 			size_t GetRange() const { return range; }
 			BVHNode::Ptr GetL() const { return l; }
 			BVHNode::Ptr GetR() const { return r; }
 
 			// 可通过 模板实例化 来自行定义
-			const BBox GetBBox(Basic::Ptr<T> obj) const {
+			const BBoxf GetBBox(Basic::Ptr<T> obj) const {
 				return holder->GetBBox(obj);
 			}
 
@@ -43,7 +41,7 @@ namespace CppUtil {
 		private:
 			HolderT * holder;
 			std::vector<Basic::Ptr<T>> & objs;
-			BBox bb;       // bounding box of the node
+			BBoxf bb;       // bounding box of the node
 			size_t start;  // start index into the primitive list
 			size_t range;  // range of index into the primitive list
 			BVHNode::Ptr l;    // left child node

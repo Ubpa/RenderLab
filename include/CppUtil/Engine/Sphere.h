@@ -9,8 +9,8 @@ namespace CppUtil {
 		class Sphere : public Primitive {
 			ELE_SETUP(Sphere)
 		public:
-			const Basic::BBoxf GetBBox() const {
-				return Basic::BBoxf(Basic::Pointf(-1.f), Basic::Pointf(1.f));
+			const BBoxf GetBBox() const {
+				return BBoxf(Pointf(-1.f), Pointf(1.f));
 			}
 		};
 	}

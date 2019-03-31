@@ -38,9 +38,9 @@ namespace CppUtil {
 					: Intersector::Rst(isIntersect), closestSObj(nullptr), n(0) { }
 
 				Basic::Ptr<SObj> closestSObj;
-				Basic::Normalf n;
-				Basic::Point2f texcoord;
-				Basic::Normalf tangent;
+				Normalf n;
+				Point2f texcoord;
+				Normalf tangent;
 			};
 
 		public:
@@ -61,8 +61,8 @@ namespace CppUtil {
 			void Visit(Basic::Ptr<Triangle> triangle);
 
 		private:
-			bool Intersect(const Basic::BBoxf & bbox);
-			bool Intersect(const Basic::BBoxf & bbox, float & t0, float & t1);
+			bool Intersect(const BBoxf & bbox);
+			bool Intersect(const BBoxf & bbox, float & t0, float & t1);
 
 		private:
 			Ray ray;

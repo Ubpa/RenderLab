@@ -29,16 +29,18 @@ namespace CppUtil {
 
 		public:
 			bool HasNaN() const { return minP.HasNaN() || maxP.HasNaN(); }
-			Point<T> Corner(int i) const {
+			const Point<T> Corner(int i) const {
 				return Point<T>(
 					_data[(i & 1)].x,
 					_data[(i & 2)].y,
 					_data[(i & 4)].z);
 			}
+			const Point<T> Center() const {
+				return Point<T>::Mid(minP, maxP);
+			}
 
-
-			Vector<T> Diagonal() const { return maxP - minP; }
-			Vector<T> SurfaceArea() const {
+			const Vector<T> Diagonal() const { return maxP - minP; }
+			const T SurfaceArea() const {
 				const auto d = Diagonal();
 				return static_cast<T>(2)*(d.x*d.y + d.x*d.z + d.y*d.z);
 			}
@@ -61,7 +63,7 @@ namespace CppUtil {
 			}
 
 			template<typename U>
-			Point<T> Lerp(const Val3<U> & t) {
+			const Point<T> Lerp(const Val3<U> & t) {
 				return Point<T>(
 					Math::Lerp(minP.x, maxP.x, t.x),
 					Math::Lerp(minP.y, maxP.y, t.y),
@@ -69,7 +71,7 @@ namespace CppUtil {
 				);
 			}
 
-			Vector<T> Offset(const Point<T> & p) const {
+			const Vector<T> Offset(const Point<T> & p) const {
 				Vector<T> o = p - pMin;
 				const auto d = Diagonal();
 				o.x /= d.x;
@@ -143,10 +145,9 @@ namespace CppUtil {
 				};
 			};
 		};
-
-		using BBoxf = BBox<float>;
-		using BBoxi = BBox<int>;
 	}
+
+	using BBoxf = Basic::BBox<float>;
 }
 
 #endif // !_CPPUTIL_BASIC_MATH_BBOX_H_

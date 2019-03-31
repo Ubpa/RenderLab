@@ -47,10 +47,10 @@ namespace CppUtil {
 			struct Coordinate {
 				void Init(const Basic::Transform & tsfm);
 
-				Basic::Pointf pos;
-				Basic::Normalf right;
-				Basic::Normalf up;
-				Basic::Normalf front;
+				Pointf pos;
+				Normalf right;
+				Normalf up;
+				Normalf front;
 			};
 			Coordinate coordinate;
 		};

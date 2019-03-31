@@ -19,10 +19,9 @@ namespace CppUtil {
 				x(static_cast<T>(x)),
 				y(static_cast<T>(y)) { }
 
-			template<typename U>
-			explicit Val2(U val) : Val2(val, val) { }
+			explicit Val2(T val) : Val2(val, val) { }
 
-			Val2() : Val2(0) { }
+			Val2() : Val2(static_cast<T>(0)) { }
 
 			template<typename U>
 			Val2(const Val2<U> & xy) : Val2(xy.x, xy.y) { }
@@ -84,10 +83,9 @@ namespace CppUtil {
 			os << "[" << val2.x << ", " << val2.y << "]";
 			return os;
 		}
-
-		using Val2f = Val2<float>;
-		using Val2i = Val2<int>;
 	}
+
+	using Val2f = Basic::Val2<float>;
 }
 
 #endif // !_CPPUTIL_BASIC_MATH_VAL2_H_

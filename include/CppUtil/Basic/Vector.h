@@ -20,51 +20,51 @@ namespace CppUtil {
 			float Length() const { return std::sqrt(Length2()); }
 
 		public:
-			static T Dot(const Vector<T> & v0, const Vector<T> & v1) {
+			static T Dot(const Vector & v0, const Vector & v1) {
 				return v0.x*v1.x + v0.y*v1.y + v0.z*v1.z;
 			}
-			T Dot(const Vector<T> & v) const {
+			T Dot(const Vector & v) const {
 				return Dot(*this, v);
 			}
 
-			static const Vector<T> Cross(const Vector<T> & v0, const Vector<T> & v1) {
+			static const Vector Cross(const Vector & v0, const Vector & v1) {
 				//  i,  j,  k
 				// x0, y0, z0
 				// x1, y1, z1
-				return Vector<T>(v0.y*v1.z - v0.z*v1.y, v0.z*v1.x - v0.x*v1.z, v0.x*v1.y - v0.y*v1.x);
+				return Vector(v0.y*v1.z - v0.z*v1.y, v0.z*v1.x - v0.x*v1.z, v0.x*v1.y - v0.y*v1.x);
 			}
-			const Vector<T> Cross(const Vector<T> & v) const {
+			const Vector Cross(const Vector & v) const {
 				return Cross(*this, v);
 			}
 
-			const Vector<T> Norm() const {
+			const Vector Norm() const {
 				return *this / Length();
 			}
 
-			Vector<T> & NormSelf() {
+			Vector & NormSelf() {
 				(*this) /= Length();
 				return *this;
 			}
 
 		public:
-			const Vector<T> operator+(const Vector<T> &v) const {
+			const Vector operator+(const Vector &v) const {
 				return Vector(x + v.x, y + v.y, z + v.z);
 			}
 
-			Vector<T> & operator+=(const Vector<T> &v) {
+			Vector & operator+=(const Vector &v) {
 				x += v.x;
 				y += v.y;
 				z += v.z;
 				return *this;
 			}
 
-			const Vector<T> operator-(const Vector<T> &v) const {
+			const Vector operator-(const Vector &v) const {
 				return Vector(x - v.x, y - v.y, z - v.z);
 			}
 
-			const Vector<T> operator-() const { return Vector<T>(-x, -y, -z); }
+			const Vector operator-() const { return Vector(-x, -y, -z); }
 
-			Vector<T> & operator-=(const Vector<T> &v) {
+			Vector & operator-=(const Vector &v) {
 				x -= v.x;
 				y -= v.y;
 				z -= v.z;
@@ -72,12 +72,12 @@ namespace CppUtil {
 			}
 
 			template <typename U>
-			const Vector<T> operator*(U s) const {
-				return Vector<T>(s * x, s * y, s * z);
+			const Vector operator*(U s) const {
+				return Vector(s * x, s * y, s * z);
 			}
 
 			template <typename U>
-			Vector<T> & operator*=(U s) {
+			Vector & operator*=(U s) {
 				x *= s;
 				y *= s;
 				z *= s;
@@ -85,14 +85,14 @@ namespace CppUtil {
 			}
 
 			template <typename U>
-			const Vector<T> operator/(U f) const {
-				float inv = (float)1 / f;
-				return Vector<T>(x * inv, y * inv, z * inv);
+			const Vector operator/(U f) const {
+				const float inv = (float)1 / f;
+				return Vector(x * inv, y * inv, z * inv);
 			}
 
 			template <typename U>
-			Vector<T> & operator/=(U f) {
-				float inv = (float)1 / f;
+			Vector & operator/=(U f) {
+				const float inv = (float)1 / f;
 				x *= inv;
 				y *= inv;
 				z *= inv;
@@ -104,10 +104,9 @@ namespace CppUtil {
 		const Vector<T> operator * (U a, const Vector<T> & v) {
 			return v * a;
 		}
-
-		using Vectorf = Vector<float>;
-		using Vectori = Vector<int>;
 	}
+
+	using Vectorf = Basic::Vector<float>;
 }
 
 #endif // !_CPPUTIL_BASIC_MATH_VECTOR_H_

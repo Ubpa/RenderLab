@@ -11,8 +11,8 @@ namespace CppUtil {
 
 		public:
 			// primitive 局部坐标系内的 bbox
-			const Basic::BBoxf GetBBox() const {
-				return Basic::BBoxf(Basic::Pointf(-0.5f, -0.000001f, -0.5f), Basic::Pointf(0.5f, 0.000001f, 0.5f));
+			const BBoxf GetBBox() const {
+				return BBoxf(Pointf(-0.5f, -0.000001f, -0.5f), Pointf(0.5f, 0.000001f, 0.5f));
 			}
 		};
 	}

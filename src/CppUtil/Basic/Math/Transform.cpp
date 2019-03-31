@@ -4,6 +4,7 @@
 
 #include <cmath>
 
+using namespace CppUtil;
 using namespace CppUtil::Basic;
 using namespace CppUtil::Basic::Math;
 

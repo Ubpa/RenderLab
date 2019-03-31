@@ -90,10 +90,9 @@ namespace CppUtil {
 		const Vector2<T> operator * (U a, const Vector2<T> & v) {
 			return v * a;
 		}
-
-		using Vector2f = Vector2<float>;
-		using Vector2i = Vector2<int>;
 	}
+
+	using Vector2f = Basic::Vector2<float>;
 }
 
 #endif // !_CPPUTIL_BASIC_MATH_VECTOR2_H_

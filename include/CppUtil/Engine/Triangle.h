@@ -20,7 +20,7 @@ namespace CppUtil {
 				: mesh(Basic::Ptr<TriMesh>(nullptr)), idx{ idx0, idx1, idx2 } { }
 
 			Basic::Ptr<TriMesh> GetMesh() const { return mesh.lock(); }
-			const Basic::BBoxf GetBBox() const;
+			const BBoxf GetBBox() const;
 		public:
 			uint idx[3]; // index into the mesh attribute arrays
 

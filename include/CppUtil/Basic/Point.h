@@ -35,6 +35,13 @@ namespace CppUtil {
 				return Lerp(*this, p1, t);
 			}
 
+			static Point<T> Mid(const Point<T> & p0, const Point<T> & p1) {
+				return Lerp(p0, p1, 0.5f);
+			}
+			static Point<T> MidWith(const Point<T> p1) {
+				return Mid(*this, p1);
+			}
+
 			static Point<T> Min(const Point<T> & p0, const Point<T> & p1) {
 				return Point<T>(std::min(p0.x, p1.x), std::min(p0.y, p1.y), std::min(p0.z, p1.z));
 			}
@@ -76,10 +83,9 @@ namespace CppUtil {
 				return *this;
 			}
 		};
-
-		using Pointf = Point<float>;
-		using Pointi = Point<int>;
 	}
+
+	using Pointf = Basic::Point<float>;
 }
 
 #endif // !_CPPUTIL_BASIC_MATH_POINT_H_
