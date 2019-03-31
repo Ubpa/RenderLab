@@ -5,8 +5,7 @@
 #include <CppUtil/Basic/Node.h>
 #include <CppUtil/Basic/TypeMap.h>
 #include <CppUtil/Basic/EleVisitor.h>
-
-#include <glm/mat4x4.hpp>
+#include <CppUtil/Basic/Transform.h>
 
 #include <string>
 #include <vector>
@@ -49,12 +48,12 @@ namespace CppUtil {
 
 		public:
 			// º¥ ±º∆À„
-			glm::mat4 GetLocalToWorldMatrix();
-			glm::mat4 GetWorldToLocalMatrix() {
-				return glm::inverse(GetLocalToWorldMatrix());
+			Basic::Transform GetLocalToWorldMatrix();
+			Basic::Transform GetWorldToLocalMatrix() {
+				return GetLocalToWorldMatrix().Inverse();
 			}
-			glm::vec3 GetWorldPos() {
-				return GetLocalToWorldMatrix() * glm::vec4(0, 0, 0, 1);
+			Basic::Pointf GetWorldPos() {
+				return GetLocalToWorldMatrix()(Basic::Pointf(0));
 			}
 
 		public:

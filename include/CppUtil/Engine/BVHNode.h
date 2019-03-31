@@ -2,7 +2,7 @@
 #define _ENGINE_PRIMITIVE_BVH_NODE_H_
 
 #include <CppUtil/Basic/Element.h>
-#include <CppUtil/Engine/BBox.h>
+#include <CppUtil/Basic/BBox.h>
 
 #include <vector>
 
@@ -11,6 +11,8 @@ namespace CppUtil {
 
 		template<typename T, typename HolderT>
 		class BVHNode : public Basic::Element {
+			using BBox = Basic::BBoxf;
+
 			ELE_SETUP(BVHNode)
 		public:
 			BVHNode(HolderT * holder, std::vector<Basic::Ptr<T>> & objs, size_t start, size_t range, size_t maxLeafSize = 4)

@@ -11,12 +11,10 @@
 
 using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
-using namespace glm;
 using namespace std;
 
 BVHAccel::BVHAccel()
 	: bvhRoot(nullptr) { }
-
 
 // ------------ BVHInitVisitor ------------
 
@@ -37,10 +35,9 @@ private:
 			return;
 
 		auto w2l = geo->GetSObj()->GetWorldToLocalMatrix();
-		auto l2w = inverse(w2l);
+		auto l2w = w2l.Inverse();
 		holder->worldToLocalMatrixes[primitive] = w2l;
 		holder->localToWorldMatrixes[primitive] = l2w;
-		holder->norm_localToWorld[geo->GetSObj()] = transpose(inverse(mat3(l2w)));
 
 		holder->primitive2sobj[geo->GetPrimitive()] = geo->GetSObj();
 		geo->GetPrimitive()->Accept(This());
@@ -49,13 +46,13 @@ private:
 	void Visit(Sphere::Ptr sphere) {
 		auto matrix = holder->localToWorldMatrixes[sphere];
 		holder->elements.push_back(sphere);
-		holder->ele2bbox[sphere] = sphere->GetBBox().Transform(matrix);
+		holder->ele2bbox[sphere] = matrix(sphere->GetBBox());
 	}
 
 	void Visit(Plane::Ptr plane) {
 		auto matrix = holder->localToWorldMatrixes[plane];
 		holder->elements.push_back(plane);
-		holder->ele2bbox[plane] = plane->GetBBox().Transform(matrix);
+		holder->ele2bbox[plane] = matrix(plane->GetBBox());
 	}
 
 	void Visit(TriMesh::Ptr mesh) {
@@ -63,7 +60,7 @@ private:
 		auto triangles = mesh->GetTriangles();
 		for (auto triangle : triangles) {
 			holder->elements.push_back(triangle);
-			holder->ele2bbox[triangle] = triangle->GetBBox().Transform(matrix);
+			holder->ele2bbox[triangle] = matrix(triangle->GetBBox());
 		}
 	}
 
@@ -71,7 +68,7 @@ private:
 	BVHAccel * holder;
 };
 
-const mat4 & BVHAccel::GetEleW2LMat(Element::Ptr element) {
+const Transform & BVHAccel::GetEleW2LMat(Element::Ptr element) {
 	auto triangle = Triangle::Ptr::Cast(element);
 	if(triangle)
 		return worldToLocalMatrixes[triangle->GetMesh()];
@@ -79,7 +76,7 @@ const mat4 & BVHAccel::GetEleW2LMat(Element::Ptr element) {
 		return worldToLocalMatrixes[Primitive::Ptr::Cast(element)];
 }
 
-const mat4 & BVHAccel::GetEleL2WMat(Element::Ptr element) {
+const Transform & BVHAccel::GetEleL2WMat(Element::Ptr element) {
 	auto triangle = Triangle::Ptr::Cast(element);
 	if (triangle)
 		return localToWorldMatrixes[triangle->GetMesh()];
@@ -96,7 +93,6 @@ const SObj::Ptr BVHAccel::GetSObj(Element::Ptr element) {
 }
 
 void BVHAccel::Init(SObj::Ptr root) {
-	norm_localToWorld.clear();
 	worldToLocalMatrixes.clear();
 	localToWorldMatrixes.clear();
 	primitive2sobj.clear();

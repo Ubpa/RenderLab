@@ -16,8 +16,6 @@ namespace CppUtil {
 			uint GetTriNum() { return triNum; }
 			uint GetPosArrSize();
 		protected:
-			static const float PI;
-			//------------
 			Array2D<float> * posArr;
 			uint vertexNum;
 			uint triNum;

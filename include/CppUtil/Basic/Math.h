@@ -72,11 +72,6 @@ namespace CppUtil {
 			template<typename T>
 			void Permute(std::vector<T> data);
 
-			// 将三维坐标转化为参数坐标
-			glm::vec2 SphereNormal2Texcoord(const glm::vec3 & normal);
-			// 从球的法向计算切向量
-			glm::vec3 SphereNormal2Tangent(const glm::vec3 & normal);
-
 			// 返回值: (alpah, beta, gamma, t)
 			// e + t * d == alpha * a + beta * b + gamma * c
 			// alpha + beta + gammma == 1

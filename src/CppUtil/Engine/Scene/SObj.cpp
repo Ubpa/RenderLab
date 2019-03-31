@@ -4,7 +4,7 @@
 #include "SObjLoader.h"
 
 #include <CppUtil/Engine/Component.h>
-#include <CppUtil/Engine/Transform.h>
+#include <CppUtil/Engine/CmptTransform.h>
 
 #include <CppUtil/Basic/EleVisitor.h>
 
@@ -12,7 +12,6 @@
 
 using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
-using namespace glm;
 using namespace std;
 
 void SObj::AttachComponent(CppUtil::Basic::Ptr<Component> component) {
@@ -32,20 +31,20 @@ std::vector<CppUtil::Basic::Ptr<Component>> SObj::GetAllComponents() const {
 	return rst;
 }
 
-mat4 SObj::GetLocalToWorldMatrix() {
-	mat4 mat(1.0f);
+Transform SObj::GetLocalToWorldMatrix() {
+	Transform tsfm(1.0f);
 
 	auto getMatVisitor = ToPtr(new EleVisitor);
-	getMatVisitor->Reg<SObj>([&mat](SObj::Ptr sobj)->bool {
-		auto transform = sobj->GetComponent<Transform>();
-		if (transform != nullptr)
-			mat = transform->GetMat() * mat;
+	getMatVisitor->Reg<SObj>([&](SObj::Ptr sobj)->bool {
+		auto cmpt = sobj->GetComponent<CmptTransform>();
+		if (cmpt != nullptr)
+			tsfm = cmpt->GetTransform() * tsfm;
 
 		return true;
 	});
 
 	AscendAccept(getMatVisitor);
-	return mat;
+	return tsfm;
 }
 
 bool SObj::HaveComponentSameTypeWith(Component::Ptr ptr) const {

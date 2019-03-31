@@ -2,6 +2,8 @@
 #include <CppUtil/Basic/Math.h>
 #include <CppUtil/Basic/Error.h>
 
+#include <cmath>
+
 using namespace CppUtil::Basic;
 using namespace CppUtil::Basic::Math;
 
@@ -52,18 +54,65 @@ const Ray Transform::operator()(const Ray & ray) const {
 	return Ray(o, d);
 }
 
-const Transform Transform::Translate(const Vectorf & delta) {
+Pointf & Transform::ApplyTo(Pointf & p) const {
+	float x = p.x, y = p.y, z = p.z;
+	p.x = m(0, 0) * x + m(0, 1) * y + m(0, 2) * z + m(0, 3);
+	p.y = m(1, 0) * x + m(1, 1) * y + m(1, 2) * z + m(1, 3);
+	p.z = m(2, 0) * x + m(2, 1) * y + m(2, 2) * z + m(2, 3);
+	float wp = m(3, 0) * x + m(3, 1) * y + m(3, 2) * z + m(3, 3);
+
+	if (wp != 1) {
+		p.x /= wp;
+		p.y /= wp;
+		p.z /= wp;
+	}
+
+	return p;
+}
+
+Vectorf & Transform::ApplyTo(Vectorf & v) const {
+	float x = v.x, y = v.y, z = v.z;
+	v.x = m(0, 0) * x + m(0, 1) * y + m(0, 2) * z;
+	v.y = m(1, 0) * x + m(1, 1) * y + m(1, 2) * z;
+	v.z = m(2, 0) * x + m(2, 1) * y + m(2, 2) * z;
+	return v;
+}
+
+Normalf & Transform::ApplyTo(Normalf & n) const {
+	float x = n.x, y = n.y, z = n.z;
+
+	n.x = mInv(0, 0) * x + mInv(1, 0) * y + mInv(2, 0) * z;
+	n.y = mInv(0, 1) * x + mInv(1, 1) * y + mInv(2, 1) * z;
+	n.z = mInv(0, 2) * x + mInv(1, 2) * y + mInv(2, 2) * z;
+	
+	return n;
+}
+
+BBoxf & Transform::ApplyTo(BBoxf & box) const {
+	return box = (*this)(box);
+}
+
+Ray & Transform::ApplyTo(Ray & ray) const {
+	const Transform &M = *this;
+
+	ray.o = M(ray.o);
+	ray.d = M(ray.d);
+
+	return ray;
+}
+
+const Transform Transform::Translate(const float x, const float y, const float z) {
 	Mat4f m(
-		1, 0, 0, delta.x,
-		0, 1, 0, delta.y,
-		0, 0, 1, delta.z,
+		1, 0, 0, x,
+		0, 1, 0, y,
+		0, 0, 1, z,
 		0, 0, 0, 1
 	);
 
 	Mat4f minv(
-		1, 0, 0, -delta.x,
-		0, 1, 0, -delta.y,
-		0, 0, 1, -delta.z,
+		1, 0, 0, x,
+		0, 1, 0, y,
+		0, 0, 1, z,
 		0, 0, 0, 1
 	);
 
@@ -93,18 +142,16 @@ const Transform Transform::RotateY(const float theta) {
 		sinTheta, 0, cosTheta, 0,
 		0, 0, 0, 1);
 	return Transform(m, m.Transpose());
-
 }
 
-const Transform Transform::RotateZ(const float degrees) {
-	float sinTheta = std::sin(Radians(degrees));
-	float cosTheta = std::cos(Radians(degrees));
+const Transform Transform::RotateZ(const float theta) {
+	float sinTheta = std::sin(Radians(theta));
+	float cosTheta = std::cos(Radians(theta));
 	Mat4f m(cosTheta, sinTheta, 0, 0,
 		-sinTheta, cosTheta, 0, 0,
 		0, 0, 1, 0,
 		0, 0, 0, 1);
 	return Transform(m, m.Transpose());
-
 }
 
 const Transform Transform::Rotate(const Vectorf &axis, const float theta) {
@@ -217,4 +264,53 @@ const Transform Transform::Orthographic(const float width, const float height, c
 	rst(2, 3) = -(zFar + zNear) / (zFar - zNear);
 
 	return Transform(rst);
+}
+
+const Transform::PosRotScale Transform::Decompose() const {
+	PosRotScale rst;
+
+	rst.pos = m.GetCol(3);
+
+	Mat3f tmpMat3(m);
+	rst.scale.x = tmpMat3.GetCol(0).Length();
+	rst.scale.y = tmpMat3.GetCol(1).Length();
+	rst.scale.z = tmpMat3.GetCol(2).Length();
+
+	tmpMat3.GetCol(0) /= rst.scale.x;
+	tmpMat3.GetCol(1) /= rst.scale.y;
+	tmpMat3.GetCol(2) /= rst.scale.z;
+
+	rst.rot.w = sqrt(tmpMat3.Tr() + 1.f) / 2.f;
+	rst.rot.v.x = tmpMat3(1, 2) - tmpMat3(2, 1);
+	rst.rot.v.y = tmpMat3(2, 0) - tmpMat3(0, 2);
+	rst.rot.v.z = tmpMat3(0, 1) - tmpMat3(1, 0);
+	rst.rot.v /= 4.f * rst.rot.w;
+
+	return rst;
+}
+
+const EulerYXZf Transform::RotationEulerYXZ() const {
+	Mat3f tmpMat3(m);
+	tmpMat3.GetCol(0).NormSelf();
+	tmpMat3.GetCol(1).NormSelf();
+	tmpMat3.GetCol(2).NormSelf();
+
+	if (tmpMat3(2, 1) == -1.f) {
+		const float x = 90;
+		const float y = Degrees(atan2(-tmpMat3(0, 2), tmpMat3(0, 0)));
+		const float z = 0;
+		return EulerYXZf(x, y, z);
+	}
+	else if (tmpMat3(2, 1) == 1.f) {
+		const float x = -90;
+		const float y = Degrees(atan2(-tmpMat3(0, 2), tmpMat3(0, 0)));
+		const float z = 0;
+		return EulerYXZf(x, y, z);
+	}
+	else {
+		const float x = Degrees(asin(-tmpMat3(2, 1)));
+		const float y = Degrees(atan2(tmpMat3(2, 0), tmpMat3(2, 2)));
+		const float z = Degrees(atan2(tmpMat3(0, 1), tmpMat3(1, 1)));
+		return EulerYXZf(x, y, z);
+	}
 }

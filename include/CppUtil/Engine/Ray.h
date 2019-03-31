@@ -1,48 +1,29 @@
 #ifndef _ENGINE_PRIMITIVE_RAY_H_
 #define _ENGINE_PRIMITIVE_RAY_H_
 
-#include <CppUtil/Basic/HeapObj.h>
-#include <glm/vec3.hpp>
-#include <glm/mat4x4.hpp>
+#include <CppUtil/Basic/Ray.h>
 
 namespace CppUtil {
 	namespace Engine {
-		class Ray : public Basic::HeapObj {
-			HEAP_OBJ_SETUP(Ray)
+		class Ray : public Basic::Ray {
 		public:
-			Ray(const glm::vec3 & origin = glm::vec3(0), const glm::vec3 dir = glm::vec3(1), float tMin = 0.001f, float tMax = FLT_MAX)
-				: origin(origin), dir(dir), invDir(1.0f/dir.x, 1.0f/dir.y, 1.0f/dir.z), tMin(tMin), tMax(tMax) { }
+			Ray(const Basic::Pointf & origin = Basic::Pointf(0), const Basic::Pointf & dir = Basic::Pointf(1), float tMin = 0.001f, float tMax = FLT_MAX)
+				: Basic::Ray(origin, dir), tMin(tMin), tMax(tMax) { }
 
-			void Init(const glm::vec3 & origin, const glm::vec3 & dir) {
-				this->origin = origin;
-				SetDir(dir);
+		public:
+			void Init(const Basic::Pointf & origin, const Basic::Vectorf & dir) {
+				o = origin;
+				d = dir;
 				tMin = 0.001f;
 				tMax = FLT_MAX;
 			}
 
-			const glm::vec3 & GetOrigin() const { return origin; }
-			const glm::vec3 & GetDir() const { return dir; }
-			const glm::vec3 & GetInvDir() const { return invDir; }
-			float GetTMin() const { return tMin; }
-			float GetTMax() const { return tMax; }
+			const Basic::Pointf StartPos() const { return (*this)(tMin); }
+			const Basic::Pointf EndPos() const { return (*this)(tMax); }
 
-			const glm::vec3 EndPos() const { return At(tMax); }
-
-			void SetTMin(float tMin) { this->tMin = tMin; }
-			void SetTMax(float tMax) { this->tMax = tMax; }
-			void SetOrigin(const glm::vec3 & origin) { this->origin = origin; }
-			void SetDir(const glm::vec3 & dir) {
-				this->dir = dir;
-				invDir = glm::vec3(1.0f / dir.x, 1.0f / dir.y, 1.0f / dir.z);
-			}
-
-			void Transform(const glm::mat4 & mat);
-
-			const glm::vec3 At(float t) const { return origin + t * dir; }
-		private:
-			glm::vec3 origin;
-			glm::vec3 dir;
-			glm::vec3 invDir;
+			const Basic::Val3f InvDir() const { return Basic::Val3f(1.f / d.x, 1.f / d.y, 1.f / d.z); }
+		
+		public:
 			float tMin;
 			float tMax;
 		};

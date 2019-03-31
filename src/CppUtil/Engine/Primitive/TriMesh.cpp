@@ -7,18 +7,14 @@
 #include <CppUtil/Basic/Sphere.h>
 #include <CppUtil/Basic/Plane.h>
 
-#include <glm/mat2x2.hpp>
-#include <glm/mat2x3.hpp>
-
 using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
-using namespace glm;
 using namespace std;
 
-TriMesh::TriMesh(const std::vector<uint> & indice,
-	const std::vector<glm::vec3> & positions,
-	const std::vector<glm::vec3> & normals,
-	const std::vector<glm::vec2> & texcoords,
+TriMesh::TriMesh(const vector<uint> & indice,
+	const vector<Pointf> & positions,
+	const vector<Normalf> & normals,
+	const vector<Point2f> & texcoords,
 	ENUM_TYPE type)
 :	indice(indice),
 	positions(positions),
@@ -58,9 +54,9 @@ TriMesh::TriMesh(uint triNum, uint vertexNum,
 	}
 
 	for (uint i = 0; i < vertexNum; i++) {
-		this->positions.push_back(vec3(positions[3 * i], positions[3 * i + 1], positions[3 * i + 2]));
-		this->normals.push_back(vec3(normals[3 * i], normals[3 * i + 1], normals[3 * i + 2]));
-		this->texcoords.push_back(vec2(texcoords[2 * i], texcoords[2 * i + 1]));
+		this->positions.push_back(Pointf(positions[3 * i], positions[3 * i + 1], positions[3 * i + 2]));
+		this->normals.push_back(Normalf(normals[3 * i], normals[3 * i + 1], normals[3 * i + 2]));
+		this->texcoords.push_back(Point2f(texcoords[2 * i], texcoords[2 * i + 1]));
 	}
 
 	// traingel 的 mesh 在 init 的时候设置
@@ -85,8 +81,8 @@ void TriMesh::GenTangents() {
 	size_t vertexCount = positions.size();
 	size_t triangleCount = indice.size() / 3;
 
-	vec3 *tan1 = new vec3[vertexCount * 2]();
-	vec3 *tan2 = tan1 + vertexCount;
+	Normalf *tan1 = new Normalf[vertexCount * 2]();
+	Normalf *tan2 = tan1 + vertexCount;
 
 	for (int a = 0; a < triangleCount; a++)
 	{
@@ -94,13 +90,13 @@ void TriMesh::GenTangents() {
 		uint i2 = indice[3 * a + 1];
 		uint i3 = indice[3 * a + 2];
 
-		const vec3 & v1 = positions[i1];
-		const vec3 & v2 = positions[i2];
-		const vec3 & v3 = positions[i3];
+		const Pointf & v1 = positions[i1];
+		const Pointf & v2 = positions[i2];
+		const Pointf & v3 = positions[i3];
 
-		const vec2 & w1 = texcoords[i1];
-		const vec2 & w2 = texcoords[i2];
-		const vec2 & w3 = texcoords[i3];
+		const Point2f & w1 = texcoords[i1];
+		const Point2f & w2 = texcoords[i2];
+		const Point2f & w3 = texcoords[i3];
 
 		float x1 = v2.x - v1.x;
 		float x2 = v3.x - v1.x;
@@ -115,9 +111,9 @@ void TriMesh::GenTangents() {
 		float t2 = w3.y - w1.y;
 
 		float r = 1.0F / (s1 * t2 - s2 * t1);
-		vec3 sdir((t2 * x1 - t1 * x2) * r, (t2 * y1 - t1 * y2) * r,
+		Normalf sdir((t2 * x1 - t1 * x2) * r, (t2 * y1 - t1 * y2) * r,
 			(t2 * z1 - t1 * z2) * r);
-		vec3 tdir((s1 * x2 - s2 * x1) * r, (s1 * y2 - s2 * y1) * r,
+		Normalf tdir((s1 * x2 - s2 * x1) * r, (s1 * y2 - s2 * y1) * r,
 			(s1 * z2 - s2 * z1) * r);
 
 		tan1[i1] += sdir;
@@ -132,14 +128,14 @@ void TriMesh::GenTangents() {
 	tangents.resize(vertexCount);
 	for (int a = 0; a < vertexCount; a++)
 	{
-		const vec3 & n = normals[a];
-		const vec3 & t = tan1[a];
+		const Normalf & n = normals[a];
+		const Normalf & t = tan1[a];
 
 		// Gram-Schmidt orthogonalize
-		tangents[a] = normalize(t - n * dot(n, t));
+		tangents[a] = (t - n * n.Dot(t)).Norm();
 
 		// Calculate handedness
-		tangents[a] *= (dot(cross(n, t), tan2[a]) < 0.0F) ? -1.0F : 1.0F;
+		tangents[a] *= (n.Cross(t).Dot(tan2[a]) < 0.0F) ? -1.0F : 1.0F;
 	}
 
 	delete[] tan1;

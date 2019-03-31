@@ -21,8 +21,8 @@ Sphere::Sphere(uint n)
 		float u = inc * i;
 		for (uint j = 0; j <= n; j++) {
 			float v = inc * j;
-			float phi = 2 * PI * u;
-			float theta = PI * v;
+			float phi = 2 * Math::PI * u;
+			float theta = Math::PI * v;
 
 			float x = sinf(theta) * sinf(phi);
 			float y = cosf(theta);

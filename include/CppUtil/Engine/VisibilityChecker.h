@@ -3,16 +3,19 @@
 
 #include <CppUtil/Engine/Intersector.h>
 
+#include <CppUtil/Engine/Ray.h>
+
 namespace CppUtil {
 	namespace Basic {
 		class Element;
+
+		template <typename T>
+		class BBox;
 	}
 
 	namespace Engine {
 		class SObj;
 		class Ray;
-
-		class BBox;
 		class Sphere;
 		class Plane;
 		class Triangle;
@@ -35,7 +38,7 @@ namespace CppUtil {
 		public:
 			VisibilityChecker();
 
-			void Init(Basic::Ptr<Ray> ray, float tMax);
+			void Init(const Ray & ray, float tMax);
 
 			Rst & GetRst() { return rst; }
 
@@ -48,11 +51,11 @@ namespace CppUtil {
 			void Visit(Basic::Ptr<Triangle> triangle);
 
 		private:
-			bool Intersect(const BBox & bbox);
-			bool Intersect(const BBox & bbox, float & t0, float & t1);
+			bool Intersect(const Basic::BBox<float> & bbox);
+			bool Intersect(const Basic::BBox<float> & bbox, float & t0, float & t1);
 
 		private:
-			Basic::Ptr<Ray> ray;
+			Ray ray;
 			Rst rst;
 		};
 	}

@@ -2,7 +2,7 @@
 #define _ENGINE_PRIMITIVE_PLANE_H_
 
 #include <CppUtil/Engine/Primitive.h>
-#include <CppUtil/Engine/BBox.h>
+#include <CppUtil/Basic/BBox.h>
 
 namespace CppUtil {
 	namespace Engine {
@@ -11,8 +11,8 @@ namespace CppUtil {
 
 		public:
 			// primitive 局部坐标系内的 bbox
-			const BBox GetBBox() const {
-				return BBox(glm::vec3(-0.5f, -0.000001f, -0.5f), glm::vec3(0.5f, 0.000001f, 0.5f));
+			const Basic::BBoxf GetBBox() const {
+				return Basic::BBoxf(Basic::Pointf(-0.5f, -0.000001f, -0.5f), Basic::Pointf(0.5f, 0.000001f, 0.5f));
 			}
 		};
 	}

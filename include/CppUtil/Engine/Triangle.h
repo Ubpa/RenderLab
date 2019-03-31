@@ -4,7 +4,7 @@
 typedef unsigned int uint;
 
 #include <CppUtil/Basic/Element.h>
-#include <CppUtil/Engine/BBox.h>
+#include <CppUtil/Basic/BBox.h>
 
 namespace CppUtil {
 	namespace Engine {
@@ -20,7 +20,7 @@ namespace CppUtil {
 				: mesh(Basic::Ptr<TriMesh>(nullptr)), idx{ idx0, idx1, idx2 } { }
 
 			Basic::Ptr<TriMesh> GetMesh() const { return mesh.lock(); }
-			const BBox GetBBox() const;
+			const Basic::BBoxf GetBBox() const;
 		public:
 			uint idx[3]; // index into the mesh attribute arrays
 

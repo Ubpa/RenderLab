@@ -4,8 +4,8 @@
 #include <CppUtil/Engine/Primitive.h>
 #include <CppUtil/Engine/Triangle.h>
 #include <CppUtil/Engine/BVHNode.h>
-
-#include <glm/vec3.hpp>
+#include <CppUtil/Basic/Normal.h>
+#include <CppUtil/Basic/Point2.h>
 
 namespace CppUtil {
 	namespace Engine {
@@ -23,9 +23,9 @@ namespace CppUtil {
 			};
 		public:
 			TriMesh(const std::vector<uint> & indice,
-				const std::vector<glm::vec3> & positions,
-				const std::vector<glm::vec3> & normals,
-				const std::vector<glm::vec2> & texcoords,
+				const std::vector<Basic::Pointf> & positions,
+				const std::vector<Basic::Normalf> & normals,
+				const std::vector<Basic::Point2f> & texcoords,
 				ENUM_TYPE type = ENUM_TYPE::CODE);
 
 			TriMesh(uint triNum, uint vertexNum,
@@ -42,10 +42,10 @@ namespace CppUtil {
 		public:
 			ENUM_TYPE GetType() const { return type; }
 
-			const std::vector<glm::vec3> & GetPositions() const { return positions; }
-			const std::vector<glm::vec3> & GetNormals() const { return normals; }
-			const std::vector<glm::vec2> & GetTexcoords() const { return texcoords; }
-			const std::vector<glm::vec3> & GetTangents() const { return tangents; }
+			const std::vector<Basic::Pointf> & GetPositions() const { return positions; }
+			const std::vector<Basic::Normalf> & GetNormals() const { return normals; }
+			const std::vector<Basic::Point2f> & GetTexcoords() const { return texcoords; }
+			const std::vector<Basic::Normalf> & GetTangents() const { return tangents; }
 			const std::vector<uint> & GetIndice() const { return indice; }
 			const std::vector<Triangle::Ptr> & GetTriangles() const { return triangles; }
 
@@ -61,10 +61,10 @@ namespace CppUtil {
 			ENUM_TYPE type;
 
 			std::vector<uint> indice;
-			std::vector<glm::vec3> positions;
-			std::vector<glm::vec3> normals;
-			std::vector<glm::vec2> texcoords;
-			std::vector<glm::vec3> tangents;
+			std::vector<Basic::Pointf> positions;
+			std::vector<Basic::Normalf> normals;
+			std::vector<Basic::Point2f> texcoords;
+			std::vector<Basic::Normalf> tangents;
 
 			std::vector<Triangle::Ptr> triangles;
 		};

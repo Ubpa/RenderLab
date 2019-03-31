@@ -1,6 +1,5 @@
 #include <CppUtil/Basic/Cube.h>
 
-#include <CppUtil/Basic/Vec.h>
 #include <cmath>
 
 using namespace CppUtil::Basic;

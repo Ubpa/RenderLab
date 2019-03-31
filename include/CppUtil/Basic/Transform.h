@@ -16,7 +16,9 @@ namespace CppUtil {
 		// ”“ ÷œµ
 		class Transform {
 		public:
-			Transform(float d = 1.f) : m(d), mInv(1.f/d) { }
+			template<typename T>
+			Transform(T d) : m(static_cast<float>(d)), mInv(1.f/ static_cast<float>(d)) { }
+			Transform() :Transform(1.f) { }
 			Transform(const float mat[4][4]) : m(Mat4f(mat)) {
 				mInv = m.Inverse();
 			}
@@ -119,8 +121,22 @@ namespace CppUtil {
 			const BBoxf operator()(const BBoxf & box) const;
 			const Ray operator()(const Ray & ray) const;
 
-			const Transform operator*(const Transform & rhs) const {
-				return Transform(m * rhs.m, rhs.mInv * mInv);
+			Pointf & ApplyTo(Pointf & p) const;
+			Vectorf & ApplyTo(Vectorf & v) const;
+			Normalf & ApplyTo(Normalf & n) const;
+			BBoxf & ApplyTo(BBoxf & box) const;
+			Ray & ApplyTo(Ray & ray) const;
+
+			const Transform operator*(const Transform & rhs) const { return Transform(m * rhs.m, rhs.mInv * mInv); }
+			Transform & operator*=(const Transform & rhs) {
+				m *= rhs.m;
+				rhs.mInv.MulTo(mInv);
+				return *this;
+			}
+			Transform & MulTo(Transform & rhs) const {
+				m.MulTo(rhs.m);
+				rhs.mInv *= mInv;
+				return rhs;
 			}
 
 		private:

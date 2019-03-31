@@ -2,8 +2,12 @@
 #define _ENGINE_INTERSECTOR_RAY_INTERSECTOR_H_
 
 #include <CppUtil/Engine/Intersector.h>
-#include <glm/vec2.hpp>
-#include <glm/vec3.hpp>
+#include <CppUtil/Basic/Point.h>
+#include <CppUtil/Basic/Point2.h>
+#include <CppUtil/Basic/Normal.h>
+#include <CppUtil/Basic/BBox.h>
+
+#include <CppUtil/Engine/Ray.h>
 
 namespace CppUtil {
 	namespace Basic {
@@ -12,9 +16,7 @@ namespace CppUtil {
 
 	namespace Engine {
 		class SObj;
-		class Ray;
 
-		class BBox;
 		class Sphere;
 		class Plane;
 		class Triangle;
@@ -36,15 +38,15 @@ namespace CppUtil {
 					: Intersector::Rst(isIntersect), closestSObj(nullptr), n(0) { }
 
 				Basic::Ptr<SObj> closestSObj;
-				glm::vec3 n;
-				glm::vec2 texcoord;
-				glm::vec3 tangent;
+				Basic::Normalf n;
+				Basic::Point2f texcoord;
+				Basic::Normalf tangent;
 			};
 
 		public:
 			RayIntersector();
 
-			void Init(Basic::Ptr<Ray> ray);
+			void Init(const Ray & ray);
 
 		public:
 			Rst & GetRst() { return rst; }
@@ -59,11 +61,11 @@ namespace CppUtil {
 			void Visit(Basic::Ptr<Triangle> triangle);
 
 		private:
-			bool Intersect(const BBox & bbox);
-			bool Intersect(const BBox & bbox, float & t0, float & t1);
+			bool Intersect(const Basic::BBoxf & bbox);
+			bool Intersect(const Basic::BBoxf & bbox, float & t0, float & t1);
 
 		private:
-			Basic::Ptr<Ray> ray;
+			Ray ray;
 			Rst rst;
 		};
 	}

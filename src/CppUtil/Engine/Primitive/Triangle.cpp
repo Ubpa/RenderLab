@@ -3,19 +3,19 @@
 #include <CppUtil/Engine/TriMesh.h>
 
 using namespace CppUtil::Engine;
-using namespace glm;
+using namespace CppUtil::Basic;
 
-const BBox Triangle::GetBBox() const {
+const BBoxf Triangle::GetBBox() const {
 	auto positions = mesh.lock()->GetPositions();
 
-	vec3 pArr[3] = {
+	Pointf pArr[3] = {
 		positions[idx[0]],
 		positions[idx[1]],
 		positions[idx[2]]
 	};
 
-	vec3 minP = min(min(pArr[0], pArr[1]), pArr[2]);
-	vec3 maxP = max(max(pArr[0], pArr[1]), pArr[2]);
+	Pointf minP = pArr[0].MinWith(pArr[1]).MinWith(pArr[2]);
+	Pointf maxP = pArr[0].MaxWith(pArr[1]).MaxWith(pArr[2]);
 
 	for (int dim = 0; dim < 3; dim++) {
 		if (minP[dim] == maxP[dim]) {
@@ -24,5 +24,5 @@ const BBox Triangle::GetBBox() const {
 		}
 	}
 
-	return { minP, maxP };
+	return BBoxf(minP, maxP);
 }

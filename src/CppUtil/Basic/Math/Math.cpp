@@ -65,7 +65,7 @@ bool Math::Refract(const vec3 & viewDir, const vec3 & normal, float ratioNiNt, v
 
 	if (discriminent < 0)
 		return false;
-
+	glm::inverse(glm::mat3());
 	refractDir = ratioNiNt * (ud - normal * cosTheta) - normal * sqrt(discriminent);
 	return true;
 }
@@ -75,22 +75,6 @@ float Math::FresnelSchlick(const vec3 & viewDir, const vec3 & halfway, float rat
 	float R0 = pow((ratioNtNi - 1) / (ratioNtNi + 1), 2);
 	float R = R0 + (1 - R0)*pow(1 - cosTheta, 5);
 	return R;
-}
-
-vec2 Math::SphereNormal2Texcoord(const vec3 & normal) {
-	vec2 uv;
-	float phi = atan2(-normal.x, -normal.z) + Math::PI;
-	float theta = acos(normal.y);
-
-	uv[0] = phi / (2 * PI);
-	uv[1] = theta / PI;
-	return uv;
-}
-
-vec3 Math::SphereNormal2Tangent(const vec3 & normal) {
-	float phi = atan2(-normal.x, -normal.z) + Math::PI;
-
-	return vec3(cos(phi), 0, - sin(phi));
 }
 
 vec4 Math::Intersect_RayTri(const vec3 & e, const vec3 & d, const vec3 & a, const vec3 & b, const vec3 & c) {
