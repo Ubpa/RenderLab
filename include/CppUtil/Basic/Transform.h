@@ -6,7 +6,7 @@
 #include <CppUtil/Basic/Normal.h>
 #include <CppUtil/Basic/Quat.h>
 #include <CppUtil/Basic/EulerYXZ.h>
-#include <CppUtil/Basic/Matrix4x4.h>
+#include <CppUtil/Basic/Mat4x4.h>
 #include <CppUtil/Basic/BBox.h>
 #include <CppUtil/Basic/Ray.h>
 
@@ -36,6 +36,24 @@ namespace CppUtil {
 				return Transform(m.Transpose(), mInv.Transpose());
 			}
 
+			struct PosRotScale {
+				Pointf pos;
+				Quatf rot;
+				Vectorf scale;
+			};
+			const PosRotScale Decompose() const;
+
+			const Pointf Position() const {
+				return m.GetCol(3);
+			}
+			const Quatf RotationQuat() const {
+				return Decompose().rot;
+			}
+			const EulerYXZf RotationEulerYXZ() const;
+			const Vectorf Scale() const {
+				return Vectorf(m.GetCol(0).Length(), m.GetCol(1).Length(), m.GetCol(2).Length());
+			}
+
 			bool operator==(const Transform & rhs)const {
 				return m == rhs.m && mInv == rhs.mInv;
 			}
@@ -45,8 +63,14 @@ namespace CppUtil {
 			}
 
 		public:
-			static const Transform Translate(const Vectorf & delta);
+			static const Transform Translate(float x, float y, float z);
+			static const Transform Translate(const Vectorf & delta) {
+				return Translate(delta.x, delta.y, delta.z);
+			}
 			static const Transform Scale(float x, float y, float z);
+			static const Transform Scale(const Vectorf & scale) {
+				return Scale(scale.x, scale.y, scale.z);
+			}
 			static const Transform RotateX(float theta);
 			static const Transform RotateY(float theta);
 			static const Transform RotateZ(float theta);
@@ -87,9 +111,6 @@ namespace CppUtil {
 				zFar: Ô¶Æ½Ãæ z
 			*/
 			static const Transform Perspcetive(float fovy, float aspect, float zNear, float zFar);
-
-			const Quatf ToQuat() const;
-			const EulerYXZf ToEulerYXZ() const;
 
 		public:
 			const Pointf operator()(const Pointf & p) const;

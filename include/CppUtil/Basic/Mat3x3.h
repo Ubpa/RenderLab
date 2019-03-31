@@ -3,6 +3,8 @@
 
 #include <CppUtil/Basic/Error.h>
 #include <CppUtil/Basic/Vector.h>
+#include <CppUtil/Basic/Quat.h>
+#include <CppUtil/Basic/EulerYXZ.h>
 
 #include <iostream>
 #include <algorithm>
@@ -39,7 +41,7 @@ namespace CppUtil {
 			{t01, t11, t21},
 			{t02, t12, t22} } { }
 
-			Mat3x3(const Matrix4x4<T> & mat) :
+			Mat3x3(const Mat4x4<T> & mat) :
 				m{
 			{mat(0,0),mat(1,0),mat(2,0)},
 			{mat(0,1),mat(1,1),mat(2,1)},

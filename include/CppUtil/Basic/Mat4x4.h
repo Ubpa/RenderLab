@@ -3,6 +3,7 @@
 
 #include <CppUtil/Basic/Error.h>
 #include <CppUtil/Basic/Vector4.h>
+#include <CppUtil/Basic/Mat3x3.h>
 
 #include <iostream>
 #include <algorithm>
@@ -49,7 +50,6 @@ namespace CppUtil {
 			// ÁÐÖ÷Ðò
 			const T * Data() const { return const_cast<type*>(this)->Data(); }
 
-
 		public:
 			bool IsIdentity() const {
 				static constexpr T one = static_cast<T>(1);
@@ -64,10 +64,12 @@ namespace CppUtil {
 			T Tr() const { return m[0][0] + m[1][1] + m[2][2] + m[3][3]; }
 
 			Mat4x4 Transpose() const {
-				return Mat4x4(m[0][0], m[1][0], m[2][0], m[3][0], m[0][1],
-					m[1][1], m[2][1], m[3][1], m[0][2], m[1][2],
-					m[2][2], m[3][2], m[0][3], m[1][3], m[2][3],
-					m[3][3]);
+				const auto & mat = *this;
+				return Mat4x4(
+					mat(0, 0), mat(1, 0), mat(2, 0), mat(3, 0),
+					mat(0, 1), mat(1, 1), mat(2, 1), mat(3, 1),
+					mat(0, 2), mat(1, 2), mat(2, 2), mat(3, 2),
+					mat(0, 3), mat(1, 3), mat(2, 3), mat(3, 3));
 			}
 
 			Mat4x4 Inverse() const {
@@ -198,7 +200,7 @@ namespace CppUtil {
 			}
 
 			T operator()(int row, int col) const {
-				return const_cast<type*>(this)->operator()(row, col);
+				return m[col][row];
 			}
 
 			T & operator()(int row, int col) {

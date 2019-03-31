@@ -3,6 +3,7 @@
 #include <CppUtil/Basic/Val2.h>
 #include <CppUtil/Basic/Normal.h>
 #include <CppUtil/Basic/Transform.h>
+#include <CppUtil/Basic/Mat3x3.h>
 #include <CppUtil/Basic/EulerYXZ.h>
 
 using namespace CppUtil::Basic;
@@ -53,9 +54,9 @@ int main() {
 	cout << q << endl;
 	cout << q.Inverse() * q << endl;
 	cout << q * Pointf(1, 1, 1) << endl;
-	cout << Transform::Rotate(q).ToQuat() << endl;
+	cout << Transform::Rotate(q).RotationQuat() << endl;
 	cout << euler << endl;
-	auto e2m2e = Transform::Rotate(euler).ToEulerYXZ();
+	auto e2m2e = Transform::Rotate(euler).RotationEulerYXZ();
 	cout << e2m2e << endl;
 	cout << euler.ToQuat() << endl;
 	cout << e2m2e.ToQuat() << endl;
@@ -66,6 +67,17 @@ int main() {
 	cout << v4 << endl;
 	cout << v5 << endl;
 	cout << v6 << endl;
+
+	cout << Transform::RotateX(50).GetMatrix() << endl;
+	cout << Transform::RotateX(50).GetInverseMatrix() << endl;
+
+	//auto tsfm = Transform::Translate(Vectorf(1, 2, 3)) * Transform::Rotate(euler) * Transform::Scale(2,3,4);
+	auto tsfm = Transform::Rotate(euler);
+	auto rst = tsfm.Decompose();
+	cout << rst.pos << endl;
+	cout << rst.scale << endl;
+	cout << rst.rot << endl;
+	cout << tsfm.GetMatrix() * tsfm.GetInverseMatrix() << endl;
 
 	return 0;
 }

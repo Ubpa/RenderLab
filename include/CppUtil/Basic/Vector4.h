@@ -26,6 +26,11 @@ namespace CppUtil {
 				return *this / Length();
 			}
 
+			Vector4<T> & NormSelf() {
+				(*this) /= Length();
+				return *this;
+			}
+
 		public:
 			const Vector4<T> operator+(const Vector4<T> &v) const {
 				return Vector4(x + v.x, y + v.y, z + v.z, w + v.w);
