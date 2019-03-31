@@ -14,8 +14,6 @@ namespace CppUtil {
 		class Vector : public Val3<T> {
 		public:
 			using Val3::Val3;
-			//explicit Vector(const Point<T> &p) : x(p.x), y(p.y), z(p.z) { }
-			//explicit Vector(const Normal<T> &n) : x(n.x), y(n.y), z(n.z) { }
 			
 		public:
 			float Length2() const { return x * x + y * y + z * z; }

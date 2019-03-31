@@ -1,7 +1,9 @@
-#ifndef _CPPUTIL_BASIC_MATH_MATRIX_4X4_H_
-#define _CPPUTIL_BASIC_MATH_MATRIX_4X4_H_
+#ifndef _CPPUTIL_BASIC_MATH_MAT_4X4_H_
+#define _CPPUTIL_BASIC_MATH_MAT_4X4_H_
 
 #include <CppUtil/Basic/Error.h>
+#include <CppUtil/Basic/Vector4.h>
+
 #include <iostream>
 #include <algorithm>
 
@@ -9,24 +11,24 @@ namespace CppUtil {
 	namespace Basic {
 		// 内部存储为列主序
 		template<typename T>
-		class Matrix4x4 {
+		class Mat4x4 {
 		public:
-			using type = Matrix4x4;
+			using type = Mat4x4;
 
 		public:
-			Matrix4x4(T d0, T d1, T d2, T d3)
+			Mat4x4(T d0, T d1, T d2, T d3)
 				: m{ {d0, static_cast<T>(0),static_cast<T>(0),static_cast<T>(0)},
 			{static_cast<T>(0),d1,static_cast<T>(0),static_cast<T>(0)},
 			{static_cast<T>(0),static_cast<T>(0),d2,static_cast<T>(0)},
 			{static_cast<T>(0),static_cast<T>(0),static_cast<T>(0),d3} } { }
 
-			explicit Matrix4x4(T d = static_cast<T>(1))
-				: Matrix4x4(d, d, d, d) { }
+			explicit Mat4x4(T d = static_cast<T>(1))
+				: Mat4x4(d, d, d, d) { }
 
 			// mat 为列主序
-			explicit Matrix4x4(const T mat[4][4]) { memcpy(m, mat, 16 * sizeof(T)); }
+			explicit Mat4x4(const T mat[4][4]) { memcpy(m, mat, 16 * sizeof(T)); }
 
-			Matrix4x4(
+			Mat4x4(
 				T t00, T t01, T t02, T t03,
 				T t10, T t11, T t12, T t13,
 				T t20, T t21, T t22, T t23,
@@ -36,6 +38,17 @@ namespace CppUtil {
 			{t01, t11, t21, t31},
 			{t02, t12, t22, t32},
 			{t03, t13, t23, t33} } { }
+
+		public:
+			const Vector4<T> & GetCol(int i) const { return m[i]; }
+			Vector4<T> & GetCol(int i) { return m[i]; }
+
+			// 列主序
+			T * Data() { return &(m[0][0]); }
+
+			// 列主序
+			const T * Data() const { return const_cast<type*>(this)->Data(); }
+
 
 		public:
 			bool IsIdentity() const {
@@ -50,15 +63,15 @@ namespace CppUtil {
 
 			T Tr() const { return m[0][0] + m[1][1] + m[2][2] + m[3][3]; }
 
-			Matrix4x4 Transpose() const {
-				return Matrix4x4(m[0][0], m[1][0], m[2][0], m[3][0], m[0][1],
+			Mat4x4 Transpose() const {
+				return Mat4x4(m[0][0], m[1][0], m[2][0], m[3][0], m[0][1],
 					m[1][1], m[2][1], m[3][1], m[0][2], m[1][2],
 					m[2][2], m[3][2], m[0][3], m[1][3], m[2][3],
 					m[3][3]);
 			}
 
-			Matrix4x4 Inverse() const {
-				static const auto & ERROR = ErrorRetVal(&Matrix4x4::Inverse);
+			Mat4x4 Inverse() const {
+				static const auto & ERROR = ErrorRetVal(&Mat4x4::Inverse);
 
 				int indxc[4], indxr[4];
 				int ipiv[4] = { 0, 0, 0, 0 };
@@ -114,17 +127,11 @@ namespace CppUtil {
 							std::swap(minv[indxr[j]][k], minv[indxc[j]][k]);
 					}
 				}
-				return Matrix4x4(minv);
+				return Mat4x4(minv);
 			}
 
-			// 列主序
-			T * Data() { return &(m[0][0]); }
-
-			// 列主序
-			const T * Data() const { return const_cast<type*>(this)->Data(); }
-
 		public:
-			bool operator ==(const Matrix4x4 & rhs) const {
+			bool operator ==(const Mat4x4 & rhs) const {
 				return
 					m[0][0] == rhs.m[0][0]
 					&& m[0][1] == rhs.m[0][1]
@@ -144,7 +151,7 @@ namespace CppUtil {
 					&& m[3][3] == rhs.m[3][3];
 			}
 
-			bool operator!=(const Matrix4x4 & rhs) const {
+			bool operator!=(const Mat4x4 & rhs) const {
 				return
 					m[0][0] != rhs.m[0][0]
 					|| m[0][1] != rhs.m[0][1]
@@ -164,7 +171,7 @@ namespace CppUtil {
 					|| m[3][3] != rhs.m[3][3];
 			}
 
-			const Matrix4x4 operator*(const Matrix4x4 & rhs) const {
+			const Mat4x4 operator*(const Mat4x4 & rhs) const {
 				const auto & lhs = *this;
 				T t00 = lhs(0, 0) * rhs(0, 0) + lhs(0, 1) * rhs(1, 0) + lhs(0, 2) * rhs(2, 0) + lhs(0, 3) * rhs(3, 0);
 				T t01 = lhs(0, 0) * rhs(0, 1) + lhs(0, 1) * rhs(1, 1) + lhs(0, 2) * rhs(2, 1) + lhs(0, 3) * rhs(3, 1);
@@ -182,7 +189,7 @@ namespace CppUtil {
 				T t31 = lhs(3, 0) * rhs(0, 1) + lhs(3, 1) * rhs(1, 1) + lhs(3, 2) * rhs(2, 1) + lhs(3, 3) * rhs(3, 1);
 				T t32 = lhs(3, 0) * rhs(0, 2) + lhs(3, 1) * rhs(1, 2) + lhs(3, 2) * rhs(2, 2) + lhs(3, 3) * rhs(3, 2);
 				T t33 = lhs(3, 0) * rhs(0, 3) + lhs(3, 1) * rhs(1, 3) + lhs(3, 2) * rhs(2, 3) + lhs(3, 3) * rhs(3, 3);
-				return Matrix4x4(
+				return Mat4x4(
 					t00, t01, t02, t03,
 					t10, t11, t12, t13,
 					t20, t21, t22, t23,
@@ -198,7 +205,7 @@ namespace CppUtil {
 				return m[col][row];
 			}
 
-			friend std::ostream & operator<<(std::ostream & os, const Matrix4x4 & mat) {
+			friend std::ostream & operator<<(std::ostream & os, const Mat4x4 & mat) {
 				os << "[" << mat(0, 0) << ", " << mat(0, 1) << ", " << mat(0, 2) << ", " << mat(0, 3) << endl;
 				os << mat(1, 0) << ", " << mat(1, 1) << ", " << mat(1, 2) << ", " << mat(1, 3) << endl;
 				os << mat(2, 0) << ", " << mat(2, 1) << ", " << mat(2, 2) << ", " << mat(2, 3) << endl;
@@ -210,13 +217,13 @@ namespace CppUtil {
 			// 列主序
 			// m[i] 为第 i 列
 			// m[i][j] 为第 j 行第 j 列
-			T m[4][4];
+			Vector4<T> m[4];
 		};
 
-		using Mat4f = Matrix4x4<float>;
-		// using Mat4d = Matrix4x4<double>;
+		using Mat4f = Mat4x4<float>;
+		// using Mat4d = Mat4x4<double>;
 	}
 
 }
 
-#endif // !_CPPUTIL_BASIC_MATH_MATRIX_4X4_H_
+#endif // !_CPPUTIL_BASIC_MATH_MAT_4X4_H_

@@ -7,17 +7,36 @@
 namespace CppUtil {
 	namespace Basic {
 		template <typename T>
+		class Val2;
+
+		template <typename T>
+		class Val4;
+
+		template <typename T>
 		class Val3 {
 		public:
-			Val3() : x(0), y(0), z(0) { }
-			explicit Val3(T val) : x(val), y(val), z(val) { }
-			Val3(T x, T y, T z) : x(x), y(y), z(z) { }
-			Val3(const Val3 & val3) : x(val3.x), y(val3.y), z(val3.z) { }
+			template<typename U, typename V, typename W>
+			Val3(U x, V y, W z) :
+				x(static_cast<T>(x)),
+				y(static_cast<T>(y)),
+				z(static_cast<T>(z)) { }
+
 			template<typename U>
-			Val3(const Val3<U> & val3) :
-				x(staic_cast<T>(val3.x)),
-				y(staic_cast<T>(val3.y)),
-				z(staic_cast<T>(val3.z)) { }
+			explicit Val3(U val) : Val3(val, val, val) { }
+
+			Val3() : Val3(0) { }
+
+			template<typename U, typename V>
+			Val3(const Val2<U> & xy, V z) : Val3(xy.x, xy.y, z) { }
+
+			template<typename U, typename V>
+			Val3(U x, const Val2<U> & yz) : Val3(x, yz.x, yz.y) { }
+
+			template<typename U>
+			Val3(const Val3<U> & xyz) : Val3(xyz.x, xyz.y, xyz.z) { }
+
+			template<typename U>
+			Val3(const Val4<U> & val4) : Val3(val4.x, val4.y, val4.z) { }
 
 		public:
 			bool HasNaN() const { return std::isnan(x) || std::isnan(y) || std::isnan(z); }

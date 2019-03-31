@@ -1,5 +1,6 @@
 #include <CppUtil/Basic/Vector.h>
 #include <CppUtil/Basic/Point.h>
+#include <CppUtil/Basic/Val2.h>
 #include <CppUtil/Basic/Normal.h>
 #include <CppUtil/Basic/Transform.h>
 #include <CppUtil/Basic/EulerYXZ.h>
@@ -58,6 +59,13 @@ int main() {
 	cout << e2m2e << endl;
 	cout << euler.ToQuat() << endl;
 	cout << e2m2e.ToQuat() << endl;
+
+	Vector4f v4(p1, 1);
+	Vector4f v5(1, p1);
+	Vector4f v6(1, Val2f(2, 3), 4);
+	cout << v4 << endl;
+	cout << v5 << endl;
+	cout << v6 << endl;
 
 	return 0;
 }

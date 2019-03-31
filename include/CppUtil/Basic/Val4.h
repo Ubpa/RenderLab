@@ -7,18 +7,45 @@
 namespace CppUtil {
 	namespace Basic {
 		template <typename T>
+		class Val3;
+		template <typename T>
+		class Val2;
+
+		template <typename T>
 		class Val4 {
 		public:
-			Val4() : x(0), y(0), z(0), w(0) { }
-			explicit Val4(T val) : x(val), y(val), z(val), w(val) { }
-			Val4(T x, T y, T z, T w) : x(x), y(y), z(z), w(w) { }
-			Val4(const Val4 & val4) : x(val4.x), y(val4.y), z(val4.z), w(val4.w) { }
+			template <typename T1, typename T2, typename T3, typename T4>
+			Val4(T1 x, T2 y, T3 z, T4 w) :
+				x(static_cast<T>(x)),
+				y(static_cast<T>(y)),
+				z(static_cast<T>(z)),
+				w(static_cast<T>(w)) { }
+
 			template<typename U>
-			Val4(const Val4<U> & val4) :
-				x(staic_cast<T>(val4.x)),
-				y(staic_cast<T>(val4.y)),
-				z(staic_cast<T>(val4.z)),
-				w(staic_cast<T>(val4.w)) { }
+			explicit Val4(U val) : Val4(val, val, val, val) { }
+
+			Val4() : Val4(0) { }
+
+			template<typename U, typename V, typename W>
+			Val4(const Val2<U> & xy, V z, W w) : Val4(xy.x, xy.y, z, w) { }
+
+			template<typename U, typename V, typename W>
+			Val4(U x, const Val2<V> & yz, W w) : Val4(x, yz.x, yz.y, w) { }
+
+			template<typename U, typename V, typename W>
+			Val4(U x, V y, const Val2<W> & zw) : Val4(x, y, zw.x, zw.y) { }
+
+			template<typename U, typename V>
+			Val4(const Val2<U> & xy, const Val2<V> & zw) : Val4(xy.x, xy.y, zw.x, zw.y) { }
+
+			template<typename U, typename V>
+			Val4(const Val3<U> & xyz, V w) : Val4(xyz.x, xyz.y, xyz.z, w) { }
+
+			template<typename U, typename V>
+			Val4(U x, const Val3<V> & yzw) : Val4(x, yzw.x, yzw.y, yzw.z) { }
+
+			template<typename U>
+			Val4(const Val4<U> & val4) : Val4(val4.x, val4.y, val4.z, val4.w) { }
 
 		public:
 			bool HasNaN() const { return std::isnan(x) || std::isnan(y) || std::isnan(z) || std::isnan(w); }
