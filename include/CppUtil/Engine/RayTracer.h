@@ -3,18 +3,19 @@
 
 #include <CppUtil/Basic/HeapObj.h>
 
-#include <glm/vec3.hpp>
+#include <CppUtil/Engine/Ray.h>
+
+#include <CppUtil/Basic/RGB.h>
 
 namespace CppUtil {
 	namespace Engine {
 		class Scene;
-		class Ray;
 
 		class RayTracer : public Basic::HeapObj {
 			HEAP_OBJ_SETUP(RayTracer)
 		public:
 			// ray 处于世界坐标系
-			virtual glm::vec3 Trace(Basic::Ptr<Ray> ray) = 0;
+			virtual const RGBf Trace(Ray & ray) = 0;
 			virtual void Init(Basic::Ptr<Scene> scene) {}
 		};
 	}

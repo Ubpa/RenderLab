@@ -100,14 +100,12 @@ namespace CppUtil {
 				b -= val;
 				return *this;
 			}
-
-			template <typename U>
-			const RGB operator*(U s) const {
+			
+			const RGB operator*(T s) const {
 				return RGB(s * r, s * g, s * b);
 			}
 
-			template <typename U>
-			RGB & operator*=(U s) {
+			RGB & operator*=(T s) {
 				r *= s;
 				g *= s;
 				b *= s;
@@ -118,7 +116,7 @@ namespace CppUtil {
 				return RGB(r*rhs.r, g*rhs.g, b*rhs.b);
 			}
 
-			RGB & operator*(const RGB & rhs) {
+			RGB & operator*=(const RGB & rhs) {
 				r *= rhs.r;
 				g *= rhs.g;
 				b *= rhs.b;

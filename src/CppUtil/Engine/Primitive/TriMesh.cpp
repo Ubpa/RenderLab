@@ -7,6 +7,7 @@
 #include <CppUtil/Basic/Sphere.h>
 #include <CppUtil/Basic/Plane.h>
 
+using namespace CppUtil;
 using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
 using namespace std;

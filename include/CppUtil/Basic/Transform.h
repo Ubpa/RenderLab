@@ -144,6 +144,8 @@ namespace CppUtil {
 			Mat4f mInv;
 		};
 	}
+
+	using Transform = Basic::Transform;
 }
 
 #endif // !_CPPUTIL_BASIC_MATH_TRANSFORM_H_

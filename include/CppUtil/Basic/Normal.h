@@ -3,7 +3,7 @@
 
 #include <CppUtil/Basic/Vector.h>
 #include <CppUtil/Basic/Point2.h>
-
+#include <CppUtil/Basic/Mat3x3.h>
 #include <CppUtil/Basic/Math.h>
 
 namespace CppUtil {
@@ -27,6 +27,22 @@ namespace CppUtil {
 				const float phi = std::atan2(-x, -z) + Math::PI;
 
 				return Normal(cos(phi), 0, -sin(phi));
+			}
+
+			const Mat3x3<T> GenCoordSpace() const {
+				auto z = Norm();
+				auto h = z;
+				if (fabs(h.x) <= fabs(h.y) && fabs(h.x) <= fabs(h.z))
+					h.x = 1.0;
+				else if (fabs(h.y) <= fabs(h.x) && fabs(h.y) <= fabs(h.z))
+					h.y = 1.0;
+				else
+					h.z = 1.0;
+
+				auto y = h.Cross(z).Norm();
+				auto x = z.Cross(y).Norm();
+
+				return Mat3x3<T>(x, y, z);
 			}
 
 		public:

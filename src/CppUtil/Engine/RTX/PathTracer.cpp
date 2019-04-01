@@ -7,20 +7,18 @@
 
 #include <CppUtil/Engine/Scene.h>
 #include <CppUtil/Engine/SObj.h>
-#include <CppUtil/Engine/Ray.h>
 
-#include <CppUtil/Engine/Material.h>
-#include <CppUtil/Engine/Light.h>
-#include <CppUtil/Engine/LightBase.h>
+#include <CppUtil/Engine/CmptMaterial.h>
 #include <CppUtil/Engine/BSDF.h>
+
+#include <CppUtil/Engine/CmptLight.h>
+#include <CppUtil/Engine/Light.h>
 
 #include <CppUtil/Basic/Math.h>
 
-#include <glm/geometric.hpp>
-
+using namespace CppUtil;
 using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
-using namespace glm;
 using namespace std;
 
 PathTracer::PathTracer()
@@ -34,36 +32,34 @@ PathTracer::PathTracer()
 void PathTracer::Init(Scene::Ptr scene) {
 	lights.clear();
 	worldToLightVec.clear();
-	dir_lightToWorldVec.clear();
-	dir_worldToLightVec.clear();
+	lightToWorldVec.clear();
 	lightToIdx.clear();
 
-	auto lightComponents = scene->GetLights();
-	for (int i = 0; i < lightComponents.size(); i++) {
-		auto lightComponent = lightComponents[i];
-		auto light = lightComponent->GetLight();
+	auto cmptLights = scene->GetCmptLights();
+	for (int i = 0; i < cmptLights.size(); i++) {
+		auto cmptLight = cmptLights[i];
+		auto light = cmptLight->light;
 
 		lightToIdx[light] = i;
 
 		lights.push_back(light);
 
-		mat4 lightToWorld = lightComponent->GetLightToWorldMatrixWithoutScale();
-		mat4 worldToLight = inverse(lightToWorld);
+		const auto lightToWorld = cmptLight->GetLightToWorldMatrixWithoutScale();
+		const auto worldToLight = lightToWorld.Inverse();
 
 		worldToLightVec.push_back(worldToLight);
-		dir_lightToWorldVec.push_back(lightToWorld);
-		dir_worldToLightVec.push_back(worldToLight);
+		lightToWorldVec.push_back(lightToWorld);
 	}
 
 	bvhAccel->Init(scene->GetRoot());
 }
 
-vec3 PathTracer::Trace(Ray::Ptr ray, int depth, vec3 pathThroughput) {
+const RGBf PathTracer::Trace(Engine::Ray & ray, int depth, RGBf pathThroughput) {
 	rayIntersector->Init(ray);
 	bvhAccel->Accept(rayIntersector);
 	auto & closestRst = rayIntersector->GetRst();
 	if (!closestRst.closestSObj) {
-		return vec3(0);
+		return RGBf(0);
 		/*
 		float t = 0.5f * (normalize(ray->GetDir()).y + 1.0f);
 		vec3 white(1.0f, 1.0f, 1.0f);
@@ -72,27 +68,26 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth, vec3 pathThroughput) {
 		*/
 	}
 
-	const vec3 hitPos = ray->At(ray->GetTMax());
+	const Pointf hitPos = ray.EndPos();
 
 	const size_t lightNum = lights.size();
-	vector<vec3> posInLightSpaceVec(lightNum);
+	vector<Pointf> posInLightSpaceVec(lightNum);
 
-	const vec4 hitPos4 = vec4(hitPos, 1);
 	for (size_t i = 0; i < lightNum; i++)
-		posInLightSpaceVec[i] = worldToLightVec[i] * hitPos4;
+		posInLightSpaceVec[i] = worldToLightVec[i](hitPos);
 
-	vec3 emitL(0);
-	auto lightComponent = closestRst.closestSObj->GetComponent<Light>();
-	if (lightComponent) {
-		int idx = lightToIdx[lightComponent->GetLight()];
-		emitL = lightComponent->GetLight()->GetMaxL(worldToLightVec[idx] * vec4(ray->GetOrigin(), 1));
+	RGBf emitL(0.f);
+	auto cmptLight = closestRst.closestSObj->GetComponent<CmptLight>();
+	if (cmptLight) {
+		int idx = lightToIdx[cmptLight->light];
+		emitL = cmptLight->light->GetMaxL(worldToLightVec[idx](ray.o));
 	}
 
-	auto material = closestRst.closestSObj->GetComponent<Material>();
+	auto material = closestRst.closestSObj->GetComponent<CmptMaterial>();
 	if (material == nullptr)
 		return emitL;
 
-	auto bsdf = BSDF::Ptr::Cast(material->GetMat());
+	auto bsdf = BSDF::Ptr::Cast(material->material);
 	if (bsdf == nullptr)
 		return emitL;
 
@@ -100,65 +95,65 @@ vec3 PathTracer::Trace(Ray::Ptr ray, int depth, vec3 pathThroughput) {
 
 	bsdf->ChangeNormal(closestRst.texcoord, closestRst.tangent, closestRst.n);
 
-	auto const surfaceToWorld = Math::GenCoordSpace(closestRst.n);
-	auto const worldToSurface = transpose(surfaceToWorld);
+	auto const surfaceToWorld = closestRst.n.GenCoordSpace();
+	auto const worldToSurface = surfaceToWorld.Transpose();
 
 	// w_out 处于表面坐标系，向外
-	auto w_out = normalize(worldToSurface * (-ray->GetDir()));
+	const Normalf w_out = (worldToSurface * (-ray.d)).Norm();
 
 	// SampleLightMode mode = depth > 0 ? SampleLightMode::RandomOne : SampleLightMode::ALL;
 	SampleLightMode mode = SampleLightMode::RandomOne;
-	const vec3 lightL = SampleLight(ray, hitPos, posInLightSpaceVec, worldToSurface, bsdf, w_out, closestRst.texcoord, SampleLightMode::RandomOne);
+	const RGBf lightL = SampleLight(ray, hitPos, posInLightSpaceVec, worldToSurface, bsdf, w_out, closestRst.texcoord, SampleLightMode::RandomOne);
 
-	const vec3 matL = SampleBSDF(bsdf, mode, w_out, surfaceToWorld, closestRst.texcoord, posInLightSpaceVec, ray, hitPos, depth, pathThroughput);
+	const RGBf matL = SampleBSDF(bsdf, mode, w_out, surfaceToWorld, closestRst.texcoord, posInLightSpaceVec, ray, hitPos, depth, pathThroughput);
 
 	return emitL + lightL + matL;
 }
 
-vec3 PathTracer::SampleLightImpl(
-	const Ray::Ptr ray,
+const RGBf PathTracer::SampleLightImpl(
+	Engine::Ray & ray,
 	const int lightID,
-	const vec3 & posInWorldSpace,
-	const vec3 & posInLightSpace,
-	const mat3 & worldToSurface,
-	const BSDF::Ptr bsdf,
-	const vec3 & w_out,
-	const vec2 & texcoord,
+	const Pointf & posInWorldSpace,
+	const Pointf & posInLightSpace,
+	const Mat3f & worldToSurface,
+	const Basic::Ptr<BSDF> bsdf,
+	const Normalf & w_out,
+	const Point2f & texcoord,
 	const float factorPD
 ) const
 {
 	auto const light = lights[lightID];
-	auto const & dir_lightToWorld = dir_lightToWorldVec[lightID];
+	auto const & lightToWorld = lightToWorldVec[lightID];
 	const int lightNum = static_cast<int>(lights.size());
 
 	float dist_ToLight;
 	float PD;// 概率密度
-	vec3 dir_ToLight;
+	Normalf dir_ToLight;
 	// dir_ToLight 是单位向量
-	const vec3 lightL = light->Sample_L(posInLightSpace, dir_ToLight, dist_ToLight, PD);
+	const RGBf lightL = light->Sample_L(posInLightSpace, dir_ToLight, dist_ToLight, PD);
 	if (PD == 0)
-		return vec3(0);
+		return RGBf(0.f);
 
 	PD *= factorPD;
 
-	const vec3 dirInWorld = normalize(dir_lightToWorld * dir_ToLight);
+	const Normalf dirInWorld = lightToWorld(dir_ToLight).Norm();
 
 	// shadow ray 处于世界坐标
-	ray->Init(posInWorldSpace, dirInWorld);
+	ray.Init(posInLightSpace, dirInWorld);
 	visibilityChecker->Init(ray, dist_ToLight - 0.001f);
 	bvhAccel->Accept(visibilityChecker);
 	auto shadowRst = visibilityChecker->GetRst();
 	if (shadowRst.IsIntersect())
-		return vec3(0);
+		return RGBf(0);
 
 	// w_in 处于表面坐标系，应该是单位向量
-	const vec3 w_in = normalize(worldToSurface * dirInWorld);
+	const Normalf w_in = (worldToSurface * dirInWorld).Norm();
 
 	// 多重重要性采样 Multiple Importance Sampling (MIS)
 	if (!light->IsDelta()) {
 		for (int k = 0; k < lightNum; k++) {
 			if (k != lightID && !lights[k]->IsDelta()) {
-				vec3 dirInLight = dir_worldToLightVec[k] * dirInWorld;
+				const auto dirInLight = worldToLightVec[k](dirInWorld).Norm();
 				PD += lights[k]->PDF(posInLightSpace, dirInLight) * factorPD;
 			}
 		}
@@ -169,28 +164,28 @@ vec3 PathTracer::SampleLightImpl(
 	const float cos_theta = max(w_in.z, 0.f);
 
 	// evaluate surface bsdf
-	const vec3 f = bsdf->F(w_out, w_in, texcoord);
+	const RGBf f = bsdf->F(w_out, w_in, texcoord);
 
 	auto weight = (cos_theta / PD) * f;
 	return weight * lightL;
 }
 
-vec3 PathTracer::SampleLight(
-	const Ray::Ptr ray,
-	const vec3 & posInWorldSpace,
-	const vector<vec3> & posInLightSpaceVec,
-	const mat3 & worldToSurface,
-	const BSDF::Ptr bsdf,
-	const vec3 & w_out,
-	const vec2 & texcoord,
+const RGBf PathTracer::SampleLight(
+	Engine::Ray & ray,
+	const Pointf & posInWorldSpace,
+	const std::vector<Pointf> & posInLightSpaceVec,
+	const Mat3f & worldToSurface,
+	const Basic::Ptr<BSDF> bsdf,
+	const Normalf & w_out,
+	const Point2f & texcoord,
 	const SampleLightMode mode
 ) const
 {
 	if (bsdf->IsDelta())
-		return vec3(0);
+		return RGBf(0.f);
 
 	int lightNum = static_cast<int>(lights.size());
-	vec3 rst = vec3(0);
+	RGBf rst(0.f);
 
 	switch (mode)
 	{
@@ -212,31 +207,31 @@ vec3 PathTracer::SampleLight(
 	return rst;
 }
 
-vec3 PathTracer::SampleBSDF(
-	const BSDF::Ptr bsdf,
+const RGBf PathTracer::SampleBSDF(
+	const Basic::Ptr<BSDF> bsdf,
 	const SampleLightMode mode,
-	const vec3 & w_out,
-	const mat3 & surfaceToWorld,
-	const vec2 & texcoord,
-	const vector<vec3> & posInLightSpaceVec,
-	const Ray::Ptr ray,
-	const vec3 & hitPos,
+	const Normalf & w_out,
+	const Mat3f & surfaceToWorld,
+	const Point2f & texcoord,
+	const std::vector<Pointf> & posInLightSpaceVec,
+	Engine::Ray & ray,
+	const Pointf & hitPos,
 	const int depth,
-	vec3 pathThroughput
+	RGBf pathThroughput
 )
 {
 	if (depth + 1 >= maxDepth)
-		return vec3(0);
+		return RGBf(0.f);
 
-	vec3 mat_w_in;
+	Normalf mat_w_in;
 	float matPD;
-	const vec3 matF = bsdf->Sample_f(w_out, texcoord, mat_w_in, matPD);
-	const vec3 matRayDirInWorld = surfaceToWorld * mat_w_in;
+	const RGBf matF = bsdf->Sample_f(w_out, texcoord, mat_w_in, matPD);
+	const Normalf matRayDirInWorld = surfaceToWorld * mat_w_in;
 	const float abs_cosTheta = abs(mat_w_in.z);
 	const int lightNum = static_cast<int>(lights.size());
 
 	if (matPD <= 0)
-		return vec3(0);
+		return RGBf(0);
 
 	// MSI
 	float sumPD = matPD;
@@ -256,22 +251,22 @@ vec3 PathTracer::SampleBSDF(
 			if (lights[i]->IsDelta())
 				continue;
 
-			vec3 dirInLight = dir_worldToLightVec[i] * matRayDirInWorld;
+			Normalf dirInLight = worldToLightVec[i](matRayDirInWorld);
 			sumPD += lights[i]->PDF(posInLightSpaceVec[i], dirInLight) * scaleFactor;
 		}
 	}
 
 	// material ray
-	ray->Init(hitPos, matRayDirInWorld);
+	ray.Init(hitPos, matRayDirInWorld);
 
 	// Russian Roulette
-	vec3 matWeight = abs_cosTheta / sumPD * matF;
+	const RGBf matWeight = abs_cosTheta / sumPD * matF;
 	pathThroughput *= matWeight;
-	float continueP = bsdf->IsDelta() ? 1.f : min(1.f, Math::Illum(pathThroughput));
+	float continueP = bsdf->IsDelta() ? 1.f : min(1.f, pathThroughput.Illumination());
 	if (Math::Rand_F() > continueP)
-		return vec3(0);
+		return RGBf(0.f);
 
-	const vec3 matRayColor = Trace(ray, depth + 1, pathThroughput / continueP);
+	const RGBf matRayColor = Trace(ray, depth + 1, pathThroughput / continueP);
 
 	return matWeight / continueP * matRayColor;
 }

@@ -15,10 +15,9 @@ namespace CppUtil {
 			CmptLight(Basic::Ptr<SObj> sobj, Basic::Ptr<Light> light)
 				: Component(sobj), light(light) { }
 
-			Basic::Ptr<Light> GetLight() const { return light; }
-			void SetLight(Basic::Ptr<Light> light) { this->light = light; }
 			Basic::Transform GetLightToWorldMatrixWithoutScale() const;
-		private:
+		
+		public:
 			Basic::Ptr<Light> light;
 		};
 	}

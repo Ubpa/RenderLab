@@ -3,8 +3,6 @@
 
 #include <CppUtil/Basic/Element.h>
 
-#include <glm/glm.hpp>
-
 #include <string>
 #include <vector>
 
@@ -12,8 +10,8 @@ namespace CppUtil {
 	namespace Engine {
 		class SObj;
 
-		class Camera;
-		class Light;
+		class CmptCamera;
+		class CmptLight;
 
 		class Scene : public Basic::Element {
 			ELE_SETUP(Scene)
@@ -21,11 +19,11 @@ namespace CppUtil {
 			Scene(Basic::Ptr<SObj> root, const std::string & name = "")
 				: root(root), name(name) { }
 
-			Basic::Ptr<SObj> GetRoot() const { return root; }
+			const Basic::Ptr<SObj> GetRoot() const { return root; }
 
-			Basic::Ptr<Camera> GetCamera() const;
+			const Basic::Ptr<CmptCamera> GetCmptCamera() const;
 
-			std::vector<Basic::Ptr<Light>> GetLights() const;
+			const std::vector<Basic::Ptr<CmptLight>> GetCmptLights() const;
 
 			// sobjs have no same name
 			// ID >= 1
@@ -34,7 +32,7 @@ namespace CppUtil {
 			// ID >= 1, return 0 if error
 			int GetID(Basic::Ptr<SObj> sobj) const;
 			// ID >= 1, return "" if error
-			std::string GetName(int ID) const;
+			const std::string GetName(int ID) const;
 
 		public:
 			std::string name;

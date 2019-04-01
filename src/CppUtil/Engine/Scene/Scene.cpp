@@ -2,8 +2,8 @@
 
 #include <CppUtil/Engine/SObj.h>
 
-#include <CppUtil/Engine/Camera.h>
-#include <CppUtil/Engine/Light.h>
+#include <CppUtil/Engine/CmptCamera.h>
+#include <CppUtil/Engine/CmptLight.h>
 
 #include <CppUtil/Basic/Math.h>
 
@@ -11,18 +11,18 @@ using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
 using namespace std;
 
-Camera::Ptr Scene::GetCamera() const {
+const CmptCamera::Ptr Scene::GetCmptCamera() const {
 	if (!root)
 		return nullptr;
 
-	return root->GetComponentInChildren<Camera>();
+	return root->GetComponentInChildren<CmptCamera>();
 }
 
-vector<Light::Ptr> Scene::GetLights() const {
+const vector<CmptLight::Ptr> Scene::GetCmptLights() const {
 	if (!root)
-		return vector<Light::Ptr>();
+		return vector<CmptLight::Ptr>();
 
-	return root->GetComponentsInChildren<Light>();
+	return root->GetComponentsInChildren<CmptLight>();
 }
 
 bool Scene::GenID() {
@@ -75,7 +75,7 @@ int Scene::GetID(SObj::Ptr sobj) const {
 	return target->second;
 }
 
-string Scene::GetName(int ID) const {
+const string Scene::GetName(int ID) const {
 	auto target = ID2name.find(ID);
 	if (target == ID2name.cend())
 		return "";

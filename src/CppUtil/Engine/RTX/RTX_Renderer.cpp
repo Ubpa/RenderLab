@@ -3,7 +3,7 @@
 #include <CppUtil/Engine/Scene.h>
 #include <CppUtil/Engine/SObj.h>
 #include <CppUtil/Engine/RayTracer.h>
-#include <CppUtil/Engine/Camera.h>
+#include <CppUtil/Engine/CmptCamera.h>
 #include <CppUtil/Engine/SObj.h>
 #include <CppUtil/Engine/Ray.h>
 
@@ -21,9 +21,9 @@
 #define THREAD_NUM 1
 #endif //  NDEBUG
 
+using namespace CppUtil;
 using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
-using namespace glm;
 using namespace std;
 
 RTX_Renderer::RTX_Renderer(const function<RayTracer::Ptr()> & generator)
@@ -44,7 +44,7 @@ void RTX_Renderer::Run(Scene::Ptr scene, Image::Ptr img) {
 	state = RendererState::Running;
 	curLoop = 0;
 
-	const float lightNum = static_cast<float>(scene->GetLights().size());
+	const float lightNum = static_cast<float>(scene->GetCmptLights().size());
 
 	// init rst image
 	int w = img->GetWidth();
@@ -52,7 +52,7 @@ void RTX_Renderer::Run(Scene::Ptr scene, Image::Ptr img) {
 
 	for (int i = 0; i < w; i++) {
 		for (int j = 0; j < h; j++)
-			img->SetPixel(i, j, vec3(0));
+			img->SetPixel(i, j, RGBf(0.f));
 	}
 	
 	// init ray tracer
@@ -60,7 +60,7 @@ void RTX_Renderer::Run(Scene::Ptr scene, Image::Ptr img) {
 		rayTracer->Init(scene);
 
 	// init camera
-	auto camera = scene->GetCamera();
+	auto camera = scene->GetCmptCamera();
 	if (camera == nullptr) {
 		// curLoop = maxLoop;
 		state = RendererState::Stop;
@@ -77,12 +77,10 @@ void RTX_Renderer::Run(Scene::Ptr scene, Image::Ptr img) {
 
 	// init float image
 	int imgSize = w * h;
-	vector<vector<vec3>> imgTiles(tileNum, vector<vec3>(tileSize*tileSize,vec3(0)));
+	vector<vector<RGBf>> imgTiles(tileNum, vector<RGBf>(tileSize*tileSize, RGBf(0.f)));
 
 	// rays
-	vector<Ray::Ptr> rays;
-	for (int i = 0; i < threadNum; i++)
-		rays.push_back(ToPtr(new Ray));
+	vector<Engine::Ray> rays(threadNum);
 
 	auto renderPartImg = [&](int id) {
 		auto & ray = rays[id];
@@ -105,10 +103,10 @@ void RTX_Renderer::Run(Scene::Ptr scene, Image::Ptr img) {
 			float v = (y + Math::Rand_F()) / (float)h;
 
 			camera->SetRay(ray, u, v);
-			vec3 rst = rayTracer->Trace(ray);
+			RGBf rst = rayTracer->Trace(ray);
 
 			// 这一步可以极大的减少白噪点（特别是由点光源产生）
-			float illum = Math::Illum(rst);
+			float illum = rst.Illumination();
 			if (illum > lightNum)
 				rst *= lightNum / illum;
 
@@ -164,5 +162,5 @@ void RTX_Renderer::Stop() {
 }
 
 float RTX_Renderer::ProgressRate() {
-	return clamp((float(curLoop) + 0.5f) / float(maxLoop), 0.f, 1.f);
+	return Math::Clamp((float(curLoop) + 0.5f) / float(maxLoop), 0.f, 1.f);
 }

@@ -3,15 +3,15 @@
 
 #include <CppUtil/Engine/RayTracer.h>
 
-#include <glm/mat4x4.hpp>
-#include <glm/mat3x3.hpp>
+#include <CppUtil/Basic/Transform.h>
+#include <CppUtil/Basic/Mat3x3.h>
 
 #include <vector>
 #include <map>
 
 namespace CppUtil {
 	namespace Engine {
-		class LightBase;
+		class Light;
 		class BVHAccel;
 
 		class RayIntersector;
@@ -25,13 +25,13 @@ namespace CppUtil {
 		public:
 			PathTracer();
 
-			virtual glm::vec3 Trace(Basic::Ptr<Ray> ray) { return Trace(ray, 0, glm::vec3(1)); }
+			virtual const RGBf Trace(Ray & ray) { return Trace(ray, 0, RGBf(1.f)); }
 
 			virtual void Init(Basic::Ptr<Scene> scene);
 
 		protected:
 			// ray 处于世界坐标系
-			glm::vec3 Trace(Basic::Ptr<Ray> ray, int depth, glm::vec3 pathThroughput);
+			const RGBf Trace(Ray & ray, int depth, RGBf pathThroughput);
 
 		private:
 			enum SampleLightMode {
@@ -39,51 +39,50 @@ namespace CppUtil {
 				RandomOne,
 			};
 
-			glm::vec3 SampleLight(
-				const Basic::Ptr<Ray> ray,
-				const glm::vec3 & posInWorldSpace,
-				const std::vector<glm::vec3> & posInLightSpaceVec,
-				const glm::mat3 & worldToSurface,
-				const Basic::Ptr<BSDF> bsdf,
-				const glm::vec3 & w_out,
-				const glm::vec2 & texcoord,
-				const SampleLightMode mode
+			const RGBf SampleLight(
+				Ray & ray,
+				const Pointf & posInWorldSpace,
+				const std::vector<Pointf> & posInLightSpaceVec,
+				const Mat3f & worldToSurface,
+				Basic::Ptr<BSDF> bsdf,
+				const Normalf & w_out,
+				const Point2f & texcoord,
+				SampleLightMode mode
 			) const;
 
-			glm::vec3 SampleLightImpl(
-				const Basic::Ptr<Ray> ray,
-				const int lightID,
-				const glm::vec3 & posInWorldSpace,
-				const glm::vec3 & posInLightSpace,
-				const glm::mat3 & worldToSurface,
-				const Basic::Ptr<BSDF> bsdf,
-				const glm::vec3 & w_out,
-				const glm::vec2 & texcoord,
-				const float factorPD
+			const RGBf SampleLightImpl(
+				Ray & ray,
+				int lightID,
+				const Pointf & posInWorldSpace,
+				const Pointf & posInLightSpace,
+				const Mat3f & worldToSurface,
+				Basic::Ptr<BSDF> bsdf,
+				const Normalf & w_out,
+				const Point2f & texcoord,
+				float factorPD
 			) const;
 
-			glm::vec3 SampleBSDF(
-				const Basic::Ptr<BSDF> bsdf,
-				const SampleLightMode mode,
-				const glm::vec3 & w_out,
-				const glm::mat3 & surfaceToWorld,
-				const glm::vec2 & texcoord,
-				const std::vector<glm::vec3> & posInLightSpaceVec,
-				const Basic::Ptr<Ray> ray,
-				const glm::vec3 & hitPos,
-				const int depth,
-				glm::vec3 pathThroughput
+			const RGBf SampleBSDF(
+				Basic::Ptr<BSDF> bsdf,
+				SampleLightMode mode,
+				const Normalf & w_out,
+				const Mat3f & surfaceToWorld,
+				const Point2f & texcoord,
+				const std::vector<Pointf> & posInLightSpaceVec,
+				Ray & ray,
+				const Pointf & hitPos,
+				int depth,
+				RGBf pathThroughput
 			);
 		
 		public:
 			int maxDepth;
 
 		private:
-			std::vector<Basic::Ptr<LightBase>> lights;
-			std::map<Basic::Ptr<LightBase>, int> lightToIdx;
-			std::vector<glm::mat4> worldToLightVec;
-			std::vector<glm::mat3> dir_worldToLightVec;// 只需要旋转方向，所以使用 mat3
-			std::vector<glm::mat3> dir_lightToWorldVec;// 只需要旋转方向，所以使用 mat3
+			std::vector<Basic::Ptr<Light>> lights;
+			std::map<Basic::Ptr<Light>, int> lightToIdx;
+			std::vector<Transform> worldToLightVec;
+			std::vector<Transform> lightToWorldVec;
 
 			Basic::Ptr<BVHAccel> bvhAccel;
 

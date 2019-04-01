@@ -2,6 +2,7 @@
 
 #include <CppUtil/Engine/TriMesh.h>
 
+using namespace CppUtil;
 using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
 
