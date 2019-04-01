@@ -44,7 +44,7 @@ bool Image::Load(const std::string & fileName, bool flip) {
 		return false;
 	}
 
-	const int valNum = width * height*channel;
+	const int valNum = width * height * channel;
 	data = new float[valNum];
 	for (int i = 0; i < valNum; i++)
 		data[i] = static_cast<float>(ucData[i]) / 255.f;

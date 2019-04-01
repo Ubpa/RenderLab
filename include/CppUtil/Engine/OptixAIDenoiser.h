@@ -17,13 +17,6 @@ namespace CppUtil {
 			}
 
 			void Denoise(Basic::Ptr<Basic::Image> img);
-		private:
-			OptixAIDenoiser() : init(false) { }
-
-		private:
-			bool init;
-			int width;
-			int height;
 		};
 	}
 }

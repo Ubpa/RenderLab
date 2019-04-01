@@ -17,7 +17,7 @@ namespace CppUtil {
 		class RGBA {
 		public:
 			template<typename T1, typename T2, typename T3, typename T4>
-			RGBA(T1 r, T2 g, T3 b, T4) :
+			RGBA(T1 r, T2 g, T3 b, T4 a) :
 				r(static_cast<T>(r)),
 				g(static_cast<T>(g)),
 				b(static_cast<T>(b)),
