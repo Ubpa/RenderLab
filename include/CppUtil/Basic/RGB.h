@@ -23,7 +23,7 @@ namespace CppUtil {
 
 			explicit RGB(T val) : RGB(val, val, val) { }
 
-			RGB() : RGB(0) { }
+			RGB() : RGB(static_cast<T>(0)) { }
 
 			template<typename U, typename V>
 			RGB(const Val2<U> & val2, V b) : RGB(val2.x, val2.y, b) { }

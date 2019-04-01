@@ -1,110 +1,119 @@
 #ifndef _BASIC_IMAGE_IMAGE_H_
 #define _BASIC_IMAGE_IMAGE_H_
 
-#include <string>
 #include <CppUtil/Basic/HeapObj.h>
-#include <glm/glm.hpp>
+#include <CppUtil/Basic/RGB.h>
+#include <CppUtil/Basic/RGBA.h>
+#include <CppUtil/Basic/Point2.h>
+
+#include <string>
 
 namespace CppUtil {
 	namespace Basic {
-		typedef unsigned char uByte;
 		class Image : public HeapObj{
 			HEAP_OBJ_SETUP_SELF_DEL(Image)
 
 		public:
 			Image();
 			Image(int width, int height, int channel);
-			Image(const char * fileName, bool flip = false);
-			//------------
-			bool IsValid() const;
-			uByte * GetData() { return data; }
-			const uByte * GetData() const { return data; }
-			int GetWidth() const { return width; }
-			int GetHeight() const { return height; }
-			int GetChannel() const { return channel; }
-			const std::string & GetPath() const { return path; }
-			//------------
-			template<glm::length_t N>
-			void SetPixel(int x, int y, const glm::vec<N, float> & pixel) {
-				SetPixel(x, y, Pixel_F2UB(pixel));
-			}
-			template<glm::length_t N>
-			void SetPixel(int x, int y, const glm::vec<N, double> & pixel) {
-				SetPixel(x, y, Pixel_D2UB(pixel));
-			}
-			template<glm::length_t N>
-			void SetPixel(int x, int y, const glm::vec<N, uByte> pixel) {
-				//assert(channel <= N);
-				for (int i = 0; i < channel; i++)
-					At(x, y, i) = pixel[i];
-			}
-
-			glm::vec<4, uByte> GetPixel_UB(int x, int y) const;
-			glm::vec4 GetPixel_F(int x, int y) const;
-			glm::dvec4 GetPixel_D(int x, int y) const;
-			uByte & At(int x, int y, int channel);
-			const uByte & At(int x, int y, int channel) const;
-			glm::vec4 Sample(float u, float v, bool blend = false) const;
-			glm::vec4 Sample(const glm::vec2 & texcoord, bool blend = false) const {
-				return Sample(texcoord.x, texcoord.y, blend);
-			}
-
-			//------------
+			Image(const std::string & path, bool flip = false);
+			Image(const Image & img);
+			
+		public:
 			bool Load(const std::string & fileName, bool flip = false);
 			void GenBuffer(int width, int height, int channel);
 			void Free();
 			bool SaveAsPNG(const std::string & fileName, bool flip = false) const;
 			Image::Ptr GenFlip() const;
 
-			//------------
-
-			template<glm::length_t N>
-			static glm::vec<N, uByte> Pixel_F2UB(const glm::vec<N, float> & pixel) {
-				glm::vec<N, uByte> rst;
-				for (int i = 0; i < N; i++)
-					rst[i] = static_cast<uByte>(glm::clamp<float>(255.99f * pixel[i], 0.0f, 255.99f));
-
-				return rst;
-			}
-
-			template<glm::length_t N>
-			static glm::vec<N, uByte> Pixel_D2UB(const glm::vec<N, double> & pixel) {
-				glm::vec<N, uByte> rst;
-				for (int i = 0; i < N; i++)
-					rst[i] = static_cast<uByte>(glm::clamp<double>(255.99 * pixel[i], 0.0, 255.99));
-
-				return rst;
-			}
-
-			template<glm::length_t N>
-			static glm::vec<N, float> Pixel_UB2F(const glm::vec<N, uByte> & pixel) {
-				return 1.0f / 255.0f * glm::vec<N, float>(pixel);
-			}
-
-			template<glm::length_t N>
-			static glm::vec<N, double> Pixel_UB2D(const glm::vec<N, uByte> & pixel) {
-				return 1.0 / 255.0 * glm::vec<N, double>(pixel);
-			}
-			//------------
 			Image & operator =(const Image & img);
-			Image(const Image & img);
+
+		public:
+			bool IsValid() const;
+			float * GetData() { return data; }
+			const float * GetData() const { return data; }
+			int GetWidth() const { return width; }
+			int GetHeight() const { return height; }
+			int GetChannel() const { return channel; }
+			const std::string & GetPath() const { return path; }
+
+		public:
+			const RGBAf GetPixel(int x, int y) const;
+			const RGBAf GetPixel(const Point2i & xy) const {
+				return GetPixel(xy.x, xy.y);
+			}
+
+			float & At(int x, int y, int channel);
+			float & At(const Point2i & xy, int channel) {
+				return At(xy.x, xy.y, channel);
+			}
+			float At(int x, int y, int channel) const;
+			float At(const Point2i & xy, int channel) const {
+				return At(xy.x, xy.y, channel);
+			}
+
+			void SetPixel(int x, int y, float r, float g, float b);
+			void SetPixel(int x, int y, const RGBf & rgb) {
+				SetPixel(x, y, rgb.r, rgb.g, rgb.b);
+			}
+			void SetPixel(const Point2i & xy, float r, float g, float b) {
+				SetPixel(xy.x, xy.y, r, g, b);
+			}
+			void SetPixel(const Point2i & xy, const RGBf & rgb) {
+				SetPixel(xy.x, xy.y, rgb.r, rgb.g, rgb.b);
+			}
+
+			void SetPixel(int x, int y, float r, float g, float b, float a);
+			void SetPixel(int x, int y, const RGBAf & rgba) {
+				SetPixel(x, y, rgba.r, rgba.g, rgba.b, rgba.a);
+			}
+			void SetPixel(const Point2i & xy, float r, float g, float b, float a) {
+				SetPixel(xy.x, xy.y, r, g, b, a);
+			}
+			void SetPixel(const Point2i & xy, const RGBAf & rgba) {
+				SetPixel(xy.x, xy.y, rgba.r, rgba.g, rgba.b, rgba.a);
+			}
+			void SetPixel(const Point2i & xy, const RGBf & rgb, float a) {
+				SetPixel(xy.x, xy.y, rgb.r, rgb.g, rgb.b, a);
+			}
+			void SetPixel(int x, int y, const RGBf & rgb, float a) {
+				SetPixel(x, y, rgb.r, rgb.g, rgb.b, a);
+			}
+
+			const RGBAf SampleNearest(float u, float v) const;
+			const RGBAf SampleNearest(const Point2f & texcoord) const {
+				return SampleNearest(texcoord.x, texcoord.y);
+			}
+			const RGBAf SampleBilinear(float u, float v) const;
+			const RGBAf SampleBilinear(const Point2f & texcoord) const {
+				return SampleBilinear(texcoord.x, texcoord.y);
+			}
+			enum Mode {
+				NEAREST,
+				BILINEAR,
+			};
+			const RGBAf Sample(float u, float v, Mode mode = Mode::NEAREST) const {
+				switch (mode)
+				{
+				case CppUtil::Basic::Image::NEAREST:
+					return SampleNearest(u, v);
+					break;
+				case CppUtil::Basic::Image::BILINEAR:
+					break;
+				}
+			}
+			const RGBAf Sample(const Point2f & texcoord, Mode mode = Mode::NEAREST) const {
+				return Sample(texcoord.x, texcoord.y, mode);
+			}
 
 		protected:
 			~Image();
 		private:
-			enum ENUM_SRC_TYPE
-			{
-				ENUM_SRC_TYPE_INVALID,
-				ENUM_SRC_TYPE_NEW,
-				ENUM_SRC_TYPE_STB,
-			};
-
-			uByte * data;
+			float * data;
 			int width;
 			int height;
 			int channel;
 			std::string path;
-			ENUM_SRC_TYPE type;
 		};
 	}
 }

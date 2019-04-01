@@ -25,6 +25,10 @@ namespace CppUtil {
 				return (180.f / PI) * radians;
 			}
 
+			template <typename T> T sgn(T val) {
+				return (static_cast<T>(0) < val) - (val < static_cast<T>(0));
+			}
+
 			glm::vec2 RandInCircle();
 
 			glm::vec3 RandInSphere();
@@ -83,6 +87,16 @@ namespace CppUtil {
 
 			template<typename T>
 			T max(const std::vector<T> & val);
+
+			template<typename T>
+			T Clamp(T v, T minV, T maxV) {
+				if (v < minV)
+					return minV;
+				else if (v > maxV)
+					return maxV;
+				else
+					return v;
+			}
 
 			bool IsBase2(int n);
 

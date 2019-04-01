@@ -11,171 +11,107 @@
 #include <CppUtil/Basic/stb_image_write.h>
 
 #include <CppUtil/Basic/File.h>
+#include <CppUtil/Basic/Math.h>
 
+using namespace CppUtil;
 using namespace CppUtil::Basic;
-using namespace glm;
 using namespace std;
 
 Image::Image()
-	:data(NULL), width(0), height(0), channel(0), type(ENUM_SRC_TYPE_INVALID){ }
+	:data(NULL), width(0), height(0), channel(0){ }
 
 Image::Image(int width, int height, int channel){
 	GenBuffer(width, height, channel);
 }
 
-Image::Image(const char * fileName, bool flip) {
+Image::Image(const string & path, bool flip) {
 	data = NULL;
-	type = ENUM_SRC_TYPE_INVALID;
-	Load(fileName, flip);
+	Load(path.c_str(), flip);
 }
 
 Image::~Image() {
 	Free();
 }
 
-//-----------
-
-bool Image::IsValid() const{
-	return data != NULL && type != ENUM_SRC_TYPE_INVALID;
-}
-
-//------------
-
-uByte & Image::At(int x, int y, int channel) {
-	return data[(y*width + x)*this->channel + channel];
-}
-
-const uByte & Image::At(int x, int y, int channel) const {
-	return data[(y*width + x)*this->channel + channel];
-}
-
-vec4 Image::Sample(float u, float v, bool blend) const {
-	// bilinear filtering
-
-	assert(type != ENUM_SRC_TYPE_INVALID);
-
-	float xf = clamp<float>(u, 0, 0.999999f) * width;
-	float yf = clamp<float>(v, 0, 0.999999f) * height;
-
-	int x0 = static_cast<int>(xf);
-	int x1 = clamp<int>(x0 + ((xf - x0) < 0.5 ? -1 : 1), 0, width - 1);
-	int y0 = static_cast<int>(yf);
-	int y1 = clamp<int>(y0 + ((yf - y0) < 0.5 ? -1 : 1), 0, height - 1);
-
-	vec4 colors[4] = {
-		GetPixel_F(x0,y0),
-		GetPixel_F(x1,y0),
-		GetPixel_F(x0,y1),
-		GetPixel_F(x1,y1),
-	};
-
-	if (blend) {
-		assert(channel == 4);
-		for (int i = 0; i < 4; i++) {
-			colors[i].r *= colors[i].a;
-			colors[i].g *= colors[i].a;
-			colors[i].b *= colors[i].a;
-		}
-	}
-
-	float tx = abs(xf - (x0 + 0.5f));
-	float ty = abs(yf - (y0 + 0.5f));
-	vec4 mixColor = (1 - ty)*((1 - tx)*colors[0] + tx * colors[1]) + ty * ((1 - tx)*colors[2] + tx * colors[3]);
-
-	if (blend && mixColor.a != 0) {
-		mixColor.r /= mixColor.a;
-		mixColor.g /= mixColor.a;
-		mixColor.b /= mixColor.a;
-	}
-	return mixColor;
-}
-
-vec<4,uByte> Image::GetPixel_UB(int x, int y) const {
-	vec<4,uByte> rst(0);
-	for (int i = 0; i < channel; i++)
-		rst[i] = At(x, y, i);
-
-	return rst;
-}
-
-vec4 Image::GetPixel_F(int x, int y) const {
-	return Pixel_UB2F(GetPixel_UB(x, y));
-}
-
-dvec4 Image::GetPixel_D(int x, int y) const {
-	return Pixel_UB2D(GetPixel_UB(x, y));
-}
-
-//------------
-
 bool Image::Load(const std::string & fileName, bool flip) {
 	Free();
 
 	stbi_set_flip_vertically_on_load(flip);
 
-	int tmpW, tmpH, tmpC;
-	data = stbi_load(fileName.c_str(), &tmpW, &tmpH, &tmpC, 0);
-	width = tmpW;
-	height = tmpH;
-	channel = tmpC;
-
-	if (data == NULL) {
-		type = ENUM_SRC_TYPE_INVALID;
+	auto ucData = stbi_load(fileName.c_str(), &width, &height, &channel, 0);
+	if (ucData == nullptr) {
+		data = nullptr;
 		return false;
 	}
 
-	type = ENUM_SRC_TYPE_STB;
+	const int valNum = width * height*channel;
+	data = new float[valNum];
+	for (int i = 0; i < valNum; i++)
+		data[i] = static_cast<float>(ucData[i]) / 255.f;
+
+	stbi_image_free(ucData);
 	path = fileName;
 	return true;
 }
+
 void Image::GenBuffer(int width, int height, int channel) {
 	Free();
 	this->width = width;
 	this->height = height;
 	this->channel = channel;
 
-	data = new uByte[width*height*channel]();
-	type = ENUM_SRC_TYPE_NEW;
+	data = new float[width*height*channel]();
 }
 
 void Image::Free() {
-	if (data != NULL) {
-		switch (type)
-		{
-		case Basic::Image::ENUM_SRC_TYPE_NEW:
-			delete[] data;
-			break;
-		case Basic::Image::ENUM_SRC_TYPE_STB:
-			stbi_image_free(data);
-			break;
-		case Basic::Image::ENUM_SRC_TYPE_INVALID:
-		default:
-			break;
-		}
-	}
+	delete[] data;
 
 	width = 0;
 	height = 0;
 	channel = 0;
-	data = NULL;
+	data = nullptr;
 	path.clear();
-	type = ENUM_SRC_TYPE_INVALID;
 }
 
-bool Image::SaveAsPNG(const string & fileName, bool flip) const{
+bool Image::SaveAsPNG(const string & fileName, bool flip) const {
+	if (!IsValid())
+		return false;
+
 	stbi_flip_vertically_on_write(flip);
-	return stbi_write_png(fileName.c_str(), width, height, channel, data, width * channel);
+	const int valNum = width * height*channel;
+	auto ucData = new stbi_uc[valNum];
+	for (int i = 0; i < valNum; i++) {
+		float val255f = data[i] * 255.f;
+
+		// clamp
+		if (val255f > 255.f)
+			val255f = 255.f;
+		else if (val255f < 0.f)
+			val255f = 0.f;
+
+		auto val255uc = static_cast<stbi_uc>(val255f);
+		if (val255f - static_cast<float>(val255uc) > 0.5f)
+			val255uc += 1;
+
+		ucData[i] = val255uc;
+	}
+
+	auto rst = stbi_write_png(fileName.c_str(), width, height, channel, ucData, width * channel);
+
+	delete[] ucData;
+	return rst;
 }
 
-Image & Image::operator =(const Image & img) {
+Image & Image::operator=(const Image & img) {
 	Free();
+
 	width = img.width;
 	height = img.height;
 	channel = img.channel;
-	type = ENUM_SRC_TYPE_NEW;
-	int bytesNum = width * height * channel;
-	data = new uByte[bytesNum];
-	memcpy(data, img.data, bytesNum * sizeof(uByte));
+
+	const int valNum = width * height * channel;
+	data = new float[valNum];
+	memcpy(data, img.data, valNum * sizeof(float));
 
 	return *this;
 }
@@ -184,10 +120,10 @@ Image::Image(const Image & img) {
 	width = img.width;
 	height = img.height;
 	channel = img.channel;
-	type = ENUM_SRC_TYPE_NEW;
-	int bytesNum = width * height * channel;
-	data = new uByte[bytesNum];
-	memcpy(data, img.data, bytesNum * sizeof(uByte));
+
+	const int valNum = width * height * channel;
+	data = new float[valNum];
+	memcpy(data, img.data, valNum * sizeof(float));
 }
 
 Image::Ptr Image::GenFlip() const {
@@ -198,8 +134,78 @@ Image::Ptr Image::GenFlip() const {
 
 	for (int i = 0; i < width; i++) {
 		for (int j = 0; j < height; j++)
-			img->SetPixel(i, height - 1 - j, GetPixel_UB(i, j));
+			img->SetPixel(i, height - 1 - j, GetPixel(i, j));
 	}
 
 	return img;
+}
+
+bool Image::IsValid() const{
+	return data != NULL;
+}
+
+const RGBAf Image::GetPixel(int x, int y) const {
+	RGBAf rgba(0, 0, 0, 1);
+	for (int i = 0; i < channel; i++)
+		rgba[i] = At(x, y, i);
+
+	return rgba;
+}
+
+float & Image::At(int x, int y, int channel) {
+	assert(channel < this->channel);
+	return data[(y*width + x)*this->channel + channel];
+}
+
+float Image::At(int x, int y, int channel) const {
+	assert(channel < this->channel);
+	return data[(y*width + x)*this->channel + channel];
+}
+
+void Image::SetPixel(int x, int y, float r, float g, float b) {
+	assert(channel == 3);
+	At(x, y, 0) = r;
+	At(x, y, 1) = g;
+	At(x, y, 2) = b;
+}
+
+void Image::SetPixel(int x, int y, float r, float g, float b, float a) {
+	assert(channel == 4);
+	At(x, y, 0) = r;
+	At(x, y, 1) = g;
+	At(x, y, 2) = b;
+	At(x, y, 3) = a;
+}
+
+const RGBAf Image::SampleNearest(float u, float v) const {
+	u = Math::Clamp(u, 0.f, 0.999999f);
+	v = Math::Clamp(v, 0.f, 0.999999f);
+	float xf = u * width;
+	float yf = v * height;
+	int xi = static_cast<int>(xf);
+	int yi = static_cast<int>(yf);
+	return GetPixel(xi, yi);
+}
+
+const RGBAf Image::SampleBilinear(float u, float v) const {
+	float xf = Math::Clamp<float>(u, 0, 0.999999f) * width;
+	float yf = Math::Clamp<float>(v, 0, 0.999999f) * height;
+
+	int x0 = static_cast<int>(xf);
+	int x1 = Math::Clamp<int>(x0 + ((xf - x0) < 0.5 ? -1 : 1), 0, width - 1);
+	int y0 = static_cast<int>(yf);
+	int y1 = Math::Clamp<int>(y0 + ((yf - y0) < 0.5 ? -1 : 1), 0, height - 1);
+
+	RGBAf colors[4] = {
+		GetPixel(x0,y0),
+		GetPixel(x1,y0),
+		GetPixel(x0,y1),
+		GetPixel(x1,y1),
+	};
+
+	float tx = abs(xf - (x0 + 0.5f));
+	float ty = abs(yf - (y0 + 0.5f));
+	RGBAf mixColor = (1 - ty)*((1 - tx)*colors[0] + tx * colors[1]) + ty * ((1 - tx)*colors[2] + tx * colors[3]);
+
+	return mixColor;
 }
