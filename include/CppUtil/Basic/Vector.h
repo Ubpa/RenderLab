@@ -58,16 +58,38 @@ namespace CppUtil {
 				return *this;
 			}
 
-			const Vector operator-(const Vector &v) const {
-				return Vector(x - v.x, y - v.y, z - v.z);
+			const Vector operator+(T val)const {
+				return Vector(x + val, y + val, z + val);
+			}
+
+			Vector operator+=(T val) {
+				x += val;
+				y += val;
+				z += val;
+				return *this;
 			}
 
 			const Vector operator-() const { return Vector(-x, -y, -z); }
+
+			const Vector operator-(const Vector &v) const {
+				return Vector(x - v.x, y - v.y, z - v.z);
+			}
 
 			Vector & operator-=(const Vector &v) {
 				x -= v.x;
 				y -= v.y;
 				z -= v.z;
+				return *this;
+			}
+
+			const Vector operator-(T val)const {
+				return Vector(x - val, y - val, z - val);
+			}
+
+			Vector operator-=(T val) {
+				x -= val;
+				y -= val;
+				z -= val;
 				return *this;
 			}
 
@@ -103,6 +125,16 @@ namespace CppUtil {
 		template <typename U, typename T>
 		const Vector<T> operator * (U a, const Vector<T> & v) {
 			return v * a;
+		}
+
+		template<typename T, typename U>
+		const Vector<T> operator+(U a, const Vector<T> & v) {
+			return v + a;
+		}
+
+		template<typename T, typename U>
+		const Vector<T> operator-(U a, const Vector<T> & v) {
+			return v - a;
 		}
 	}
 

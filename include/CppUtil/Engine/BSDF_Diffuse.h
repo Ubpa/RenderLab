@@ -14,37 +14,23 @@ namespace CppUtil {
 		class BSDF_Diffuse : public BSDF {
 			ELE_SETUP(BSDF_Diffuse)
 		public:
-			BSDF_Diffuse(const glm::vec3 & albedoColor = glm::vec3(1)) :albedoColor(albedoColor), albedoTexture(nullptr) { }
+			BSDF_Diffuse(const RGBf & colorFactor = RGBf(1))
+				: colorFactor(colorFactor), albedoTexture(nullptr) { }
 
-			virtual glm::vec3 F(const glm::vec3 & wo, const glm::vec3 & wi, const glm::vec2 & texcoord);
+			virtual const RGBf F(const Normalf & wo, const Normalf & wi, const Point2f & texcoord);
 
 			// probability density function
-			virtual float PDF(const glm::vec3 & wo, const glm::vec3 & wi, const glm::vec2 & texcoord);
+			virtual float PDF(const Normalf & wo, const Normalf & wi, const Point2f & texcoord);
 
 			// PD is probability density
 			// return albedo
-			// @arg0 in
-			// @arg1 out
-			// @arg2 out
-			virtual glm::vec3 Sample_f(const glm::vec3 & wo, const glm::vec2 & texcoord, glm::vec3 & wi, float & pd);
-
-			virtual bool IsDelta() const { return false; }
-
-			//glm::vec3 GetAlbedo() const { return albedo; }
-			//void SetAlbedo(const glm::vec3 & albedo) { this->albedo = albedo; }
-
-		public:
-			Basic::CPtr<Basic::Image> GetAlbedoTexture() const { return albedoTexture; }
-
-			void SetAlbedoTexture(Basic::Ptr<Basic::Image> albedoTexture) {
-				this->albedoTexture = albedoTexture;
-			}
+			virtual const RGBf Sample_f(const Normalf & wo, const Point2f & texcoord, Normalf & wi, float & PD);
 
 		private:
-			const glm::vec3 GetAlbedo(const glm::vec2 & texcoord) const;
+			const RGBf GetAlbedo(const Point2f & texcoord) const;
 
 		public:
-			glm::vec3 albedoColor;
+			RGBf colorFactor;
 			Basic::Ptr<Basic::Image> albedoTexture;
 
 		private:

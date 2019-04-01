@@ -2,13 +2,12 @@
 
 #include <CppUtil/Basic/Math.h>
 
-#include <glm/geometric.hpp>
-
+using namespace CppUtil;
 using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
-using namespace glm;
+using namespace std;
 
-float BSDF_CookTorrance::NDF(const vec3 & h) {
+float BSDF_CookTorrance::NDF(const Normalf & h) {
 	// backmann
 
 	//float NoH = h.z;
@@ -18,19 +17,19 @@ float BSDF_CookTorrance::NDF(const vec3 & h) {
 	return exp((NoH2 - 1) / (m2 * NoH2)) / (m2 * NoH4);
 }
 
-float BSDF_CookTorrance::Fr(const vec3 & wi, vec3 & h) {
+float BSDF_CookTorrance::Fr(const Normalf & wi, const Normalf & h) {
 	// schlick
 
 	float R0 = (ior - 1) / (ior + 1);
 	R0 *= R0;
-	return R0 + (1 - R0)*pow(1 - dot(wi, h), 5);
+	return R0 + (1 - R0)*pow(1 - wi.Dot(h), 5);
 }
 
-float BSDF_CookTorrance::G(const vec3 & wo, const vec3 & wi, const vec3 & h){
+float BSDF_CookTorrance::G(const Normalf & wo, const Normalf & wi, const Normalf & h){
 	// Cook-Torrance
 
 	//float NoH = h.z;
-	float HoWo = dot(h, wo);
+	float HoWo = h.Dot(wo);
 	//float NoWo = wo.z;
 	//float NoWi = wi.z;
 	float commomPart = 2 * h.z / HoWo;
@@ -39,21 +38,21 @@ float BSDF_CookTorrance::G(const vec3 & wo, const vec3 & wi, const vec3 & h){
 	return min(min(1.0f, item1), item2);
 }
 
-vec3 BSDF_CookTorrance::F(const vec3 & wo, const vec3 & wi, const vec2 & texcoord) {
-	vec3 h = normalize(wo + wi);
+const RGBf BSDF_CookTorrance::F(const Normalf & wo, const Normalf & wi, const Point2f & texcoord) {
+	const Normalf h = (wo + wi).Norm();
 	float fr = Fr(wi, h);
 	float kd = 1 - fr;
 	return kd * albedo / Math::PI + NDF(h) * fr * G(wo, wi, h) / (4 * wo.z *wi.z) * refletance;
 }
 
-float BSDF_CookTorrance::PDF(const vec3 & wo, const vec3 & wi, const vec2 & texcoord) {
+float BSDF_CookTorrance::PDF(const Normalf & wo, const Normalf & wi, const Point2f & texcoord) {
 	//vec3 h = normalize(wo + wi);
 	//return NDF(h) / 4.0f;
 
 	return 1.0f / (2.0f * Math::PI);
 }
 
-vec3 BSDF_CookTorrance::Sample_f(const vec3 & wo, const vec2 & texcoord, vec3 & wi, float & pd) {
+const RGBf BSDF_CookTorrance::Sample_f(const Normalf & wo, const Point2f & texcoord, Normalf & wi, float & pd) {
 	/*
 	// 根据 NDF 来进行重要性采样
 	// 有异常，暂时未解决
@@ -77,8 +76,8 @@ vec3 BSDF_CookTorrance::Sample_f(const vec3 & wo, const vec2 & texcoord, vec3 & 
 	float cosTheta = Xi1;
 	float sinTheta = sqrt(1 - cosTheta * cosTheta);
 	float phi = 2 * Math::PI * Xi2;
-	wi = vec3(sinTheta*cos(phi), sinTheta*sin(phi), cosTheta);
-	vec3 h = normalize(wo + wi);
+	wi = Normalf(sinTheta*cos(phi), sinTheta*sin(phi), cosTheta);
+	Normalf h = (wo + wi).Norm();
 	pd = 1.0f / (2.0f * Math::PI);
 
 	float fr = Fr(wi, h);

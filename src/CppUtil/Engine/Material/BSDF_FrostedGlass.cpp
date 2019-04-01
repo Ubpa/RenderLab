@@ -3,12 +3,12 @@
 #include <CppUtil/Basic/Math.h>
 #include <CppUtil/Basic/Image.h>
 
+using namespace CppUtil;
 using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
-using namespace glm;
 using namespace std;
 
-float BSDF_FrostedGlass::GGX_D(const vec3 & h, float alpha) {
+float BSDF_FrostedGlass::GGX_D(const Normalf & h, float alpha) {
 	float HoN = h.z;
 	if (HoN <= 0)
 		return 0;
@@ -21,9 +21,9 @@ float BSDF_FrostedGlass::GGX_D(const vec3 & h, float alpha) {
 	return Math::INV_PI * root * root;
 }
 
-float BSDF_FrostedGlass::GGX_G1(const vec3 & v, const vec3 & h, float alpha) {
+float BSDF_FrostedGlass::GGX_G1(const Normalf & v, const Normalf & h, float alpha) {
 	float NoV = v.z;
-	float HoV = dot(v, h);
+	float HoV = v.Dot(h);
 	if (NoV * HoV <= 0)
 		return 0;
 
@@ -32,21 +32,21 @@ float BSDF_FrostedGlass::GGX_G1(const vec3 & v, const vec3 & h, float alpha) {
 	return 2.f / (1.f + sqrt(1 + alpha2 * tan2));
 }
 
-float BSDF_FrostedGlass::GGX_G(const vec3 & wo, const vec3 & wi, const vec3 & h, float alpha) {
+float BSDF_FrostedGlass::GGX_G(const Normalf & wo, const Normalf & wi, const Normalf & h, float alpha) {
 	return GGX_G1(wo, h, alpha) * GGX_G1(wi, h, alpha);
 }
 
-float BSDF_FrostedGlass::Fr(const vec3 & v, const vec3 & h, float ior) {
+float BSDF_FrostedGlass::Fr(const Normalf & v, const Normalf & h, float ior) {
 	// 需要是低折射率介质中的角
-	float cosTheta = dot(v, h);
+	float cosTheta = v.Dot(h);
 	bool entering = cosTheta > 0.0f;
 	
 	if (!entering) {
-		vec3 vInLowIOR = refract(-v, -h, ior);
-		if (vInLowIOR == vec3(0))
-			return 1;
+		Normalf vInLowIOR = Normalf::Refract(-v, -h, ior);
+		if (vInLowIOR.IsZero())
+			return 1.f;
 
-		cosTheta = dot(vInLowIOR, h);
+		cosTheta = vInLowIOR.Dot(h);
 	}
 
 	float R0 = pow((ior - 1) / (ior + 1), 2);
@@ -54,22 +54,22 @@ float BSDF_FrostedGlass::Fr(const vec3 & v, const vec3 & h, float ior) {
 	return R0 + (1 - R0) * pow((1 - cosTheta), 5);
 }
 
-vec3 BSDF_FrostedGlass::F(const vec3 & wo, const vec3 & wi, const vec2 & texcoord) {
+const RGBf BSDF_FrostedGlass::F(const Normalf & wo, const Normalf & wi, const Point2f & texcoord) {
 	if (wo.z == 0 || wi.z == 0)
-		return vec3(0);
+		return RGBf(0.f);
 
 	bool entering = wo.z > 0;
 	bool isReflect = wo.z * wi.z > 0;
 
-	vec3 color = GetColor(texcoord);
+	auto color = GetColor(texcoord);
 	color *= GetAO(texcoord);
 	float roughness = GetRoughness(texcoord);
 	float alpha = roughness * roughness;
 
 	if (isReflect) {
-		vec3 h = normalize(wo + wi);
+		Normalf h = (wo + wi).Norm();
 
-		h *= sign(h.z);// 使 h 指向外侧
+		h *= Math::sgn(h.z);// 使 h 指向外侧
 		float bsdfVal = Fr(wo, h, ior) * GGX_D(h, alpha) * GGX_G(wo, wi, h, alpha) / abs(4.f * wo.z * wi.z);
 		return bsdfVal * color;
 	}
@@ -78,11 +78,11 @@ vec3 BSDF_FrostedGlass::F(const vec3 & wo, const vec3 & wi, const vec2 & texcoor
 		if (!entering)
 			swap(etai, etat);
 
-		vec3 h = -normalize(etai * wo + etat * wi);
-		h *= sign(h.z);// 使 h 指向外侧
+		Normalf h = -(etai * wo + etat * wi).Norm();
+		h *= Math::sgn(h.z);// 使 h 指向外侧
 
-		float HoWo = dot(h, wo);
-		float HoWi = dot(h, wi);
+		float HoWo = h.Dot(wo);
+		float HoWi = h.Dot(wi);
 		float sqrtDenom = etai * HoWo + etat * HoWi;
 
 		float factor = abs(HoWo * HoWi / (wo.z * wi.z));
@@ -94,18 +94,18 @@ vec3 BSDF_FrostedGlass::F(const vec3 & wo, const vec3 & wi, const vec2 & texcoor
 }
 
 // probability density function
-float BSDF_FrostedGlass::PDF(const vec3 & wo, const vec3 & wi, const vec2 & texcoord) {
+float BSDF_FrostedGlass::PDF(const Normalf & wo, const Normalf & wi, const Point2f & texcoord) {
 	bool isReflect = wo.z * wi.z > 0;
 
 	float roughness = GetRoughness(texcoord);
 	float alpha = roughness * roughness;
 
-	vec3 h;
+	Normalf h;
 	float dwh_dwi;
 	if (isReflect) {
-		h = normalize(wo + wi);
+		h = (wo + wi).Norm();
 
-		dwh_dwi = 1.0f / (4.0f * abs(dot(wi, h)));
+		dwh_dwi = 1.0f / (4.0f * abs(wi.Dot(h)));
 	}
 	else {
 		float etai = 1.f, etat = ior;
@@ -113,15 +113,15 @@ float BSDF_FrostedGlass::PDF(const vec3 & wo, const vec3 & wi, const vec2 & texc
 		if (!entering)
 			swap(etai, etat);
 
-		h = -normalize(etai * wo + etat * wi);
+		h = -(etai * wo + etat * wi).Norm();
 
-		float HoWo = dot(h, wo);
-		float HoWi = dot(h, wi);
+		float HoWo = h.Dot(wo);
+		float HoWi = h.Dot(wi);
 		float sqrtDenom = etai * HoWo + etat * HoWi;
 		dwh_dwi = (etat * etat * abs(HoWi)) / (sqrtDenom * sqrtDenom);
 	}
 
-	h *= sign(h.z);
+	h *= Math::sgn(h.z);
 	float Dh = GGX_D(h, alpha);
 
 	float fr = Fr(wo, h, ior);
@@ -129,7 +129,7 @@ float BSDF_FrostedGlass::PDF(const vec3 & wo, const vec3 & wi, const vec2 & texc
 	return Dh * h.z * dwh_dwi * (isReflect ? fr : 1 - fr);
 }
 
-vec3 BSDF_FrostedGlass::Sample_f(const vec3 & wo, const vec2 & texcoord, vec3 & wi, float & PD) {
+const RGBf BSDF_FrostedGlass::Sample_f(const Normalf & wo, const Point2f & texcoord, Normalf & wi, float & PD) {
 	float roughness = GetRoughness(texcoord);
 	float alpha = roughness * roughness;
 
@@ -142,22 +142,22 @@ vec3 BSDF_FrostedGlass::Sample_f(const vec3 & wo, const vec2 & texcoord, vec3 & 
 	float sinTheta = sqrt(1 - cosTheta2);
 	float phi = 2 * Math::PI * Xi2;
 
-	vec3 h(sinTheta * cos(phi), sinTheta * sin(phi), cosTheta);
+	Normalf h(sinTheta * cos(phi), sinTheta * sin(phi), cosTheta);
 
 	float fr = Fr(wo, h, ior);
 	bool isReflect = Math::Rand_F() < fr;
 
 	if (isReflect) {
-		wi = reflect(-wo, h);
+		wi = Normalf::Reflect(-wo, h);
 		if (wi.z * wo.z <= 0) {
 			PD = 0;
-			return vec3(0);
+			return RGBf(0.f);
 		}
 
 		float Dh = GGX_D(h, alpha);
-		PD = Dh * h.z / (4.f * abs(dot(wo, h))) * fr;
+		PD = Dh * h.z / (4.f * abs(wo.Dot(h))) * fr;
 		float Gwowih = GGX_G(wo, wi, h, alpha);
-		vec3 color = GetColor(texcoord);
+		auto color = GetColor(texcoord);
 		color *= GetAO(texcoord);
 		float bsdfVal = fr * Dh * Gwowih / abs(4.f*wo.z*wi.z);
 		return bsdfVal * color;
@@ -166,28 +166,28 @@ vec3 BSDF_FrostedGlass::Sample_f(const vec3 & wo, const vec2 & texcoord, vec3 & 
 		bool entering = wo.z > 0.f;
 		float etai = 1.f, etat = ior;
 		if (entering) {
-			wi = refract(-wo, h, etai / etat);
+			wi = Normalf::Refract(-wo, h, etai / etat);
 		}
 		else {
 			swap(etai, etat);
-			wi = refract(-wo, -h, etai / etat);
+			wi = Normalf::Refract(-wo, -h, etai / etat);
 		}
 
-		if (wi.z * wo.z >= 0 || wi == vec3(0)) {
+		if (wi.z * wo.z >= 0 || wi.IsZero()) {
 			PD = 0;
-			return vec3(0);
+			return RGBf(0.f);
 		}
 
 		float Dh = GGX_D(h, alpha);
-		float HoWo = dot(h, wo);
-		float HoWi = dot(h, wi);
+		float HoWo = h.Dot(wo);
+		float HoWi = h.Dot(wi);
 		float sqrtDenom = etai * HoWo + etat * HoWi;
 		float dwh_dwi = (etat * etat * abs(HoWi)) / (sqrtDenom * sqrtDenom);
 		PD = Dh * h.z * dwh_dwi * (1 - fr);
 
 		float Gwowih = GGX_G(wo, wi, h, alpha);
 		float factor = abs(HoWo * HoWi / (wo.z * wi.z));
-		vec3 color = GetColor(texcoord);
+		auto color = GetColor(texcoord);
 		color *= GetAO(texcoord);
 		float bsdfVal = factor * ((1 - fr) * Dh * Gwowih * etat * etat) /
 			(sqrtDenom * sqrtDenom);
@@ -195,33 +195,33 @@ vec3 BSDF_FrostedGlass::Sample_f(const vec3 & wo, const vec2 & texcoord, vec3 & 
 	}
 }
 
-vec3 BSDF_FrostedGlass::GetColor(const vec2 & texcoord) const {
+const RGBf BSDF_FrostedGlass::GetColor(const Point2f & texcoord) const {
 	if (!colorTexture || !colorTexture->IsValid())
 		return colorFactor;
 
-	bool blend = colorTexture->GetChannel() == 4;
-	return vec3(colorTexture->Sample(texcoord, blend)) * colorFactor;
+	return colorFactor * (colorTexture->Sample(texcoord, Image::Mode::BILINEAR)).ToRGB();
 }
 
-float BSDF_FrostedGlass::GetRoughness(const vec2 & texcoord) const {
+float BSDF_FrostedGlass::GetRoughness(const Point2f & texcoord) const {
 	if (!roughnessTexture || !roughnessTexture->IsValid())
 		return roughnessFactor;
 
-	return roughnessTexture->Sample(texcoord).x * roughnessFactor;
+	return roughnessTexture->Sample(texcoord, Image::Mode::BILINEAR).r * roughnessFactor;
 }
 
-float BSDF_FrostedGlass::GetAO(const vec2 & texcoord) const {
+float BSDF_FrostedGlass::GetAO(const Point2f & texcoord) const {
 	if (!aoTexture || !aoTexture->IsValid())
 		return 1.0f;
 
-	return aoTexture->Sample(texcoord).x;
+	return aoTexture->Sample(texcoord, Image::Mode::BILINEAR).r;
 }
 
-void BSDF_FrostedGlass::ChangeNormal(const vec2 & texcoord, const vec3 & tangent, vec3 & normal) const {
+void BSDF_FrostedGlass::ChangeNormal(const Point2f & texcoord, const Normalf & tangent, Normalf & normal) const {
 	if (!normalTexture || !normalTexture->IsValid())
 		return;
 
-	vec3 tangentSpaceNormal = 2.0f * normalTexture->Sample(texcoord) - 1.0f;
+	const auto rgb = normalTexture->Sample(texcoord, Image::Mode::BILINEAR).ToRGB();
+	Normalf tangentSpaceNormal = 2.f * Vectorf(rgb.r, rgb.g, rgb.b) - 1.f;
 
 	normal = TangentSpaceNormalToWorld(tangent, normal, tangentSpaceNormal);
 }

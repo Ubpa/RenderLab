@@ -92,17 +92,20 @@ namespace CppUtil {
 				NEAREST,
 				BILINEAR,
 			};
-			const RGBAf Sample(float u, float v, Mode mode = Mode::NEAREST) const {
+			const RGBAf Sample(float u, float v, Mode mode) const {
 				switch (mode)
 				{
 				case CppUtil::Basic::Image::NEAREST:
 					return SampleNearest(u, v);
 					break;
 				case CppUtil::Basic::Image::BILINEAR:
+					return SampleBilinear(u, v);
 					break;
+				default:
+					return RGBAf(0.f);
 				}
 			}
-			const RGBAf Sample(const Point2f & texcoord, Mode mode = Mode::NEAREST) const {
+			const RGBAf Sample(const Point2f & texcoord, Mode mode) const {
 				return Sample(texcoord.x, texcoord.y, mode);
 			}
 

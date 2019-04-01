@@ -2,19 +2,15 @@
 
 #include <CppUtil/Basic/Math.h>
 
-using namespace CppUtil::Engine;
-
+using namespace CppUtil;
 using namespace CppUtil::Engine;
 using namespace CppUtil::Basic::Math;
-using namespace glm;
 
-
-vec3 BSDF_Glass::Sample_f(const vec3 & wo, const vec2 & texcoord, vec3 & wi, float & PD) {
+const RGBf BSDF_Glass::Sample_f(const Normalf & wo, const Point2f & texcoord, Normalf & wi, float & PD) {
 	// PDF is delta
 
 	if (!LocalRefract(wo, wi, ior)) {
 		// È«·´Éä
-
 		PD = 1.0f;
 		wi = LocalReflect(wo);
 		return 1.0f / abs(wi.z) * reflectance;

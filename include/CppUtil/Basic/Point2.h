@@ -84,6 +84,7 @@ namespace CppUtil {
 	}
 
 	using Point2f = Basic::Point2<float>;
+	using Point2i = Basic::Point2<int>;
 }
 
 #endif // !_CPPUTIL_BASIC_MATH_POINT2_H_

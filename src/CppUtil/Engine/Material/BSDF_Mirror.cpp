@@ -2,14 +2,12 @@
 
 #include <CppUtil/Basic/Math.h>
 
-using namespace CppUtil::Engine;
-
+using namespace CppUtil;
 using namespace CppUtil::Engine;
 using namespace CppUtil::Basic::Math;
-using namespace glm;
 
 
-vec3 BSDF_Mirror::Sample_f(const vec3 & wo, const vec2 & texcoord, vec3 & wi, float & PD) {
+const RGBf BSDF_Mirror::Sample_f(const Normalf & wo, const Point2f & texcoord, Normalf & wi, float & PD) {
 	wi = LocalReflect(wo);
 
 	// delta

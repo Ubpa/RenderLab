@@ -26,6 +26,9 @@ namespace CppUtil {
 			explicit Mat4x4(T d = static_cast<T>(1))
 				: Mat4x4(d, d, d, d) { }
 
+			Mat4x4(const Val4<T> & col0, const Val4<T> & col1, const Val4<T> & col2, const Val4<T> & col3)
+				:m{ col0, col1, col2, col3 } { }
+
 			// mat ÎªÁÐÖ÷Ðò
 			explicit Mat4x4(const T mat[4][4]) { memcpy(m, mat, 16 * sizeof(T)); }
 

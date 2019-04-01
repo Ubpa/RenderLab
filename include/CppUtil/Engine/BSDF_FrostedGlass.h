@@ -12,39 +12,37 @@ namespace CppUtil {
 		class BSDF_FrostedGlass : public Engine::BSDF {
 			ELE_SETUP(BSDF_FrostedGlass)
 		public:
-			BSDF_FrostedGlass(const glm::vec3 & colorFactor = glm::vec3(1), float roughnessFactor = 1.f, float ior = 1.5f)
+			BSDF_FrostedGlass(const RGBf & colorFactor = RGBf(1.f), float roughnessFactor = 1.f, float ior = 1.5f)
 				: colorFactor(colorFactor), roughnessFactor(roughnessFactor), ior(ior),
 				colorTexture(nullptr),
 				roughnessTexture(nullptr),
 				aoTexture(nullptr),
 				normalTexture(nullptr) { }
 
-			virtual glm::vec3 F(const glm::vec3 & wo, const glm::vec3 & wi, const glm::vec2 & texcoord) ;
+			virtual const RGBf F(const Normalf & wo, const Normalf & wi, const Point2f & texcoord);
 
 			// probability density function
-			virtual float PDF(const glm::vec3 & wo, const glm::vec3 & wi, const glm::vec2 & texcoord);
+			virtual float PDF(const Normalf & wo, const Normalf & wi, const Point2f & texcoord);
 
 			// PD is probability density
-			// return color
-			virtual glm::vec3 Sample_f(const glm::vec3 & wo, const glm::vec2 & texcoord, glm::vec3 & wi, float & PD);
+			// return albedo
+			virtual const RGBf Sample_f(const Normalf & wo, const Point2f & texcoord, Normalf & wi, float & PD);
 
-			virtual bool IsDelta() const { return false; }
-
-			virtual void ChangeNormal(const glm::vec2 & texcoord, const glm::vec3 & tangent, glm::vec3 & normal) const;
+			virtual void ChangeNormal(const Point2f & texcoord, const Normalf & tangent, Normalf & normal) const;
 
 		private:
-			static float GGX_D(const glm::vec3 & h, float alpha);
-			static float GGX_G1(const glm::vec3 & v, const glm::vec3 & h, float alpha);
-			static float GGX_G(const glm::vec3 & wo, const glm::vec3 & wi, const glm::vec3 & h, float alpha);
-			static float Fr(const glm::vec3 & v, const glm::vec3 & h, float ior);
+			static float GGX_D(const Normalf & h, float alpha);
+			static float GGX_G1(const Normalf & v, const Normalf & h, float alpha);
+			static float GGX_G(const Normalf & wo, const Normalf & wi, const Normalf & h, float alpha);
+			static float Fr(const Normalf & v, const Normalf & h, float ior);
 
 		private:
-			glm::vec3 GetColor(const glm::vec2 & texcoord) const;
-			float GetRoughness(const glm::vec2 & texcoord) const;
-			float GetAO(const glm::vec2 & texcoord) const;
+			const RGBf GetColor(const Point2f & texcoord) const;
+			float GetRoughness(const Point2f & texcoord) const;
+			float GetAO(const Point2f & texcoord) const;
 
 		public:
-			glm::vec3 colorFactor;
+			RGBf colorFactor;
 			Basic::Ptr<Basic::Image> colorTexture;
 
 			float roughnessFactor;

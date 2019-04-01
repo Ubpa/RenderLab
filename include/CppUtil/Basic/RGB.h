@@ -47,6 +47,13 @@ namespace CppUtil {
 
 			T Illumination() const { return static_cast<T>(0.2126) *r + static_cast<T>(0.7152) * g + static_cast<T>(0.0722) * b; }
 
+			static const RGB Lerp(const RGB & c0, const RGB & c1, float t) {
+				return (1.f - t)*c0 + t * c1;
+			}
+			const RGB LerpWith(const RGB & c1, float t) const {
+				return Lerp(*this, c1, t);
+			}
+
 		public:
 			const RGB operator+(const RGB &v) const {
 				return RGB(r + v.r, g + v.g, b + v.b);
@@ -59,16 +66,38 @@ namespace CppUtil {
 				return *this;
 			}
 
-			const RGB operator-(const RGB &v) const {
-				return RGB(r - v.r, g - v.g, b - v.b);
+			const RGB operator+(T val)const {
+				return RGB(r + val, g + val, b + val);
+			}
+
+			RGB operator+=(T val) {
+				r += val;
+				g += val;
+				b += val;
+				return *this;
 			}
 
 			const RGB operator-() const { return RGB(-r, -g, -b); }
+
+			const RGB operator-(const RGB &v) const {
+				return RGB(r - v.r, g - v.g, b - v.b);
+			}
 
 			RGB & operator-=(const RGB &v) {
 				r -= v.r;
 				g -= v.g;
 				b -= v.b;
+				return *this;
+			}
+
+			const RGB operator-(T val)const {
+				return RGB(r - val, g - val, b - val);
+			}
+
+			RGB operator-=(T val) {
+				r -= val;
+				g -= val;
+				b -= val;
 				return *this;
 			}
 
@@ -82,6 +111,17 @@ namespace CppUtil {
 				r *= s;
 				g *= s;
 				b *= s;
+				return *this;
+			}
+
+			const RGB operator*(const RGB & rhs) const {
+				return RGB(r*rhs.r, g*rhs.g, b*rhs.b);
+			}
+
+			RGB & operator*(const RGB & rhs) {
+				r *= rhs.r;
+				g *= rhs.g;
+				b *= rhs.b;
 				return *this;
 			}
 
@@ -120,6 +160,16 @@ namespace CppUtil {
 		template<typename U, typename V>
 		const RGB<U> operator*(V k, const RGB<U> & rgb) {
 			return rgb * k;
+		}
+
+		template<typename U, typename V>
+		const RGB<U> operator+(V k, const RGB<U> & rgb) {
+			return rgb + k;
+		}
+
+		template<typename U, typename V>
+		const RGB<U> operator-(V k, const RGB<U> & rgb) {
+			return rgb - k;
 		}
 	}
 

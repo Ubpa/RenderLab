@@ -8,33 +8,28 @@ namespace CppUtil {
 		class BSDF_CookTorrance : public BSDF {
 			ELE_SETUP(BSDF_CookTorrance)
 		public:
-			BSDF_CookTorrance(float ior, float m, glm::vec3 refletance=glm::vec3(1), glm::vec3 albedo = glm::vec3(1))
+			BSDF_CookTorrance(float ior, float m, const RGBf & refletance = RGBf(1.f), const RGBf & albedo = RGBf(1.f))
 				: ior(ior), m(m), refletance(refletance) , albedo(albedo){ }
 
-			virtual glm::vec3 F(const glm::vec3 & wo, const glm::vec3 & wi, const glm::vec2 & texcoord);
+			virtual const RGBf F(const Normalf & wo, const Normalf & wi, const Point2f & texcoord);
 
 			// probability density function
-			virtual float PDF(const glm::vec3 & wo, const glm::vec3 & wi, const glm::vec2 & texcoord);
+			virtual float PDF(const Normalf & wo, const Normalf & wi, const Point2f & texcoord);
 
 			// PD is probability density
-			// return refletance
-			// @arg0 in
-			// @arg1 out
-			// @arg2 out
-			virtual glm::vec3 Sample_f(const glm::vec3 & wo, const glm::vec2 & texcoord, glm::vec3 & wi, float & pd);
-
-			virtual bool IsDelta() const { return false; }
+			// return albedo
+			virtual const RGBf Sample_f(const Normalf & wo, const Point2f & texcoord, Normalf & wi, float & PD);
 
 		private:
-			float NDF(const glm::vec3 & h);
-			float Fr(const glm::vec3 & wi, glm::vec3 & h);
-			float G(const glm::vec3 & wo, const glm::vec3 & wi, const glm::vec3 & h);
+			float NDF(const Normalf & h);
+			float Fr(const Normalf & wi, const Normalf & h);
+			float G(const Normalf & wo, const Normalf & wi, const Normalf & h);
 
 		public:
 			float ior;
 			float m;
-			glm::vec3 refletance;
-			glm::vec3 albedo;
+			RGBf refletance;
+			RGBf albedo;
 		};
 	}
 }

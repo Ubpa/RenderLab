@@ -8,27 +8,24 @@ namespace CppUtil {
 		class BSDF_Glass : public BSDF {
 			ELE_SETUP(BSDF_Glass)
 		public:
-			BSDF_Glass(float ior = 1.f, const glm::vec3 & transmittance = glm::vec3(1), const glm::vec3 & reflectance = glm::vec3(1))
+			BSDF_Glass(float ior = 1.f, const RGBf & transmittance = RGBf(1.f), const RGBf & reflectance = RGBf(1.f))
 				: ior(ior), transmittance(transmittance), reflectance(reflectance) { }
 
-			virtual glm::vec3 F(const glm::vec3 & wo, const glm::vec3 & wi, const glm::vec2 & texcoord) { return glm::vec3(0); }
+			virtual const RGBf F(const Normalf & wo, const Normalf & wi, const Point2f & texcoord);
 
 			// probability density function
-			virtual float PDF(const glm::vec3 & wo, const glm::vec3 & wi, const glm::vec2 & texcoord) { return 0; }
+			virtual float PDF(const Normalf & wo, const Normalf & wi, const Point2f & texcoord);
 
 			// PD is probability density
 			// return albedo
-			// @arg0 in
-			// @arg1 out
-			// @arg2 out
-			virtual glm::vec3 Sample_f(const glm::vec3 & wo, const glm::vec2 & texcoord, glm::vec3 & wi, float & pd);
+			virtual const RGBf Sample_f(const Normalf & wo, const Point2f & texcoord, Normalf & wi, float & PD);
 
 			virtual bool IsDelta() const { return true; }
 
 		public:
 			float ior;
-			glm::vec3 transmittance;
-			glm::vec3 reflectance;
+			RGBf transmittance;
+			RGBf reflectance;
 		};
 	}
 }

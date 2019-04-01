@@ -3,22 +3,23 @@
 #include <CppUtil/Basic/Math.h>
 #include <CppUtil/Basic/Image.h>
 
+using namespace CppUtil;
 using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
 using namespace glm;
 
-vec3 BSDF_Diffuse::F(const vec3 & wo, const vec3 & wi, const vec2 & texcoord) {
+const RGBf BSDF_Diffuse::F(const Normalf & wo, const Normalf & wi, const Point2f & texcoord) {
 	if (wo.z <= 0 || wi.z <= 0)
-		return vec3(0);
+		return RGBf(0.f);
 	
 	return GetAlbedo(texcoord) / Math::PI;
 }
 
-vec3 BSDF_Diffuse::Sample_f(const vec3 & wo, const vec2 & texcoord, vec3 & wi, float & PD) {
+const RGBf BSDF_Diffuse::Sample_f(const Normalf & wo, const Point2f & texcoord, Normalf & wi, float & PD) {
 	if (wo.z <= 0) {
 		PD = 0;
-		wi = vec3(0);
-		return vec3(0);
+		wi = Normalf(0.f);
+		return RGBf(0.f);
 	}
 
 	wi = sampler.GetSample(PD);
@@ -26,14 +27,13 @@ vec3 BSDF_Diffuse::Sample_f(const vec3 & wo, const vec2 & texcoord, vec3 & wi, f
 	return GetAlbedo(texcoord) / Math::PI;
 }
 
-float BSDF_Diffuse::PDF(const vec3 & wo, const vec3 & wi, const vec2 & texcoord) {
+float BSDF_Diffuse::PDF(const Normalf & wo, const Normalf & wi, const Point2f & texcoord) {
 	return wi.z > 0 && wo.z > 0 ? wi.z / Math::PI : 0;
 }
 
-const vec3 BSDF_Diffuse::GetAlbedo(const vec2 & texcoord) const {
+const RGBf BSDF_Diffuse::GetAlbedo(const Point2f & texcoord) const {
 	if (!albedoTexture || !albedoTexture->IsValid())
-		return albedoColor;
+		return colorFactor;
 
-	bool blend = albedoTexture->GetChannel() == 4;
-	return vec3(albedoTexture->Sample(texcoord, blend))*albedoColor;
+	return colorFactor * albedoTexture->Sample(texcoord, Image::Mode::BILINEAR).ToRGB();
 }

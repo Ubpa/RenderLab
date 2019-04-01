@@ -26,7 +26,7 @@ namespace CppUtil {
 			}
 
 			template <typename T> T sgn(T val) {
-				return (static_cast<T>(0) < val) - (val < static_cast<T>(0));
+				return static_cast<T>((static_cast<T>(0) < val) - (val < static_cast<T>(0)));
 			}
 
 			glm::vec2 RandInCircle();

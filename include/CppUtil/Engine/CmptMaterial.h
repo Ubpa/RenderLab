@@ -5,19 +5,19 @@
 
 namespace CppUtil {
 	namespace Engine {
-		class MaterialBase;
+		class Material;
 
 		class Material : public Component {
 			COMPONENT_SETUP(Material)
 		public:
-			Material(Basic::Ptr<SObj> sobj, Basic::Ptr<MaterialBase> material)
+			Material(Basic::Ptr<SObj> sobj, Basic::Ptr<Material> material)
 				: Component(sobj), material(material) { }
 
-			Basic::Ptr<MaterialBase> GetMat() const { return material; }
-			void SetMat(Basic::Ptr<MaterialBase> material) { this->material = material; }
+			Basic::Ptr<Material> GetMat() const { return material; }
+			void SetMat(Basic::Ptr<Material> material) { this->material = material; }
 
 		private:
-			Basic::Ptr<MaterialBase> material;
+			Basic::Ptr<Material> material;
 		};
 	}
 }

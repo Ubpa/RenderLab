@@ -14,25 +14,20 @@ namespace CppUtil {
 		class BSDF_MetalWorkflow : public BSDF {
 			ELE_SETUP(BSDF_MetalWorkflow)
 		public:
-			BSDF_MetalWorkflow(const glm::vec3 & albedoColor = glm::vec3(1.0f), float roughnessFactor = 1.0f, float metallicFactor = 1.0f)
-				: albedoColor(albedoColor), roughnessFactor(roughnessFactor), metallicFactor(metallicFactor),
+			BSDF_MetalWorkflow(const RGBf & colorFactor = RGBf(1.f), float roughnessFactor = 1.f, float metallicFactor = 1.f)
+				: colorFactor(colorFactor), roughnessFactor(roughnessFactor), metallicFactor(metallicFactor),
 				albedoTexture(nullptr), metallicTexture(nullptr), aoTexture(nullptr) { }
 
-			virtual glm::vec3 F(const glm::vec3 & wo, const glm::vec3 & wi, const glm::vec2 & texcoord);
+			virtual const RGBf F(const Normalf & wo, const Normalf & wi, const Point2f & texcoord);
 
 			// probability density function
-			virtual float PDF(const glm::vec3 & wo, const glm::vec3 & wi, const glm::vec2 & texcoord);
+			virtual float PDF(const Normalf & wo, const Normalf & wi, const Point2f & texcoord);
 
 			// PD is probability density
 			// return albedo
-			// @arg0 in
-			// @arg1 out
-			// @arg2 out
-			virtual glm::vec3 Sample_f(const glm::vec3 & wo, const glm::vec2 & texcoord, glm::vec3 & wi, float & pd);
+			virtual const RGBf Sample_f(const Normalf & wo, const Point2f & texcoord, Normalf & wi, float & PD);
 
-			virtual bool IsDelta() const { return false; }
-
-			virtual void ChangeNormal(const glm::vec2 & texcoord, const glm::vec3 tangent, glm::vec3 & normal) const;
+			virtual void ChangeNormal(const Point2f & texcoord, const Normalf & tangent, Normalf & normal) const;
 
 		public:
 			Basic::CPtr<Basic::Image> GetAlbedoTexture() const { return albedoTexture; }
@@ -63,23 +58,23 @@ namespace CppUtil {
 
 		private:
 			// Microfacet Specular BRDF
-			static glm::vec3 MS_BRDF(const glm::vec3 & wo, const glm::vec3 & wi, const glm::vec3 & albedo, float metallic, float roughness);
+			static const RGBf MS_BRDF(const Normalf & wo, const Normalf & wi, const RGBf & albedo, float metallic, float roughness);
 			// Microfacet Specular BRDF
-			static glm::vec3 MS_BRDF(const glm::vec3 & wo, const glm::vec3 & wi, const glm::vec3 & fr, const glm::vec3 & albedo, float roughness);
+			static const RGBf MS_BRDF(const Normalf & wo, const Normalf & wi, const RGBf & fr, const RGBf & albedo, float roughness);
 			// Normal Distribution Function
-			static float NDF(const glm::vec3 & h, float roughness);
+			static float NDF(const Normalf & h, float roughness);
 			// Fresnel
-			static glm::vec3 Fr(const glm::vec3 & wi, const glm::vec3 & h, const glm::vec3 & albedo, float metallic);
+			static const RGBf Fr(const Normalf & wi, const Normalf & h, const RGBf & albedo, float metallic);
 			// Geometric Attenuation
-			static float G(const glm::vec3 & wo, const glm::vec3 & wi, float roughness);
+			static float G(const Normalf & wo, const Normalf & wi, float roughness);
 
-			const glm::vec3 GetAlbedo(const glm::vec2 & texcoord) const;
-			float GetMetallic(const glm::vec2 & texcoord) const;
-			float GetRoughness(const glm::vec2 & texcoord) const;
-			float GetAO(const glm::vec2 & texcoord) const;
+			const RGBf GetAlbedo(const Point2f & texcoord) const;
+			float GetMetallic(const Point2f & texcoord) const;
+			float GetRoughness(const Point2f & texcoord) const;
+			float GetAO(const Point2f & texcoord) const;
 
 		public:
-			glm::vec3 albedoColor;
+			RGBf colorFactor;
 			Basic::Ptr<Basic::Image> albedoTexture;
 
 			// 0--1

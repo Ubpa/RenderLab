@@ -1,38 +1,41 @@
 #ifndef _ENGINE_MATERIAL_BSDF_H_
 #define _ENGINE_MATERIAL_BSDF_H_
 
-#include <CppUtil/Engine/MaterialBase.h>
-#include <glm/vec2.hpp>
-#include <glm/vec3.hpp>
+#include <CppUtil/Engine/Material.h>
+#include <CppUtil/Basic/Point2.h>
+#include <CppUtil/Basic/Vector.h>
+#include <CppUtil/Basic/Normal.h>
+#include <CppUtil/Basic/Point.h>
+#include <CppUtil/Basic/RGB.h>
 
 namespace CppUtil {
 	namespace Engine {
-		class BSDF : public MaterialBase {
+		class BSDF : public Material {
 			ELE_SETUP(BSDF)
 		public:
-			virtual glm::vec3 F(const glm::vec3 & wo, const glm::vec3 & wi, const glm::vec2 & texcoord) = 0;
+			virtual const RGBf F(const Normalf & wo, const Normalf & wi, const Point2f & texcoord) = 0;
 
 			// probability density function
-			virtual float PDF(const glm::vec3 & wo, const glm::vec3 & wi, const glm::vec2 & texcoord) = 0;
+			virtual float PDF(const Normalf & wo, const Normalf & wi, const Point2f & texcoord) = 0;
 
 			// PD is probability density
 			// return albedo
-			virtual glm::vec3 Sample_f(const glm::vec3 & wo, const glm::vec2 & texcoord, glm::vec3 & wi, float & PD) = 0;
+			virtual const RGBf Sample_f(const Normalf & wo, const Point2f & texcoord, Normalf & wi, float & PD) = 0;
 
-			virtual glm::vec3 GetEmission() const { return glm::vec3(0); }
+			virtual const RGBf GetEmission() const { return RGBf(0.f); }
 
-			virtual bool IsDelta() const = 0;
+			virtual bool IsDelta() const { return false; }
 
-			virtual void ChangeNormal(const glm::vec2 & texcoord, const glm::vec3 & tangent, glm::vec3 & normal) const { return; };
+			virtual void ChangeNormal(const Point2f & texcoord, const Normalf & tangent, Normalf & normal) const { return; };
 
 		public:
-			static glm::vec3 LocalReflect(const glm::vec3 & w) {
-				return glm::vec3(-w.x, -w.y, w.z);
+			static const Normalf LocalReflect(const Normalf & w) {
+				return Normalf(-w.x, -w.y, w.z);
 			}
-			static bool LocalRefract(const glm::vec3& wo, glm::vec3& wi, float ior);
+			static bool LocalRefract(const Normalf & wo, Normalf & wi, float ior);
 
 		protected:
-			static glm::vec3 TangentSpaceNormalToWorld(const glm::vec3 & worldTangent, const glm::vec3 worldNormal, const glm::vec3 & tangentSpaceNormal);
+			static const Normalf TangentSpaceNormalToWorld(const Normalf & worldTangent, const Normalf & worldNormal, const Normalf & tangentSpaceNormal);
 		};
 	}
 }

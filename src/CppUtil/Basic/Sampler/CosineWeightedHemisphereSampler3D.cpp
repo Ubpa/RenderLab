@@ -2,15 +2,15 @@
 
 #include <CppUtil/Basic/Math.h>
 
+using namespace CppUtil;
 using namespace CppUtil::Basic;
-using namespace glm;
 
-vec3 CosineWeightedHemisphereSampler3D::GetSample() const {
+const Vectorf CosineWeightedHemisphereSampler3D::GetSample() {
 	float pd;
 	return GetSample(pd);
 }
 
-vec3 CosineWeightedHemisphereSampler3D::GetSample(float & pd) const {
+const Vectorf CosineWeightedHemisphereSampler3D::GetSample(float & pd) {
 	float Xi1 = Math::Rand_F();
 	float Xi2 = Math::Rand_F();
 
@@ -26,5 +26,5 @@ vec3 CosineWeightedHemisphereSampler3D::GetSample(float & pd) const {
 	// pdf 是 p(w)，而不是 p(theta, phi)
 	pd = cosTheta / Math::PI;
 
-	return vec3(xs, ys, zs);
+	return Vectorf(xs, ys, zs);
 }

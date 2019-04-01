@@ -8,27 +8,25 @@ namespace CppUtil {
 		class BSDF_Emission : public BSDF {
 			ELE_SETUP(BSDF_Emission)
 		public:
-			BSDF_Emission(const glm::vec3 & color = glm::vec3(1), float intensity = 1.0f)
+			BSDF_Emission(const RGBf & color = RGBf(1.f), float intensity = 1.f)
 				: color(color), intensity(intensity) { }
 
-			virtual glm::vec3 F(const glm::vec3 & wo, const glm::vec3 & wi, const glm::vec2 & texcoord) { return glm::vec3(0); }
+			virtual const RGBf F(const Normalf & wo, const Normalf & wi, const Point2f & texcoord) { return RGBf(0.f); }
 
 			// probability density function
-			virtual float PDF(const glm::vec3 & wo, const glm::vec3 & wi, const glm::vec2 & texcoord) { return 0; }
+			virtual float PDF(const Normalf & wo, const Normalf & wi, const Point2f & texcoord) { return 0; }
 
 			// PD is probability density
 			// return albedo
-			// @arg0 in
-			// @arg1 out
-			// @arg2 out
-			virtual glm::vec3 Sample_f(const glm::vec3 & wo, const glm::vec2 & texcoord, glm::vec3 & wi, float & pd) { pd = 0; return glm::vec3(0); }
+			virtual const RGBf Sample_f(const Normalf & wo, const Point2f & texcoord, Normalf & wi, float & PD) {
+				PD = 0;
+				return RGBf(0.f);
+			}
 
-			virtual glm::vec3 GetEmission() const { return intensity * color; }
-
-			virtual bool IsDelta() const { return false; }
+			virtual const RGBf GetEmission() const { return intensity * color; }
 
 		public:
-			glm::vec3 color;
+			RGBf color;
 			float intensity;
 		};
 	}

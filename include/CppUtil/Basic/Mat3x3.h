@@ -10,6 +10,9 @@
 namespace CppUtil {
 	namespace Basic {
 		template <typename T>
+		class Point;
+
+		template <typename T>
 		class Mat4x4;
 
 		// 内部存储为列主序
@@ -29,6 +32,9 @@ namespace CppUtil {
 
 			// mat 为列主序
 			explicit Mat3x3(const T mat[3][3]) { memcpy(m, mat, 9 * sizeof(T)); }
+
+			Mat3x3(const Val3<T> & col0, const Val3<T> & col1, const Val3<T> & col2)
+				:m{ col0, col1, col2 } { }
 
 			Mat3x3(
 				T t00, T t01, T t02,
@@ -97,7 +103,7 @@ namespace CppUtil {
 			const T * Data() const { return const_cast<type*>(this)->Data(); }
 
 		public:
-			bool operator ==(const Mat3x3 & rhs) const {
+			bool operator==(const Mat3x3 & rhs) const {
 				return
 					m[0][0] == rhs.m[0][0]
 					&& m[0][1] == rhs.m[0][1]
@@ -167,6 +173,22 @@ namespace CppUtil {
 				rhs(2, 1) = lhs(2, 0) * rhs(0, 1) + lhs(2, 1) * rhs(1, 1) + lhs(2, 2) * rhs(2, 1);
 				rhs(2, 2) = lhs(2, 0) * rhs(0, 2) + lhs(2, 1) * rhs(1, 2) + lhs(2, 2) * rhs(2, 2);
 				return rhs;
+			}
+
+			const Point<T> operator*(const Point<T> & p) const {
+				const auto & mat = *this;
+				const T x = mat(0, 0)*p.x + mat(0, 1)*p.y + m(0, 2)*p.z;
+				const T y = mat(1, 0)*p.x + mat(1, 1)*p.y + m(1, 2)*p.z;
+				const T z = mat(2, 0)*p.x + mat(2, 1)*p.y + m(2, 2)*p.z;
+				return Point<T>(x, y, z);
+			}
+
+			const Vector<T> operator*(const Vector<T> & v) const {
+				const auto & mat = *this;
+				const T x = mat(0, 0)*v.x + mat(0, 1)*v.y + mat(0, 2)*v.z;
+				const T y = mat(1, 0)*v.x + mat(1, 1)*v.y + mat(1, 2)*v.z;
+				const T z = mat(2, 0)*v.x + mat(2, 1)*v.y + mat(2, 2)*v.z;
+				return Vector<T>(x, y, z);
 			}
 
 			T operator()(int row, int col) const {
