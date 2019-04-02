@@ -20,10 +20,9 @@
 
 using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
-using namespace glm;
 
 Picker::Picker(Viewer * viewer)
-	: viewer(viewer), ray(ToPtr(new Ray(vec3(0),vec3(1)))), rayIntersector(ToPtr(new RayIntersector)) { }
+	: viewer(viewer), rayIntersector(ToPtr(new RayIntersector)) { }
 
 void Picker::Init() {
 	auto MRB_PressOp = ToPtr(new LambdaOp([this]() {
@@ -35,13 +34,12 @@ void Picker::Init() {
 		int y = pOGWL->y;
 
 		// y 需要反过来
-		vec3 posOnScreen(x / float(pOGWL->w), 1 - y / float(pOGWL->h), 1);
-		vec3 posInNorm = posOnScreen * 2.0f - 1.0f;
-		vec4 posInWorldQ = inverse(camera->GetProjectionMatrix() * camera->GetViewMatrix()) * vec4(posInNorm, 1);
-		vec3 posInWorld = vec3(posInWorldQ) / posInWorldQ.w;
+		Point3 posOnScreen(x / float(pOGWL->w), 1 - y / float(pOGWL->h), 1);
+		Point3 posInNorm = Vec3(posOnScreen) * 2.0f - 1.0f;
+		Point3 posInWorld = (camera->GetProjectionMatrix() * camera->GetViewMatrix()).Inverse()(posInNorm);
 
-		vec3 dir = posInWorld - camera->GetPos();
-		ray->Init(camera->GetPos(), dir);
+		Vec3 dir = posInWorld - camera->GetPos();
+		Ray ray(camera->GetPos(), dir);
 		rayIntersector->Init(ray);
 		viewer->GetScene()->GetRoot()->Accept(rayIntersector);
 		auto closestRst = rayIntersector->GetRst();

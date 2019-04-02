@@ -39,6 +39,8 @@ namespace CppUtil {
 			{t02, t12, t22, t32},
 			{t03, t13, t23, t33} } { }
 
+			Mat4x4(const Mat4x4<T> & mat) { memcpy(m, mat.m, 16 * sizeof(T)); }
+
 		public:
 			const Vector<4, T> & GetCol(int i) const { return m[i]; }
 			Vector<4, T> & GetCol(int i) { return m[i]; }
@@ -72,8 +74,6 @@ namespace CppUtil {
 			}
 
 			Mat4x4 Inverse() const {
-				static const auto & ERROR = ErrorRetVal(&Mat4x4::Inverse);
-
 				int indxc[4], indxr[4];
 				int ipiv[4] = { 0, 0, 0, 0 };
 				T minv[4][4];
@@ -93,7 +93,7 @@ namespace CppUtil {
 									}
 								}
 								else if (ipiv[k] > 1)
-									return ERROR;
+									return Mat4x4(static_cast<T>(0));
 							}
 						}
 					}
@@ -105,7 +105,7 @@ namespace CppUtil {
 					indxr[i] = irow;
 					indxc[i] = icol;
 					if (minv[icol][icol] == static_cast<T>(0))
-						return ERROR;
+						return Mat4x4(static_cast<T>(0));
 
 					// Set $m[icol][icol]$ to one by scaling row _icol_ appropriately
 					T pivinv = static_cast<T>(1) / minv[icol][icol];

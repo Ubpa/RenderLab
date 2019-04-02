@@ -2,6 +2,7 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
+using namespace CppUtil;
 using namespace CppUtil::OpenGL;
 
 const float Camera::RATIO_WH = 1.0f;
@@ -13,7 +14,16 @@ const float Camera::FOV = 50.0f;
 const Camera::ENUM_Projection Camera::PROJECTION_MODE = Camera::PROJECTION_PERSEPCTIVE;
 
 // Constructor with vectors
-Camera::Camera(glm::vec3 position, float yaw, float pitch , float ratioWH , float nearPlane , float farPlane , glm::vec3 up, ENUM_Projection projectionMode)
+Camera::Camera(
+	const Point3 & position,
+	float yaw,
+	float pitch,
+	float ratioWH,
+	float nearPlaneE,
+	float farPlane,
+	const Vec3 & up,
+	ENUM_Projection projectionMode
+)
 	:
 	position(position),
 	yaw(yaw),
@@ -36,13 +46,13 @@ void Camera::SetOrtho() {
 	projectionMode = ENUM_Projection::PROJECTION_ORTHO;
 }
 
-glm::vec3 & Camera::GetPos() {
+Point3 & Camera::GetPos() {
 	return position;
 }
 
 // Returns the view matrix calculated using Euler Angles and the LookAt Matrix
-glm::mat4 Camera::GetViewMatrix() {
-	return glm::lookAt(position, position + front, up);
+Transform Camera::GetViewMatrix() {
+	return Transform::LookAt(position, position + front, up);
 }
 
 // Calculates the front vector from the Camera's (updated) Euler Angles
@@ -51,25 +61,22 @@ void Camera::updateCameraVectors() {
 	front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
 	front.y = sin(glm::radians(pitch));
 	front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-	front = glm::normalize(front);
+	front.NormSelf();
 	// Also re-calculate the Right and Up vector
-	right = glm::normalize(glm::cross(front, worldUp));  // Normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
-	up = glm::normalize(glm::cross(right, front));
+	right = front.Cross(worldUp).Norm();  // Normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
+	up = right.Cross(front).Norm();
 }
 
 // Returns the projection matrix calculated using zoom, ratioWH, nearPlane, farPlane
-glm::mat4 Camera::GetProjectionMatrix() {
+Transform Camera::GetProjectionMatrix() {
 	switch (projectionMode)
 	{
 	case OpenGL::Camera::PROJECTION_PERSEPCTIVE:
-		return glm::perspective(glm::radians(fov), ratioWH, nearPlane, farPlane);
-		break;
+		return Transform::Perspcetive(glm::radians(fov), ratioWH, nearPlane, farPlane);
 	case OpenGL::Camera::PROJECTION_ORTHO:
-		return glm::ortho(-fov / 4.0f, fov / 4.0f, -fov / 4.0f / ratioWH, fov / 4.0f / ratioWH, nearPlane, farPlane);
-		break;
+		return Transform::Orthographic(fov / 2.0f, fov / 2.0f / ratioWH, nearPlane, farPlane);
 	default:
-		return glm::mat4(1.0f);
-		break;
+		return Transform(1);
 	}
 }
 
@@ -121,7 +128,7 @@ void Camera::ProcessKeyboard(ENUM_Movement direction, float deltaTime) {
 		position -= up * velocity;
 }
 
-void Camera::SetPose(const glm::vec3 & pos, float yaw, float pitch) {
+void Camera::SetPose(const Point3 & pos, float yaw, float pitch) {
 	position = pos;
 	this->yaw = yaw;
 	this->pitch = pitch;

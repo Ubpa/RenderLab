@@ -3,7 +3,9 @@
 
 typedef unsigned int uint;
 
-#include <glm/glm.hpp>
+#include <CppUtil/Basic/Point3.h>
+#include <CppUtil/Basic/Normal.h>
+#include <CppUtil/Basic/Vector2.h>
 
 #include <string>
 #include <vector>
@@ -16,15 +18,15 @@ namespace CppUtil {
 		public:
 			struct Vertex {
 				// position
-				glm::vec3 Position;
+				Point3 Position;
 				// normal
-				glm::vec3 Normal;
+				Normalf Normal;
 				// texCoords
-				glm::vec2 TexCoords;
+				Vec2 TexCoords;
 				// tangent
-				//glm::vec3 Tangent;
+				//Normalf Tangent;
 				// bitangent
-				//glm::vec3 Bitangent;
+				//Normalf Bitangent;
 			};
 
 			struct TextureInfo {

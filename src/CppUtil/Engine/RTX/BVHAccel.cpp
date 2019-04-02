@@ -30,7 +30,7 @@ public:
 	}
 private:
 	void Visit(CmptGeometry::Ptr geo) {
-		auto primitive = geo->GetPrimitive();
+		auto primitive = geo->primitive;
 		if (!primitive)
 			return;
 
@@ -39,8 +39,8 @@ private:
 		holder->worldToLocalMatrixes[primitive] = w2l;
 		holder->localToWorldMatrixes[primitive] = l2w;
 
-		holder->primitive2sobj[geo->GetPrimitive()] = geo->GetSObj();
-		geo->GetPrimitive()->Accept(This());
+		holder->primitive2sobj[geo->primitive] = geo->GetSObj();
+		geo->primitive->Accept(This());
 	}
 
 	void Visit(Sphere::Ptr sphere) {

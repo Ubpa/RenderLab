@@ -7,6 +7,8 @@
 #include <CppUtil/OpenGL/Shader.h>
 #include <CppUtil/OpenGL/Texture.h>
 
+#include <CppUtil/Basic/Transform.h>
+
 namespace CppUtil {
 	namespace Basic {
 		class Operation;
@@ -93,7 +95,7 @@ namespace CppUtil {
 
 			OpenGL::Shader curShader;
 
-			std::vector<glm::mat4> modelVec;
+			std::vector<Transform> modelVec;
 
 			std::map<Basic::WCPtr<TriMesh>, OpenGL::VAO> meshVAOs;
 

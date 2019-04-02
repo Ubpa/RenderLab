@@ -8,17 +8,16 @@
 #include <CppUtil/Basic/LambdaOp.h>
 #include <CppUtil/Basic/EventManager.h>
 
-#include <glm/gtc/type_ptr.hpp>
 #include <QtWidgets/QApplication>
 
+using namespace CppUtil;
 using namespace CppUtil::Basic;
 using namespace CppUtil::Engine;
 using namespace CppUtil::Qt;
 using namespace CppUtil::OpenGL;
-using namespace glm;
 
 Roamer::Roamer(RawAPI_OGLW * pOGLW)
-	: pOGLW(pOGLW), camera(new Camera(vec3(0,0.75,2.3))), lock(false) {
+	: pOGLW(pOGLW), camera(new Camera(Point3(0,0.75,2.3))), lock(false) {
 }
 
 void Roamer::Init() {
@@ -139,9 +138,9 @@ void Roamer::ListenerInit() {
 
 void Roamer::UpdateCamera() {
 	glBindBuffer(GL_UNIFORM_BUFFER, cameraUBO);
-	glBufferSubData(GL_UNIFORM_BUFFER, 0, 64, glm::value_ptr(camera->GetViewMatrix()));
-	glBufferSubData(GL_UNIFORM_BUFFER, 64, 64, glm::value_ptr(camera->GetProjectionMatrix()));
-	glBufferSubData(GL_UNIFORM_BUFFER, 128, 12, glm::value_ptr(camera->GetPos()));
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, 64, camera->GetViewMatrix().GetMatrix().Data());
+	glBufferSubData(GL_UNIFORM_BUFFER, 64, 64, camera->GetProjectionMatrix().GetMatrix().Data());
+	glBufferSubData(GL_UNIFORM_BUFFER, 128, 12, camera->GetPos().Data());
 	float nearPlane = camera->GetNearPlane();
 	float farPlane = camera->GetFarPlane();
 	float fov = camera->GetFOV();

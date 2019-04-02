@@ -1,7 +1,7 @@
 #ifndef _OPENGL_CAMERA_CAMERA_H_
 #define _OPENGL_CAMERA_CAMERA_H_
 
-#include <glm/glm.hpp>
+#include <CppUtil/Basic/Transform.h>
 
 namespace CppUtil {
 	namespace OpenGL {
@@ -23,13 +23,22 @@ namespace CppUtil {
 			};
 
 		public:
-			Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 4.0f), float yaw = YAW, float pitch = PITCH, float ratioWH = RATIO_WH, float nearPlane = NEAR_PLANE, float farPlane = FAR_PLANE, glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), ENUM_Projection projectionMode = PROJECTION_MODE);
+			Camera(
+				const Point3 & position = Point3(0.0f, 0.0f, 4.0f),
+				float yaw = YAW,
+				float pitch = PITCH,
+				float ratioWH = RATIO_WH,
+				float nearPlane = NEAR_PLANE,
+				float farPlane = FAR_PLANE,
+				const Vec3 & up = Vec3(0.0f, 1.0f, 0.0f),
+				ENUM_Projection projectionMode = PROJECTION_MODE
+			);
 
 		public:
-			glm::mat4 GetViewMatrix();
-			glm::mat4 GetProjectionMatrix();
-			glm::vec3 & GetPos();
-			glm::vec3 GetFront() const { return front; }
+			Transform GetViewMatrix();
+			Transform GetProjectionMatrix();
+			Point3 & GetPos();
+			Vec3 GetFront() const { return front; }
 
 			float GetFOV() const { return fov; }
 			float GetAspectRatio() const { return ratioWH; }
@@ -47,17 +56,17 @@ namespace CppUtil {
 			void SetRatioWH(float w, float h) { ratioWH = w / h; }
 			void SetRatioWH(float ratioWH) { this->ratioWH = ratioWH; }
 
-			void SetPose(const glm::vec3 & pos, float yaw, float pitch);
+			void SetPose(const Point3 & pos, float yaw, float pitch);
 
 		private:
 			void updateCameraVectors();
 
 			// Camera Attributes
-			glm::vec3 position;
-			glm::vec3 front;
-			glm::vec3 up;
-			glm::vec3 right;
-			glm::vec3 worldUp;
+			Point3 position;
+			Vec3 front;
+			Vec3 up;
+			Vec3 right;
+			Vec3 worldUp;
 			float fov;
 			float ratioWH;
 			float nearPlane;

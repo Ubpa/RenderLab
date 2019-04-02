@@ -64,7 +64,7 @@ void RRF_Raster::InitShaders() {
 		if (!material || !geometry)
 			return;
 
-		auto bsdf = BSDF_FrostedGlass::Ptr::Cast(material->GetMat());
+		auto bsdf = BSDF_FrostedGlass::Ptr::Cast(material->material);
 		if (bsdf == nullptr)
 			return;
 

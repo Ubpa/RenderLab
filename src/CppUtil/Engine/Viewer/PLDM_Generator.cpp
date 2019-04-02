@@ -8,22 +8,22 @@
 #include <CppUtil/Engine/Scene.h>
 #include <CppUtil/Engine/SObj.h>
 
-#include <CppUtil/Engine/Transform.h>
-#include <CppUtil/Engine/Geometry.h>
+#include <CppUtil/Engine/CmptTransform.h>
 
-#include <CppUtil/Engine/Light.h>
+#include <CppUtil/Engine/CmptLight.h>
 #include <CppUtil/Engine/PointLight.h>
 
+#include <CppUtil/Engine/CmptGeometry.h>
 #include <CppUtil/Engine/Sphere.h>
 #include <CppUtil/Engine/Plane.h>
 #include <CppUtil/Engine/TriMesh.h>
 
 #include <ROOT_PATH.h>
 
+using namespace CppUtil;
 using namespace CppUtil::Engine;
 using namespace CppUtil::OpenGL;
 using namespace CppUtil::Basic;
-using namespace glm;
 using namespace std;
 
 namespace CppUtil {
@@ -65,23 +65,23 @@ void PLDM_Generator::Visit(Scene::Ptr scene) {
 	glGetIntegerv(GL_VIEWPORT, viewport);
 
 	modelVec.clear();
-	modelVec.push_back(mat4(1.0f));
+	modelVec.push_back(Transform(1.f));
 
 	// regist
-	for (auto light : scene->GetLights()) {
-		if (lightMap.find(light) != lightMap.end())
+	for (auto cmptLight : scene->GetCmptLights()) {
+		if (lightMap.find(cmptLight) != lightMap.end())
 			continue;
 
-		auto pointLight = PointLight::CPtr::Cast(light->GetLight());
+		auto pointLight = PointLight::CPtr::Cast(cmptLight->light);
 		if (!pointLight)
 			continue;
 
 		FBO FBO_DepthMap(depthMapSize, depthMapSize, FBO::ENUM_TYPE_CUBE_DEPTH);
 		Texture depthMap(FBO_DepthMap.GetDepthTexture().GetID(), Texture::ENUM_TYPE_CUBE_MAP);
-		lightMap[light] = Val(FBO_DepthMap, depthMap);
+		lightMap[cmptLight] = Val(FBO_DepthMap, depthMap);
 	}
 
-	mat4 shadowProj = perspective(radians(90.0f), 1.0f, 0.01f, lightFar);
+	auto shadowProj = Transform::Perspcetive(90.f, 1.f, 0.01f, lightFar);
 	auto nextIt = lightMap.begin();
 	while (nextIt != lightMap.end()) {
 		auto curIt = nextIt;
@@ -101,21 +101,21 @@ void PLDM_Generator::Visit(Scene::Ptr scene) {
 		auto lightPos = lightComponent->GetSObj()->GetWorldPos();
 		shader_genDepth.SetVec3f("lightPos", lightPos);
 
-		std::vector<mat4> shadowTransforms;
+		std::vector<Transform> shadowTransforms;
 		shadowTransforms.push_back(shadowProj *
-			lookAt(lightPos, lightPos + vec3(1.0, 0.0, 0.0), vec3(0.0, -1.0, 0.0)));
+			Transform::LookAt(lightPos, lightPos + Vec3(1.0, 0.0, 0.0), Vec3(0.0, -1.0, 0.0)));
 		shadowTransforms.push_back(shadowProj *
-			lookAt(lightPos, lightPos + vec3(-1.0, 0.0, 0.0), vec3(0.0, -1.0, 0.0)));
+			Transform::LookAt(lightPos, lightPos + Vec3(-1.0, 0.0, 0.0), Vec3(0.0, -1.0, 0.0)));
 		shadowTransforms.push_back(shadowProj *
-			lookAt(lightPos, lightPos + vec3(0.0, 1.0, 0.0), vec3(0.0, 0.0, 1.0)));
+			Transform::LookAt(lightPos, lightPos + Vec3(0.0, 1.0, 0.0), Vec3(0.0, 0.0, 1.0)));
 		shadowTransforms.push_back(shadowProj *
-			lookAt(lightPos, lightPos + vec3(0.0, -1.0, 0.0), vec3(0.0, 0.0, -1.0)));
+			Transform::LookAt(lightPos, lightPos + Vec3(0.0, -1.0, 0.0), Vec3(0.0, 0.0, -1.0)));
 		shadowTransforms.push_back(shadowProj *
-			lookAt(lightPos, lightPos + vec3(0.0, 0.0, 1.0), vec3(0.0, -1.0, 0.0)));
+			Transform::LookAt(lightPos, lightPos + Vec3(0.0, 0.0, 1.0), Vec3(0.0, -1.0, 0.0)));
 		shadowTransforms.push_back(shadowProj *
-			lookAt(lightPos, lightPos + vec3(0.0, 0.0, -1.0), vec3(0.0, -1.0, 0.0)));
+			Transform::LookAt(lightPos, lightPos + Vec3(0.0, 0.0, -1.0), Vec3(0.0, -1.0, 0.0)));
 		for (size_t i = 0; i < 6; ++i)
-			shader_genDepth.SetMat4f("shadowMatrices[" + to_string(i) + "]", shadowTransforms[i]);
+			shader_genDepth.SetMat4f("shadowMatrices[" + to_string(i) + "]", shadowTransforms[i].GetMatrix());
 
 		scene->GetRoot()->Accept(This());
 	}
@@ -125,34 +125,29 @@ void PLDM_Generator::Visit(Scene::Ptr scene) {
 }
 
 void PLDM_Generator::Visit(SObj::Ptr sobj) {
-	auto geometry = sobj->GetComponent<Geometry>();
+	auto geometry = sobj->GetComponent<CmptGeometry>();
 	auto children = sobj->GetChildren();
 	// 这种情况下不需要 transform
-	if ((geometry == nullptr || !geometry->GetPrimitive()) && children.size() == 0)
+	if ((geometry == nullptr || !geometry->primitive) && children.size() == 0)
 		return;
 
-	auto transform = sobj->GetComponent<Transform>();
-	if (transform != nullptr)
-		modelVec.push_back(modelVec.back() * transform->GetMat());
+	auto cmptTransform = sobj->GetComponent<CmptTransform>();
+	if (cmptTransform != nullptr)
+		modelVec.push_back(modelVec.back() * cmptTransform->GetTransform());
 
-	if (geometry && geometry->GetPrimitive())
-		geometry->GetPrimitive()->Accept(This());
+	if (geometry && geometry->primitive)
+		geometry->primitive->Accept(This());
 
 	for (auto child : children)
 		child->Accept(This());
 
-	if (transform != nullptr)
+	if (cmptTransform != nullptr)
 		modelVec.pop_back();
 }
 
 
 void PLDM_Generator::Visit(Sphere::Ptr sphere) {
-	mat4 model = modelVec.back();
-	model = translate(model, sphere->center);
-	model = scale(model, vec3(sphere->r));
-
-	shader_genDepth.SetMat4f("model", model);
-
+	shader_genDepth.SetMat4f("model", modelVec.back());
 	raster->GetSphereVAO().Draw(shader_genDepth);
 }
 
@@ -166,7 +161,7 @@ void PLDM_Generator::Visit(TriMesh::Ptr mesh) {
 	raster->GetMeshVAO(mesh).Draw(shader_genDepth);
 }
 
-Texture PLDM_Generator::GetDepthCubeMap(Light::CPtr light) const {
+Texture PLDM_Generator::GetDepthCubeMap(CmptLight::CPtr light) const {
 	auto target = lightMap.find(light);
 	if (target == lightMap.end())
 		return Texture::InValid;

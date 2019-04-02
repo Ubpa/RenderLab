@@ -5,16 +5,17 @@
 #include <CppUtil/Engine/Scene.h>
 #include <CppUtil/Engine/SObj.h>
 
-#include <CppUtil/Engine/Geometry.h>
-#include <CppUtil/Engine/Material.h>
-#include <CppUtil/Engine/Transform.h>
+#include <CppUtil/Engine/CmptMaterial.h>
 
+#include <CppUtil/Engine/CmptTransform.h>
+
+#include <CppUtil/Engine/CmptGeometry.h>
 #include <CppUtil/Engine/Sphere.h>
 #include <CppUtil/Engine/Plane.h>
 #include <CppUtil/Engine/TriMesh.h>
 #include <CppUtil/Engine/AllBSDFs.h>
 
-#include <CppUtil/Engine/Light.h>
+#include <CppUtil/Engine/CmptLight.h>
 #include <CppUtil/Engine/PointLight.h>
 
 #include <CppUtil/Qt/RawAPI_OGLW.h>
@@ -72,7 +73,7 @@ void RasterBase::Draw() {
 	UpdateLights();
 
 	modelVec.clear();
-	modelVec.push_back(mat4(1.0f));
+	modelVec.push_back(Transform(1.f));
 	scene->GetRoot()->Accept(This());
 }
 
@@ -116,38 +117,33 @@ void RasterBase::InitVAO_Plane() {
 }
 
 void RasterBase::Visit(SObj::Ptr sobj) {
-	auto geometry = sobj->GetComponent<Geometry>();
-	auto material = sobj->GetComponent<Material>();
+	auto geometry = sobj->GetComponent<CmptGeometry>();
+	auto material = sobj->GetComponent<CmptMaterial>();
 	auto children = sobj->GetChildren();
 
 	// 这种情况下不需要 transform
-	if ((!geometry || !geometry->GetPrimitive() || !material || !material->GetMat())
+	if ((!geometry || !geometry->primitive || !material || !material->material)
 		&& children.size() == 0)
 		return;
 
-	auto transform = sobj->GetComponent<Transform>();
-	if (transform != nullptr)
-		modelVec.push_back(modelVec.back() * transform->GetMat());
+	auto cmptTransform = sobj->GetComponent<CmptTransform>();
+	if (cmptTransform != nullptr)
+		modelVec.push_back(modelVec.back() * cmptTransform->GetTransform());
 
-	if (geometry && geometry->GetPrimitive() && material && material->GetMat()) {
-		material->GetMat()->Accept(This());
-		geometry->GetPrimitive()->Accept(This());
+	if (geometry && geometry->primitive && material && material->material) {
+		material->material->Accept(This());
+		geometry->primitive->Accept(This());
 	}
 
 	for (auto child : children)
 		child->Accept(This());
 
-	if (transform != nullptr)
+	if (cmptTransform != nullptr)
 		modelVec.pop_back();
 }
 
 void RasterBase::Visit(Engine::Sphere::Ptr sphere) {
-	mat4 model = modelVec.back();
-	model = translate(model, sphere->center);
-	model = scale(model, vec3(sphere->r));
-
-	curShader.SetMat4f("model", model);
-
+	curShader.SetMat4f("model", modelVec.back());
 	VAO_P3N3T2T3_Sphere.Draw(curShader);
 }
 
@@ -158,10 +154,7 @@ void RasterBase::Visit(Engine::Plane::Ptr plane) {
 
 void RasterBase::Visit(TriMesh::Ptr mesh) {
 	curShader.SetMat4f("model", modelVec.back());
-
-	auto meshVAO = GetMeshVAO(mesh);
-
-	meshVAO.Draw(curShader);
+	GetMeshVAO(mesh).Draw(curShader);
 }
 
 Texture RasterBase::GetTex(Image::CPtr img) {
@@ -177,16 +170,17 @@ Texture RasterBase::GetTex(Image::CPtr img) {
 void RasterBase::UpdateLights() const {
 	int lightIdx = 0;
 	glBindBuffer(GL_UNIFORM_BUFFER, lightsUBO);
-	for (auto lightComponent : scene->GetLights()) {
-		auto pointLight = PointLight::Ptr::Cast(lightComponent->GetLight());
+	for (auto cmptLight : scene->GetCmptLights()) {
+		auto pointLight = PointLight::Ptr::Cast(cmptLight->light);
 		if (!pointLight)
 			continue;
 
-		vec3 position = lightComponent->GetSObj()->GetLocalToWorldMatrix()*vec4(0, 0, 0, 1);
+		Point3 position = cmptLight->GetSObj()->GetWorldPos();
 
 		int base = 16 + 48 * lightIdx;
-		glBufferSubData(GL_UNIFORM_BUFFER, base, 12, glm::value_ptr(position));
-		glBufferSubData(GL_UNIFORM_BUFFER, base + 16, 12, glm::value_ptr(pointLight->intensity * pointLight->color));
+		glBufferSubData(GL_UNIFORM_BUFFER, base, 12, position.Data());
+		auto lightL = pointLight->intensity * pointLight->color;
+		glBufferSubData(GL_UNIFORM_BUFFER, base + 16, 12, lightL.Data());
 		glBufferSubData(GL_UNIFORM_BUFFER, base + 28, 4, &pointLight->linear);
 		glBufferSubData(GL_UNIFORM_BUFFER, base + 32, 4, &pointLight->quadratic);
 
@@ -217,11 +211,11 @@ VAO RasterBase::GetMeshVAO(TriMesh::CPtr mesh) {
 
 void RasterBase::SetPointLightDepthMap(const Shader & shader, int base) {
 	int lightIdx = 0;
-	for (auto lightComponent : scene->GetLights()) {
-		if (!PointLight::Ptr::Cast(lightComponent->GetLight()))
+	for (auto cmptLight : scene->GetCmptLights()) {
+		if (!PointLight::Ptr::Cast(cmptLight->light))
 			continue;
 
-		pldmGenerator->GetDepthCubeMap(lightComponent).Use(base + lightIdx);
+		pldmGenerator->GetDepthCubeMap(cmptLight).Use(base + lightIdx);
 
 		lightIdx++;
 	}

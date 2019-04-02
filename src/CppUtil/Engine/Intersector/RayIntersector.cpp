@@ -123,7 +123,7 @@ void RayIntersector::Visit(SObj::Ptr sobj) {
 	auto geometry = sobj->GetComponent<CmptGeometry>();
 	auto children = sobj->GetChildren();
 
-	if ((geometry == nullptr || !geometry->GetPrimitive()) && children.size() == 0)
+	if ((geometry == nullptr || !geometry->primitive) && children.size() == 0)
 		return;
 
 	auto origSObj = rst.closestSObj;
@@ -131,8 +131,8 @@ void RayIntersector::Visit(SObj::Ptr sobj) {
 	if (cmptTransform)
 		cmptTransform->GetTransform().Inverse().ApplyTo(ray);
 
-	if (geometry && geometry->GetPrimitive()) {
-		geometry->GetPrimitive()->Accept(This());
+	if (geometry && geometry->primitive) {
+		geometry->primitive->Accept(This());
 		if (rst.isIntersect)
 			rst.closestSObj = sobj;
 	}

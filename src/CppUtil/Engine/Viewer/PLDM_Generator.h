@@ -7,6 +7,8 @@
 #include <CppUtil/OpenGL/VAO.h>
 #include <CppUtil/OpenGL/Shader.h>
 
+#include <CppUtil/Basic/Transform.h>
+
 namespace CppUtil {
 	namespace Engine {
 		class Scene;
@@ -16,7 +18,7 @@ namespace CppUtil {
 		class Plane;
 		class TriMesh;
 
-		class Light;
+		class CmptLight;
 
 		class RasterBase;
 
@@ -29,7 +31,7 @@ namespace CppUtil {
 
 			void Init();
 
-			OpenGL::Texture GetDepthCubeMap(Basic::CPtr<Light> light) const;
+			OpenGL::Texture GetDepthCubeMap(Basic::CPtr<CmptLight> light) const;
 			float GetLightFar() const { return lightFar; }
 
 		private:
@@ -50,12 +52,12 @@ namespace CppUtil {
 				OpenGL::FBO fbo;
 				OpenGL::Texture tex;
 			};
-			std::map<Basic::WCPtr<Light>, Val> lightMap;
+			std::map<Basic::WCPtr<CmptLight>, Val> lightMap;
 			int depthMapSize;
 			float lightFar;
 
 			OpenGL::Shader shader_genDepth;
-			std::vector<glm::mat4> modelVec;
+			std::vector<Transform> modelVec;
 		};
 	}
 }

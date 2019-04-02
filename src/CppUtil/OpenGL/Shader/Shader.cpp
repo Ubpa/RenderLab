@@ -132,17 +132,9 @@ void Shader::SetVec2f(const std::string &name, float value0, float value1) const
 	glUniform2f(glGetUniformLocation(ID, name.c_str()), value0, value1);
 }
 
-void Shader::SetVec2f(const std::string &name, const glm::vec2 & v) const {
-	SetVec2f(name, v.x, v.y);
-}
-
 void Shader::SetVec3f(const string &name, float value0, float value1, float value2) const {
 	Use();
 	glUniform3f(glGetUniformLocation(ID, name.c_str()), value0, value1, value2);
-}
-
-void Shader::SetVec3f(const string &name, const glm::vec3 & v) const {
-	SetVec3f(name, v.x, v.y, v.z);
 }
 
 void Shader::SetVec3fs(const std::string &name, uint n, const float * data) const {
@@ -155,17 +147,9 @@ void Shader::SetVec4f(const string &name, float value0, float value1, float valu
 	glUniform4f(glGetUniformLocation(ID, name.c_str()), value0, value1, value2, value3);
 }
 
-void Shader::SetVec4f(const string &name, const glm::vec4 & v) const {
-	SetVec4f(name, v.x, v.y, v.z, v.w);
-}
-
 void Shader::SetMat4f(const string &name, const float * matValue) const{
 	Use();
 	glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, matValue);
-}
-
-void Shader::SetMat4f(const string &name, const glm::mat4 mat4) const{
-	SetMat4f(name, glm::value_ptr(mat4));
 }
 
 void Shader::UniformBlockBind(const string &name, uint bindPoint) const {

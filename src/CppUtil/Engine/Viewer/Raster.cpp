@@ -3,9 +3,9 @@
 #include <CppUtil/Engine/Scene.h>
 #include <CppUtil/Engine/SObj.h>
 
-#include <CppUtil/Engine/Geometry.h>
-#include <CppUtil/Engine/Material.h>
-#include <CppUtil/Engine/Transform.h>
+#include <CppUtil/Engine/CmptGeometry.h>
+#include <CppUtil/Engine/CmptMaterial.h>
+#include <CppUtil/Engine/CmptTransform.h>
 
 #include <CppUtil/Engine/Sphere.h>
 #include <CppUtil/Engine/Plane.h>
@@ -39,7 +39,6 @@ using namespace CppUtil::OpenGL;
 using namespace CppUtil::Basic;
 using namespace CppUtil;
 using namespace Define;
-using namespace glm;
 using namespace std;
 
 const string rootPath = ROOT_PATH;
@@ -108,7 +107,7 @@ void Raster::Visit(BSDF_Diffuse::Ptr bsdf) {
 	SetCurShader(shader_diffuse);
 
 	string strBSDF = "bsdf.";
-	shader_diffuse.SetVec3f(strBSDF + "albedoColor", bsdf->albedoColor);
+	shader_diffuse.SetVec3f(strBSDF + "colorFactor", bsdf->colorFactor);
 	if (bsdf->albedoTexture && bsdf->albedoTexture->IsValid()) {
 		shader_diffuse.SetBool(strBSDF + "haveAlbedoTexture", true);
 		GetTex(bsdf->albedoTexture).Use(0);
@@ -147,7 +146,7 @@ void Raster::Visit(BSDF_MetalWorkflow::Ptr bsdf) {
 	SetCurShader(shader_metalWorkflow);
 
 	string strBSDF = "bsdf.";
-	shader_metalWorkflow.SetVec3f(strBSDF + "albedoColor", bsdf->albedoColor);
+	shader_metalWorkflow.SetVec3f(strBSDF + "colorFactor", bsdf->colorFactor);
 	shader_metalWorkflow.SetFloat(strBSDF + "metallicFactor", bsdf->metallicFactor);
 	shader_metalWorkflow.SetFloat(strBSDF + "roughnessFactor", bsdf->roughnessFactor);
 

@@ -64,7 +64,7 @@ namespace CppUtil {
 			}
 
 		public:
-			T operator[](int i) const { return _data[i]; }
+			const T & operator[](int i) const { return _data[i]; }
 			T & operator[](int i) { return _data[i]; }
 
 			bool operator==(const Val & rhs) const {
