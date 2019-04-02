@@ -2,7 +2,8 @@
 #define _DEFINES_H_
 
 #include <CppUtil/OpenGL/CommonDefine.h>
-#include <glm/vec3.hpp>
+#include <CppUtil/Basic/Point3.h>
+#include <CppUtil/Basic/RGB.h>
 
 namespace Define {
 	//------------ shader
@@ -29,18 +30,18 @@ namespace Define {
 	//------------ data
 	const size_t lightNum = 4;
 
-	const glm::vec3 data_LightPositions[lightNum] = {
-		glm::vec3(0.0f, 0.5f,  1.5f),
-		glm::vec3(-4.0f, 0.5f, -3.0f),
-		glm::vec3(3.0f, 0.5f,  1.0f),
-		glm::vec3(-.8f,  2.4f, -1.0f)
+	const CppUtil::Point3 data_LightPositions[lightNum] = {
+		CppUtil::Point3(0.0f, 0.5f,  1.5f),
+		CppUtil::Point3(-4.0f, 0.5f, -3.0f),
+		CppUtil::Point3(3.0f, 0.5f,  1.0f),
+		CppUtil::Point3(-.8f,  2.4f, -1.0f)
 	};
 
-	const glm::vec3 data_LightColors[lightNum] = {
-		glm::vec3(2.0f, 2.0f, 2.0f),
-		glm::vec3(1.5f, 0.0f, 0.0f),
-		glm::vec3(0.0f, 0.0f, 1.5f),
-		glm::vec3(0.0f, 1.5f, 0.0f)
+	const CppUtil::RGBf data_LightColors[lightNum] = {
+		CppUtil::RGBf(2.0f, 2.0f, 2.0f),
+		CppUtil::RGBf(1.5f, 0.0f, 0.0f),
+		CppUtil::RGBf(0.0f, 0.0f, 1.5f),
+		CppUtil::RGBf(0.0f, 1.5f, 0.0f)
 	};
 }
 

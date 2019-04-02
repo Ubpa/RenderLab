@@ -417,9 +417,9 @@ RasterOpCreator::SceneOp::Ptr RasterOpCreator::GenScenePaintOp_1() {
 		//------------ 更新相机
 		auto cameraUBO_Update = ToPtr(new LambdaOp([&]() {
 			glBindBuffer(GL_UNIFORM_BUFFER, *cameraUBO);
-			glBufferSubData(GL_UNIFORM_BUFFER, 0, 64, glm::value_ptr(mainCamera->GetViewMatrix()));
-			glBufferSubData(GL_UNIFORM_BUFFER, 64, 64, glm::value_ptr(mainCamera->GetProjectionMatrix()));
-			glBufferSubData(GL_UNIFORM_BUFFER, 128, 12, glm::value_ptr(mainCamera->GetPos()));
+			glBufferSubData(GL_UNIFORM_BUFFER, 0, 64, mainCamera->GetViewMatrix().GetMatrix().Data());
+			glBufferSubData(GL_UNIFORM_BUFFER, 64, 64, mainCamera->GetProjectionMatrix().GetMatrix().Data());
+			glBufferSubData(GL_UNIFORM_BUFFER, 128, 12, mainCamera->GetPos().Data());
 			float nearPlane = mainCamera->GetNearPlane();
 			float farPlane = mainCamera->GetFarPlane();
 			float fov = mainCamera->GetFOV();
