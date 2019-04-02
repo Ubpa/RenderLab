@@ -25,7 +25,7 @@ VisibilityChecker::VisibilityChecker()
 	Reg<Triangle>();
 }
 
-void VisibilityChecker::Init(const Engine::Ray & ray, const float tMax) {
+void VisibilityChecker::Init(const ERay & ray, const float tMax) {
 	this->ray = ray;
 
 	this->ray.tMax = tMax;

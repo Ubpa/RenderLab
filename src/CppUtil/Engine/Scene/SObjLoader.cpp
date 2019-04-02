@@ -8,7 +8,6 @@ using namespace CppUtil;
 using namespace CppUtil::Basic;
 using namespace CppUtil::Engine;
 using namespace tinyxml2;
-using namespace glm;
 using namespace std;
 
 template<>

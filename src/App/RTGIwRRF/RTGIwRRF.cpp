@@ -34,10 +34,9 @@
 #include <synchapi.h>
 
 using namespace App;
-using namespace CppUtil::Qt;
+using namespace CppUtil::QT;
 using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
-using namespace glm;
 using namespace std;
 using namespace Ui;
 

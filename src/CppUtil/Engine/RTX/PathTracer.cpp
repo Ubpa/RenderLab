@@ -54,8 +54,8 @@ void PathTracer::Init(Scene::Ptr scene) {
 	bvhAccel->Init(scene->GetRoot());
 }
 
-const RGBf PathTracer::Trace(Engine::Ray & ray, int depth, RGBf pathThroughput) {
-	rayIntersector->Init(ray);
+const RGBf PathTracer::Trace(ERay & ray, int depth, RGBf pathThroughput) {
+	rayIntersector->Init(&ray);
 	bvhAccel->Accept(rayIntersector);
 	auto & closestRst = rayIntersector->GetRst();
 	if (!closestRst.closestSObj) {
@@ -111,7 +111,7 @@ const RGBf PathTracer::Trace(Engine::Ray & ray, int depth, RGBf pathThroughput) 
 }
 
 const RGBf PathTracer::SampleLightImpl(
-	Engine::Ray & ray,
+	ERay & ray,
 	const int lightID,
 	const Point3 & posInWorldSpace,
 	const Point3 & posInLightSpace,
@@ -171,7 +171,7 @@ const RGBf PathTracer::SampleLightImpl(
 }
 
 const RGBf PathTracer::SampleLight(
-	Engine::Ray & ray,
+	ERay & ray,
 	const Point3 & posInWorldSpace,
 	const std::vector<Point3> & posInLightSpaceVec,
 	const Mat3f & worldToSurface,
@@ -214,7 +214,7 @@ const RGBf PathTracer::SampleBSDF(
 	const Mat3f & surfaceToWorld,
 	const Point2 & texcoord,
 	const std::vector<Point3> & posInLightSpaceVec,
-	Engine::Ray & ray,
+	ERay & ray,
 	const Point3 & hitPos,
 	const int depth,
 	RGBf pathThroughput

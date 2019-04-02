@@ -24,7 +24,7 @@ T Variance(const std::vector<T> & data) {
 }
 
 template<typename T>
-void Permute(std::vector<T> data) {
+inline void Permute(std::vector<T> data) {
 	for (size_t i = data.size() - 1; i > 0; i--) {
 		size_t target = Rand_UI() % i;
 		std::swap(data[i], data[target]);
@@ -32,7 +32,7 @@ void Permute(std::vector<T> data) {
 }
 
 template<typename T>
-T min(const std::vector<T> & val) {
+inline T min(const std::vector<T> & val) {
 	if (val.empty())
 		return static_cast<T>(0);
 
@@ -44,7 +44,7 @@ T min(const std::vector<T> & val) {
 }
 
 template<typename T>
-T max(const std::vector<T> & val) {
+inline T max(const std::vector<T> & val) {
 	if (val.empty())
 		return static_cast<T>(0);
 

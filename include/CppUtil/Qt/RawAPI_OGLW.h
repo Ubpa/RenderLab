@@ -10,12 +10,12 @@
 #include <CppUtil/Basic/GStorage.h>
 
 namespace CppUtil {
-	namespace Qt {
+	namespace QT {
 
 		class RawAPI_OGLW : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core {
 			Q_OBJECT
 		public:
-			explicit RawAPI_OGLW(QWidget* parent = nullptr, ::Qt::WindowFlags f = ::Qt::WindowFlags());
+			explicit RawAPI_OGLW(QWidget* parent = nullptr,Qt::WindowFlags f =Qt::WindowFlags());
 			~RawAPI_OGLW();
 
 			void SetInitOp(Basic::Operation::Ptr initOp);

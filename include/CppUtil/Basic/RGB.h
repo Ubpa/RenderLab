@@ -11,7 +11,8 @@ namespace CppUtil {
 			using Val<3, T>::Val;
 
 		public:
-			T Illumination() const { return static_cast<T>(0.2126) *r + static_cast<T>(0.7152) * g + static_cast<T>(0.0722) * b; }
+			T Illumination() const { return static_cast<T>(0.2126) * r + static_cast<T>(0.7152) * g + static_cast<T>(0.0722) * b; }
+			T Gray() const { return r * static_cast<T>(0.299) + g * static_cast<T>(0.587) + b * static_cast<T>(0.114); }
 
 			static const RGB Lerp(const RGB & c0, const RGB & c1, float t) {
 				return (1.f - t)*c0 + t * c1;

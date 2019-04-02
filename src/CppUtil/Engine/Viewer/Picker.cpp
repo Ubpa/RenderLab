@@ -40,11 +40,11 @@ void Picker::Init() {
 
 		Vec3 dir = posInWorld - camera->GetPos();
 		Ray ray(camera->GetPos(), dir);
-		rayIntersector->Init(ray);
+		rayIntersector->Init(&ray);
 		viewer->GetScene()->GetRoot()->Accept(rayIntersector);
 		auto closestRst = rayIntersector->GetRst();
 		if (closestRst.closestSObj)
 			Ui::Attribute::GetInstance()->SetSObj(closestRst.closestSObj);
 	}));
-	EventMngr::GetInstance().Reg(::Qt::LeftButton, (void*)viewer->GetOGLW(), EventMngr::MOUSE_PRESS, MRB_PressOp);
+	EventMngr::GetInstance().Reg(Qt::LeftButton, (void*)viewer->GetOGLW(), EventMngr::MOUSE_PRESS, MRB_PressOp);
 }

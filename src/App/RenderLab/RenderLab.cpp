@@ -32,7 +32,7 @@
 
 using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
-using namespace CppUtil::Qt;
+using namespace CppUtil::QT;
 using namespace std;
 using namespace Ui;
 
@@ -57,7 +57,7 @@ RenderLab::RenderLab(QWidget *parent)
 	const size_t fps = 60;
 	timer->start(1000 / fps);
 
-	auto root = SObj::Load(ROOT_PATH + "data/SObjs/CB_Glass.xml");
+	auto root = ToPtr(new SObj);
 	scene = ToPtr(new Scene(root));
 
 	// viewer

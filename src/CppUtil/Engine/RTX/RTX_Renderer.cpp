@@ -67,7 +67,7 @@ void RTX_Renderer::Run(Scene::Ptr scene, Image::Ptr img) {
 		printf("ERROR: no camera\n");
 		return;
 	}
-	camera->SetAspectRatio(w, h);
+	camera->SetAspectRatioWH(w, h);
 	camera->InitCoordinate();
 
 	// jobs
@@ -80,7 +80,7 @@ void RTX_Renderer::Run(Scene::Ptr scene, Image::Ptr img) {
 	vector<vector<RGBf>> imgTiles(tileNum, vector<RGBf>(tileSize*tileSize, RGBf(0.f)));
 
 	// rays
-	vector<Engine::Ray> rays(threadNum);
+	vector<ERay> rays(threadNum);
 
 	auto renderPartImg = [&](int id) {
 		auto & ray = rays[id];

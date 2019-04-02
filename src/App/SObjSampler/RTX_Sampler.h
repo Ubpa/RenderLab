@@ -3,7 +3,7 @@
 
 #include <CppUtil/Basic/HeapObj.h>
 
-#include <glm/vec2.hpp>
+#include <CppUtil/Basic/Point2.h>
 
 #include <functional>
 #include <vector>
@@ -29,13 +29,13 @@ namespace App {
 	public:
 		void Run(CppUtil::Basic::Ptr<CppUtil::Engine::Scene> scene, CppUtil::Basic::Ptr<CppUtil::Basic::Image> img);
 
-		const std::vector<std::vector<glm::uvec2>> & GetJobs() const { return jobs; }
+		const std::vector<std::vector<CppUtil::Point2ui>> & GetJobs() const { return jobs; }
 
 	private:
 		std::function<CppUtil::Basic::Ptr<CppUtil::Engine::RayTracer>()> generator;
 		std::vector<CppUtil::Basic::Ptr<CppUtil::Engine::RayTracer>> rayTracers;
 
-		std::vector<std::vector<glm::uvec2>> jobs;
+		std::vector<std::vector<CppUtil::Point2ui>> jobs;
 
 		int maxLoop;
 		int sampleNum;

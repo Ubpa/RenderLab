@@ -23,7 +23,7 @@ namespace CppUtil {
 
 			Val() : Val(static_cast<T>(0)) { }
 
-			template<int N, typename U>
+			template<typename U, int N>
 			Val(U(&arr)[N]) : Val(arr[0], arr[1]) { assert(N >= 2); }
 
 			template<typename U>
@@ -36,7 +36,7 @@ namespace CppUtil {
 			Val(const Val<4, U> & val4) : Val(val4.x, val4.y) { }
 
 		public:
-			bool HasNaN() const { return std::isnan(x) || std::isnan(y) || std::isnan(z); }
+			bool HasNaN() const { return std::isnan(x) || std::isnan(y); }
 			bool IsZero() const {
 				static constexpr T zero = static_cast<T>(0);
 				return x == zero && y == zero;
@@ -59,8 +59,8 @@ namespace CppUtil {
 			}
 
 		public:
-			const T & operator[](int i) const { return _data[i]; }
-			T & operator[](int i) { return _data[i]; }
+			const T & operator[](int i) const { assert(i >= 0 && i <= (valNum - 1)); return _data[i]; }
+			T & operator[](int i) { assert(i >= 0 && i <= (valNum - 1)); return _data[i]; }
 
 			bool operator==(const Val & rhs) const {
 				return x == rhs.x && y == rhs.y;

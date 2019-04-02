@@ -2,6 +2,8 @@
 #define _CPPUTIL_BASIC_MATH_VAL_H_
 
 #include <CppUtil/Basic/Math.h>
+
+#include <cassert>
 #include <iostream>
 
 namespace CppUtil {

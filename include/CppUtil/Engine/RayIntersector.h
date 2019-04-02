@@ -46,7 +46,7 @@ namespace CppUtil {
 		public:
 			RayIntersector();
 
-			void Init(const Ray & ray);
+			void Init(Ray * ray);
 
 		public:
 			Rst & GetRst() { return rst; }
@@ -65,7 +65,7 @@ namespace CppUtil {
 			bool Intersect(const BBoxf & bbox, float & t0, float & t1);
 
 		private:
-			Ray ray;
+			Ray * ray;
 			Rst rst;
 		};
 	}

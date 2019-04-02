@@ -15,8 +15,8 @@
 #include <CppUtil/Engine/Viewer.h>
 #include <CppUtil/Engine/Scene.h>
 #include <CppUtil/Engine/SObj.h>
-#include <CppUtil/Engine/Camera.h>
-#include <CppUtil/Engine/Transform.h>
+#include <CppUtil/Engine/CmptCamera.h>
+#include <CppUtil/Engine/CmptTransform.h>
 
 #include <CppUtil/OpenGL/Camera.h>
 
@@ -37,10 +37,10 @@
 #include <synchapi.h>
 
 using namespace App;
-using namespace CppUtil::Qt;
+using namespace CppUtil::QT;
 using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
-using namespace glm;
+using namespace CppUtil;
 using namespace std;
 using namespace Ui;
 
@@ -73,7 +73,7 @@ SObjSampler::~SObjSampler() {
 	delete timer;
 }
 
-SObjSampler::SObjSampler(const ArgMap & argMap, QWidget *parent, Qt::WindowFlags flags)
+SObjSampler::SObjSampler(const ArgMap & argMap, QWidget *parent,Qt::WindowFlags flags)
 	: argMap(argMap), QMainWindow(parent, flags), timer(nullptr)
 {
 	ui.setupUi(this);
@@ -107,9 +107,9 @@ void SObjSampler::InitRaster() {
 	sampleRaster = ToPtr(new SampleRaster(scene));
 	roamer = ToPtr(new Roamer(ui.OGLW_Raster));
 	roamer->SetLock(true);
-	auto camera = scene->GetCamera();
-	auto transform = camera->GetSObj()->GetComponent<Transform>();
-	auto eulerAngle = degrees(transform->GetEulerRoatation());
+	auto camera = scene->GetCmptCamera();
+	auto transform = camera->GetSObj()->GetComponent<CmptTransform>();
+	auto eulerAngle = transform->GetRotationEuler();
 	roamer->GetCamera()->SetPose(transform->GetPosition(), - eulerAngle.y - 90, eulerAngle.x);
 
 	ui.OGLW_Raster->SetInitOp(ToPtr(new LambdaOp([=]() {
@@ -248,7 +248,7 @@ void SObjSampler::SaveData() {
 			float roughness = dataMap[ENUM_TYPE::IOR_ROUGHNESS_ID][idx + 1];
 			lineVals.push_back(ID);
 
-			vec3 directIllum(
+			RGBf directIllum(
 				dataMap[ENUM_TYPE::DirectIllum][idx + 0],
 				dataMap[ENUM_TYPE::DirectIllum][idx + 1],
 				dataMap[ENUM_TYPE::DirectIllum][idx + 2]
@@ -269,7 +269,7 @@ void SObjSampler::SaveData() {
 				
 				// Ïû³ý¹Ø¼üÎó²î
 				if (abs(val) > 0.999f)
-					val = sign(val);
+					val = Math::sgn(val);
 				else if (abs(val) < 0.001f)
 					val = 0;
 
@@ -279,13 +279,12 @@ void SObjSampler::SaveData() {
 			for (int channel = 0; channel < 3; channel++)
 				lineVals.push_back(dataMap[ENUM_TYPE::MAT_COLOR][idx + channel]);
 
-			vec3 globalIllum = paintImgOp->GetImg()->GetPixel_F(col, row);
+			RGBf globalIllum = paintImgOp->GetImg()->GetPixel(col, row);
 
-			vec3 indirectIllum = max(globalIllum - directIllum, 0.f);
-
-			//indirectImg->SetPixel(col, row, 10.f*indirectIllum);
-			//directImg->SetPixel(col, row, directIllum);
-			//globalImg->SetPixel(col, row, globalIllum);
+			RGBf indirectIllum = globalIllum - directIllum;
+			indirectIllum.r = max(indirectIllum.r, 0.f);
+			indirectIllum.g = max(indirectIllum.g, 0.f);
+			indirectIllum.b = max(indirectIllum.b, 0.f);
 
 			lineVals.push_back(ior);
 			lineVals.push_back(roughness);

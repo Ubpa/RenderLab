@@ -14,6 +14,7 @@ namespace CppUtil {
 
 	using Point2 = Point<2, float>;
 	using Point2i = Point<2, int>;
+	using Point2ui = Point<2, unsigned int>;
 	using Point2 = Point2;
 
 	using Point3 = Point<3, float>;

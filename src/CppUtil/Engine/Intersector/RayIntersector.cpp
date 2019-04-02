@@ -30,7 +30,7 @@ RayIntersector::RayIntersector() {
 	Reg<Triangle>();
 }
 
-void RayIntersector::Init(const Engine::Ray & ray) {
+void RayIntersector::Init(ERay * ray) {
 	this->ray = ray;
 
 	rst.closestSObj = nullptr;
@@ -43,11 +43,11 @@ bool RayIntersector::Intersect(const BBoxf & bbox) {
 }
 
 bool RayIntersector::Intersect(const BBoxf & bbox, float & t0, float & t1) {
-	const Point3 origin = ray.o;
-	const Vec3 dir = ray.d;
-	const Val3f invDir = ray.InvDir();
-	float tMin = ray.tMin;
-	float tMax = ray.tMax;
+	const Point3 origin = ray->o;
+	const Vec3 dir = ray->d;
+	const Val3f invDir = ray->InvDir();
+	float tMin = ray->tMin;
+	float tMax = ray->tMax;
 
 	for (int i = 0; i < 3; i++) {
 		float invD = invDir[i];
@@ -80,18 +80,18 @@ void RayIntersector::Visit(BVHAccel::Ptr bvhAccel) {
 
 void RayIntersector::Visit(BVHNode<Element, BVHAccel>::Ptr bvhNode) {
 	if (bvhNode->IsLeaf()) {
-		const auto origin = ray.o;
-		const auto dir = ray.d;
+		const auto origin = ray->o;
+		const auto dir = ray->d;
 		for (size_t i = 0; i < bvhNode->GetRange(); i++) {
 			auto ele = bvhNode->GetObjs()[i + bvhNode->GetStart()];
 			const auto & mat = bvhNode->GetHolder()->GetEleW2LMat(ele);
-			mat.ApplyTo(ray);
+			mat.ApplyTo(*ray);
 			ele->Accept(This());
 			if (rst.isIntersect)
 				rst.closestSObj = bvhNode->GetHolder()->GetSObj(ele);
 
-			ray.o = origin;
-			ray.d = dir;
+			ray->o = origin;
+			ray->d = dir;
 		}
 	}
 	else {
@@ -106,7 +106,7 @@ void RayIntersector::Visit(BVHNode<Element, BVHAccel>::Ptr bvhNode) {
 				auto first = (t1 <= t3) ? l : r;
 				auto second = (t1 <= t3) ? r : l;
 				Visit(first);
-				if (t3 < ray.tMax)
+				if (t3 < ray->tMax)
 					Visit(second);
 			}
 			else
@@ -129,7 +129,7 @@ void RayIntersector::Visit(SObj::Ptr sobj) {
 	auto origSObj = rst.closestSObj;
 	auto cmptTransform = sobj->GetComponent<CmptTransform>();
 	if (cmptTransform)
-		cmptTransform->GetTransform().Inverse().ApplyTo(ray);
+		cmptTransform->GetTransform().Inverse().ApplyTo(*ray);
 
 	if (geometry && geometry->primitive) {
 		geometry->primitive->Accept(This());
@@ -141,7 +141,7 @@ void RayIntersector::Visit(SObj::Ptr sobj) {
 		child->Accept(This());
 
 	if (cmptTransform) {
-		cmptTransform->GetTransform().ApplyTo(ray);
+		cmptTransform->GetTransform().ApplyTo(*ray);
 		if (rst.closestSObj != origSObj) {
 			cmptTransform->GetTransform().ApplyTo(rst.n).NormSelf();
 			cmptTransform->GetTransform().ApplyTo(rst.tangent).NormSelf();
@@ -150,8 +150,8 @@ void RayIntersector::Visit(SObj::Ptr sobj) {
 }
 
 void RayIntersector::Visit(Sphere::Ptr sphere) {
-	const auto & dir = ray.d;
-	const auto & origin = ray.o;
+	const auto & dir = ray->d;
+	const auto & origin = ray->o;
 
 	const Vec3 oc = origin;
 	const float a = dir.Dot(dir);
@@ -164,8 +164,8 @@ void RayIntersector::Visit(Sphere::Ptr sphere) {
 		return;
 	}
 
-	const float tMin = ray.tMin;
-	const float tMax = ray.tMax;
+	const float tMin = ray->tMin;
+	const float tMax = ray->tMax;
 	const float sqrt_discriminant = sqrt(discriminant);
 	const float inv_a = 1.0f / a;
 
@@ -179,17 +179,17 @@ void RayIntersector::Visit(Sphere::Ptr sphere) {
 	}
 
 	rst.isIntersect = true;
-	ray.tMax = t;
-	rst.n = ray(t);
+	ray->tMax = t;
+	rst.n = ray->At(t);
 	rst.texcoord = rst.n.ToTexcoord();
 	rst.tangent = rst.n.ToTangent();
 }
 
 void RayIntersector::Visit(Plane::Ptr plane) {
-	const auto & dir = ray.d;
-	const auto & origin = ray.o;
-	const float tMin = ray.tMin;
-	const float tMax = ray.tMax;
+	const auto & dir = ray->d;
+	const auto & origin = ray->o;
+	const float tMin = ray->tMin;
+	const float tMax = ray->tMax;
 
 	const float t = - origin.y / dir.y;
 	if (t<tMin || t>tMax) {
@@ -197,14 +197,14 @@ void RayIntersector::Visit(Plane::Ptr plane) {
 		return;
 	}
 
-	const auto pos = ray(t);
+	const auto pos = ray->At(t);
 	if (pos.x<-0.5 || pos.x>0.5 || pos.z<-0.5 || pos.z>0.5) {
 		rst.isIntersect = false;
 		return;
 	}
 
 	rst.isIntersect = true;
-	ray.tMax = t;
+	ray->tMax = t;
 	rst.n = Normalf(0, 1, 0);
 	rst.texcoord = Point2(pos.x + 0.5f, pos.z + 0.5f);
 	rst.tangent = Normalf(1, 0, 0);
@@ -221,7 +221,7 @@ void RayIntersector::Visit(Triangle::Ptr triangle) {
 	const auto & p2 = positions[idx2];
 	const auto & p3 = positions[idx3];
 
-	const auto & dir = ray.d;
+	const auto & dir = ray->d;
 
 	const auto e1 = p2 - p1;
 	const auto e2 = p3 - p1;
@@ -234,7 +234,7 @@ void RayIntersector::Visit(Triangle::Ptr triangle) {
 
 	const float inv_denominator = 1.0f / denominator;
 
-	const auto s = ray.o - p1;
+	const auto s = ray->o - p1;
 
 	const auto e2_x_s = e2.Cross(s);
 	const float r1 = e2_x_s.Dot(dir);
@@ -255,14 +255,14 @@ void RayIntersector::Visit(Triangle::Ptr triangle) {
 	const float r3 = e2_x_s.Dot(e1);
 	const float t = r3 * inv_denominator;
 
-	if (t < ray.tMin || t > ray.tMax) {
+	if (t < ray->tMin || t > ray->tMax) {
 		rst.isIntersect = false;
 		return;
 	}
 
 	rst.isIntersect = true;
 
-	ray.tMax = t;
+	ray->tMax = t;
 
 	const float w = 1 - u_plus_v;
 

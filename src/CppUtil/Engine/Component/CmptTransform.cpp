@@ -4,8 +4,12 @@ using namespace CppUtil;
 using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
 
-CmptTransform::CmptTransform(Basic::Ptr<SObj> sobj)
-	: Component(sobj), transform(1), position(0), scale(1), rotation(), dirtyTransform(false)  { }
+void CmptTransform::Init(const Point3 & pos, const Vec3 & scale, const Quatf & rot) {
+	position = pos;
+	this->scale = scale;
+	rotation = rot;
+	dirtyTransform = true;
+}
 
 const Transform & CmptTransform::GetTransform() const{
 	UpdateMat();

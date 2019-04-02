@@ -6,7 +6,6 @@
 using namespace CppUtil;
 using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
-using namespace glm;
 
 const RGBf BSDF_Diffuse::F(const Normalf & wo, const Normalf & wi, const Point2 & texcoord) {
 	if (wo.z <= 0 || wi.z <= 0)

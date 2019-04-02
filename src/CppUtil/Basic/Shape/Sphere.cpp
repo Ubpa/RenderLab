@@ -5,7 +5,6 @@
 #include <cmath>
 
 using namespace CppUtil::Basic;
-using namespace glm;
 
 Sphere::Sphere(uint n)
 	: Shape((n + 1)*(n + 1), 2 * n*n) {

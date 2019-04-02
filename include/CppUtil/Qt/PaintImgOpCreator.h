@@ -9,7 +9,7 @@ namespace CppUtil {
 		class Image;
 	}
 
-	namespace Qt {
+	namespace QT {
 		class RawAPI_OGLW;
 
 		class PaintImgOpCreator {
@@ -22,13 +22,13 @@ namespace CppUtil {
 					friend class PaintImgOpCreator;
 
 			public:
-				PaintImgOp(Qt::RawAPI_OGLW * pOGLW);
+				PaintImgOp(QT::RawAPI_OGLW * pOGLW);
 				bool SetOp(int w, int h);
-				Qt::RawAPI_OGLW * GetOGLW() { return pOGLW; }
+				QT::RawAPI_OGLW * GetOGLW() { return pOGLW; }
 				Basic::Ptr<Basic::Image> GetImg() { return img; }
 
 			private:
-				Qt::RawAPI_OGLW * pOGLW;
+				QT::RawAPI_OGLW * pOGLW;
 
 				Basic::Ptr<Basic::Operation> initOp;
 				Basic::Ptr<Basic::Operation> paintOp;
@@ -39,7 +39,7 @@ namespace CppUtil {
 			PaintImgOp::Ptr GenScenePaintOp();
 			
 		private:
-			Qt::RawAPI_OGLW * pOGLW;
+			QT::RawAPI_OGLW * pOGLW;
 		};
 
 	}

@@ -4,8 +4,8 @@
 
 #include <CppUtil/Engine/Scene.h>
 #include <CppUtil/Engine/SObj.h>
-#include <CppUtil/Engine/Material.h>
-#include <CppUtil/Engine/Geometry.h>
+#include <CppUtil/Engine/CmptMaterial.h>
+#include <CppUtil/Engine/CmptGeometry.h>
 #include <CppUtil/Engine/BSDF_FrostedGlass.h>
 
 #include <CppUtil/Basic/Image.h>
@@ -59,8 +59,8 @@ void RRF_Raster::InitShaders() {
 	vector<int> IDs;
 	auto visitor = ToPtr(new EleVisitor);
 	visitor->Reg<SObj>([&](SObj::Ptr sobj) {
-		auto material = sobj->GetComponent<Material>();
-		auto geometry = sobj->GetComponent<Geometry>();
+		auto material = sobj->GetComponent<CmptMaterial>();
+		auto geometry = sobj->GetComponent<CmptGeometry>();
 		if (!material || !geometry)
 			return;
 

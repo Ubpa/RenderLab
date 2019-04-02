@@ -9,7 +9,7 @@
 #include <CppUtil/Basic/LambdaOp.h>
 
 using namespace CppUtil::Engine;
-using namespace CppUtil::Qt;
+using namespace CppUtil::QT;
 using namespace CppUtil::Basic;
 
 Viewer::Viewer(RawAPI_OGLW * pOGLW, CppUtil::Basic::Ptr<Scene> scene)

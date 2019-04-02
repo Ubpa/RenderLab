@@ -8,12 +8,12 @@
 #include <qevent.h>
 #include <qnamespace.h>
 
-using namespace CppUtil::Qt;
+using namespace CppUtil::QT;
 using namespace CppUtil::Basic;
 
-RawAPI_OGLW::RawAPI_OGLW(QWidget* parent, ::Qt::WindowFlags f)
+RawAPI_OGLW::RawAPI_OGLW(QWidget* parent,Qt::WindowFlags f)
 	: QOpenGLWidget(parent, f), resizeOp(nullptr), paintOp(nullptr), initOp(nullptr) {
-	setFocusPolicy(::Qt::ClickFocus);
+	setFocusPolicy(Qt::ClickFocus);
 }
 
 RawAPI_OGLW::~RawAPI_OGLW() { }
@@ -87,5 +87,5 @@ void RawAPI_OGLW::mouseReleaseEvent(QMouseEvent *event) {
 void RawAPI_OGLW::wheelEvent(QWheelEvent *event) {
 	// 15 degree
 	angle = event->angleDelta().y() / 8;
-	EventMngr::GetInstance().Response(::Qt::NoButton, (void*)this, EventMngr::MOUSE_WHEEL);
+	EventMngr::GetInstance().Response(Qt::NoButton, (void*)this, EventMngr::MOUSE_WHEEL);
 }

@@ -12,7 +12,8 @@ namespace CppUtil {
 			
 		public:
 			bool HasNaN() const { return o.HasNaN() || d.HasNaN(); }
-			Point3 operator()(float t) const { return o + t * d; }
+			const Point3 operator()(float t) const { return o + t * d; }
+			const Point3 At(float t) const { return o + t * d ; }
 
 			friend std::ostream &operator<<(std::ostream &os, const Ray &r) {
 				os << "[o=" << r.o << ", d=" << r.d << "]";

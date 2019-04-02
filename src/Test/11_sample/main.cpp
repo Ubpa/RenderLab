@@ -1,8 +1,8 @@
 #include <CppUtil/Engine/SObj.h>
 #include <CppUtil/Engine/Scene.h>
 
-#include <CppUtil/Engine/Camera.h>
-#include <CppUtil/Engine/Transform.h>
+#include <CppUtil/Engine/CmptCamera.h>
+#include <CppUtil/Engine/CmptTransform.h>
 
 #include <CppUtil/Basic/Math.h>
 
@@ -15,9 +15,9 @@
 #include <cstdlib>
 #include <thread>
 
+using namespace CppUtil;
 using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
-using namespace glm;
 using namespace std;
 
 static const char USAGE[] =
@@ -53,15 +53,15 @@ int main(int argc, const char** argv)
 	for (int k = 0; k < threadNum; k++)
 		workers.push_back(thread([=](int id) {
 		auto root = SObj::Load(ROOT_PATH + "data/SObjs/App/RTGIwRRF/CB_Glass.xml");
-		auto camera = root->GetComponentInChildren<Camera>();
-		auto transform = camera->GetSObj()->GetComponent<Transform>();
+		auto camera = root->GetComponentInChildren<CmptCamera>();
+		auto transform = camera->GetSObj()->GetComponent<CmptTransform>();
 
 		for (int i = id; i < sampleNum; i += threadNum) {
-			vec3 eye = vec3(2 * Math::Rand_F() - 1, Math::Rand_F()*1.5, 2 * Math::Rand_F() - 1);
+			Point3 eye = Point3(2 * Math::Rand_F() - 1, Math::Rand_F()*1.5, 2 * Math::Rand_F() - 1);
 
 			// 靠近中心位置
-			vec3 center = vec3(1.5 * Math::Rand_F() - 0.75, Math::Rand_F()*1.125+0.1875, 1.5 * Math::Rand_F() - 0.75);
-			transform->LookAt(eye, center);
+			Point3 center = Point3(1.5 * Math::Rand_F() - 0.75, Math::Rand_F()*1.125+0.1875, 1.5 * Math::Rand_F() - 0.75);
+			transform->SetTransform(Transform::LookAt(eye, center));
 
 			string sobjPath = "data/SObjs/App/RTGIwRRF/CB_Glass_tmp" + to_string(id) + ".xml";
 			root->Save(ROOT_PATH + sobjPath);

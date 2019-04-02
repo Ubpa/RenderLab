@@ -26,7 +26,7 @@ namespace CppUtil {
 
 			Val() : Val(static_cast<T>(0)) { }
 
-			template<int N, typename U>
+			template<typename U, int N>
 			Val(U(&arr)[N]) : Val(arr[0], arr[1], arr[2], arr[3]) { assert(N >= 4); }
 
 			template<typename U, typename V, typename W>
@@ -74,8 +74,8 @@ namespace CppUtil {
 			}
 
 		public:
-			const T & operator[](int i) const { return _data[i]; }
-			T & operator[](int i) { return _data[i]; }
+			const T & operator[](int i) const { assert(i >= 0 && i <= (valNum - 1)); return _data[i]; }
+			T & operator[](int i) { assert(i >= 0 && i <= (valNum - 1)); return _data[i]; }
 
 			bool operator==(const Val & rhs) const {
 				return x == rhs.x && y == rhs.y && z == rhs.z && w == rhs.w;

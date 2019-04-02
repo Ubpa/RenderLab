@@ -42,7 +42,7 @@ private:
 
 private:
 	Ui::RenderLabClass ui;
-	CppUtil::Basic::Ptr<CppUtil::Qt::PaintImgOpCreator::PaintImgOp> paintImgOp;
+	CppUtil::Basic::Ptr<CppUtil::QT::PaintImgOpCreator::PaintImgOp> paintImgOp;
 	CppUtil::Basic::Ptr<CppUtil::Engine::Scene> scene;
 	CppUtil::Basic::Ptr<CppUtil::Engine::Viewer> viewer;
 	CppUtil::Basic::Ptr<CppUtil::Engine::RTX_Renderer> rtxRenderer;

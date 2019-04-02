@@ -22,7 +22,7 @@ namespace CppUtil {
 		class PathTracer;
 	}
 
-	namespace Qt {
+	namespace QT {
 		class OpThread;
 	}
 }
@@ -63,7 +63,7 @@ namespace App{
 
 	public:
 		typedef std::map<ENUM_ARG, docopt::value> ArgMap;
-		explicit SObjSampler(const ArgMap & argMap, QWidget *parent = Q_NULLPTR, Qt::WindowFlags flags = Qt::WindowFlags());
+		explicit SObjSampler(const ArgMap & argMap, QWidget *parent = Q_NULLPTR,Qt::WindowFlags flags =Qt::WindowFlags());
 
 		virtual ~SObjSampler();
 
@@ -83,10 +83,10 @@ namespace App{
 
 	private:
 		Ui::SObjSamplerClass ui;
-		CppUtil::Basic::Ptr<CppUtil::Qt::PaintImgOpCreator::PaintImgOp> paintImgOp;
+		CppUtil::Basic::Ptr<CppUtil::QT::PaintImgOpCreator::PaintImgOp> paintImgOp;
 		CppUtil::Basic::Ptr<CppUtil::Engine::Scene> scene;
 		CppUtil::Basic::Ptr<RTX_Sampler> rtxSampler;
-		CppUtil::Basic::Ptr<CppUtil::Qt::OpThread> drawImgThread;
+		CppUtil::Basic::Ptr<CppUtil::QT::OpThread> drawImgThread;
 		CppUtil::Basic::Ptr<App::SampleRaster> sampleRaster;
 		CppUtil::Basic::Ptr<CppUtil::Engine::Roamer> roamer;
 		QTimer * timer;

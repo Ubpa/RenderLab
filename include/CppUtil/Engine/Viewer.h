@@ -4,7 +4,7 @@
 #include <CppUtil/Basic/HeapObj.h>
 
 namespace CppUtil {
-	namespace Qt {
+	namespace QT {
 		class RawAPI_OGLW;
 	}
 
@@ -18,10 +18,10 @@ namespace CppUtil {
 		class Viewer : public Basic::HeapObj {
 			HEAP_OBJ_SETUP(Viewer)
 		public:
-			Viewer(Qt::RawAPI_OGLW * pOGLW, Basic::Ptr<Scene> scene);
+			Viewer(QT::RawAPI_OGLW * pOGLW, Basic::Ptr<Scene> scene);
 
 		public:
-			Qt::RawAPI_OGLW * GetOGLW() const { return pOGLW; }
+			QT::RawAPI_OGLW * GetOGLW() const { return pOGLW; }
 			Basic::Ptr<Scene> GetScene() const { return scene; }
 			Basic::Ptr<Raster> GetRaster() const { return raster; }
 			Basic::Ptr<Roamer> GetRoamer() const { return roamer; }
@@ -31,7 +31,7 @@ namespace CppUtil {
 			void SetLock(bool isLock);
 
 		private:
-			Qt::RawAPI_OGLW * pOGLW;
+			QT::RawAPI_OGLW * pOGLW;
 			Basic::Ptr<Picker> picker;
 			Basic::Ptr<Scene> scene;
 			Basic::Ptr<Raster> raster;

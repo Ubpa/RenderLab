@@ -2,7 +2,6 @@
 
 using namespace CppUtil;
 using namespace CppUtil::Engine;
-using namespace glm;
 
 const RGBf AreaLight::Sample_L(const Point3 & p, Normalf & wi, float & distToLight, float & PD) const {
 	if (p.y >= 0) {

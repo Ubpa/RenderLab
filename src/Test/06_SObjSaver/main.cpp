@@ -13,7 +13,6 @@
 using namespace CppUtil;
 using namespace CppUtil::Basic;
 using namespace CppUtil::Engine;
-using namespace glm;
 using namespace std;
 
 int main() {

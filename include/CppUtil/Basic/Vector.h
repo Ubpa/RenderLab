@@ -26,10 +26,15 @@ namespace CppUtil {
 	using Vector = Basic::Vector<N, T>;
 
 	using Vec2f = Vector<2, float>;
+	using Vec2i = Vector<2, int>;
 	using Vec2 = Vec2f;
+
 	using Vec3f = Vector<3, float>;
+	using Vec3i = Vector<3, int>;
 	using Vec3 = Vec3f;
+
 	using Vec4f = Vector<4, float>;
+	using Vec4i = Vector<4, int>;
 	using Vec4 = Vec4f;
 }
 

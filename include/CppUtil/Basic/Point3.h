@@ -44,15 +44,31 @@ namespace CppUtil {
 			static Point Min(const Point & p0, const Point & p1) {
 				return Point(std::min(p0.x, p1.x), std::min(p0.y, p1.y), std::min(p0.z, p1.z));
 			}
+			template<typename U>
+			static Point Min(const Point & p, U val) {
+				return Min(p, Point(val));
+			}
 			const Point MinWith(const Point & p) const{
 				return Min(*this, p);
+			}
+			template<typename U>
+			const Point MinWith(U val) const {
+				return Min(*this, Point(val));
 			}
 
 			static Point Max(const Point & p0, const Point & p1) {
 				return Point(std::max(p0.x, p1.x), std::max(p0.y, p1.y), std::max(p0.z, p1.z));
 			}
+			template<typename U>
+			static Point Max(const Point & p, U val) {
+				return Max(p, Point(val));
+			}
 			const Point MaxWith(const Point & p) const {
 				return Max(*this, p);
+			}
+			template<typename U>
+			const Point MaxWith(U val) const {
+				return Max(*this, Point(val));
 			}
 
 		public:

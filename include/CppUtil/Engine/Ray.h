@@ -27,7 +27,9 @@ namespace CppUtil {
 			float tMin;
 			float tMax;
 		};
+
 	}
+	using ERay = Engine::Ray;
 }
 
 #endif//!_ENGINE_PRIMITIVE_RAY_H_

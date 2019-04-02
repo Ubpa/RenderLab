@@ -13,7 +13,7 @@
 using namespace CppUtil;
 using namespace CppUtil::Basic;
 using namespace CppUtil::Engine;
-using namespace CppUtil::Qt;
+using namespace CppUtil::QT;
 using namespace CppUtil::OpenGL;
 
 Roamer::Roamer(RawAPI_OGLW * pOGLW)
@@ -57,9 +57,9 @@ void Roamer::ListenerInit() {
 		pOGWL->Reg("lockX", x);
 		pOGWL->Reg("lockY", y);
 
-		QApplication::setOverrideCursor(::Qt::BlankCursor);
+		QApplication::setOverrideCursor(Qt::BlankCursor);
 	}));
-	EventMngr::GetInstance().Reg(::Qt::RightButton, (void*)this->GetOGLW(), EventMngr::MOUSE_PRESS, MRB_PressOp);
+	EventMngr::GetInstance().Reg(Qt::RightButton, (void*)this->GetOGLW(), EventMngr::MOUSE_PRESS, MRB_PressOp);
 
 	// lock mouse and rotate camera
 	auto mouseMoveOp = ToPtr(new LambdaOp([this]() {
@@ -89,7 +89,7 @@ void Roamer::ListenerInit() {
 
 		QCursor::setPos(pOGWL->mapToGlobal(QPoint(lockX, lockY)));
 	}));
-	EventMngr::GetInstance().Reg(::Qt::NoButton, (void*)this->GetOGLW(), EventMngr::MOUSE_MOVE, mouseMoveOp);
+	EventMngr::GetInstance().Reg(Qt::NoButton, (void*)this->GetOGLW(), EventMngr::MOUSE_MOVE, mouseMoveOp);
 
 	// release mouse cursor
 	auto MRB_ReleaseOp = ToPtr(new LambdaOp([this]() {
@@ -104,7 +104,7 @@ void Roamer::ListenerInit() {
 
 		QApplication::restoreOverrideCursor();
 	}));
-	EventMngr::GetInstance().Reg(::Qt::RightButton, (void*)this->GetOGLW(), EventMngr::MOUSE_RELEASE, MRB_ReleaseOp);
+	EventMngr::GetInstance().Reg(Qt::RightButton, (void*)this->GetOGLW(), EventMngr::MOUSE_RELEASE, MRB_ReleaseOp);
 
 	// wheel
 	auto wheelOp = ToPtr(new LambdaOp([this]() {
@@ -118,10 +118,10 @@ void Roamer::ListenerInit() {
 		this->GetCamera()->ProcessMouseScroll(angle*0.1f);
 		UpdateCamera();
 	}));
-	EventMngr::GetInstance().Reg(::Qt::NoButton, (void*)this->GetOGLW(), EventMngr::MOUSE_WHEEL, wheelOp);
+	EventMngr::GetInstance().Reg(Qt::NoButton, (void*)this->GetOGLW(), EventMngr::MOUSE_WHEEL, wheelOp);
 
 	// Move
-	size_t moveKey[] = { ::Qt::Key_W, ::Qt::Key_S, ::Qt::Key_A, ::Qt::Key_D, ::Qt::Key_Q, ::Qt::Key_E };
+	size_t moveKey[] = {Qt::Key_W,Qt::Key_S,Qt::Key_A,Qt::Key_D,Qt::Key_Q,Qt::Key_E };
 	for (size_t i = 0; i < 6; i++) {
 		auto op = ToPtr(new LambdaOp([this, moveKey, i]() {
 			if (this->lock)

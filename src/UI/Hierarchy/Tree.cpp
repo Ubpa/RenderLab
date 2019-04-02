@@ -22,7 +22,6 @@
 using namespace Ui;
 using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
-using namespace glm;
 using namespace std;
 
 Tree::Tree(QWidget *parent)

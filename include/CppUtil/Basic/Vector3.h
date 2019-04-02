@@ -10,7 +10,7 @@ namespace CppUtil {
 		class Vector<3, T> : public Val<3, T> {
 		public:
 			using Val<3, T>::Val;
-			
+
 		public:
 			T Length2() const { return x * x + y * y + z * z; }
 			T Length() const { return std::sqrt(Length2()); }
@@ -34,20 +34,24 @@ namespace CppUtil {
 			}
 
 			const Vector Norm() const {
+				assert(Length() != static_cast<T>(0));
 				return *this / Length();
 			}
 
 			Vector & NormSelf() {
+				assert(Length() != static_cast<T>(0));
 				(*this) /= Length();
 				return *this;
 			}
 
 		public:
-			const Vector operator+(const Vector &v) const {
+			template<typename U>
+			const Vector operator+(const Vector<valNum, U> &v) const {
 				return Vector(x + v.x, y + v.y, z + v.z);
 			}
 
-			Vector & operator+=(const Vector &v) {
+			template<typename U>
+			Vector & operator+=(const Vector<valNum, U> &v) {
 				x += v.x;
 				y += v.y;
 				z += v.z;
@@ -67,11 +71,13 @@ namespace CppUtil {
 
 			const Vector operator-() const { return Vector(-x, -y, -z); }
 
-			const Vector operator-(const Vector &v) const {
+			template<typename U>
+			const Vector operator-(const Vector<valNum, U> &v) const {
 				return Vector(x - v.x, y - v.y, z - v.z);
 			}
 
-			Vector & operator-=(const Vector &v) {
+			template<typename U>
+			Vector & operator-=(const Vector<valNum, U> &v) {
 				x -= v.x;
 				y -= v.y;
 				z -= v.z;
@@ -102,18 +108,52 @@ namespace CppUtil {
 				return *this;
 			}
 
+			template<typename U>
+			const Vector operator*(const Vector<valNum, U> & rhs) const {
+				return Vector(x*rhs.x, y*rhs.y, z*rhs.z);
+			}
+
+			template<typename U>
+			Vector & operator*=(const Vector<valNum, U> & rhs) const {
+				x *= rhs.x;
+				y *= rhs.y;
+				z *= rhs.z;
+				return *this;
+			}
+
 			template <typename U>
 			const Vector operator/(U f) const {
+				assert(f != static_cast<U>(0));
 				const float inv = (float)1 / f;
 				return Vector(x * inv, y * inv, z * inv);
 			}
 
 			template <typename U>
 			Vector & operator/=(U f) {
+				assert(f != static_cast<U>(0));
 				const float inv = (float)1 / f;
 				x *= inv;
 				y *= inv;
 				z *= inv;
+				return *this;
+			}
+
+			template<typename U>
+			const Vector operator/(const Vector<valNum, U> & rhs) const {
+				assert(rhs.x != static_cast<U>(0));
+				assert(rhs.y != static_cast<U>(0));
+				assert(rhs.z != static_cast<U>(0));
+				return Vector(x / rhs.x, y / rhs.y, z / rhs.z);
+			}
+
+			template<typename U>
+			Vector & operator/=(const Vector<valNum, U> & rhs) const {
+				assert(rhs.x != static_cast<U>(0));
+				assert(rhs.y != static_cast<U>(0));
+				assert(rhs.z != static_cast<U>(0));
+				x /= rhs.x;
+				y /= rhs.y;
+				z /= rhs.z;
 				return *this;
 			}
 		};

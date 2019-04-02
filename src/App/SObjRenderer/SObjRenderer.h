@@ -21,7 +21,7 @@ namespace CppUtil {
 		class PathTracer;
 	}
 
-	namespace Qt {
+	namespace QT {
 		class OpThread;
 	}
 }
@@ -66,12 +66,12 @@ private:
 
 private:
 	Ui::SObjRendererClass ui;
-	CppUtil::Basic::Ptr<CppUtil::Qt::PaintImgOpCreator::PaintImgOp> paintImgOp;
+	CppUtil::Basic::Ptr<CppUtil::QT::PaintImgOpCreator::PaintImgOp> paintImgOp;
 	CppUtil::Basic::Ptr<CppUtil::Engine::Scene> scene;
 	CppUtil::Basic::Ptr<CppUtil::Engine::Viewer> viewer;
 	CppUtil::Basic::Ptr<CppUtil::Engine::RTX_Renderer> rtxRenderer;
 	CppUtil::Basic::Ptr<CppUtil::Engine::PathTracer> pathTracer;
-	CppUtil::Basic::Ptr<CppUtil::Qt::OpThread> drawImgThread;
+	CppUtil::Basic::Ptr<CppUtil::QT::OpThread> drawImgThread;
 	QTimer * timer;
 
 private:

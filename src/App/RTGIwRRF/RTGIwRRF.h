@@ -23,7 +23,7 @@ namespace CppUtil {
 		class PathTracer;
 	}
 
-	namespace Qt {
+	namespace QT {
 		class OpThread;
 	}
 }
@@ -53,7 +53,7 @@ namespace App{
 
 	private:
 		Ui::RTGIwRRFClass ui;
-		CppUtil::Basic::Ptr<CppUtil::Qt::PaintImgOpCreator::PaintImgOp> paintImgOp;
+		CppUtil::Basic::Ptr<CppUtil::QT::PaintImgOpCreator::PaintImgOp> paintImgOp;
 		CppUtil::Basic::Ptr<CppUtil::Engine::Scene> scene;
 		CppUtil::Basic::Ptr<App::RRF_Raster> rrfRaster;
 		CppUtil::Basic::Ptr<CppUtil::Engine::Roamer> roamer;

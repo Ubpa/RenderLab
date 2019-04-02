@@ -28,7 +28,6 @@ using namespace Ui;
 using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
 using namespace CppUtil::Basic::Math;
-using namespace glm;
 using namespace std;
 
 class Attribute::ComponentVisitor : public EleVisitor {

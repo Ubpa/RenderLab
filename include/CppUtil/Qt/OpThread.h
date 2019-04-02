@@ -12,7 +12,7 @@ namespace CppUtil {
 		class Operation;
 	}
 
-	namespace Qt {
+	namespace QT {
 		class OpThread : public QThread, public Basic::HeapObj {
 			Q_OBJECT
 

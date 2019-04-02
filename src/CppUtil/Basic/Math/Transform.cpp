@@ -8,6 +8,10 @@ using namespace CppUtil;
 using namespace CppUtil::Basic;
 using namespace CppUtil::Basic::Math;
 
+void Transform::Init(const Point3 & pos, const Vec3 & scale, const Quatf & rot) {
+	(*this) = Translate(pos) * Scale(scale) * Rotate(rot);
+}
+
 const Point3 Transform::operator()(const Point3 & p) const {
 	float x = p.x, y = p.y, z = p.z;
 	float xp = m(0, 0) * x + m(0, 1) * y + m(0, 2) * z + m(0, 3);
@@ -177,7 +181,6 @@ const Transform Transform::Rotate(const Vec3 &axis, const float theta) {
 	m(2, 2) = a.z * a.z * (1 - cosTheta) + cosTheta;
 	m(2, 3) = 0;
 	return Transform(m, m.Transpose());
-
 }
 
 const Transform Transform::LookAt(const Point3 &pos, const Point3 &target, const Vec3 &up) {

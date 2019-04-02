@@ -21,12 +21,23 @@ namespace CppUtil {
 			Transform(const float mat[4][4]) : m(Mat4f(mat)), mInv(m.Inverse()) { }
 			Transform(const Mat4f & m) : m(m), mInv(m.Inverse()) { }
 			Transform(const Mat4f & m, const Mat4f & mInv) : m(m), mInv(mInv) {}
+			Transform(const Point3 & pos, const Vec3 & scale = Vec3f(1.0f), const Quatf & rot = Quatf()) { Init(pos, scale, rot); }
+			Transform(const Point3 & pos, const Vec3 & scale, const Vec3 & axis, float theta) { Init(pos, scale, axis, theta); }
+			Transform(const Point3 & pos, const Vec3 & scale, const EulerYXZf & euler) { Init(pos, scale, euler); }
 
 		public:
 			const Mat4f & GetMatrix() const { return m; }
 			const Mat4f & GetInverseMatrix() const { return mInv; }
 
 		public:
+			void Init(const Point3 & pos, const Vec3 & scale = Vec3f(1.0f), const Quatf & rot = Quatf());
+			void Init(const Point3 & pos, const Vec3 & scale, const Vec3 & axis, float theta) {
+				Init(pos, scale, Quatf(axis, theta));
+			}
+			void Init(const Point3 & pos, const Vec3 & scale, const EulerYXZf & euler) {
+				Init(pos, scale, euler.ToQuat());
+			}
+
 			const Transform Inverse() const {
 				return Transform(mInv, m);
 			}

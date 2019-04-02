@@ -4,7 +4,7 @@
 
 #include <QMetaType>
 
-using namespace CppUtil::Qt;
+using namespace CppUtil::QT;
 using namespace CppUtil::Basic;
 using namespace std;
 

@@ -2,19 +2,18 @@
 #define _BASIC_IMAGE_IMG_PIXEL_SET_H_
 
 #include <CppUtil/Basic/RandSet.h>
-
-#include <glm/glm.hpp>
+#include <CppUtil/Basic/Point2.h>
 
 namespace CppUtil {
 	namespace Basic {
-		class ImgPixelSet : public RandSet<glm::uvec2>{
+		class ImgPixelSet : public RandSet<CppUtil::Point2ui>{
 		public:
 			ImgPixelSet();
 			ImgPixelSet(size_t width, size_t height);
 
-			using RandSet<glm::uvec2>::RandPick;
-			std::vector<glm::uvec2> RandPick(size_t n);
-			std::vector<glm::uvec2> PickAll();
+			using RandSet<CppUtil::Point2ui>::RandPick;
+			std::vector<CppUtil::Point2ui> RandPick(size_t n);
+			std::vector<CppUtil::Point2ui> PickAll();
 		};
 	}
 }

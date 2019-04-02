@@ -3,7 +3,7 @@
 #include <CppUtil/Engine/Scene.h>
 #include <CppUtil/Engine/SObj.h>
 #include <CppUtil/Engine/RayTracer.h>
-#include <CppUtil/Engine/Camera.h>
+#include <CppUtil/Engine/CmptCamera.h>
 #include <CppUtil/Engine/SObj.h>
 #include <CppUtil/Engine/Ray.h>
 
@@ -22,9 +22,9 @@
 #endif //  NDEBUG
 
 using namespace App;
+using namespace CppUtil;
 using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
-using namespace glm;
 using namespace std;
 
 RTX_Sampler::RTX_Sampler(const function<RayTracer::Ptr()> & generator, int maxLoop, int sampleNum)
@@ -41,7 +41,7 @@ RTX_Sampler::RTX_Sampler(const function<RayTracer::Ptr()> & generator, int maxLo
 }
 
 void RTX_Sampler::Run(Scene::Ptr scene, Image::Ptr img) {
-	const float lightNum = static_cast<float>(scene->GetLights().size());
+	const float lightNum = static_cast<float>(scene->GetCmptLights().size());
 
 	jobs.clear();
 
@@ -51,7 +51,7 @@ void RTX_Sampler::Run(Scene::Ptr scene, Image::Ptr img) {
 
 	for (int i = 0; i < w; i++) {
 		for (int j = 0; j < h; j++)
-			img->SetPixel(i, j, vec3(0));
+			img->SetPixel(i, j, RGBf(0));
 	}
 
 	// init ray tracer
@@ -59,25 +59,23 @@ void RTX_Sampler::Run(Scene::Ptr scene, Image::Ptr img) {
 		rayTracer->Init(scene);
 
 	// init camera
-	auto camera = scene->GetCamera();
+	auto camera = scene->GetCmptCamera();
 	if (camera == nullptr) {
 		printf("ERROR: no camera\n");
 		return;
 	}
-	camera->SetAspectRatio(w, h);
+	camera->SetAspectRatioWH(w, h);
 	camera->InitCoordinate();
 
 	// jobs
-	vector<vector<vec3>> fimg(w, vector<vec3>(h, vec3(0)));
+	vector<vector<RGBf>> fimg(w, vector<RGBf>(h, RGBf(0)));
 
 	ImgPixelSet pixelsSet(w, h);
 	for (int i = 0; i < threadNum; i++)
 		jobs.push_back(pixelsSet.RandPick(sampleNum / threadNum));
 
 	// rays
-	vector<Ray::Ptr> rays;
-	for (int i = 0; i < threadNum; i++)
-		rays.push_back(ToPtr(new Ray));
+	vector<ERay> rays(threadNum);
 
 	auto renderPartImg = [&](int id) {
 		auto & ray = rays[id];
@@ -93,10 +91,10 @@ void RTX_Sampler::Run(Scene::Ptr scene, Image::Ptr img) {
 				float v = (y + Math::Rand_F()) / (float)h;
 
 				camera->SetRay(ray, u, v);
-				vec3 rst = rayTracer->Trace(ray);
+				RGBf rst = rayTracer->Trace(ray);
 
 				// 这一步可以极大的减少白噪点（特别是由点光源产生）
-				float illum = Math::Illum(rst);
+				float illum = rst.Illumination();
 				if (illum > lightNum)
 					rst *= lightNum / illum;
 

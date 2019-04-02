@@ -1,4 +1,4 @@
-#include <CppUtil/Engine/Camera.h>
+#include <CppUtil/Engine/CmptCamera.h>
 #include <CppUtil/Engine/SObj.h>
 
 #include <CppUtil/Basic/Math.h>
@@ -8,14 +8,13 @@
 
 using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
-using namespace glm;
 using namespace std;
 
 int main() {
 	SObj::Ptr sobj1 = ToPtr(new SObj(nullptr, "sobj_test"));
 
 	cout << "new camera2, not attach" << endl;
-	Camera::Ptr camera2 = ToPtr(new Camera(nullptr));
+	CmptCamera::Ptr camera2 = ToPtr(new CmptCamera(nullptr));
 	cout << "camera2 have " << (camera2->GetSObj() ? "" : "not ") << "sobj." << endl;
 
 	{
@@ -26,11 +25,11 @@ int main() {
 		cout << "sobj1 have " << sobj1->GetAllComponents().size() << " components." << endl;
 
 		cout << "camera0 attach to sobj1" << endl;
-		Camera::Ptr camera0 = ToPtr(new Camera(sobj1));
+		CmptCamera::Ptr camera0 = ToPtr(new CmptCamera(sobj1));
 
 		cout << "camera1 attach to sobj1" << endl;
 		// 因为 sobj1 只能有一个 camera component，所以先会跟 camera0 解绑定
-		Camera::Ptr camera1 = ToPtr(new Camera(sobj1));
+		CmptCamera::Ptr camera1 = ToPtr(new CmptCamera(sobj1));
 
 		cout << "camera0 have " << (camera0->GetSObj() ? "" : "not ") << "sobj." << endl;
 		cout << "camera1 have " << (camera1->GetSObj() ? "" : "not ") << "sobj." << endl;
@@ -40,7 +39,7 @@ int main() {
 		cout << "datach camera1" << endl;
 		camera1->Detach();
 		cout << "camera1 have " << (camera1->GetSObj() ? "" : "not ") << "sobj." << endl;
-		cout << "sobj1 have " << (sobj1->GetComponent<Camera>() ? "" : "not ") << "a [ Camera ] component." << endl;
+		cout << "sobj1 have " << (sobj1->GetComponent<CmptCamera>() ? "" : "not ") << "a [ Camera ] component." << endl;
 
 
 		cout << "camera2 attach to sobj2" << endl;

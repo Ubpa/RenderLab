@@ -30,7 +30,7 @@
 
 using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
-using namespace CppUtil::Qt;
+using namespace CppUtil::QT;
 using namespace std;
 using namespace Ui;
 
