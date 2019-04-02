@@ -81,11 +81,11 @@ namespace CppUtil {
 			}
 
 			const RGBAf SampleNearest(float u, float v) const;
-			const RGBAf SampleNearest(const Point2f & texcoord) const {
+			const RGBAf SampleNearest(const Point2 & texcoord) const {
 				return SampleNearest(texcoord.x, texcoord.y);
 			}
 			const RGBAf SampleBilinear(float u, float v) const;
-			const RGBAf SampleBilinear(const Point2f & texcoord) const {
+			const RGBAf SampleBilinear(const Point2 & texcoord) const {
 				return SampleBilinear(texcoord.x, texcoord.y);
 			}
 			enum Mode {
@@ -105,7 +105,7 @@ namespace CppUtil {
 					return RGBAf(0.f);
 				}
 			}
-			const RGBAf Sample(const Point2f & texcoord, Mode mode) const {
+			const RGBAf Sample(const Point2 & texcoord, Mode mode) const {
 				return Sample(texcoord.x, texcoord.y, mode);
 			}
 

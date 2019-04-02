@@ -12,7 +12,7 @@ namespace CppUtil {
 		public:
 			// primitive 局部坐标系内的 bbox
 			const BBoxf GetBBox() const {
-				return BBoxf(Pointf(-0.5f, -0.000001f, -0.5f), Pointf(0.5f, 0.000001f, 0.5f));
+				return BBoxf(Point3(-0.5f, -0.000001f, -0.5f), Point3(0.5f, 0.000001f, 0.5f));
 			}
 		};
 	}

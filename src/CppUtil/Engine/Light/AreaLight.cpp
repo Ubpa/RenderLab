@@ -1,18 +1,17 @@
 #include <CppUtil/Engine/AreaLight.h>
-#include <CppUtil/Basic/Vector2.h>
 
 using namespace CppUtil;
 using namespace CppUtil::Engine;
 using namespace glm;
 
-RGBf AreaLight::Sample_L(const Pointf & p, Normalf & wi, float & distToLight, float & PD) const {
+RGBf AreaLight::Sample_L(const Point3 & p, Normalf & wi, float & distToLight, float & PD) const {
 	if (p.y >= 0) {
 		PD = 0;
 		return RGBf(0);
 	}
 
-	Point2f sample = sampler.GetSample() - Point2f(0.5f, 0.5f);
-	Pointf posOnLight(sample.x*width / 2, 0, sample.y*height / 2);
+	Point2 sample = Point2(sampler.GetSample()) - Point2(0.5f, 0.5f);
+	Point3 posOnLight(sample.x*width / 2, 0, sample.y*height / 2);
 
 	const auto d = posOnLight - p;
 	const float sqDist = d.Length2();
@@ -26,8 +25,8 @@ RGBf AreaLight::Sample_L(const Pointf & p, Normalf & wi, float & distToLight, fl
 	return intensity * color;
 }
 
-float AreaLight::PDF(const Pointf & p, const Normalf & wi) const {
-	Pointf posOnLight;
+float AreaLight::PDF(const Point3 & p, const Normalf & wi) const {
+	Point3 posOnLight;
 	if (!Hit(p, wi, posOnLight))
 		return 0;
 	
@@ -39,8 +38,8 @@ float AreaLight::PDF(const Pointf & p, const Normalf & wi) const {
 	return sqDist / (area * cosTheta);
 }
 
-RGBf AreaLight::GetL(const Pointf & p, const Vectorf & dirToLight, float & distToLight) {
-	Pointf posOnLight;
+RGBf AreaLight::GetL(const Point3 & p, const Vec3 & dirToLight, float & distToLight) {
+	Point3 posOnLight;
 	if (!Hit(p, dirToLight, posOnLight))
 		return RGBf(0);
 
@@ -50,11 +49,11 @@ RGBf AreaLight::GetL(const Pointf & p, const Vectorf & dirToLight, float & distT
 	return intensity * color;
 }
 
-RGBf AreaLight::GetMaxL(const Pointf & p) const {
+RGBf AreaLight::GetMaxL(const Point3 & p) const {
 	return p.y < 0 ? intensity * color : RGBf(0);
 }
 
-bool AreaLight::Hit(const Pointf & p, const Vectorf & dirToLight, Pointf & hitPos) const {
+bool AreaLight::Hit(const Point3 & p, const Vec3 & dirToLight, Point3 & hitPos) const {
 	if (p.y >= 0 || dirToLight.y < 0)
 		return false;
 
@@ -67,7 +66,7 @@ bool AreaLight::Hit(const Pointf & p, const Vectorf & dirToLight, Pointf & hitPo
 	if (z >= height / 2 || z <= -height / 2)
 		return false;
 
-	hitPos = Pointf(x, 0, z);
+	hitPos = Point3(x, 0, z);
 
 	return true;
 }

@@ -7,7 +7,7 @@ using namespace CppUtil::Engine;
 using namespace CppUtil::Basic::Math;
 
 
-const RGBf BSDF_Mirror::Sample_f(const Normalf & wo, const Point2f & texcoord, Normalf & wi, float & PD) {
+const RGBf BSDF_Mirror::Sample_f(const Normalf & wo, const Point2 & texcoord, Normalf & wi, float & PD) {
 	wi = LocalReflect(wo);
 
 	// delta

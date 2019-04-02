@@ -41,24 +41,24 @@ namespace CppUtil {
 
 			const RGBf SampleLight(
 				Ray & ray,
-				const Pointf & posInWorldSpace,
-				const std::vector<Pointf> & posInLightSpaceVec,
+				const Point3 & posInWorldSpace,
+				const std::vector<Point3> & posInLightSpaceVec,
 				const Mat3f & worldToSurface,
 				Basic::Ptr<BSDF> bsdf,
 				const Normalf & w_out,
-				const Point2f & texcoord,
+				const Point2 & texcoord,
 				SampleLightMode mode
 			) const;
 
 			const RGBf SampleLightImpl(
 				Ray & ray,
 				int lightID,
-				const Pointf & posInWorldSpace,
-				const Pointf & posInLightSpace,
+				const Point3 & posInWorldSpace,
+				const Point3 & posInLightSpace,
 				const Mat3f & worldToSurface,
 				Basic::Ptr<BSDF> bsdf,
 				const Normalf & w_out,
-				const Point2f & texcoord,
+				const Point2 & texcoord,
 				float factorPD
 			) const;
 
@@ -67,10 +67,10 @@ namespace CppUtil {
 				SampleLightMode mode,
 				const Normalf & w_out,
 				const Mat3f & surfaceToWorld,
-				const Point2f & texcoord,
-				const std::vector<Pointf> & posInLightSpaceVec,
+				const Point2 & texcoord,
+				const std::vector<Point3> & posInLightSpaceVec,
 				Ray & ray,
-				const Pointf & hitPos,
+				const Point3 & hitPos,
 				int depth,
 				RGBf pathThroughput
 			);

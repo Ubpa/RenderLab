@@ -68,10 +68,10 @@ const RGBf PathTracer::Trace(Engine::Ray & ray, int depth, RGBf pathThroughput) 
 		*/
 	}
 
-	const Pointf hitPos = ray.EndPos();
+	const Point3 hitPos = ray.EndPos();
 
 	const size_t lightNum = lights.size();
-	vector<Pointf> posInLightSpaceVec(lightNum);
+	vector<Point3> posInLightSpaceVec(lightNum);
 
 	for (size_t i = 0; i < lightNum; i++)
 		posInLightSpaceVec[i] = worldToLightVec[i](hitPos);
@@ -113,12 +113,12 @@ const RGBf PathTracer::Trace(Engine::Ray & ray, int depth, RGBf pathThroughput) 
 const RGBf PathTracer::SampleLightImpl(
 	Engine::Ray & ray,
 	const int lightID,
-	const Pointf & posInWorldSpace,
-	const Pointf & posInLightSpace,
+	const Point3 & posInWorldSpace,
+	const Point3 & posInLightSpace,
 	const Mat3f & worldToSurface,
 	const Basic::Ptr<BSDF> bsdf,
 	const Normalf & w_out,
-	const Point2f & texcoord,
+	const Point2 & texcoord,
 	const float factorPD
 ) const
 {
@@ -172,12 +172,12 @@ const RGBf PathTracer::SampleLightImpl(
 
 const RGBf PathTracer::SampleLight(
 	Engine::Ray & ray,
-	const Pointf & posInWorldSpace,
-	const std::vector<Pointf> & posInLightSpaceVec,
+	const Point3 & posInWorldSpace,
+	const std::vector<Point3> & posInLightSpaceVec,
 	const Mat3f & worldToSurface,
 	const Basic::Ptr<BSDF> bsdf,
 	const Normalf & w_out,
-	const Point2f & texcoord,
+	const Point2 & texcoord,
 	const SampleLightMode mode
 ) const
 {
@@ -212,10 +212,10 @@ const RGBf PathTracer::SampleBSDF(
 	const SampleLightMode mode,
 	const Normalf & w_out,
 	const Mat3f & surfaceToWorld,
-	const Point2f & texcoord,
-	const std::vector<Pointf> & posInLightSpaceVec,
+	const Point2 & texcoord,
+	const std::vector<Point3> & posInLightSpaceVec,
 	Engine::Ray & ray,
-	const Pointf & hitPos,
+	const Point3 & hitPos,
 	const int depth,
 	RGBf pathThroughput
 )

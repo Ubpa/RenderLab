@@ -10,6 +10,7 @@ namespace CppUtil {
 	namespace Basic {
 		namespace Math {
 			constexpr float EPSILON = 1e-6f;
+
 			constexpr float PI = 3.14159265358979323f;
 			constexpr float INV_PI = 0.318309886183790672f;
 
@@ -21,6 +22,7 @@ namespace CppUtil {
 			inline float Radians(const float degree) {
 				return (PI / 180.f) * degree;
 			}
+
 			inline float Degrees(const float radians) {
 				return (180.f / PI) * radians;
 			}
@@ -28,6 +30,15 @@ namespace CppUtil {
 			template <typename T> T sgn(T val) {
 				return static_cast<T>((static_cast<T>(0) < val) - (val < static_cast<T>(0)));
 			}
+
+			template<typename T>
+			T ToZero(T val, T bound = static_cast<T>(0.000001)) {
+				if (val<bound && val > -bound)
+					return static_cast<T>(0);
+				else
+					return val;
+			}
+			
 
 			glm::vec2 RandInCircle();
 

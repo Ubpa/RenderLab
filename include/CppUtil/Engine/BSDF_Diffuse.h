@@ -17,17 +17,17 @@ namespace CppUtil {
 			BSDF_Diffuse(const RGBf & colorFactor = RGBf(1))
 				: colorFactor(colorFactor), albedoTexture(nullptr) { }
 
-			virtual const RGBf F(const Normalf & wo, const Normalf & wi, const Point2f & texcoord);
+			virtual const RGBf F(const Normalf & wo, const Normalf & wi, const Point2 & texcoord);
 
 			// probability density function
-			virtual float PDF(const Normalf & wo, const Normalf & wi, const Point2f & texcoord);
+			virtual float PDF(const Normalf & wo, const Normalf & wi, const Point2 & texcoord);
 
 			// PD is probability density
 			// return albedo
-			virtual const RGBf Sample_f(const Normalf & wo, const Point2f & texcoord, Normalf & wi, float & PD);
+			virtual const RGBf Sample_f(const Normalf & wo, const Point2 & texcoord, Normalf & wi, float & PD);
 
 		private:
-			const RGBf GetAlbedo(const Point2f & texcoord) const;
+			const RGBf GetAlbedo(const Point2 & texcoord) const;
 
 		public:
 			RGBf colorFactor;

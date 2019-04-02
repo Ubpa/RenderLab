@@ -124,7 +124,7 @@ void VisibilityChecker::Visit(Sphere::Ptr sphere) {
 	const auto & dir = ray.d;
 	const auto & origin = ray.o;
 
-	const Vectorf oc = origin;
+	const Vec3 oc = origin;
 	const float a = dir.Dot(dir);
 	const float b = oc.Dot(dir);
 	const float c = oc.Dot(oc) - 1;

@@ -10,7 +10,7 @@ namespace CppUtil {
 			ELE_SETUP(Sphere)
 		public:
 			const BBoxf GetBBox() const {
-				return BBoxf(Pointf(-1.f), Pointf(1.f));
+				return BBoxf(Point3(-1.f), Point3(1.f));
 			}
 		};
 	}

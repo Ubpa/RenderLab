@@ -1,50 +1,16 @@
 #ifndef _CPPUTIL_BASIC_MATH_RGB_H_
 #define _CPPUTIL_BASIC_MATH_RGB_H_
 
-#include <iostream>
+#include <CppUtil/Basic/Val3.h>
 
 namespace CppUtil {
 	namespace Basic {
 		template<typename T>
-		class Val2;
-		template<typename T>
-		class Val3;
-		template<typename T>
-		class Val4;
-
-		template<typename T>
-		class RGB {
+		class RGB : public Val<3, T> {
 		public:
-			template<typename U, typename V, typename W>
-			RGB(U r, V g, W b) :
-				r(static_cast<T>(r)),
-				g(static_cast<T>(g)),
-				b(static_cast<T>(b)) { }
-
-			explicit RGB(T val) : RGB(val, val, val) { }
-
-			RGB() : RGB(static_cast<T>(0)) { }
-
-			template<typename U, typename V>
-			RGB(const Val2<U> & val2, V b) : RGB(val2.x, val2.y, b) { }
-
-			template<typename U, typename V>
-			RGB(U r, const Val2<V> & val2) : RGB(r, val2.x, val2.y) { }
-
-			template<typename U>
-			RGB(const Val3<U> & val3) : RGB(val3.x, val3.y, val3.z) { }
-
-			template<typename U>
-			RGB(const Val4<U> & val4) : RGB(val4.x, val4.y, val4.z) { }
-
+			using Val<3, T>::Val;
 
 		public:
-			T operator[](int i)const { return _data[i]; }
-			T & operator[](int i) { return _data[i]; }
-
-		public:
-			bool HasNaN() const { return isnan(r) || isnan(g) || isnan(b); }
-
 			T Illumination() const { return static_cast<T>(0.2126) *r + static_cast<T>(0.7152) * g + static_cast<T>(0.0722) * b; }
 
 			static const RGB Lerp(const RGB & c0, const RGB & c1, float t) {
@@ -55,14 +21,14 @@ namespace CppUtil {
 			}
 
 		public:
-			const RGB operator+(const RGB &v) const {
-				return RGB(r + v.r, g + v.g, b + v.b);
+			const RGB operator+(const RGB & rgb) const {
+				return RGB(r + rgb.r, g + rgb.g, b + rgb.b);
 			}
 
-			RGB & operator+=(const RGB &v) {
-				r += v.r;
-				g += v.g;
-				b += v.b;
+			RGB & operator+=(const RGB & rgb) {
+				r += rgb.r;
+				g += rgb.g;
+				b += rgb.b;
 				return *this;
 			}
 
@@ -79,14 +45,14 @@ namespace CppUtil {
 
 			const RGB operator-() const { return RGB(-r, -g, -b); }
 
-			const RGB operator-(const RGB &v) const {
-				return RGB(r - v.r, g - v.g, b - v.b);
+			const RGB operator-(const RGB & rgb) const {
+				return RGB(r - rgb.r, g - rgb.g, b - rgb.b);
 			}
 
-			RGB & operator-=(const RGB &v) {
-				r -= v.r;
-				g -= v.g;
-				b -= v.b;
+			RGB & operator-=(const RGB &rgb) {
+				r -= rgb.r;
+				g -= rgb.g;
+				b -= rgb.b;
 				return *this;
 			}
 
@@ -137,37 +103,21 @@ namespace CppUtil {
 				b *= inv;
 				return *this;
 			}
-
-		public:
-			union
-			{
-				T _data[3];
-				struct
-				{
-					T r, g, b;
-				};
-			};
 		};
 
-		template<typename T>
-		std::ostream & operator<<(std::ostream & os, const RGB<T> & rgb) {
-			os << "[" << rgb.r << ", " << rgb.g << ", " << rgb.b << "]";
-			return os;
-		}
-
-		template<typename U, typename V>
-		const RGB<U> operator*(V k, const RGB<U> & rgb) {
-			return rgb * k;
-		}
-
-		template<typename U, typename V>
-		const RGB<U> operator+(V k, const RGB<U> & rgb) {
+		template<typename T, typename U>
+		const RGB<T> operator+(U k, const RGB<T> & rgb) {
 			return rgb + k;
 		}
 
-		template<typename U, typename V>
-		const RGB<U> operator-(V k, const RGB<U> & rgb) {
-			return rgb - k;
+		template<typename T, typename U>
+		const RGB<T> operator-(U k, const RGB<T> & rgb) {
+			return -rgb + k;
+		}
+
+		template<typename T, typename U>
+		const RGB<T> operator*(U k, const RGB<T> & rgb) {
+			return rgb * k;
 		}
 	}
 

@@ -43,8 +43,8 @@ bool RayIntersector::Intersect(const BBoxf & bbox) {
 }
 
 bool RayIntersector::Intersect(const BBoxf & bbox, float & t0, float & t1) {
-	const Pointf origin = ray.o;
-	const Vectorf dir = ray.d;
+	const Point3 origin = ray.o;
+	const Vec3 dir = ray.d;
 	const Val3f invDir = ray.InvDir();
 	float tMin = ray.tMin;
 	float tMax = ray.tMax;
@@ -153,7 +153,7 @@ void RayIntersector::Visit(Sphere::Ptr sphere) {
 	const auto & dir = ray.d;
 	const auto & origin = ray.o;
 
-	const Vectorf oc = origin;
+	const Vec3 oc = origin;
 	const float a = dir.Dot(dir);
 	const float b = oc.Dot(dir);
 	const float c = oc.Dot(oc) - 1;
@@ -206,7 +206,7 @@ void RayIntersector::Visit(Plane::Ptr plane) {
 	rst.isIntersect = true;
 	ray.tMax = t;
 	rst.n = Normalf(0, 1, 0);
-	rst.texcoord = Point2f(pos.x + 0.5f, pos.z + 0.5f);
+	rst.texcoord = Point2(pos.x + 0.5f, pos.z + 0.5f);
 	rst.tangent = Normalf(1, 0, 0);
 }
 

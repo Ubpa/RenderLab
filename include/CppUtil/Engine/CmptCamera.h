@@ -47,7 +47,7 @@ namespace CppUtil {
 			struct Coordinate {
 				void Init(const Basic::Transform & tsfm);
 
-				Pointf pos;
+				Point3 pos;
 				Normalf right;
 				Normalf up;
 				Normalf front;

@@ -1,16 +1,16 @@
-#ifndef _CPPUTIL_BASIC_MATH_POINT2_H_
-#define _CPPUTIL_BASIC_MATH_POINT2_H_
+#ifndef _CPPUTIL_BASIC_MATH_POINT3_H_
+#define _CPPUTIL_BASIC_MATH_POINT3_H_
 
-#include <CppUtil/Basic/Val2.h>
+#include <CppUtil/Basic/Val3.h>
 #include <CppUtil/Basic/Point.h>
-#include <CppUtil/Basic/Vector2.h>
+#include <CppUtil/Basic/Vector3.h>
 
 namespace CppUtil {
 	namespace Basic {
 		template <typename T>
-		class Point<2, T> : public Val<2, T> {
+		class Point<3, T> : public Val<3, T> {
 		public:
-			using Val<2, T>::Val;
+			using Val<3, T>::Val;
 
 		public:
 			static float Distance2(const Point & p0, const Point & p1) {
@@ -42,45 +42,47 @@ namespace CppUtil {
 			}
 
 			static Point Min(const Point & p0, const Point & p1) {
-				return Point(std::min(p0.x, p1.x), std::min(p0.y, p1.y))
+				return Point(std::min(p0.x, p1.x), std::min(p0.y, p1.y), std::min(p0.z, p1.z));
 			}
-			static Point MinWith(const Point & p) {
+			const Point MinWith(const Point & p) const{
 				return Min(*this, p);
 			}
 
 			static Point Max(const Point & p0, const Point & p1) {
-				return Point(std::max(p0.x, p1.x), std::max(p0.y, p1.y));
+				return Point(std::max(p0.x, p1.x), std::max(p0.y, p1.y), std::max(p0.z, p1.z));
 			}
-			static Point MaxWith(const Point & p) {
+			const Point MaxWith(const Point & p) const {
 				return Max(*this, p);
 			}
 
 		public:
-			const Vector<2, T> operator-(const Point &p) const {
-				return Vector<2, T>(x - p.x, y - p.y);
+			const Vector<3, T> operator-(const Point &p) const {
+				return Vector<3, T>(x - p.x, y - p.y, z - p.z);
 			}
 
-			const Point operator+(const Vector<2, T> &v) const {
-				return Point(x + v.x, y + v.y);
+			const Point operator+(const Vector<3, T> &v) const {
+				return Point(x + v.x, y + v.y, z + v.z);
 			}
 
-			Point & operator+=(const Vector<2, T> &v) {
+			Point & operator+=(const Vector<3, T> &v) {
 				x += v.x;
 				y += v.y;
+				z += v.z;
 				return *this;
 			}
 
-			const Point operator-(const Vector<2, T> &v) const {
-				return Point(x - v.x, y - v.y);
+			const Point operator-(const Vector<3, T> &v) const {
+				return Point(x - v.x, y - v.y, z - v.z);
 			}
 
-			const Point & operator-=(const Vector<2, T> &v) {
+			const Point & operator-=(const Vector<3, T> &v) {
 				x -= v.x;
 				y -= v.y;
+				z -= v.z;
 				return *this;
 			}
 		};
 	}
 }
 
-#endif // !_CPPUTIL_BASIC_MATH_POINT2_H_
+#endif // !_CPPUTIL_BASIC_MATH_POINT3_H_

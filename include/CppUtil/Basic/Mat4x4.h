@@ -3,10 +3,6 @@
 
 #include <CppUtil/Basic/Error.h>
 #include <CppUtil/Basic/Vector4.h>
-#include <CppUtil/Basic/Mat3x3.h>
-
-#include <iostream>
-#include <algorithm>
 
 namespace CppUtil {
 	namespace Basic {
@@ -26,7 +22,7 @@ namespace CppUtil {
 			explicit Mat4x4(T d = static_cast<T>(1))
 				: Mat4x4(d, d, d, d) { }
 
-			Mat4x4(const Val4<T> & col0, const Val4<T> & col1, const Val4<T> & col2, const Val4<T> & col3)
+			Mat4x4(const Val<4, T> & col0, const Val<4, T> & col1, const Val<4, T> & col2, const Val<4, T> & col3)
 				:m{ col0, col1, col2, col3 } { }
 
 			// mat 为列主序
@@ -44,8 +40,8 @@ namespace CppUtil {
 			{t03, t13, t23, t33} } { }
 
 		public:
-			const Vector4<T> & GetCol(int i) const { return m[i]; }
-			Vector4<T> & GetCol(int i) { return m[i]; }
+			const Vector<4, T> & GetCol(int i) const { return m[i]; }
+			Vector<4, T> & GetCol(int i) { return m[i]; }
 
 			// 列主序
 			T * Data() { return &(m[0][0]); }
@@ -253,10 +249,10 @@ namespace CppUtil {
 			}
 
 			friend std::ostream & operator<<(std::ostream & os, const Mat4x4 & mat) {
-				os << "[" << mat(0, 0) << ", " << mat(0, 1) << ", " << mat(0, 2) << ", " << mat(0, 3) << endl;
-				os << mat(1, 0) << ", " << mat(1, 1) << ", " << mat(1, 2) << ", " << mat(1, 3) << endl;
-				os << mat(2, 0) << ", " << mat(2, 1) << ", " << mat(2, 2) << ", " << mat(2, 3) << endl;
-				os << mat(3, 0) << ", " << mat(3, 1) << ", " << mat(3, 2) << ", " << mat(3, 3) << "]";
+				os << "[" << Math::ToZero(mat(0, 0)) << ", " << Math::ToZero(mat(0, 1)) << ", " << Math::ToZero(mat(0, 2)) << ", " << Math::ToZero(mat(0, 3)) << endl;
+				os << Math::ToZero(mat(1, 0)) << ", " << Math::ToZero(mat(1, 1)) << ", " << Math::ToZero(mat(1, 2)) << ", " << Math::ToZero(mat(1, 3)) << endl;
+				os << Math::ToZero(mat(2, 0)) << ", " << Math::ToZero(mat(2, 1)) << ", " << Math::ToZero(mat(2, 2)) << ", " << Math::ToZero(mat(2, 3)) << endl;
+				os << Math::ToZero(mat(3, 0)) << ", " << Math::ToZero(mat(3, 1)) << ", " << Math::ToZero(mat(3, 2)) << ", " << Math::ToZero(mat(3, 3)) << "]";
 				return os;
 			}
 
@@ -264,7 +260,7 @@ namespace CppUtil {
 			// 列主序
 			// m[i] 为第 i 列
 			// m[i][j] 为第 j 行第 j 列
-			Vector4<T> m[4];
+			Vector<4, T> m[4];
 		};
 	}
 

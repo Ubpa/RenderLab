@@ -11,22 +11,22 @@ namespace CppUtil {
 		public:
 			CmptTransform(Basic::Ptr<SObj> sobj);
 
-			const Pointf & GetPosition() const { return position; }
+			const Point3 & GetPosition() const { return position; }
 			const Quatf & GetRotation() const { return rotation; }
-			const Vectorf & GetScale() const { return scale; }
+			const Vec3 & GetScale() const { return scale; }
 			const Basic::Transform & GetTransform();
 
-			void SetPosition(const Pointf & position);
+			void SetPosition(const Point3 & position);
 			void SetRotation(const Quatf & rotation);
-			void SetScale(const Vectorf & xyz);
+			void SetScale(const Vec3 & xyz);
 			void SetTransform(const Basic::Transform & transform);
 
 		private:
 			void UpdateMat();
 
-			Pointf position;
+			Point3 position;
 			Quatf rotation;
-			Vectorf scale;
+			Vec3 scale;
 
 			bool dirtyTransform;
 			Basic::Transform transform;

@@ -1,50 +1,47 @@
 #ifndef _CPPUTIL_BASIC_MATH_VAL4_H_
 #define _CPPUTIL_BASIC_MATH_VAL4_H_
 
-#include <iostream>
+#include <CppUtil/Basic/Val.h>
+#include <CppUtil/Basic/Vector3.h>
+
 #include <algorithm>
 
 namespace CppUtil {
 	namespace Basic {
 		template <typename T>
-		class Val3;
-		template <typename T>
-		class Val2;
-
-		template <typename T>
-		class Val4 {
+		class Val<4, T> {
 		public:
 			template <typename T1, typename T2, typename T3, typename T4>
-			Val4(T1 x, T2 y, T3 z, T4 w) :
+			Val(T1 x, T2 y, T3 z, T4 w) :
 				x(static_cast<T>(x)),
 				y(static_cast<T>(y)),
 				z(static_cast<T>(z)),
 				w(static_cast<T>(w)) { }
 
-			explicit Val4(T val) : Val4(val, val, val, val) { }
+			explicit Val(T val) : Val(val, val, val, val) { }
 
-			Val4() : Val4(static_cast<T>(0)) { }
-
-			template<typename U, typename V, typename W>
-			Val4(const Val2<U> & xy, V z, W w) : Val4(xy.x, xy.y, z, w) { }
+			Val() : Val(static_cast<T>(0)) { }
 
 			template<typename U, typename V, typename W>
-			Val4(U x, const Val2<V> & yz, W w) : Val4(x, yz.x, yz.y, w) { }
+			Val(const Val<2, U> & xy, V z, W w) : Val(xy.x, xy.y, z, w) { }
 
 			template<typename U, typename V, typename W>
-			Val4(U x, V y, const Val2<W> & zw) : Val4(x, y, zw.x, zw.y) { }
+			Val(U x, const Val<2, V> & yz, W w) : Val(x, yz.x, yz.y, w) { }
+
+			template<typename U, typename V, typename W>
+			Val(U x, V y, const Val<2, W> & zw) : Val(x, y, zw.x, zw.y) { }
 
 			template<typename U, typename V>
-			Val4(const Val2<U> & xy, const Val2<V> & zw) : Val4(xy.x, xy.y, zw.x, zw.y) { }
+			Val(const Val<2, U> & xy, const Val<2, V> & zw) : Val(xy.x, xy.y, zw.x, zw.y) { }
 
 			template<typename U, typename V>
-			Val4(const Val3<U> & xyz, V w) : Val4(xyz.x, xyz.y, xyz.z, w) { }
+			Val(const Val<3, U> & xyz, V w) : Val(xyz.x, xyz.y, xyz.z, w) { }
 
 			template<typename U, typename V>
-			Val4(U x, const Val3<V> & yzw) : Val4(x, yzw.x, yzw.y, yzw.z) { }
+			Val(U x, const Val<3, V> & yzw) : Val(x, yzw.x, yzw.y, yzw.z) { }
 
 			template<typename U>
-			Val4(const Val4<U> & val4) : Val4(val4.x, val4.y, val4.z, val4.w) { }
+			Val(const Val<4, U> & val4) : Val(val4.x, val4.y, val4.z, val4.w) { }
 
 		public:
 			bool HasNaN() const { return std::isnan(x) || std::isnan(y) || std::isnan(z) || std::isnan(w); }
@@ -73,14 +70,14 @@ namespace CppUtil {
 			T operator[](int i) const { return _data[i]; }
 			T & operator[](int i) { return _data[i]; }
 
-			bool operator==(const Val4<T> & rhs) const {
+			bool operator==(const Val & rhs) const {
 				return x == rhs.x && y == rhs.y && z == rhs.z && w == rhs.w;
 			}
-			bool operator!=(const Val4<T> & rhs) const {
+			bool operator!=(const Val & rhs) const {
 				return x != rhs.x || y != rhs.y || z != rhs.z || w != rhs.w;
 			}
 
-			Val4 & operator=(const Val4 & rhs) {
+			Val & operator=(const Val & rhs) {
 				x = rhs.x;
 				y = rhs.y;
 				z = rhs.z;
@@ -93,19 +90,18 @@ namespace CppUtil {
 			{
 				T _data[4];
 				struct {
-					T x, y, z, w;
+					union { T x, r, s; };
+					union { T y, g, t; };
+					union { T z, b, p; };
+					union { T w, a, q; };
+				};
+				struct {
+					Vector<3, T> imag;
+					T real;
 				};
 			};
 		};
-
-		template <typename T>
-		std::ostream & operator<<(std::ostream & os, const Val4<T> & val4) {
-			os << "[" << val4.x << ", " << val4.y << ", " << val4.z << ", " << val4.w << "]";
-			return os;
-		}
 	}
-
-	using Val4f = Basic::Val4<float>;
 }
 
 #endif // !_CPPUTIL_BASIC_MATH_VAL4_H_

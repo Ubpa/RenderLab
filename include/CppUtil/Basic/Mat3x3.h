@@ -2,15 +2,13 @@
 #define _CPPUTIL_BASIC_MATH_MAT_3X3_H_
 
 #include <CppUtil/Basic/Error.h>
-#include <CppUtil/Basic/Vector.h>
-
-#include <iostream>
-#include <algorithm>
+#include <CppUtil/Basic/Point.h>
+#include <CppUtil/Basic/Vector3.h>
 
 namespace CppUtil {
 	namespace Basic {
-		template <typename T>
-		class Point;
+		template<typename T>
+		class Normal;
 
 		template <typename T>
 		class Mat4x4;
@@ -33,7 +31,7 @@ namespace CppUtil {
 			// mat 为列主序
 			explicit Mat3x3(const T mat[3][3]) { memcpy(m, mat, 9 * sizeof(T)); }
 
-			Mat3x3(const Val3<T> & col0, const Val3<T> & col1, const Val3<T> & col2)
+			Mat3x3(const Val<3, T> & col0, const Val<3, T> & col1, const Val<3, T> & col2)
 				:m{ col0, col1, col2 } { }
 
 			Mat3x3(
@@ -53,8 +51,8 @@ namespace CppUtil {
 			} { }
 			
 		public:
-			const Vector<T> & GetCol(int i) const { return m[i]; }
-			Vector<T> & GetCol(int i) { return m[i]; }
+			const Vector<3, T> & GetCol(int i) const { return m[i]; }
+			Vector<3, T> & GetCol(int i) { return m[i]; }
 
 		public:
 			bool IsIdentity() const {
@@ -83,15 +81,15 @@ namespace CppUtil {
 					+ m[2][0] * (m[0][1] * m[1][2] - m[1][1] * m[0][2]));
 
 				Mat3x3 Inverse;
-				Inverse[0][0] = +(m[1][1] * m[2][2] - m[2][1] * m[1][2]) * OneOverDeterminant;
-				Inverse[1][0] = -(m[1][0] * m[2][2] - m[2][0] * m[1][2]) * OneOverDeterminant;
-				Inverse[2][0] = +(m[1][0] * m[2][1] - m[2][0] * m[1][1]) * OneOverDeterminant;
-				Inverse[0][1] = -(m[0][1] * m[2][2] - m[2][1] * m[0][2]) * OneOverDeterminant;
-				Inverse[1][1] = +(m[0][0] * m[2][2] - m[2][0] * m[0][2]) * OneOverDeterminant;
-				Inverse[2][1] = -(m[0][0] * m[2][1] - m[2][0] * m[0][1]) * OneOverDeterminant;
-				Inverse[0][2] = +(m[0][1] * m[1][2] - m[1][1] * m[0][2]) * OneOverDeterminant;
-				Inverse[1][2] = -(m[0][0] * m[1][2] - m[1][0] * m[0][2]) * OneOverDeterminant;
-				Inverse[2][2] = +(m[0][0] * m[1][1] - m[1][0] * m[0][1]) * OneOverDeterminant;
+				Inverse.m[0][0] = +(m[1][1] * m[2][2] - m[2][1] * m[1][2]) * OneOverDeterminant;
+				Inverse.m[1][0] = -(m[1][0] * m[2][2] - m[2][0] * m[1][2]) * OneOverDeterminant;
+				Inverse.m[2][0] = +(m[1][0] * m[2][1] - m[2][0] * m[1][1]) * OneOverDeterminant;
+				Inverse.m[0][1] = -(m[0][1] * m[2][2] - m[2][1] * m[0][2]) * OneOverDeterminant;
+				Inverse.m[1][1] = +(m[0][0] * m[2][2] - m[2][0] * m[0][2]) * OneOverDeterminant;
+				Inverse.m[2][1] = -(m[0][0] * m[2][1] - m[2][0] * m[0][1]) * OneOverDeterminant;
+				Inverse.m[0][2] = +(m[0][1] * m[1][2] - m[1][1] * m[0][2]) * OneOverDeterminant;
+				Inverse.m[1][2] = -(m[0][0] * m[1][2] - m[1][0] * m[0][2]) * OneOverDeterminant;
+				Inverse.m[2][2] = +(m[0][0] * m[1][1] - m[1][0] * m[0][1]) * OneOverDeterminant;
 
 				return Inverse;
 			}
@@ -175,20 +173,24 @@ namespace CppUtil {
 				return rhs;
 			}
 
-			const Point<T> operator*(const Point<T> & p) const {
+			const Val<3, T> operator*(const Val<3, T> & val3) const {
 				const auto & mat = *this;
-				const T x = mat(0, 0)*p.x + mat(0, 1)*p.y + m(0, 2)*p.z;
-				const T y = mat(1, 0)*p.x + mat(1, 1)*p.y + m(1, 2)*p.z;
-				const T z = mat(2, 0)*p.x + mat(2, 1)*p.y + m(2, 2)*p.z;
-				return Point<T>(x, y, z);
+				const T x = mat(0, 0)*val3.x + mat(0, 1)*val3.y + mat(0, 2)*val3.z;
+				const T y = mat(1, 0)*val3.x + mat(1, 1)*val3.y + mat(1, 2)*val3.z;
+				const T z = mat(2, 0)*val3.x + mat(2, 1)*val3.y + mat(2, 2)*val3.z;
+				return Val<3, T>(x, y, z);
 			}
 
-			const Vector<T> operator*(const Vector<T> & v) const {
-				const auto & mat = *this;
-				const T x = mat(0, 0)*v.x + mat(0, 1)*v.y + mat(0, 2)*v.z;
-				const T y = mat(1, 0)*v.x + mat(1, 1)*v.y + mat(1, 2)*v.z;
-				const T z = mat(2, 0)*v.x + mat(2, 1)*v.y + mat(2, 2)*v.z;
-				return Vector<T>(x, y, z);
+			const Point<3, T> operator*(const Point<3, T> & p) const {
+				return (*this)*(static_cast<Val<3, T>>(p));
+			}
+
+			const Vector<3, T> operator*(const Vector<3, T> & v) const {
+				return (*this)*(static_cast<Val<3, T>>(v));
+			}
+
+			const Normal<T> operator*(const Normal<T> & n) const {
+				return (*this)*(static_cast<Val<3, T>>(n));
 			}
 
 			T operator()(int row, int col) const {
@@ -200,9 +202,9 @@ namespace CppUtil {
 			}
 
 			friend std::ostream & operator<<(std::ostream & os, const Mat3x3 & mat) {
-				os << "[" << mat(0, 0) << ", " << mat(0, 1) << ", " << mat(0, 2) << endl;
-				os << mat(1, 0) << ", " << mat(1, 1) << ", " << mat(1, 2) << endl;
-				os << mat(2, 0) << ", " << mat(2, 1) << ", " << mat(2, 2) << "]";
+				os << "[" << Math::ToZero(mat(0, 0)) << ", " << Math::ToZero(mat(0, 1)) << ", " << Math::ToZero(mat(0, 2)) << endl;
+				os << Math::ToZero(mat(1, 0)) << ", " << Math::ToZero(mat(1, 1)) << ", " << Math::ToZero(mat(1, 2)) << endl;
+				os << Math::ToZero(mat(2, 0)) << ", " << Math::ToZero(mat(2, 1)) << ", " << Math::ToZero(mat(2, 2)) << "]";
 				return os;
 			}
 
@@ -210,7 +212,7 @@ namespace CppUtil {
 			// 列主序
 			// m[i] 为第 i 列
 			// m[i][j] 为第 j 行第 j 列
-			Vector<T> m[3];
+			Vector<3, T> m[3];
 		};
 	}
 

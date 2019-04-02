@@ -54,7 +54,7 @@ float BSDF_FrostedGlass::Fr(const Normalf & v, const Normalf & h, float ior) {
 	return R0 + (1 - R0) * pow((1 - cosTheta), 5);
 }
 
-const RGBf BSDF_FrostedGlass::F(const Normalf & wo, const Normalf & wi, const Point2f & texcoord) {
+const RGBf BSDF_FrostedGlass::F(const Normalf & wo, const Normalf & wi, const Point2 & texcoord) {
 	if (wo.z == 0 || wi.z == 0)
 		return RGBf(0.f);
 
@@ -94,7 +94,7 @@ const RGBf BSDF_FrostedGlass::F(const Normalf & wo, const Normalf & wi, const Po
 }
 
 // probability density function
-float BSDF_FrostedGlass::PDF(const Normalf & wo, const Normalf & wi, const Point2f & texcoord) {
+float BSDF_FrostedGlass::PDF(const Normalf & wo, const Normalf & wi, const Point2 & texcoord) {
 	bool isReflect = wo.z * wi.z > 0;
 
 	float roughness = GetRoughness(texcoord);
@@ -129,7 +129,7 @@ float BSDF_FrostedGlass::PDF(const Normalf & wo, const Normalf & wi, const Point
 	return Dh * h.z * dwh_dwi * (isReflect ? fr : 1 - fr);
 }
 
-const RGBf BSDF_FrostedGlass::Sample_f(const Normalf & wo, const Point2f & texcoord, Normalf & wi, float & PD) {
+const RGBf BSDF_FrostedGlass::Sample_f(const Normalf & wo, const Point2 & texcoord, Normalf & wi, float & PD) {
 	float roughness = GetRoughness(texcoord);
 	float alpha = roughness * roughness;
 
@@ -195,33 +195,33 @@ const RGBf BSDF_FrostedGlass::Sample_f(const Normalf & wo, const Point2f & texco
 	}
 }
 
-const RGBf BSDF_FrostedGlass::GetColor(const Point2f & texcoord) const {
+const RGBf BSDF_FrostedGlass::GetColor(const Point2 & texcoord) const {
 	if (!colorTexture || !colorTexture->IsValid())
 		return colorFactor;
 
 	return colorFactor * (colorTexture->Sample(texcoord, Image::Mode::BILINEAR)).ToRGB();
 }
 
-float BSDF_FrostedGlass::GetRoughness(const Point2f & texcoord) const {
+float BSDF_FrostedGlass::GetRoughness(const Point2 & texcoord) const {
 	if (!roughnessTexture || !roughnessTexture->IsValid())
 		return roughnessFactor;
 
 	return roughnessTexture->Sample(texcoord, Image::Mode::BILINEAR).r * roughnessFactor;
 }
 
-float BSDF_FrostedGlass::GetAO(const Point2f & texcoord) const {
+float BSDF_FrostedGlass::GetAO(const Point2 & texcoord) const {
 	if (!aoTexture || !aoTexture->IsValid())
 		return 1.0f;
 
 	return aoTexture->Sample(texcoord, Image::Mode::BILINEAR).r;
 }
 
-void BSDF_FrostedGlass::ChangeNormal(const Point2f & texcoord, const Normalf & tangent, Normalf & normal) const {
+void BSDF_FrostedGlass::ChangeNormal(const Point2 & texcoord, const Normalf & tangent, Normalf & normal) const {
 	if (!normalTexture || !normalTexture->IsValid())
 		return;
 
 	const auto rgb = normalTexture->Sample(texcoord, Image::Mode::BILINEAR).ToRGB();
-	Normalf tangentSpaceNormal = 2.f * Vectorf(rgb.r, rgb.g, rgb.b) - 1.f;
+	Normalf tangentSpaceNormal = 2.f * Vec3(rgb.r, rgb.g, rgb.b) - 1.f;
 
 	normal = TangentSpaceNormalToWorld(tangent, normal, tangentSpaceNormal);
 }

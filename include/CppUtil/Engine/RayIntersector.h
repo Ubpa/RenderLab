@@ -39,7 +39,7 @@ namespace CppUtil {
 
 				Basic::Ptr<SObj> closestSObj;
 				Normalf n;
-				Point2f texcoord;
+				Point2 texcoord;
 				Normalf tangent;
 			};
 

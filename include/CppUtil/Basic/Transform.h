@@ -1,8 +1,8 @@
 #ifndef _CPPUTIL_BASIC_MATH_TRANSFORM_H_
 #define _CPPUTIL_BASIC_MATH_TRANSFORM_H_
 
-#include <CppUtil/Basic/Point.h>
-#include <CppUtil/Basic/Vector.h>
+#include <CppUtil/Basic/Point3.h>
+#include <CppUtil/Basic/Vector3.h>
 #include <CppUtil/Basic/Normal.h>
 #include <CppUtil/Basic/Quat.h>
 #include <CppUtil/Basic/EulerYXZ.h>
@@ -39,21 +39,21 @@ namespace CppUtil {
 			}
 
 			struct PosRotScale {
-				Pointf pos;
+				Point3 pos;
 				Quatf rot;
-				Vectorf scale;
+				Vec3 scale;
 			};
 			const PosRotScale Decompose() const;
 
-			const Pointf Position() const {
+			const Point3 Position() const {
 				return m.GetCol(3);
 			}
 			const Quatf RotationQuat() const {
 				return Decompose().rot;
 			}
 			const EulerYXZf RotationEulerYXZ() const;
-			const Vectorf Scale() const {
-				return Vectorf(m.GetCol(0).Length(), m.GetCol(1).Length(), m.GetCol(2).Length());
+			const Vec3 Scale() const {
+				return Vec3(m.GetCol(0).Length(), m.GetCol(1).Length(), m.GetCol(2).Length());
 			}
 
 			bool operator==(const Transform & rhs)const {
@@ -66,11 +66,11 @@ namespace CppUtil {
 
 		public:
 			static const Transform Translate(float x, float y, float z);
-			static const Transform Translate(const Vectorf & delta) {
+			static const Transform Translate(const Vec3 & delta) {
 				return Translate(delta.x, delta.y, delta.z);
 			}
 			static const Transform Scale(float x, float y, float z);
-			static const Transform Scale(const Vectorf & scale) {
+			static const Transform Scale(const Vec3 & scale) {
 				return Scale(scale.x, scale.y, scale.z);
 			}
 			static const Transform RotateX(float theta);
@@ -82,7 +82,7 @@ namespace CppUtil {
 				return RotateZ(euler.z) * RotateX(euler.x) * RotateY(euler.y);
 			}
 			
-			static const Transform Rotate(const Vectorf &axis, float theta);
+			static const Transform Rotate(const Vec3 &axis, float theta);
 			static const Transform Rotate(const Quatf & q) {
 				return Rotate(q.GetAxis(), q.GetTheta());
 			}
@@ -95,7 +95,7 @@ namespace CppUtil {
 				target: 观察目标点位置
 				up: 上方向
 			*/
-			static const Transform LookAt(const Pointf &pos, const Pointf &target, const Vectorf &up = Vectorf(0, 1, 0));
+			static const Transform LookAt(const Point3 &pos, const Point3 &target, const Vec3 &up = Vec3(0, 1, 0));
 
 
 			/*
@@ -115,14 +115,14 @@ namespace CppUtil {
 			static const Transform Perspcetive(float fovy, float aspect, float zNear, float zFar);
 
 		public:
-			const Pointf operator()(const Pointf & p) const;
-			const Vectorf operator()(const Vectorf & v) const;
+			const Point3 operator()(const Point3 & p) const;
+			const Vec3 operator()(const Vec3 & v) const;
 			const Normalf operator()(const Normalf & n) const;
 			const BBoxf operator()(const BBoxf & box) const;
 			const Ray operator()(const Ray & ray) const;
 
-			Pointf & ApplyTo(Pointf & p) const;
-			Vectorf & ApplyTo(Vectorf & v) const;
+			Point3 & ApplyTo(Point3 & p) const;
+			Vec3 & ApplyTo(Vec3 & v) const;
 			Normalf & ApplyTo(Normalf & n) const;
 			BBoxf & ApplyTo(BBoxf & box) const;
 			Ray & ApplyTo(Ray & ray) const;

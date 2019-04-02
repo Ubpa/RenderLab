@@ -13,20 +13,20 @@ namespace CppUtil {
 		class BSDF : public Material {
 			ELE_SETUP(BSDF)
 		public:
-			virtual const RGBf F(const Normalf & wo, const Normalf & wi, const Point2f & texcoord) = 0;
+			virtual const RGBf F(const Normalf & wo, const Normalf & wi, const Point2 & texcoord) = 0;
 
 			// probability density function
-			virtual float PDF(const Normalf & wo, const Normalf & wi, const Point2f & texcoord) = 0;
+			virtual float PDF(const Normalf & wo, const Normalf & wi, const Point2 & texcoord) = 0;
 
 			// PD is probability density
 			// return albedo
-			virtual const RGBf Sample_f(const Normalf & wo, const Point2f & texcoord, Normalf & wi, float & PD) = 0;
+			virtual const RGBf Sample_f(const Normalf & wo, const Point2 & texcoord, Normalf & wi, float & PD) = 0;
 
 			virtual const RGBf GetEmission() const { return RGBf(0.f); }
 
 			virtual bool IsDelta() const { return false; }
 
-			virtual void ChangeNormal(const Point2f & texcoord, const Normalf & tangent, Normalf & normal) const { return; };
+			virtual void ChangeNormal(const Point2 & texcoord, const Normalf & tangent, Normalf & normal) const { return; };
 
 		public:
 			static const Normalf LocalReflect(const Normalf & w) {

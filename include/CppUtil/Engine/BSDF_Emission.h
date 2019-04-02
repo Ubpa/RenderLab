@@ -11,14 +11,14 @@ namespace CppUtil {
 			BSDF_Emission(const RGBf & color = RGBf(1.f), float intensity = 1.f)
 				: color(color), intensity(intensity) { }
 
-			virtual const RGBf F(const Normalf & wo, const Normalf & wi, const Point2f & texcoord) { return RGBf(0.f); }
+			virtual const RGBf F(const Normalf & wo, const Normalf & wi, const Point2 & texcoord) { return RGBf(0.f); }
 
 			// probability density function
-			virtual float PDF(const Normalf & wo, const Normalf & wi, const Point2f & texcoord) { return 0; }
+			virtual float PDF(const Normalf & wo, const Normalf & wi, const Point2 & texcoord) { return 0; }
 
 			// PD is probability density
 			// return albedo
-			virtual const RGBf Sample_f(const Normalf & wo, const Point2f & texcoord, Normalf & wi, float & PD) {
+			virtual const RGBf Sample_f(const Normalf & wo, const Point2 & texcoord, Normalf & wi, float & PD) {
 				PD = 0;
 				return RGBf(0.f);
 			}

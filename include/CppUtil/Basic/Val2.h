@@ -1,36 +1,32 @@
 #ifndef _CPPUTIL_BASIC_MATH_VAL2_H_
 #define _CPPUTIL_BASIC_MATH_VAL2_H_
 
-#include <iostream>
+#include <CppUtil/Basic/Val.h>
+
 #include <algorithm>
 
 namespace CppUtil {
 	namespace Basic {
-		template<typename T>
-		class Val3;
-		template<typename T>
-		class Val4;
-
 		template <typename T>
-		class Val2 {
+		class Val<2, T> {
 		public:
 			template<typename U, typename V>
-			Val2(U x, V y) :
+			Val(U x, V y) :
 				x(static_cast<T>(x)),
 				y(static_cast<T>(y)) { }
 
-			explicit Val2(T val) : Val2(val, val) { }
+			explicit Val(T val) : Val(val, val) { }
 
-			Val2() : Val2(static_cast<T>(0)) { }
-
-			template<typename U>
-			Val2(const Val2<U> & xy) : Val2(xy.x, xy.y) { }
+			Val() : Val(static_cast<T>(0)) { }
 
 			template<typename U>
-			Val2(const Val3<U> & val3) : Val2(val3.x, val3.y) { }
+			Val(const Val<2, U> & xy) : Val(xy.x, xy.y) { }
 
 			template<typename U>
-			Val2(const Val4<U> & val4) : Val2(val4.x, val4.y) { }
+			Val(const Val<3, U> & val3) : Val(val3.x, val3.y) { }
+
+			template<typename U>
+			Val(const Val<4, U> & val4) : Val(val4.x, val4.y) { }
 
 		public:
 			bool HasNaN() const { return std::isnan(x) || std::isnan(y) || std::isnan(z); }
@@ -59,14 +55,14 @@ namespace CppUtil {
 			T operator[](int i) const { return _data[i]; }
 			T & operator[](int i) { return _data[i]; }
 
-			bool operator==(const Val2<T> & rhs) const {
+			bool operator==(const Val & rhs) const {
 				return x == rhs.x && y == rhs.y;
 			}
-			bool operator!=(const Val2<T> & rhs) const {
+			bool operator!=(const Val & rhs) const {
 				return x != rhs.x || y != rhs.y;
 			}
 
-			Val2 & operator=(const Val2 & rhs) {
+			Val & operator=(const Val & rhs) {
 				x = rhs.x;
 				y = rhs.y;
 				return *this;
@@ -77,19 +73,12 @@ namespace CppUtil {
 			{
 				T _data[2];
 				struct {
-					T x, y;
+					union { T x, r, s; };
+					union { T y, g, t; };
 				};
 			};
 		};
-
-		template <typename T>
-		std::ostream & operator<<(std::ostream & os, const Val2<T> & val2) {
-			os << "[" << val2.x << ", " << val2.y << "]";
-			return os;
-		}
 	}
-
-	using Val2f = Basic::Val2<float>;
 }
 
 #endif // !_CPPUTIL_BASIC_MATH_VAL2_H_

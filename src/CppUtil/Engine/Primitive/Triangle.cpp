@@ -9,14 +9,14 @@ using namespace CppUtil::Basic;
 const BBoxf Triangle::GetBBox() const {
 	auto positions = mesh.lock()->GetPositions();
 
-	Pointf pArr[3] = {
+	Point3 pArr[3] = {
 		positions[idx[0]],
 		positions[idx[1]],
 		positions[idx[2]]
 	};
 
-	Pointf minP = pArr[0].MinWith(pArr[1]).MinWith(pArr[2]);
-	Pointf maxP = pArr[0].MaxWith(pArr[1]).MaxWith(pArr[2]);
+	Point3 minP = pArr[0].MinWith(pArr[1]).MinWith(pArr[2]);
+	Point3 maxP = pArr[0].MaxWith(pArr[1]).MaxWith(pArr[2]);
 
 	for (int dim = 0; dim < 3; dim++) {
 		if (minP[dim] == maxP[dim]) {

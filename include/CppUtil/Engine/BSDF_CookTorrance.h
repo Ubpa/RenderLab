@@ -11,14 +11,14 @@ namespace CppUtil {
 			BSDF_CookTorrance(float ior, float m, const RGBf & refletance = RGBf(1.f), const RGBf & albedo = RGBf(1.f))
 				: ior(ior), m(m), refletance(refletance) , albedo(albedo){ }
 
-			virtual const RGBf F(const Normalf & wo, const Normalf & wi, const Point2f & texcoord);
+			virtual const RGBf F(const Normalf & wo, const Normalf & wi, const Point2 & texcoord);
 
 			// probability density function
-			virtual float PDF(const Normalf & wo, const Normalf & wi, const Point2f & texcoord);
+			virtual float PDF(const Normalf & wo, const Normalf & wi, const Point2 & texcoord);
 
 			// PD is probability density
 			// return albedo
-			virtual const RGBf Sample_f(const Normalf & wo, const Point2f & texcoord, Normalf & wi, float & PD);
+			virtual const RGBf Sample_f(const Normalf & wo, const Point2 & texcoord, Normalf & wi, float & PD);
 
 		private:
 			float NDF(const Normalf & h);

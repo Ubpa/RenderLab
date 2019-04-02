@@ -2,6 +2,7 @@
 #define _CPPUTIL_BASIC_MATH_EULER_YXZ_H_
 
 #include <CppUtil/Basic/Val3.h>
+#include <CppUtil/Basic/Quat.h>
 
 namespace CppUtil {
 	namespace Basic {
@@ -9,9 +10,9 @@ namespace CppUtil {
 		class Quat;
 
 		template <typename T>
-		class EulerYXZ : public Val3<T> {
+		class EulerYXZ : public Val<3, T> {
 		public:
-			using Val3::Val3;
+			using Val<3, T>::Val;
 
 		public:
 			const Quat<T> ToQuat() const {

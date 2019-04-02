@@ -8,14 +8,14 @@ using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
 using namespace glm;
 
-const RGBf BSDF_Diffuse::F(const Normalf & wo, const Normalf & wi, const Point2f & texcoord) {
+const RGBf BSDF_Diffuse::F(const Normalf & wo, const Normalf & wi, const Point2 & texcoord) {
 	if (wo.z <= 0 || wi.z <= 0)
 		return RGBf(0.f);
 	
 	return GetAlbedo(texcoord) / Math::PI;
 }
 
-const RGBf BSDF_Diffuse::Sample_f(const Normalf & wo, const Point2f & texcoord, Normalf & wi, float & PD) {
+const RGBf BSDF_Diffuse::Sample_f(const Normalf & wo, const Point2 & texcoord, Normalf & wi, float & PD) {
 	if (wo.z <= 0) {
 		PD = 0;
 		wi = Normalf(0.f);
@@ -27,11 +27,11 @@ const RGBf BSDF_Diffuse::Sample_f(const Normalf & wo, const Point2f & texcoord, 
 	return GetAlbedo(texcoord) / Math::PI;
 }
 
-float BSDF_Diffuse::PDF(const Normalf & wo, const Normalf & wi, const Point2f & texcoord) {
+float BSDF_Diffuse::PDF(const Normalf & wo, const Normalf & wi, const Point2 & texcoord) {
 	return wi.z > 0 && wo.z > 0 ? wi.z / Math::PI : 0;
 }
 
-const RGBf BSDF_Diffuse::GetAlbedo(const Point2f & texcoord) const {
+const RGBf BSDF_Diffuse::GetAlbedo(const Point2 & texcoord) const {
 	if (!albedoTexture || !albedoTexture->IsValid())
 		return colorFactor;
 

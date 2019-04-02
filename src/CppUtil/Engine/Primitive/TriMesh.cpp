@@ -13,9 +13,9 @@ using namespace CppUtil::Basic;
 using namespace std;
 
 TriMesh::TriMesh(const vector<uint> & indice,
-	const vector<Pointf> & positions,
+	const vector<Point3> & positions,
 	const vector<Normalf> & normals,
-	const vector<Point2f> & texcoords,
+	const vector<Point2> & texcoords,
 	ENUM_TYPE type)
 :	indice(indice),
 	positions(positions),
@@ -55,9 +55,9 @@ TriMesh::TriMesh(uint triNum, uint vertexNum,
 	}
 
 	for (uint i = 0; i < vertexNum; i++) {
-		this->positions.push_back(Pointf(positions[3 * i], positions[3 * i + 1], positions[3 * i + 2]));
+		this->positions.push_back(Point3(positions[3 * i], positions[3 * i + 1], positions[3 * i + 2]));
 		this->normals.push_back(Normalf(normals[3 * i], normals[3 * i + 1], normals[3 * i + 2]));
-		this->texcoords.push_back(Point2f(texcoords[2 * i], texcoords[2 * i + 1]));
+		this->texcoords.push_back(Point2(texcoords[2 * i], texcoords[2 * i + 1]));
 	}
 
 	// traingel 的 mesh 在 init 的时候设置
@@ -91,13 +91,13 @@ void TriMesh::GenTangents() {
 		uint i2 = indice[3 * a + 1];
 		uint i3 = indice[3 * a + 2];
 
-		const Pointf & v1 = positions[i1];
-		const Pointf & v2 = positions[i2];
-		const Pointf & v3 = positions[i3];
+		const Point3 & v1 = positions[i1];
+		const Point3 & v2 = positions[i2];
+		const Point3 & v3 = positions[i3];
 
-		const Point2f & w1 = texcoords[i1];
-		const Point2f & w2 = texcoords[i2];
-		const Point2f & w3 = texcoords[i3];
+		const Point2 & w1 = texcoords[i1];
+		const Point2 & w2 = texcoords[i2];
+		const Point2 & w3 = texcoords[i3];
 
 		float x1 = v2.x - v1.x;
 		float x2 = v3.x - v1.x;

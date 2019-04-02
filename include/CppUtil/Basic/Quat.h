@@ -2,8 +2,7 @@
 #define _CPPUTIL_BASIC_MATH_QUAT_H_
 
 #include <CppUtil/Basic/Val4.h>
-#include <CppUtil/Basic/Vector.h>
-#include <CppUtil/Basic/Point.h>
+#include <CppUtil/Basic/Point3.h>
 
 #include <CppUtil/Basic/Math.h>
 
@@ -13,62 +12,83 @@ namespace CppUtil {
 		class EulerYXZ;
 
 		template <typename T>
-		class Quat {
+		class Quat : public Val<4, T>{
 		public:
-			Quat(): s(1), v(0) {}
-			Quat(T s, const Val3<T> & v) :s(s), v(v) { }
-			Quat(const Val3<T> & v) :s(0), v(v) { }
-			Quat(const Quat & q) :s(q.s), v(q.v) { }
+			template<typename U, typename V>
+			Quat(U real, const Val<3, V> & imag) : Val<4, T>(imag, real) { }
+			
+			Quat() : Quat(1, Val<3, T>(0)) { }
+			
+			explicit Quat(T real) : Quat(real, Val<3, T>(0)) { }
 
-			Quat(const Vector<T> & axis, float theta) {
-				Init(axis, theta);
+			template<typename U>
+			explicit Quat(const Val<3, U> & imag) : Quat(0, imag) { }
+
+			template<typename U>
+			explicit Quat(const Val<4, U> & val4) : Quat(val4.real, val4.imag) { }
+
+			template<typename U, typename V>
+			Quat(const Vector<3, U> & axis, V theta) {
+				Init(axis, static_cast<float>(theta));
 			}
 
-			void Init(const Vector<T> & axis, float theta) {
-				v = axis.Norm();
-				const float halfTheta = Math::Radians(theta) / 2.f;
-				v *= sinf(halfTheta);
-				s = cosf(halfTheta);
+			template<typename U>
+			void Init(const Vector<3, U> & axis, float theta) {
+				imag = static_cast<Vector<3,T>>(axis.Norm());
+				const T halfTheta = Math::Radians(theta) / static_cast<T>(2);
+				imag *= sin(halfTheta);
+				real = cos(halfTheta);
 			}
 			
 		public:
+			enum Axis { X, Y, Z };
+			static const Quat Rotate(Axis axis, float theta) {
+				switch (axis) {
+				case X:
+					return RotateX(theta);
+				case Y:
+					return RotateY(theta);
+				case Z:
+					return RotateZ(theta);
+				}
+			}
 			static const Quat RotateX(float theta) {
-				return Quat(Vector<T>(1, 0, 0), theta);
+				return Quat(Vector<3, T>(1, 0, 0), theta);
 			}
 			static const Quat RotateY(float theta) {
-				return Quat(Vector<T>(0, 1, 0), theta);
+				return Quat(Vector<3, T>(0, 1, 0), theta);
 			}
 			static const Quat RotateZ(float theta) {
-				return Quat(Vector<T>(0, 0, 1), theta);
+				return Quat(Vector<3, T>(0, 0, 1), theta);
 			}
 
 			static const Quat Rotate(const EulerYXZ<T> & euler) {
 				const auto qY = RotateY(euler.y);
-				const auto axisX = qY * Point<T>(1, 0, 0);
-				const Quat qX(axisX, euler.x);
-				const auto axisZ = qX * (qY * Point<T>(0, 0, 1));
-				const Quat qZ(axisZ, euler.z);
+				const auto axisX = qY * Point<3, T>(1, 0, 0);
+				const Quat qX(Vector<3,T>(axisX), euler.x);
+				const auto axisZ = qX * (qY * Point<3, T>(0, 0, 1));
+				const Quat qZ(Vector<3, T>(axisZ), euler.z);
 				return qZ * qX * qY;
 			}
 
 		public:
-			const Vector<T> GetAxis() const {
-				const auto sinHalfTheta = sqrt(1 - s * s);
-				return v / sinHalfTheta;
+			const Vector<3, T> GetAxis() const {
+				const auto sinHalfTheta = sqrt(static_cast<T>(1) - real * real);
+				return imag / sinHalfTheta;
 			}
 
 			T GetTheta() const {
-				return Math::Degrees(static_cast<T>(2)*acos(s));
+				return Math::Degrees(static_cast<T>(2)*acos(real));
 			}
 
-			T ModularLength() const { return sqrt(v.Length2() + s * s); }
+			T ModularLength() const { return sqrt(imag.Length2() + real * real); }
 
-			Quat Conjugate() const { return Quat(s, -v); }
+			Quat Conjugate() const { return Quat(real, -imag); }
 
 			Quat Inverse() const { return Conjugate() / ModularLength(); }
 
 			const T Dot(const Quat & rhs) const {
-				return s * rhs.s + v.Dot(rhs.v);
+				return real * rhs.real + imag.Dot(rhs.imag);
 			}
 
 			static const Quat SLerp(const Quat & q0, Quat q1, float t) {
@@ -78,71 +98,71 @@ namespace CppUtil {
 					theta = -theta;
 				}
 
-				if (theta > 0.9995f)
-					return (1.f - t)*q0 + t * q1;
+				if (theta > static_cast<T>(0.9995))
+					return (static_cast<T>(1) - t) * q0 + t * q1;
 				else
-					return (sin((1.f - t)*theta) * q0 + sin(t*theta)*q1) / sin(theta);
+					return (sin((static_cast<T>(1) - t)*theta) * q0 + sin(t*theta)*q1) / sin(theta);
 			}
 
 		public:
 			const Quat operator+(const Quat & rhs) const {
-				return Quat(s + rhs.s, v + rhs.v);
+				return Quat(real + rhs.real, imag + rhs.imag);
 			}
 
 			Quat & operator+=(const Quat & rhs) {
-				v += rhs.v;
-				s += rhs.s;
+				imag += rhs.imag;
+				real += rhs.real;
 				return *this;
 			}
 
 			const Quat operator-()const {
-				return Quat(-s, -v);
+				return Quat(-real, -imag);
 			}
 
 			const Quat operator*(const Quat & rhs) const {
-				const auto rstS = s * rhs.s - v.Dot(rhs.v);
-				const auto rstV = s * rhs.v + rhs.s*v + v.Cross(rhs.v);
+				const auto rstS = real * rhs.real - imag.Dot(rhs.imag);
+				const auto rstV = real * rhs.imag + rhs.real*imag + imag.Cross(rhs.imag);
 				return Quat(rstS, rstV);
 			}
 
-			const Point<T> operator*(const Point<T> & p) const {
-				return (*this * Quat(p) * Inverse()).v;
+			const Point<3, T> operator*(const Point<3, T> & p) const {
+				return (*this * Quat(p) * Inverse()).imag;
 			}
 
 			Quat & operator*=(const Quat & rhs) {
-				s = s * rhs.s - v.Dot(rhs.v);
-				v = s * rhs.v + rhs.s*v + v.Cross(rhs.v);
+				real = real * rhs.real - imag.Dot(rhs.imag);
+				imag = real * rhs.imag + rhs.real*imag + imag.Cross(rhs.imag);
 				return *this;
 			}
 
 			template <typename U>
 			const Quat operator*(U k) const {
-				return Quat(s*k, v*k);
+				return Quat(real*k, imag*k);
 			}
 
 			template <typename U>
 			Quat & operator*=(U k) const {
-				s *= k;
-				v *= k;
+				real *= k;
+				imag *= k;
 				return *this;
 			}
 
 			template <typename U>
 			const Quat operator/(U k) const {
 				const float invK = 1.f / static_cast<float>(k);
-				return Quat(s*invK, v*invK);
+				return Quat(real*invK, imag*invK);
 			}
 
 			template <typename U>
 			Quat & operator/=(U k) {
 				const float invK = 1.f / static_cast<float>(k);
-				s *= invK;
-				v *= invK;
+				real *= invK;
+				imag *= invK;
 				return *this;
 			}
 
 			bool operator==(const Quat & rhs) const {
-				return (v == v && s == s) || (v == -v && s == -s);
+				return (imag == imag && real == real) || (imag == -imag && real == -real);
 			}
 
 			bool operator!=(const Quat & rhs) const {
@@ -150,32 +170,15 @@ namespace CppUtil {
 			}
 
 			Quat & operator=(const Quat & rhs) {
-				v = rhs.v;
-				s = rhs.s;
+				imag = rhs.imag;
+				real = rhs.real;
 				return *this;
 			}
-
-		public:
-			union {
-				struct {
-					Vector<T> v;
-					T s;
-				};
-				struct {
-					T x, y, z, w;
-				};
-			};
 		};
 
 		template<typename T, typename U>
 		const Quat<T> operator*(U k, const Quat<T> & q) {
 			return q * k;
-		}
-
-		template<typename T>
-		std::ostream & operator<<(std::ostream & os, const Quat<T> & q) {
-			os << "[" << q.x << ", " << q.y << ", " << q.z << ", " << q.w << "]";
-			return os;
 		}
 	}
 

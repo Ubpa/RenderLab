@@ -7,10 +7,10 @@ namespace CppUtil {
 	namespace Basic {
 		class CosineWeightedHemisphereSampler3D : public Sampler3D {
 		public:
-			virtual const Vectorf GetSample();
+			virtual const Val3 GetSample();
 
 			// Also returns the probability density at the sample point for use in importance sampling.
-			virtual const Vectorf GetSample(float & pd);
+			virtual const Val3 GetSample(float & pd);
 		};
 	}
 }

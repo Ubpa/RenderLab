@@ -5,12 +5,12 @@
 using namespace CppUtil;
 using namespace CppUtil::Basic;
 
-const Vectorf CosineWeightedHemisphereSampler3D::GetSample() {
+const Val3 CosineWeightedHemisphereSampler3D::GetSample() {
 	float pd;
 	return GetSample(pd);
 }
 
-const Vectorf CosineWeightedHemisphereSampler3D::GetSample(float & pd) {
+const Val3 CosineWeightedHemisphereSampler3D::GetSample(float & pd) {
 	float Xi1 = Math::Rand_F();
 	float Xi2 = Math::Rand_F();
 
@@ -26,5 +26,5 @@ const Vectorf CosineWeightedHemisphereSampler3D::GetSample(float & pd) {
 	// pdf 是 p(w)，而不是 p(theta, phi)
 	pd = cosTheta / Math::PI;
 
-	return Vectorf(xs, ys, zs);
+	return Val3(xs, ys, zs);
 }

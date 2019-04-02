@@ -12,7 +12,7 @@ const Transform & CmptTransform::GetTransform() {
 	return transform;
 }
 
-void CmptTransform::SetPosition(const Pointf & position) {
+void CmptTransform::SetPosition(const Point3 & position) {
 	dirtyTransform = true;
 	this->position = position;
 }
@@ -22,7 +22,7 @@ void CmptTransform::SetRotation(const Quatf & rotation) {
 	this->rotation = rotation;
 }
 
-void CmptTransform::SetScale(const Vectorf & scale) {
+void CmptTransform::SetScale(const Vec3 & scale) {
 	dirtyTransform = true;
 	this->scale = scale;
 }

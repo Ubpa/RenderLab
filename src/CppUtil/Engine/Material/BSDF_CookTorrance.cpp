@@ -38,21 +38,21 @@ float BSDF_CookTorrance::G(const Normalf & wo, const Normalf & wi, const Normalf
 	return min(min(1.0f, item1), item2);
 }
 
-const RGBf BSDF_CookTorrance::F(const Normalf & wo, const Normalf & wi, const Point2f & texcoord) {
+const RGBf BSDF_CookTorrance::F(const Normalf & wo, const Normalf & wi, const Point2 & texcoord) {
 	const Normalf h = (wo + wi).Norm();
 	float fr = Fr(wi, h);
 	float kd = 1 - fr;
 	return kd * albedo / Math::PI + NDF(h) * fr * G(wo, wi, h) / (4 * wo.z *wi.z) * refletance;
 }
 
-float BSDF_CookTorrance::PDF(const Normalf & wo, const Normalf & wi, const Point2f & texcoord) {
+float BSDF_CookTorrance::PDF(const Normalf & wo, const Normalf & wi, const Point2 & texcoord) {
 	//vec3 h = normalize(wo + wi);
 	//return NDF(h) / 4.0f;
 
 	return 1.0f / (2.0f * Math::PI);
 }
 
-const RGBf BSDF_CookTorrance::Sample_f(const Normalf & wo, const Point2f & texcoord, Normalf & wi, float & pd) {
+const RGBf BSDF_CookTorrance::Sample_f(const Normalf & wo, const Point2 & texcoord, Normalf & wi, float & pd) {
 	/*
 	// 根据 NDF 来进行重要性采样
 	// 有异常，暂时未解决

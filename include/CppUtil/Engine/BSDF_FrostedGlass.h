@@ -19,16 +19,16 @@ namespace CppUtil {
 				aoTexture(nullptr),
 				normalTexture(nullptr) { }
 
-			virtual const RGBf F(const Normalf & wo, const Normalf & wi, const Point2f & texcoord);
+			virtual const RGBf F(const Normalf & wo, const Normalf & wi, const Point2 & texcoord);
 
 			// probability density function
-			virtual float PDF(const Normalf & wo, const Normalf & wi, const Point2f & texcoord);
+			virtual float PDF(const Normalf & wo, const Normalf & wi, const Point2 & texcoord);
 
 			// PD is probability density
 			// return albedo
-			virtual const RGBf Sample_f(const Normalf & wo, const Point2f & texcoord, Normalf & wi, float & PD);
+			virtual const RGBf Sample_f(const Normalf & wo, const Point2 & texcoord, Normalf & wi, float & PD);
 
-			virtual void ChangeNormal(const Point2f & texcoord, const Normalf & tangent, Normalf & normal) const;
+			virtual void ChangeNormal(const Point2 & texcoord, const Normalf & tangent, Normalf & normal) const;
 
 		private:
 			static float GGX_D(const Normalf & h, float alpha);
@@ -37,9 +37,9 @@ namespace CppUtil {
 			static float Fr(const Normalf & v, const Normalf & h, float ior);
 
 		private:
-			const RGBf GetColor(const Point2f & texcoord) const;
-			float GetRoughness(const Point2f & texcoord) const;
-			float GetAO(const Point2f & texcoord) const;
+			const RGBf GetColor(const Point2 & texcoord) const;
+			float GetRoughness(const Point2 & texcoord) const;
+			float GetAO(const Point2 & texcoord) const;
 
 		public:
 			RGBf colorFactor;

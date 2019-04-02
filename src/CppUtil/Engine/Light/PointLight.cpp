@@ -5,8 +5,8 @@ using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
 using namespace std;
 
-RGBf PointLight::Sample_L(const Pointf & p, Normalf & wi, float & distToLight, float & PD) const {
-	const auto d = Vectorf(p);
+RGBf PointLight::Sample_L(const Point3 & p, Normalf & wi, float & distToLight, float & PD) const {
+	const auto d = Vec3(p);
 	float dist2 = d.Length2();
 	distToLight = sqrt(dist2);
 	wi = - d / distToLight;

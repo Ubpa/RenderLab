@@ -6,7 +6,7 @@ using namespace CppUtil;
 using namespace CppUtil::Engine;
 using namespace CppUtil::Basic::Math;
 
-const RGBf BSDF_Glass::Sample_f(const Normalf & wo, const Point2f & texcoord, Normalf & wi, float & PD) {
+const RGBf BSDF_Glass::Sample_f(const Normalf & wo, const Point2 & texcoord, Normalf & wi, float & PD) {
 	// PDF is delta
 
 	if (!LocalRefract(wo, wi, ior)) {

@@ -8,21 +8,21 @@ using namespace CppUtil;
 using namespace CppUtil::Basic;
 using namespace CppUtil::Basic::Math;
 
-const Pointf Transform::operator()(const Pointf & p) const {
+const Point3 Transform::operator()(const Point3 & p) const {
 	float x = p.x, y = p.y, z = p.z;
 	float xp = m(0, 0) * x + m(0, 1) * y + m(0, 2) * z + m(0, 3);
 	float yp = m(1, 0) * x + m(1, 1) * y + m(1, 2) * z + m(1, 3);
 	float zp = m(2, 0) * x + m(2, 1) * y + m(2, 2) * z + m(2, 3);
 	float wp = m(3, 0) * x + m(3, 1) * y + m(3, 2) * z + m(3, 3);
 	if (wp == 1)
-		return Pointf(xp, yp, zp);
+		return Point3(xp, yp, zp);
 	else
-		return Pointf(xp / wp, yp / wp, zp / wp);
+		return Point3(xp / wp, yp / wp, zp / wp);
 }
 
-const Vectorf Transform::operator()(const Vectorf & v) const {
+const Vec3 Transform::operator()(const Vec3 & v) const {
 	float x = v.x, y = v.y, z = v.z;
-	return Vectorf(
+	return Vec3(
 		m(0, 0) * x + m(0, 1) * y + m(0, 2) * z,
 		m(1, 0) * x + m(1, 1) * y + m(1, 2) * z,
 		m(2, 0) * x + m(2, 1) * y + m(2, 2) * z
@@ -55,7 +55,7 @@ const Ray Transform::operator()(const Ray & ray) const {
 	return Ray(o, d);
 }
 
-Pointf & Transform::ApplyTo(Pointf & p) const {
+Point3 & Transform::ApplyTo(Point3 & p) const {
 	float x = p.x, y = p.y, z = p.z;
 	p.x = m(0, 0) * x + m(0, 1) * y + m(0, 2) * z + m(0, 3);
 	p.y = m(1, 0) * x + m(1, 1) * y + m(1, 2) * z + m(1, 3);
@@ -71,7 +71,7 @@ Pointf & Transform::ApplyTo(Pointf & p) const {
 	return p;
 }
 
-Vectorf & Transform::ApplyTo(Vectorf & v) const {
+Vec3 & Transform::ApplyTo(Vec3 & v) const {
 	float x = v.x, y = v.y, z = v.z;
 	v.x = m(0, 0) * x + m(0, 1) * y + m(0, 2) * z;
 	v.y = m(1, 0) * x + m(1, 1) * y + m(1, 2) * z;
@@ -155,8 +155,8 @@ const Transform Transform::RotateZ(const float theta) {
 	return Transform(m, m.Transpose());
 }
 
-const Transform Transform::Rotate(const Vectorf &axis, const float theta) {
-	Vectorf a = axis.Norm();
+const Transform Transform::Rotate(const Vec3 &axis, const float theta) {
+	Vec3 a = axis.Norm();
 	float sinTheta = std::sin(Radians(theta));
 	float cosTheta = std::cos(Radians(theta));
 	Mat4f m;
@@ -180,7 +180,7 @@ const Transform Transform::Rotate(const Vectorf &axis, const float theta) {
 
 }
 
-const Transform Transform::LookAt(const Pointf &pos, const Pointf &target, const Vectorf &up) {
+const Transform Transform::LookAt(const Point3 &pos, const Point3 &target, const Vec3 &up) {
 	const auto & ERROR = ErrorRetVal(LookAt);
 
 	// R
@@ -202,9 +202,9 @@ const Transform Transform::LookAt(const Pointf &pos, const Pointf &target, const
 	// [ 0    1 ]
 
 
-	const Vectorf front = (target - pos).Norm();
-	const Vectorf right = front.Cross(up).Norm();
-	const Vectorf camUp = right.Cross(front);
+	const Vec3 front = (target - pos).Norm();
+	const Vec3 right = front.Cross(up).Norm();
+	const Vec3 camUp = right.Cross(front);
 
 	Mat4f worldToCamera;
 	worldToCamera(0, 0) = right.x;
@@ -281,11 +281,11 @@ const Transform::PosRotScale Transform::Decompose() const {
 	tmpMat3.GetCol(1) /= rst.scale.y;
 	tmpMat3.GetCol(2) /= rst.scale.z;
 
-	rst.rot.w = sqrt(tmpMat3.Tr() + 1.f) / 2.f;
-	rst.rot.v.x = tmpMat3(1, 2) - tmpMat3(2, 1);
-	rst.rot.v.y = tmpMat3(2, 0) - tmpMat3(0, 2);
-	rst.rot.v.z = tmpMat3(0, 1) - tmpMat3(1, 0);
-	rst.rot.v /= 4.f * rst.rot.w;
+	rst.rot.real = sqrt(tmpMat3.Tr() + 1.f) / 2.f;
+	rst.rot.imag.x = tmpMat3(1, 2) - tmpMat3(2, 1);
+	rst.rot.imag.y = tmpMat3(2, 0) - tmpMat3(0, 2);
+	rst.rot.imag.z = tmpMat3(0, 1) - tmpMat3(1, 0);
+	rst.rot.imag /= 4.f * rst.rot.w;
 
 	return rst;
 }

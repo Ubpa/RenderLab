@@ -7,7 +7,7 @@ using namespace CppUtil;
 using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
 
-const RGBf BSDF_MetalWorkflow::F(const Normalf & wo, const Normalf & wi, const Point2f & texcoord) {
+const RGBf BSDF_MetalWorkflow::F(const Normalf & wo, const Normalf & wi, const Point2 & texcoord) {
 	auto albedo = GetAlbedo(texcoord);
 	auto metallic = GetMetallic(texcoord);
 	auto roughness = GetRoughness(texcoord);
@@ -20,14 +20,14 @@ const RGBf BSDF_MetalWorkflow::F(const Normalf & wo, const Normalf & wi, const P
 	return ao * ((1 - metallic)*(1.0f - fr)*diffuse + MS_BRDF(wo, wi, fr, albedo, roughness));
 }
 
-float BSDF_MetalWorkflow::PDF(const Normalf & wo, const Normalf & wi, const Point2f & texcoord) {
+float BSDF_MetalWorkflow::PDF(const Normalf & wo, const Normalf & wi, const Point2 & texcoord) {
 	auto roughness = GetRoughness(texcoord);
 
 	const auto h = (wo + wi).Norm();
 	return NDF(h, roughness) / 4.0f;
 }
 
-const RGBf BSDF_MetalWorkflow::Sample_f(const Normalf & wo, const Point2f & texcoord, Normalf & wi, float & pd) {
+const RGBf BSDF_MetalWorkflow::Sample_f(const Normalf & wo, const Point2 & texcoord, Normalf & wi, float & pd) {
 	float Xi1 = Math::Rand_F();
 	float Xi2 = Math::Rand_F();
 	auto roughness = GetRoughness(texcoord);
@@ -115,40 +115,40 @@ float BSDF_MetalWorkflow::G(const Normalf & wo, const Normalf & wi, float roughn
 	return G1_wo * G1_wi;
 }
 
-const RGBf BSDF_MetalWorkflow::GetAlbedo(const Point2f & texcoord) const {
+const RGBf BSDF_MetalWorkflow::GetAlbedo(const Point2 & texcoord) const {
 	if (!albedoTexture || !albedoTexture->IsValid())
 		return colorFactor;
 
 	return colorFactor * albedoTexture->Sample(texcoord, Image::Mode::BILINEAR).ToRGB();
 }
 
-float BSDF_MetalWorkflow::GetMetallic(const Point2f & texcoord) const {
+float BSDF_MetalWorkflow::GetMetallic(const Point2 & texcoord) const {
 	if (!metallicTexture || !metallicTexture->IsValid())
 		return metallicFactor;
 
 	return metallicFactor * metallicTexture->Sample(texcoord, Image::Mode::BILINEAR).r;
 }
 
-float BSDF_MetalWorkflow::GetRoughness(const Point2f & texcoord) const {
+float BSDF_MetalWorkflow::GetRoughness(const Point2 & texcoord) const {
 	if (!roughnessTexture || !roughnessTexture->IsValid())
 		return roughnessFactor;
 
 	return roughnessFactor * roughnessTexture->Sample(texcoord, Image::Mode::BILINEAR).r;
 }
 
-float BSDF_MetalWorkflow::GetAO(const Point2f & texcoord) const {
+float BSDF_MetalWorkflow::GetAO(const Point2 & texcoord) const {
 	if (!aoTexture || !aoTexture->IsValid())
 		return 1.0f;
 
 	return aoTexture->Sample(texcoord, Image::Mode::BILINEAR).r;
 }
 
-void BSDF_MetalWorkflow::ChangeNormal(const Point2f & texcoord, const Normalf & tangent, Normalf & normal) const {
+void BSDF_MetalWorkflow::ChangeNormal(const Point2 & texcoord, const Normalf & tangent, Normalf & normal) const {
 	if (!normalTexture || !normalTexture->IsValid())
 		return;
 
 	const auto rgb = normalTexture->Sample(texcoord, Image::Mode::BILINEAR).ToRGB();
-	Normalf tangentSpaceNormal = 2.f * Vectorf(rgb.r, rgb.g, rgb.b) - 1.f;
+	Normalf tangentSpaceNormal = 2.f * Vec3(rgb.r, rgb.g, rgb.b) - 1.f;
 
 	normal = TangentSpaceNormalToWorld(tangent, normal, tangentSpaceNormal);
 }
