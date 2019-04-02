@@ -7,7 +7,7 @@ using namespace CppUtil::Basic;
 CmptTransform::CmptTransform(Basic::Ptr<SObj> sobj)
 	: Component(sobj), transform(1), position(0), scale(1), rotation(), dirtyTransform(false)  { }
 
-const Transform & CmptTransform::GetTransform() {
+const Transform & CmptTransform::GetTransform() const{
 	UpdateMat();
 	return transform;
 }
@@ -27,7 +27,7 @@ void CmptTransform::SetScale(const Vec3 & scale) {
 	this->scale = scale;
 }
 
-void CmptTransform::UpdateMat() {
+void CmptTransform::UpdateMat() const{
 	if (dirtyTransform) {
 		const auto scaleTsfm = Transform::Scale(scale);
 		const auto rotateTsfm = Transform::Rotate(rotation);
@@ -44,4 +44,8 @@ void CmptTransform::SetTransform(const Transform & transform) {
 	rotation = transform.RotationQuat();
 	scale = transform.Scale();
 	dirtyTransform = false;
+}
+
+const EulerYXZf CmptTransform::GetRotationEuler() const {
+	return GetTransform().RotationEulerYXZ();
 }

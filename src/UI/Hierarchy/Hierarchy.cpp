@@ -4,7 +4,8 @@
 
 #include <CppUtil/Engine/Scene.h>
 #include <CppUtil/Engine/SObj.h>
-#include <CppUtil/Engine/Transform.h>
+
+#include <CppUtil/Engine/CmptTransform.h>
 
 #include <CppUtil/Basic/EleVisitor.h>
 
@@ -141,11 +142,11 @@ void Hierarchy::Move(QTreeWidgetItem * item, QTreeWidgetItem * parent) {
 	auto sobjL2W = sobj->GetLocalToWorldMatrix();
 	auto parentW2L = parentSObj->GetWorldToLocalMatrix();
 
-	auto transform = sobj->GetComponent<Transform>();
-	if (!transform)
-		transform = ToPtr(new Transform(sobj));
+	auto cmptTransform = sobj->GetComponent<CmptTransform>();
+	if (!cmptTransform)
+		cmptTransform = ToPtr(new CmptTransform(sobj));
 
-	transform->SetMatrix(parentW2L * sobjL2W);
+	cmptTransform->SetTransform(parentW2L * sobjL2W);
 
 	sobj->SetParent(parentSObj);
 }

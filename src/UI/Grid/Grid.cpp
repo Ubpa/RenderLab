@@ -1,6 +1,7 @@
 #include <UI/Grid.h>
 
 #include <CppUtil/Basic/Image.h>
+#include <CppUtil/Basic/Math.h>
 
 #include <qlabel.h>
 #include <qgridlayout.h>
@@ -15,9 +16,9 @@
 
 #include <sstream>
 
+using namespace CppUtil;
 using namespace CppUtil::Basic;
 using namespace Ui;
-using namespace glm;
 using namespace std;
 
 Grid::Grid(QWidget * page)
@@ -180,13 +181,13 @@ void Grid::AddText(const string & left, const string & right) {
 	AddRow(left, label1);
 }
 
-void Grid::AddEditColor(const string & text, glm::vec3 & color) {
+void Grid::AddEditColor(const string & text, CppUtil::RGBf & color) {
 	auto button = new QPushButton;
 	stringstream stylesheet;
 	stylesheet << "background-color: rgb(" <<
-		clamp<int>(255 * color.r, 0, 255) << ", " <<
-		clamp<int>(255 * color.g, 0, 255) << ", " <<
-		clamp<int>(255 * color.b, 0, 255) << ");";
+		Math::Clamp<int>(255 * color.r, 0, 255) << ", " <<
+		Math::Clamp<int>(255 * color.g, 0, 255) << ", " <<
+		Math::Clamp<int>(255 * color.b, 0, 255) << ");";
 	button->setStyleSheet(QString::fromStdString(stylesheet.str()));
 
 	page->connect(button, &QPushButton::clicked, [&color, button]() {
@@ -328,7 +329,13 @@ bool Grid::SetImgLabel(QLabel * imgLabel, Image::CPtr img) {
 		return false;
 	}
 	
-	QImage qImg(img->GetData(), img->GetWidth(), img->GetHeight(), formatMap[img->GetChannel()]);
+	const float * imgData = img->GetData();
+	const auto valNum = img->GetValNum();
+	vector<unsigned char> imgUC(valNum);
+	for (int i = 0; i < valNum; i++)
+		imgUC[i] = static_cast<unsigned char>(255.f * Math::Clamp(imgData[i], 0.0f, 0.999999f));
+
+	QImage qImg(imgUC.data(), img->GetWidth(), img->GetHeight(), formatMap[img->GetChannel()]);
 	QPixmap imgIcon;
 	imgIcon.convertFromImage(qImg.scaled(32, 32, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
 	imgLabel->setPixmap(imgIcon);

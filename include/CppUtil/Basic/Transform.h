@@ -16,8 +16,7 @@ namespace CppUtil {
 		// ”“ ÷œµ
 		class Transform {
 		public:
-			template<typename T>
-			Transform(T d) : m(static_cast<float>(d)), mInv(1.f/ static_cast<float>(d)) { }
+			Transform(float d) : m(d), mInv(1.f/d) { }
 			Transform() :Transform(1.f) { }
 			Transform(const float mat[4][4]) : m(Mat4f(mat)), mInv(m.Inverse()) { }
 			Transform(const Mat4f & m) : m(m), mInv(m.Inverse()) { }

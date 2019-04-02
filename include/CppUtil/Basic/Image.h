@@ -35,6 +35,7 @@ namespace CppUtil {
 			int GetWidth() const { return width; }
 			int GetHeight() const { return height; }
 			int GetChannel() const { return channel; }
+			int GetValNum() const { return width * height*channel; }
 			const std::string & GetPath() const { return path; }
 
 		public:

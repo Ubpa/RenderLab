@@ -429,7 +429,8 @@ static CmptTransform::Ptr SObjLoader::Load(XMLElement * ele, CmptTransform::Ptr*
 
 	FuncMap funcMap;
 	Reg_Text_setVal(funcMap, str::CmptTransform::Position, cmpt, &CmptTransform::SetPosition);
-	Reg_Text_setVal(funcMap, str::CmptTransform::Rotation, cmpt, &CmptTransform::SetRotation);
+	void (CmptTransform::*func)(const Quatf &) = &CmptTransform::SetRotation;
+	Reg_Text_setVal(funcMap, str::CmptTransform::Rotation, cmpt, func);
 	Reg_Text_setVal(funcMap, str::CmptTransform::Scale, cmpt, &CmptTransform::SetScale);
 
 	LoadNode(ele, funcMap);

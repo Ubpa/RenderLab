@@ -13,23 +13,27 @@ namespace CppUtil {
 
 			const Point3 & GetPosition() const { return position; }
 			const Quatf & GetRotation() const { return rotation; }
+			const EulerYXZf GetRotationEuler() const;
 			const Vec3 & GetScale() const { return scale; }
-			const Basic::Transform & GetTransform();
+			const Basic::Transform & GetTransform() const;
 
 			void SetPosition(const Point3 & position);
 			void SetRotation(const Quatf & rotation);
+			void SetRotation(const EulerYXZf & euler) {
+				SetRotation(euler.ToQuat());
+			}
 			void SetScale(const Vec3 & xyz);
 			void SetTransform(const Basic::Transform & transform);
 
 		private:
-			void UpdateMat();
+			void UpdateMat() const;
 
 			Point3 position;
 			Quatf rotation;
 			Vec3 scale;
 
-			bool dirtyTransform;
-			Basic::Transform transform;
+			mutable bool dirtyTransform;
+			mutable Basic::Transform transform;
 		};
 	}
 }

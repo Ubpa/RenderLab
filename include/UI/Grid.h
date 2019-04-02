@@ -3,9 +3,9 @@
 
 #include <CppUtil/Basic/HeapObj.h>
 
-#include <qstring.h>
+#include <CppUtil/Basic/RGB.h>
 
-#include <glm/vec3.hpp>
+#include <qstring.h>
 
 #include <functional>
 #include <vector>
@@ -63,7 +63,7 @@ namespace Ui {
 		void AddText(const std::string & text, numT val) { AddText(text, QString::number(val).toStdString()); }
 
 		// color : [0, 1] x 3
-		void AddEditColor(const std::string & text, glm::vec3 & color);
+		void AddEditColor(const std::string & text, CppUtil::RGBf & color);
 
 		// combobox
 		typedef std::map<std::string, std::function<void()>> SlotMap;
