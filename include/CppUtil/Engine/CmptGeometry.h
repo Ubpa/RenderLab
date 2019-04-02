@@ -13,9 +13,7 @@ namespace CppUtil {
 			CmptGeometry(Basic::Ptr<SObj> sobj, Basic::Ptr<Primitive> primitive)
 				: Component(sobj), primitive(primitive) { }
 
-			Basic::Ptr<Primitive> GetPrimitive() { return primitive; }
-			void SetPrimitive(Basic::Ptr<Primitive> primitive) { this->primitive = primitive; }
-		private:
+		public:
 			Basic::Ptr<Primitive> primitive;
 		};
 	}

@@ -7,9 +7,6 @@
 namespace CppUtil {
 	namespace Basic {
 		template <typename T>
-		class Quat;
-
-		template <typename T>
 		class EulerYXZ : public Val<3, T> {
 		public:
 			using Val<3, T>::Val;
@@ -21,7 +18,10 @@ namespace CppUtil {
 		};
 	}
 
-	using EulerYXZf = Basic::EulerYXZ<float>;
+	template<typename T>
+	using EulerYXZ = Basic::EulerYXZ<T>;
+
+	using EulerYXZf = EulerYXZ<float>;
 }
 
 #endif // !_CPPUTIL_BASIC_MATH_EULER_YXZ_H_

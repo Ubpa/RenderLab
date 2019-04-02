@@ -3,10 +3,17 @@
 
 #include <CppUtil/Basic/EleVisitor.h>
 #include <3rdParty/tinyxml2.h>
+#include <CppUtil/Basic/Transform.h>
+
+#include <CppUtil/Basic/Point.h>
+#include <CppUtil/Basic/Vector.h>
+#include <CppUtil/Basic/Normal.h>
+#include <CppUtil/Basic/RGB.h>
+#include <CppUtil/Basic/RGBA.h>
 
 #include <stack>
-#include <glm/glm.hpp>
 #include <functional>
+#include <sstream>
 
 namespace CppUtil {
 	namespace Basic {
@@ -16,18 +23,18 @@ namespace CppUtil {
 	namespace Engine {
 		class SObj;
 
-		class Camera;
+		class CmptCamera;
 
-		class Geometry;
+		class CmptGeometry;
 		class Sphere;
 		class Plane;
 		class TriMesh;
 
-		class Light;
+		class CmptLight;
 		class AreaLight;
 		class PointLight;
 
-		class Material;
+		class CmptMaterial;
 		class BSDF_CookTorrance;
 		class BSDF_Diffuse;
 		class BSDF_Emission;
@@ -36,7 +43,7 @@ namespace CppUtil {
 		class BSDF_Mirror;
 		class BSDF_FrostedGlass;
 
-		class Transform;
+		class CmptTransform;
 
 		class SObjSaver : public Basic::EleVisitor {
 			ELEVISITOR_SETUP(SObjSaver)
@@ -49,18 +56,18 @@ namespace CppUtil {
 			void Visit(Basic::Ptr<Basic::Image> img);
 
 			void Visit(Basic::Ptr<SObj> sobj);
-			void Visit(Basic::Ptr<Camera> camera);
+			void Visit(Basic::Ptr<CmptCamera> camera);
 
-			void Visit(Basic::Ptr<Geometry> geometry);
+			void Visit(Basic::Ptr<CmptGeometry> geometry);
 			void Visit(Basic::Ptr<Sphere> sphere);
 			void Visit(Basic::Ptr<Plane> plane);
 			void Visit(Basic::Ptr<TriMesh> mesh);
 
-			void Visit(Basic::Ptr<Light> light);
+			void Visit(Basic::Ptr<CmptLight> light);
 			void Visit(Basic::Ptr<AreaLight> areaLight);
 			void Visit(Basic::Ptr<PointLight> pointLight);
 
-			void Visit(Basic::Ptr<Material> meterial);
+			void Visit(Basic::Ptr<CmptMaterial> meterial);
 			void Visit(Basic::Ptr<BSDF_CookTorrance> bsdf);
 			void Visit(Basic::Ptr<BSDF_Diffuse> bsdf);
 			void Visit(Basic::Ptr<BSDF_Emission> bsdf);
@@ -69,7 +76,7 @@ namespace CppUtil {
 			void Visit(Basic::Ptr<BSDF_Mirror> bsdf);
 			void Visit(Basic::Ptr<BSDF_FrostedGlass> bsdf);
 
-			void Visit(Basic::Ptr<Transform> transform);
+			void Visit(Basic::Ptr<CmptTransform> transform);
 
 		private:
 			tinyxml2::XMLText * NewText(const std::string & text) {
@@ -110,8 +117,40 @@ namespace CppUtil {
 			void NewEle(const char * const name, int val) {
 				NewEle(parentEleStack.back(), name, std::to_string(val));
 			}
+			
+			template<int N, typename T>
+			void NewEle(const char * const name, const Val<N, T> & val) {
+				std::stringstream ss;
+				for (int i = 0; i < N - 1; i++)
+					ss << val[i] << " ";
+				ss << val[N-1];
+				NewEle(name, ss.str());
+			}
 
-			void NewEle(const char * const name, const glm::vec3 & vec);
+			template<int N, typename T>
+			void NewEle(const char * const name, const Point<N, T> & val) {
+				NewEle(name, static_cast<Val<N, T>>(val));
+			}
+
+			template<int N, typename T>
+			void NewEle(const char * const name, const Vector<N, T> & val) {
+				NewEle(name, static_cast<Val<N, T>>(val));
+			}
+
+			template<typename T>
+			void NewEle(const char * const name, const Normal<T> & val) {
+				NewEle(name, static_cast<Val<3, T>>(val));
+			}
+
+			template<typename T>
+			void NewEle(const char * const name, const RGB<T> & val) {
+				NewEle(name, static_cast<Val<3, T>>(val));
+			}
+
+			template<typename T>
+			void NewEle(const char * const name, const RGBA<T> & val) {
+				NewEle(name, static_cast<Val<4, T>>(val));
+			}
 
 			void Member(tinyxml2::XMLElement * parent, const std::function<void()> & func);
 

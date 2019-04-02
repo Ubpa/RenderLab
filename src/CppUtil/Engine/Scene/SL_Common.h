@@ -33,8 +33,8 @@ namespace str {
 
 	// ------------- Camera
 
-	namespace Camera {
-		const char * const type = "Camera";
+	namespace CmptCamera {
+		const char * const type = "CmptCamera";
 
 		const char * const fov = "fov";
 		const char * const ar = "ar";
@@ -44,16 +44,13 @@ namespace str {
 
 	// ------------- Geometry
 
-	namespace Geometry {
-		const char * const type = "Geometry";
+	namespace CmptGeometry {
+		const char * const type = "CmptGeometry";
 		const char * const primitive = "primitive";
 	}
 
 	namespace Sphere {
 		const char * const type = "Sphere";
-
-		const char * const center = "center";
-		const char * const radius = "radius";
 	}
 
 	namespace Plane {
@@ -75,10 +72,10 @@ namespace str {
 
 	// ------------- Light
 
-	namespace Light {
-		const char * const type = "Light";
+	namespace CmptLight {
+		const char * const type = "CmptLight";
 		
-		const char * const lightBase = "lightBase";
+		const char * const light = "light";
 	}
 
 	namespace AreaLight {
@@ -101,16 +98,16 @@ namespace str {
 
 	// ------------- Material
 
-	namespace Material {
-		const char * const type = "Material";
+	namespace CmptMaterial {
+		const char * const type = "CmptMaterial";
 
-		const char * const materialBase = "materialBase";
+		const char * const material = "material";
 	}
 
 	// ------------- Transform
 
-	namespace Transform {
-		const char * const type = "Transform";
+	namespace CmptTransform {
+		const char * const type = "CmptTransform";
 
 		const char * const Position = "Position";
 		const char * const Rotation = "Rotation";
@@ -129,7 +126,7 @@ namespace str {
 	namespace BSDF_Diffuse {
 		const char * const type = "BSDF_Diffuse";
 
-		const char * const albedoColor = "albedoColor";
+		const char * const colorFactor = "colorFactor";
 		const char * const albedoTexture = "albedoTexture";
 	}
 
@@ -155,7 +152,7 @@ namespace str {
 	namespace BSDF_MetalWorkflow {
 		const char * const type = "BSDF_MetalWorkflow";
 
-		const char * const albedoColor = "albedoColor";
+		const char * const colorFactor = "colorFactor";
 		const char * const albedoTexture = "albedoTexture";
 		const char * const metallicFactor = "metallicFactor";
 		const char * const metallicTexture = "metallicTexture";

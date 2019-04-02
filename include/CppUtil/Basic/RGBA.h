@@ -134,7 +134,10 @@ namespace CppUtil {
 		}
 	}
 
-	using RGBAf = Basic::RGBA<float>;
+	template<typename T>
+	using RGBA = Basic::RGBA<T>;
+
+	using RGBAf = RGBA<float>;
 }
 
 #endif // !_CPPUTIL_BASIC_MATH_RGBA_H_

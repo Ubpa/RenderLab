@@ -22,15 +22,15 @@ namespace CppUtil {
 				: Node(parent), name(name) { }
 
 			bool Save(const std::string & path);
-			static SObj::Ptr Load(const std::string & path);
+			static const SObj::Ptr Load(const std::string & path);
 
 		public:
 			template<typename T>
-			Basic::Ptr<T> GetComponent(T * useless_parameter = nullptr) const;
+			const Basic::Ptr<T> GetComponent(T * useless_parameter = nullptr) const;
 
 			bool HaveComponentSameTypeWith(Basic::Ptr<Component> ptr) const;
 
-			std::vector<Basic::Ptr<Component>> GetAllComponents() const;
+			const std::vector<Basic::Ptr<Component>> GetAllComponents() const;
 
 			void AttachComponent(Basic::Ptr<Component> component);
 
@@ -41,19 +41,19 @@ namespace CppUtil {
 			void DetachComponent(Basic::Ptr<T> component);
 
 			template<typename T>
-			Basic::Ptr<T> GetComponentInChildren();
+			const Basic::Ptr<T> GetComponentInChildren();
 
 			template<typename T>
-			std::vector<Basic::Ptr<T>> GetComponentsInChildren();
+			const std::vector<Basic::Ptr<T>> GetComponentsInChildren();
 
 		public:
 			// º¥ ±º∆À„
-			Basic::Transform GetLocalToWorldMatrix();
-			Basic::Transform GetWorldToLocalMatrix() {
+			const Basic::Transform GetLocalToWorldMatrix();
+			const Basic::Transform GetWorldToLocalMatrix() {
 				return GetLocalToWorldMatrix().Inverse();
 			}
-			Pointf GetWorldPos() {
-				return GetLocalToWorldMatrix()(Pointf(0));
+			const Point3 GetWorldPos() {
+				return GetLocalToWorldMatrix()(Point3(0));
 			}
 
 		public:

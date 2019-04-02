@@ -11,6 +11,10 @@ namespace CppUtil {
 		template <typename T>
 		class Val<4, T> {
 		public:
+			static constexpr int valNum = 4;
+			using valType = T;
+
+		public:
 			template <typename T1, typename T2, typename T3, typename T4>
 			Val(T1 x, T2 y, T3 z, T4 w) :
 				x(static_cast<T>(x)),
@@ -21,6 +25,9 @@ namespace CppUtil {
 			explicit Val(T val) : Val(val, val, val, val) { }
 
 			Val() : Val(static_cast<T>(0)) { }
+
+			template<int N, typename U>
+			Val(U(&arr)[N]) : Val(arr[0], arr[1], arr[2], arr[3]) { assert(N >= 4); }
 
 			template<typename U, typename V, typename W>
 			Val(const Val<2, U> & xy, V z, W w) : Val(xy.x, xy.y, z, w) { }

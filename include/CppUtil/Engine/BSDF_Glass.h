@@ -11,10 +11,10 @@ namespace CppUtil {
 			BSDF_Glass(float ior = 1.f, const RGBf & transmittance = RGBf(1.f), const RGBf & reflectance = RGBf(1.f))
 				: ior(ior), transmittance(transmittance), reflectance(reflectance) { }
 
-			virtual const RGBf F(const Normalf & wo, const Normalf & wi, const Point2 & texcoord);
+			virtual const RGBf F(const Normalf & wo, const Normalf & wi, const Point2 & texcoord) { return RGBf(0.f); }
 
 			// probability density function
-			virtual float PDF(const Normalf & wo, const Normalf & wi, const Point2 & texcoord);
+			virtual float PDF(const Normalf & wo, const Normalf & wi, const Point2 & texcoord) { return 0; }
 
 			// PD is probability density
 			// return albedo

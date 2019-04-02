@@ -8,7 +8,7 @@ namespace CppUtil {
 		class Sampler3D {
 		public:
 			virtual const Val3 GetSample() = 0;
-			virtual const Val3 GetSample(float & pd);
+			virtual const Val3 GetSample(float & pd) = 0;
 			virtual ~Sampler3D() {}
 		};
 	}

@@ -19,11 +19,14 @@ namespace CppUtil {
 		}
 	}
 
-	using Val2f = Basic::Val<2, float>;
+	template <int N, typename T>
+	using Val = Basic::Val<N, T>;
+
+	using Val2f = Val<2, float>;
 	using Val2 = Val2f;
-	using Val3f = Basic::Val<3, float>;
+	using Val3f = Val<3, float>;
 	using Val3 = Val3f;
-	using Val4f = Basic::Val<4, float>;
+	using Val4f = Val<4, float>;
 	using Val4 = Val4f;
 }
 

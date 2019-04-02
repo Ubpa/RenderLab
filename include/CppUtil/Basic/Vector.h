@@ -22,11 +22,14 @@ namespace CppUtil {
 		}
 	}
 
-	using Vec2f = Basic::Vector<2, float>;
+	template <int N, typename T>
+	using Vector = Basic::Vector<N, T>;
+
+	using Vec2f = Vector<2, float>;
 	using Vec2 = Vec2f;
-	using Vec3f = Basic::Vector<3, float>;
+	using Vec3f = Vector<3, float>;
 	using Vec3 = Vec3f;
-	using Vec4f = Basic::Vector<4, float>;
+	using Vec4f = Vector<4, float>;
 	using Vec4 = Vec4f;
 }
 

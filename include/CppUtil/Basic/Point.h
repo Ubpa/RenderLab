@@ -9,14 +9,17 @@ namespace CppUtil {
 		class Point;
 	}
 
-	using Point2 = Basic::Point<2, float>;
-	using Point2i = Basic::Point<2, int>;
+	template <int N, typename T>
+	using Point = Basic::Point<N, T>;
+
+	using Point2 = Point<2, float>;
+	using Point2i = Point<2, int>;
 	using Point2 = Point2;
 
-	using Point3 = Basic::Point<3, float>;
+	using Point3 = Point<3, float>;
 	using Point3 = Point3;
 
-	using Point4f = Basic::Point<4, float>;
+	using Point4f = Point<4, float>;
 	using Point4 = Point4f;
 }
 

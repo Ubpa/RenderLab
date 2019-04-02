@@ -18,7 +18,7 @@ struct SObj::Wrapper<T, true> {
 };
 
 template<typename T>
-CppUtil::Basic::Ptr<T> SObj::GetComponent(T *) const {
+const CppUtil::Basic::Ptr<T> SObj::GetComponent(T *) const {
 	return Wrapper<T, std::is_base_of<Component, T>::value>::GetComponent(components);
 }
 
@@ -33,7 +33,7 @@ void SObj::DetachComponent(Basic::Ptr<T> component) {
 }
 
 template<typename T>
-CppUtil::Basic::Ptr<T> SObj::GetComponentInChildren() {
+const CppUtil::Basic::Ptr<T> SObj::GetComponentInChildren() {
 	Basic::Ptr<T> componentOfT = nullptr;
 	auto visitor = ToPtr(new Basic::EleVisitor);
 	visitor->Reg<SObj>([&componentOfT, visitor](SObj::Ptr sobj) {
@@ -55,7 +55,7 @@ CppUtil::Basic::Ptr<T> SObj::GetComponentInChildren() {
 }
 
 template<typename T>
-std::vector<CppUtil::Basic::Ptr<T> > SObj::GetComponentsInChildren() {
+const std::vector<CppUtil::Basic::Ptr<T> > SObj::GetComponentsInChildren() {
 	std::vector<Basic::Ptr<T>> componentsOfT;
 	auto visitor = ToPtr(new Basic::EleVisitor);
 

@@ -67,7 +67,10 @@ namespace CppUtil {
 			}
 		};
 	}
-	using Normalf = Basic::Normal<float>;
+	template<typename T>
+	using Normal = Basic::Normal<T>;
+
+	using Normalf = Normal<float>;
 }
 
 #endif // !_CPPUTIL_BASIC_MATH_NORMAL_H_

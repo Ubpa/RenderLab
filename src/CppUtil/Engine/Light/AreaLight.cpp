@@ -4,7 +4,7 @@ using namespace CppUtil;
 using namespace CppUtil::Engine;
 using namespace glm;
 
-RGBf AreaLight::Sample_L(const Point3 & p, Normalf & wi, float & distToLight, float & PD) const {
+const RGBf AreaLight::Sample_L(const Point3 & p, Normalf & wi, float & distToLight, float & PD) const {
 	if (p.y >= 0) {
 		PD = 0;
 		return RGBf(0);
@@ -38,7 +38,7 @@ float AreaLight::PDF(const Point3 & p, const Normalf & wi) const {
 	return sqDist / (area * cosTheta);
 }
 
-RGBf AreaLight::GetL(const Point3 & p, const Vec3 & dirToLight, float & distToLight) {
+const RGBf AreaLight::GetL(const Point3 & p, const Vec3 & dirToLight, float & distToLight) {
 	Point3 posOnLight;
 	if (!Hit(p, dirToLight, posOnLight))
 		return RGBf(0);
@@ -49,7 +49,7 @@ RGBf AreaLight::GetL(const Point3 & p, const Vec3 & dirToLight, float & distToLi
 	return intensity * color;
 }
 
-RGBf AreaLight::GetMaxL(const Point3 & p) const {
+const RGBf AreaLight::GetMaxL(const Point3 & p) const {
 	return p.y < 0 ? intensity * color : RGBf(0);
 }
 

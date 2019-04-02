@@ -10,6 +10,7 @@
 
 #include <ROOT_PATH.h>
 
+using namespace CppUtil;
 using namespace CppUtil::Basic;
 using namespace CppUtil::Engine;
 using namespace glm;
@@ -31,35 +32,35 @@ int main() {
 	auto sobj35 = ToPtr(new SObj(sobj3, "sobj35"));
 
 	{
-		auto camera = ToPtr(new Camera(sobj1, 3, 3, 3, 3));
-		auto transform = ToPtr(new Transform(sobj1));
-		transform->SetPosition(vec3(3, 3, 3));
-		transform->SetRotation(vec3(3, 3, 3));
-		transform->SetScale(vec3(3, 3, 3));
-		auto light = ToPtr(new Light(sobj1, nullptr));
-		auto material = ToPtr(new Material(sobj1, nullptr));
-		auto geometry = ToPtr(new Geometry(sobj1, nullptr));
+		auto camera = ToPtr(new CmptCamera(sobj1, 3, 3, 3, 3));
+		auto transform = ToPtr(new CmptTransform(sobj1));
+		transform->SetPosition(Vec3(3, 3, 3));
+		transform->SetRotation(EulerYXZf(3, 3, 3).ToQuat());
+		transform->SetScale(Vec3(3, 3, 3));
+		auto light = ToPtr(new CmptLight(sobj1, nullptr));
+		auto material = ToPtr(new CmptMaterial(sobj1, nullptr));
+		auto geometry = ToPtr(new CmptGeometry(sobj1, nullptr));
 	}
 
 	{
-		auto geometry0 = ToPtr(new Geometry(sobj2, ToPtr(new Sphere(vec3(3,3,3),3))));
-		auto geometry1 = ToPtr(new Geometry(sobj3, ToPtr(new Plane)));
-		auto light = ToPtr(new Light(sobj2, ToPtr(new AreaLight(vec3(3),3.f,3.f,3.f))));
+		auto geometry0 = ToPtr(new CmptGeometry(sobj2, ToPtr(new Sphere)));
+		auto geometry1 = ToPtr(new CmptGeometry(sobj3, ToPtr(new Plane)));
+		auto light = ToPtr(new CmptLight(sobj2, ToPtr(new AreaLight(Vec3(3),3.f,3.f,3.f))));
 	}
 
 	{
-		auto material0 = ToPtr(new Material(sobj30, ToPtr(new BSDF_CookTorrance(3.f, 3.f, vec3(3),vec3(3)))));
-		auto material1 = ToPtr(new Material(sobj31, ToPtr(new BSDF_Diffuse(vec3(3.f)))));
-		auto material2 = ToPtr(new Material(sobj32, ToPtr(new BSDF_Emission(vec3(3.f),3.f))));
-		auto material3 = ToPtr(new Material(sobj33, ToPtr(new BSDF_Glass(3.f,vec3(3.f),vec3(3.f)))));
-		auto material4 = ToPtr(new Material(sobj34, ToPtr(new BSDF_MetalWorkflow(vec3(3.f),3.f,3.f))));
-		auto material5 = ToPtr(new Material(sobj35, ToPtr(new BSDF_Mirror(vec3(3.f)))));
+		auto material0 = ToPtr(new CmptMaterial(sobj30, ToPtr(new BSDF_CookTorrance(3.f, 3.f, Vec3(3),Vec3(3)))));
+		auto material1 = ToPtr(new CmptMaterial(sobj31, ToPtr(new BSDF_Diffuse(Vec3(3.f)))));
+		auto material2 = ToPtr(new CmptMaterial(sobj32, ToPtr(new BSDF_Emission(Vec3(3.f),3.f))));
+		auto material3 = ToPtr(new CmptMaterial(sobj33, ToPtr(new BSDF_Glass(3.f,Vec3(3.f),Vec3(3.f)))));
+		auto material4 = ToPtr(new CmptMaterial(sobj34, ToPtr(new BSDF_MetalWorkflow(Vec3(3.f),3.f,3.f))));
+		auto material5 = ToPtr(new CmptMaterial(sobj35, ToPtr(new BSDF_Mirror(Vec3(3.f)))));
 	}
 
 	{
 		auto sobj_IronSphere = ToPtr(new SObj(sobj5, "rusted iron sphere"));
 
-		auto bsdfIron = ToPtr(new BSDF_MetalWorkflow(vec3(3), 3.f, 3.f));
+		auto bsdfIron = ToPtr(new BSDF_MetalWorkflow(Vec3(3), 3.f, 3.f));
 		auto ironAlbedoImg = ToPtr(new Image((ROOT_PATH + "data/textures/pbr/rusted_iron/albedo.png").c_str()));
 		bsdfIron->SetAlbedoTexture(ironAlbedoImg);
 		auto ironMatallicImg = ToPtr(new Image((ROOT_PATH + "data/textures/pbr/rusted_iron/metallic.png").c_str()));
@@ -70,7 +71,7 @@ int main() {
 		bsdfIron->SetAOTexture(ironAOImg);
 		auto ironNormalImg = ToPtr(new Image((ROOT_PATH + "data/textures/pbr/rusted_iron/normal.png").c_str()));
 		bsdfIron->SetNormalTexture(ironNormalImg);
-		auto materialIron = ToPtr(new Material(sobj_IronSphere, bsdfIron));
+		auto materialIron = ToPtr(new CmptMaterial(sobj_IronSphere, bsdfIron));
 	}
 
 	sobj->Save(ROOT_PATH + "data/out/write.xml");

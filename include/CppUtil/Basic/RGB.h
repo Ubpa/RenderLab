@@ -121,7 +121,10 @@ namespace CppUtil {
 		}
 	}
 
-	using RGBf = Basic::RGB<float>;
+	template<typename T>
+	using RGB = Basic::RGB<T>;
+
+	using RGBf = RGB<float>;
 }
 
 #endif // !_CPPUTIL_BASIC_MATH_RGB_H_

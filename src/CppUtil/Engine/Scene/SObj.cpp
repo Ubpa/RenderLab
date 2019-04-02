@@ -22,7 +22,7 @@ void SObj::AttachComponent(CppUtil::Basic::Ptr<Component> component) {
 	components[typeid(*component)] = component;
 }
 
-std::vector<CppUtil::Basic::Ptr<Component>> SObj::GetAllComponents() const {
+const std::vector<CppUtil::Basic::Ptr<Component>> SObj::GetAllComponents() const {
 	std::vector<CppUtil::Basic::Ptr<Component>> rst;
 
 	for (auto & component : components)
@@ -31,7 +31,7 @@ std::vector<CppUtil::Basic::Ptr<Component>> SObj::GetAllComponents() const {
 	return rst;
 }
 
-Transform SObj::GetLocalToWorldMatrix() {
+const Transform SObj::GetLocalToWorldMatrix() {
 	Transform tsfm(1.0f);
 
 	auto getMatVisitor = ToPtr(new EleVisitor);
@@ -61,6 +61,6 @@ bool SObj::Save(const string & path) {
 	return true;
 }
 
-SObj::Ptr SObj::Load(const string & path) {
+const SObj::Ptr SObj::Load(const string & path) {
 	return SObjLoader::Load(path);
 }

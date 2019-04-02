@@ -19,13 +19,13 @@ namespace CppUtil {
 			
 			Quat() : Quat(1, Val<3, T>(0)) { }
 			
-			explicit Quat(T real) : Quat(real, Val<3, T>(0)) { }
+			Quat(T real) : Quat(real, Val<3, T>(0)) { }
 
 			template<typename U>
-			explicit Quat(const Val<3, U> & imag) : Quat(0, imag) { }
+			Quat(const Val<3, U> & imag) : Quat(0, imag) { }
 
 			template<typename U>
-			explicit Quat(const Val<4, U> & val4) : Quat(val4.real, val4.imag) { }
+			Quat(const Val<4, U> & val4) : Quat(val4.real, val4.imag) { }
 
 			template<typename U, typename V>
 			Quat(const Vector<3, U> & axis, V theta) {
@@ -181,6 +181,9 @@ namespace CppUtil {
 			return q * k;
 		}
 	}
+
+	template<typename T>
+	using Quat = Basic::Quat<T>;
 
 	using Quatf = Basic::Quat<float>;
 }

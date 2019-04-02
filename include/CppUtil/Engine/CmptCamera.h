@@ -17,7 +17,7 @@ namespace CppUtil {
 			float GetAspectRatio() const { return ar; }
 			void SetAspectRatio(float ar);
 			template<typename numT>
-			void SetAspectRatio(numT w, numT h) { SetAspectRatio(static_cast<float>(w) / static_cast<float>(h)); }
+			void SetAspectRatioWH(numT w, numT h) { SetAspectRatio(static_cast<float>(w) / static_cast<float>(h)); }
 
 			bool InitCoordinate();
 
