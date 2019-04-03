@@ -35,12 +35,10 @@ const Transform SObj::GetLocalToWorldMatrix() {
 	Transform tsfm(1.0f);
 
 	auto getMatVisitor = ToPtr(new EleVisitor);
-	getMatVisitor->Reg<SObj>([&](SObj::Ptr sobj)->bool {
+	getMatVisitor->Reg<SObj>([&](SObj::Ptr sobj) {
 		auto cmpt = sobj->GetComponent<CmptTransform>();
 		if (cmpt != nullptr)
 			tsfm = cmpt->GetTransform() * tsfm;
-
-		return true;
 	});
 
 	AscendAccept(getMatVisitor);

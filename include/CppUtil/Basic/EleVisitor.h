@@ -44,7 +44,7 @@ namespace CppUtil {
 			}
 
 			template<typename EleType>
-			void Reg(std::function<void (Basic::Ptr<EleType>)> visitFunc) {
+			void Reg(const std::function<void (Basic::Ptr<EleType>)> & visitFunc) {
 				visitOps[typeid(EleType)] = [visitFunc](Basic::Ptr<Element> pEle) {
 					visitFunc(Basic::Ptr<EleType>::Cast(pEle));
 				};

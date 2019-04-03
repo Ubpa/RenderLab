@@ -29,12 +29,13 @@ namespace CppUtil {
 			Point<3, T> & operator[](int zeroOrOne) { return data[zeroOrOne]; }
 
 		public:
+			bool IsValid() const { return maxP.x >= minP.x && maxP.y >= minP.y && maxP.z >= minP.z; }
 			bool HasNaN() const { return minP.HasNaN() || maxP.HasNaN(); }
 			const Point<3, T> Corner(int i) const {
 				return Point<3, T>(
 					_data[(i & 1)].x,
-					_data[(i & 2)].y,
-					_data[(i & 4)].z);
+					_data[(i & 2) ? 1 : 0].y,
+					_data[(i & 4) ? 1 : 0].z);
 			}
 			const Point<3, T> Center() const {
 				return Point<3, T>::Mid(minP, maxP);
@@ -42,10 +43,14 @@ namespace CppUtil {
 
 			const Vector<3, T> Diagonal() const { return maxP - minP; }
 			const T SurfaceArea() const {
+				if (!IsValid())
+					return static_cast<T>(0);
 				const auto d = Diagonal();
 				return static_cast<T>(2)*(d.x*d.y + d.x*d.z + d.y*d.z);
 			}
 			T Volume() const {
+				if (!IsValid())
+					return static_cast<T>(0);
 				const auto d = Diagonal();
 				return d.x * d.y * d
 			}

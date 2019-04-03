@@ -95,8 +95,8 @@ const RGBf PathTracer::Trace(ERay & ray, int depth, RGBf pathThroughput) {
 
 	bsdf->ChangeNormal(closestRst.texcoord, closestRst.tangent, closestRst.n);
 
-	auto const surfaceToWorld = closestRst.n.GenCoordSpace();
-	auto const worldToSurface = surfaceToWorld.Transpose();
+	const auto surfaceToWorld = closestRst.n.GenCoordSpace();
+	const auto worldToSurface = surfaceToWorld.Transpose();
 
 	// w_out 处于表面坐标系，向外
 	const Normalf w_out = (worldToSurface * (-ray.d)).Norm();

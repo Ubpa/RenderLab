@@ -86,8 +86,6 @@ private:
 private:
 	QWidget * GenItem(Component::Ptr component, const QString & str) {
 		auto item = new QWidget;
-		attr->component2item[component] = item;
-		attr->item2component[item] = component;
 		attr->componentType2item[typeid(*component)] = item;
 		attr->tbox->insertItem(0, item, str);
 		return item;
@@ -417,7 +415,7 @@ void Attribute::ComponentVisitor::Visit(PointLight::Ptr light) {
 // -------------- Attribute --------------
 
 Attribute::Attribute()
-	: tbox(nullptr), sobj(nullptr), visitor(ToPtr(new ComponentVisitor(this))){
+	: tbox(nullptr), visitor(ToPtr(new ComponentVisitor(this))){
 }
 
 void Attribute::Init(QToolBox * tbox) {
@@ -429,8 +427,6 @@ void Attribute::SetSObj(SObj::Ptr sobj) {
 	if (!tbox)
 		return;
 
-	this->sobj = sobj;
-
 	// clear
 	int num = tbox->count();
 	while (num-- > 0) {
@@ -439,8 +435,6 @@ void Attribute::SetSObj(SObj::Ptr sobj) {
 		tbox->removeItem(0);
 		delete item;
 	}
-	component2item.clear();
-	item2component.clear();
 	item2grid.clear();
 
 	if (sobj == nullptr)
@@ -449,10 +443,10 @@ void Attribute::SetSObj(SObj::Ptr sobj) {
 	for (auto component : sobj->GetAllComponents())
 		component->Accept(visitor);
 
-	AddController();
+	AddController(sobj);
 }
 
-void Attribute::AddController() {
+void Attribute::AddController(SObj::Ptr sobj) {
 	auto item = new QWidget;
 	tbox->insertItem(tbox->count(), item, "Controller");
 
@@ -529,14 +523,14 @@ void Attribute::AddController() {
 		if (component == nullptr)
 			return;
 
-		auto target2 = component2item.find(component);
-		if (target2 == component2item.end())
+		auto target2 = componentType2item.find(typeid(*component));
+		if (target2 == componentType2item.cend())
 			return;
 
 		auto tboxItem = target2->second;
 
-		component2item.erase(component);
-		item2component.erase(tboxItem);
+		componentType2item.erase(target2);
+
 		item2grid.erase(tboxItem);
 
 		tbox->removeItem(tbox->indexOf(tboxItem));

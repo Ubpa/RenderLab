@@ -34,10 +34,6 @@ RTX_Renderer::RTX_Renderer(const function<RayTracer::Ptr()> & generator)
 	curLoop(0),
 	threadNum(THREAD_NUM)
 {
-	for (int i = 0; i < threadNum; i++) {
-		auto rayTracer = generator();
-		rayTracers.push_back(rayTracer);
-	}
 }
 
 void RTX_Renderer::Run(Scene::Ptr scene, Image::Ptr img) {
@@ -53,6 +49,13 @@ void RTX_Renderer::Run(Scene::Ptr scene, Image::Ptr img) {
 	for (int i = 0; i < w; i++) {
 		for (int j = 0; j < h; j++)
 			img->SetPixel(i, j, RGBf(0.f));
+	}
+
+	vector<RayTracer::Ptr> rayTracers;
+
+	for (int i = 0; i < threadNum; i++) {
+		auto rayTracer = generator();
+		rayTracers.push_back(rayTracer);
 	}
 	
 	// init ray tracer

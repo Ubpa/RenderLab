@@ -72,7 +72,7 @@ void RayIntersector::Visit(BVHAccel::Ptr bvhAccel) {
 	rst.closestSObj = nullptr;
 	bvhAccel->GetBVHRoot()->Accept(This());
 	if (rst.closestSObj) {
-		const auto & mat = bvhAccel->GetEleL2WMat(rst.closestSObj);
+		const auto & mat = bvhAccel->GetSObjL2WMat(rst.closestSObj);
 		rst.n = mat(rst.n).Norm();
 		rst.tangent = mat(rst.tangent).Norm();
 	}

@@ -33,17 +33,14 @@ namespace Ui {
 		void SetSObj(CppUtil::Basic::Ptr<CppUtil::Engine::SObj> sobj);
 
 	private:
-		void AddController();
+		void AddController(CppUtil::Basic::Ptr<CppUtil::Engine::SObj> sobj);
 
 	private:
 		class ComponentVisitor;
 		friend class ComponentVisitor;
 
 		QToolBox * tbox;
-		CppUtil::Basic::Ptr<CppUtil::Engine::SObj> sobj;
 
-		std::map<CppUtil::Basic::Ptr<CppUtil::Engine::Component>, QWidget *> component2item;
-		std::map<QWidget *, CppUtil::Basic::Ptr<CppUtil::Engine::Component>> item2component;
 		CppUtil::Basic::TypeMap<QWidget *> componentType2item;
 		std::map<QWidget *, CppUtil::Basic::Ptr<Grid>> item2grid;
 

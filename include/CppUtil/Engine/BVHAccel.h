@@ -26,13 +26,18 @@ namespace CppUtil {
 		public:
 			BVHAccel();
 
+		public:
 			void Init(Basic::Ptr<SObj> root);
+			void Clear();
 
+		public:
 			Basic::Ptr<BVHNode<Basic::Element, BVHAccel>> GetBVHRoot() const { return bvhRoot; }
-			const Basic::Transform & GetEleW2LMat(Basic::Ptr<Basic::Element> element);
-			const Basic::Transform & GetEleL2WMat(Basic::Ptr<Basic::Element> element);
-			const BBoxf & GetBBox(Basic::Ptr<Basic::Element> element) { return ele2bbox[element]; }
-			const Basic::Ptr<SObj> GetSObj(Basic::Ptr<Basic::Element> element);
+
+			const Basic::Transform & GetEleW2LMat(Basic::Ptr<Basic::Element> element) const;
+			const Basic::Transform & GetEleL2WMat(Basic::Ptr<Basic::Element> element) const;
+			const Basic::Transform & GetSObjL2WMat(Basic::Ptr<SObj> sobj) const;
+			const BBoxf & GetBBox(Basic::Ptr<Basic::Element> element) const;
+			const Basic::Ptr<SObj> GetSObj(Basic::Ptr<Basic::Element> element) const;
 
 		private:
 			// bvh
@@ -41,6 +46,7 @@ namespace CppUtil {
 			class GetPrimitiveVisitor;
 			std::map<Basic::Ptr<Primitive>, Basic::Transform> worldToLocalMatrixes;
 			std::map<Basic::Ptr<Primitive>, Basic::Transform> localToWorldMatrixes;
+			std::map<Basic::Ptr<SObj>, Basic::Transform> sobjL2W;
 			std::map<Basic::Ptr<Primitive>, Basic::Ptr<SObj>> primitive2sobj;
 
 			// obj and box

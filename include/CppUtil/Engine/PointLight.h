@@ -34,7 +34,7 @@ namespace CppUtil {
 			// !!! p，wi 处于灯的坐标空间中
 			virtual float PDF(const Point3 & p, const Normalf & wi) const { return 0; }
 
-			virtual bool IsDelta() const { return false; }
+			virtual bool IsDelta() const { return true; }
 
 		public:
 			RGBf color;

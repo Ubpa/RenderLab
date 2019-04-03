@@ -36,7 +36,6 @@ namespace CppUtil {
 
 		private:
 			std::function<Basic::Ptr<RayTracer>()> generator;
-			std::vector<Basic::Ptr<RayTracer>> rayTracers;
 
 			RendererState state;
 			int curLoop;
