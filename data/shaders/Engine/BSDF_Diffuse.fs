@@ -28,7 +28,7 @@ const vec3 gridSamplingDisk[20] = vec3[]
 // ----------------- 结构
 
 struct BSDF_Diffuse {
-	vec3 albedoColor;
+	vec3 colorFactor;
 	
 	bool haveAlbedoTexture;
     sampler2D albedoTexture;
@@ -81,7 +81,7 @@ float Visibility(vec3 lightToFrag, samplerCube depthMap);
 
 void main() {
 	// 获取属性值
-	vec3 albedo = bsdf.albedoColor;
+	vec3 albedo = bsdf.colorFactor;
 	if(bsdf.haveAlbedoTexture) {
 		albedo *= texture(bsdf.albedoTexture, fs_in.TexCoords).xyz;
 	}

@@ -40,10 +40,10 @@ namespace CppUtil {
 			Point3 & GetPos();
 			Vec3 GetFront() const { return front; }
 
-			float GetFOV() const { return fov; }
-			float GetAspectRatio() const { return ratioWH; }
-			float GetNearPlane() const { return nearPlane; }
-			float GetFarPlane() const { return farPlane; }
+			const float & GetFOV() const { return fov; }
+			const float & GetAspectRatio() const { return ratioWH; }
+			const float & GetNearPlane() const { return nearPlane; }
+			const float & GetFarPlane() const { return farPlane; }
 
 		public:
 			void ProcessKeyboard(ENUM_Movement direction, float deltaTime);

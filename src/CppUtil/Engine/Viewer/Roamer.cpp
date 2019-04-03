@@ -15,6 +15,7 @@ using namespace CppUtil::Basic;
 using namespace CppUtil::Engine;
 using namespace CppUtil::QT;
 using namespace CppUtil::OpenGL;
+using namespace std;
 
 Roamer::Roamer(RawAPI_OGLW * pOGLW)
 	: pOGLW(pOGLW), camera(new Camera(Point3(0,0.75,2.3))), lock(false) {
@@ -138,16 +139,15 @@ void Roamer::ListenerInit() {
 
 void Roamer::UpdateCamera() {
 	glBindBuffer(GL_UNIFORM_BUFFER, cameraUBO);
-	glBufferSubData(GL_UNIFORM_BUFFER, 0, 64, camera->GetViewMatrix().GetMatrix().Data());
-	glBufferSubData(GL_UNIFORM_BUFFER, 64, 64, camera->GetProjectionMatrix().GetMatrix().Data());
+	auto viewMatrix = camera->GetViewMatrix().GetMatrix();
+	auto projectM = camera->GetProjectionMatrix().GetMatrix();
+
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, 64, viewMatrix.Data());
+	glBufferSubData(GL_UNIFORM_BUFFER, 64, 64, projectM.Data());
 	glBufferSubData(GL_UNIFORM_BUFFER, 128, 12, camera->GetPos().Data());
-	float nearPlane = camera->GetNearPlane();
-	float farPlane = camera->GetFarPlane();
-	float fov = camera->GetFOV();
-	float ar = camera->GetAspectRatio();
-	glBufferSubData(GL_UNIFORM_BUFFER, 140, 4, &nearPlane);
-	glBufferSubData(GL_UNIFORM_BUFFER, 144, 4, &farPlane);
-	glBufferSubData(GL_UNIFORM_BUFFER, 148, 4, &fov);
-	glBufferSubData(GL_UNIFORM_BUFFER, 152, 4, &ar);
+	glBufferSubData(GL_UNIFORM_BUFFER, 140, 4, &camera->GetNearPlane());
+	glBufferSubData(GL_UNIFORM_BUFFER, 144, 4, &camera->GetFarPlane());
+	glBufferSubData(GL_UNIFORM_BUFFER, 148, 4, &camera->GetFOV());
+	glBufferSubData(GL_UNIFORM_BUFFER, 152, 4, &camera->GetAspectRatio());
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }

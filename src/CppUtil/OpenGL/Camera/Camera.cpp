@@ -19,7 +19,7 @@ Camera::Camera(
 	float yaw,
 	float pitch,
 	float ratioWH,
-	float nearPlaneE,
+	float nearPlane,
 	float farPlane,
 	const Vec3 & up,
 	ENUM_Projection projectionMode
@@ -72,7 +72,7 @@ Transform Camera::GetProjectionMatrix() {
 	switch (projectionMode)
 	{
 	case OpenGL::Camera::PROJECTION_PERSEPCTIVE:
-		return Transform::Perspcetive(glm::radians(fov), ratioWH, nearPlane, farPlane);
+		return Transform::Perspcetive(fov, ratioWH, nearPlane, farPlane);
 	case OpenGL::Camera::PROJECTION_ORTHO:
 		return Transform::Orthographic(fov / 2.0f, fov / 2.0f / ratioWH, nearPlane, farPlane);
 	default:
