@@ -371,3 +371,96 @@ void Grid::AddTitle(const string & text) {
 	AddLine();
 	AddRow(text);
 }
+
+void Grid::AddEditVal(const vector<string> & texts, const Val3 & val, const Val3 & minVal, const Val3 & maxVal, const Val3i & stepNum, const function<void(const Val3 &)> & slot) {
+	auto f_step = (Vec3(maxVal) - Vec3(minVal)) / Vec3(stepNum);
+	auto i_val = (Vec3(val) - Vec3(minVal)) / f_step;
+	QSlider * horizontalSliders[3] = {
+		new QSlider,
+		new QSlider,
+		new QSlider
+	};
+
+	for (int i = 0; i < 3; i++) {
+		horizontalSliders[i]->setOrientation(Qt::Horizontal);
+		horizontalSliders[i]->setMinimum(0);
+		horizontalSliders[i]->setMaximum(stepNum[i]);
+		horizontalSliders[i]->setValue(i_val[i]);
+	}
+
+	QDoubleSpinBox * spinboxs[3] = {
+		new QDoubleSpinBox,
+		new QDoubleSpinBox,
+		new QDoubleSpinBox
+	};
+	for (int i = 0; i < 3; i++) {
+		spinboxs[i]->setMinimum(minVal[i]);
+		spinboxs[i]->setMaximum(maxVal[i]);
+		spinboxs[i]->setSingleStep(f_step[i]);
+		spinboxs[i]->setValue(val[i]);
+	}
+
+	void (QSlider::*signalFunc0)(int) = &QSlider::valueChanged;
+	void (QDoubleSpinBox::*signalFunc1)(double) = &QDoubleSpinBox::valueChanged;
+	for (int idx = 0; idx < 3; idx++) {
+		page->connect(horizontalSliders[idx], &QSlider::sliderMoved, [=](int i_val) {
+			auto d_val = minVal[idx] + i_val * f_step[idx];
+
+			spinboxs[idx]->blockSignals(true);
+			spinboxs[idx]->setValue(d_val);
+			spinboxs[idx]->blockSignals(false);
+
+			auto x = spinboxs[0]->value();
+			auto y = spinboxs[1]->value();
+			auto z = spinboxs[2]->value();
+
+			slot(Val3(x, y, z));
+		});
+
+		page->connect(spinboxs[idx], signalFunc1, [=](double d_val) {
+			auto i_val = (d_val - minVal[idx]) / f_step[idx];
+
+			horizontalSliders[idx]->blockSignals(true);
+			horizontalSliders[idx]->setValue(i_val);
+			horizontalSliders[idx]->blockSignals(false);
+
+			auto x = spinboxs[0]->value();
+			auto y = spinboxs[1]->value();
+			auto z = spinboxs[2]->value();
+
+			slot(Val3(x, y, z));
+		});
+
+		AddText(texts[idx]);
+		AddRow(spinboxs[idx], horizontalSliders[idx]);
+	}
+}
+
+void Grid::AddEditVal(const vector<string> & texts, const Val3 & val, const Val3 & singleStep, const function<void(const Val3 &)> & slot) {
+	QDoubleSpinBox * spinboxs[3] = {
+		new QDoubleSpinBox,
+		new QDoubleSpinBox,
+		new QDoubleSpinBox
+	};
+
+	for (int i = 0; i < 3; i++) {
+		spinboxs[i]->setMinimum(-DBL_MAX);
+		spinboxs[i]->setMaximum(DBL_MAX);
+		spinboxs[i]->setSingleStep(singleStep[i]);
+		spinboxs[i]->setValue(val[i]);
+	}
+
+	void (QDoubleSpinBox::*signalFunc)(double) = &QDoubleSpinBox::valueChanged;
+
+	for (int i = 0; i < 3; i++) {
+		page->connect(spinboxs[i], signalFunc, [=](double) {
+			auto x = spinboxs[0]->value();
+			auto y = spinboxs[1]->value();
+			auto z = spinboxs[2]->value();
+
+			slot(Val3(x, y, z));
+		});
+
+		AddRow(texts[i], spinboxs[i]);
+	}
+}

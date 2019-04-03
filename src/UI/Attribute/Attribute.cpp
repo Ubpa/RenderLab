@@ -25,6 +25,7 @@
 #include <tuple>
 
 using namespace Ui;
+using namespace CppUtil;
 using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
 using namespace CppUtil::Basic::Math;
@@ -115,67 +116,19 @@ void Attribute::ComponentVisitor::Visit(CmptTransform::Ptr transform) {
 
 	// position
 	grid->AddText("- Position");
-	auto pos = transform->GetPosition();
-	grid->AddEditVal("x", pos.x, 0.1, [transform](double x) {
-		auto pos = transform->GetPosition();
-		pos.x = x;
-		transform->SetPosition(pos);
+	grid->AddEditVal({ "x","y","z" }, transform->GetPosition(), Val3(0.1f), [=](const Val3 & val) {
+		transform->SetPosition(val);
 	});
 
-	grid->AddEditVal("y", pos.y, 0.1, [transform](double y) {
-		auto pos = transform->GetPosition();
-		pos.y = y;
-		transform->SetPosition(pos);
-	});
-
-	grid->AddEditVal("z", pos.z, 0.1, [transform](double z) {
-		auto pos = transform->GetPosition();
-		pos.z = z;
-		transform->SetPosition(pos);
-	});
-
-	// rotation
 	grid->AddText("- Rotation");
-	auto rotation = transform->GetRotationEuler();
-	grid->AddEditVal("x", rotation.x, 1.0, [transform](double x) {
-		auto rotation = transform->GetRotationEuler();
-		rotation.x = x;
-		transform->SetRotation(rotation);
+	grid->AddEditVal({"x","y","z"}, transform->GetRotationEuler(), Vec3(-90, -180, -180), Vec3(90, 180, 180), Vec3i(180, 360, 360), [=](const Val3 & val) {
+		transform->SetRotation(EulerYXZf(val));
 	});
 
-	grid->AddEditVal("y", rotation.y, 1.0, [transform](double y) {
-		auto rotation = transform->GetRotationEuler();
-		rotation.y = y;
-		transform->SetRotation(rotation);
-	});
-
-	grid->AddEditVal("z", rotation.y, 1.0, [transform](double z) {
-		auto rotation = transform->GetRotationEuler();
-		rotation.z = z;
-		transform->SetRotation(rotation);
-	});
-
-	// scale
 	grid->AddText("- Scale");
-	auto scale = transform->GetScale();
-	grid->AddEditVal("x", scale.x, 0.1, [transform](double x) {
-		auto scale = transform->GetScale();
-		scale.x = x;
-		transform->SetScale(scale);
+	grid->AddEditVal({ "x","y","z" }, transform->GetScale(), Val3(0.1f), [=](const Val3 & val) {
+		transform->SetScale(val);
 	});
-
-	grid->AddEditVal("y", scale.y, 0.1, [transform](double y) {
-		auto scale = transform->GetScale();
-		scale.y = y;
-		transform->SetScale(scale);
-	});
-
-	grid->AddEditVal("z", scale.z, 0.1, [transform](double z) {
-		auto scale = transform->GetScale();
-		scale.z = z;
-		transform->SetScale(scale);
-	});
-
 }
 
 // -------------- Camera --------------

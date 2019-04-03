@@ -44,7 +44,7 @@ namespace CppUtil {
 			bool HasNaN() const { return std::isnan(x) || std::isnan(y) || std::isnan(z); }
 			bool IsZero() const {
 				static constexpr T zero = static_cast<T>(0);
-				return x == zero && y == zero && z == zero;
+				return Math::ToZero(x) == zero && Math::ToZero(y) == zero && Math::ToZero(z) == zero;
 			}
 
 			const T * Data() const { return _data; }

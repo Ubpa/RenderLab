@@ -82,7 +82,7 @@ namespace CppUtil {
 			}
 
 			bool IsIdentity() const {
-				return imag.IsZero() && abs(real) == 1;
+				return imag.IsZero() && Math::ToVal(abs(real),static_cast<T>(1)) == static_cast<T>(1);
 			}
 
 			T ModularLength() const { return sqrt(imag.Length2() + real * real); }

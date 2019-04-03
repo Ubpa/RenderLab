@@ -133,8 +133,8 @@ const Transform Transform::RotateX(const float theta) {
 	float cosTheta = std::cos(Radians(theta));
 	Mat4f m(
 		1, 0, 0, 0,
-		0, cosTheta, sinTheta, 0,
-		0, -sinTheta, cosTheta, 0,
+		0, cosTheta, -sinTheta, 0,
+		0, sinTheta, cosTheta, 0,
 		0, 0, 0, 1);
 	return Transform(m, m.Transpose());
 }
@@ -142,9 +142,9 @@ const Transform Transform::RotateX(const float theta) {
 const Transform Transform::RotateY(const float theta) {
 	float sinTheta = std::sin(Radians(theta));
 	float cosTheta = std::cos(Radians(theta));
-	Mat4f m(cosTheta, 0, -sinTheta, 0,
+	Mat4f m(cosTheta, 0, sinTheta, 0,
 		0, 1, 0, 0,
-		sinTheta, 0, cosTheta, 0,
+		-sinTheta, 0, cosTheta, 0,
 		0, 0, 0, 1);
 	return Transform(m, m.Transpose());
 }
@@ -152,8 +152,8 @@ const Transform Transform::RotateY(const float theta) {
 const Transform Transform::RotateZ(const float theta) {
 	float sinTheta = std::sin(Radians(theta));
 	float cosTheta = std::cos(Radians(theta));
-	Mat4f m(cosTheta, sinTheta, 0, 0,
-		-sinTheta, cosTheta, 0, 0,
+	Mat4f m(cosTheta, -sinTheta, 0, 0,
+		sinTheta, cosTheta, 0, 0,
 		0, 0, 1, 0,
 		0, 0, 0, 1);
 	return Transform(m, m.Transpose());
@@ -166,18 +166,18 @@ const Transform Transform::Rotate(const Vec3 &axis, const float theta) {
 	Mat4f m;
 	// Compute rotation of first basis vector
 	m(0, 0) = a.x * a.x * (1 - cosTheta) + cosTheta;
-	m(0, 1) = a.x * a.y * (1 - cosTheta) + a.z * sinTheta;
-	m(0, 2) = a.x * a.z * (1 - cosTheta) - a.y * sinTheta;
+	m(0, 1) = a.x * a.y * (1 - cosTheta) - a.z * sinTheta;
+	m(0, 2) = a.x * a.z * (1 - cosTheta) + a.y * sinTheta;
 	m(0, 3) = 0;
 
 	// Compute rotations of second and third basis vectors
-	m(1, 0) = a.x * a.y * (1 - cosTheta) - a.z * sinTheta;
+	m(1, 0) = a.x * a.y * (1 - cosTheta) + a.z * sinTheta;
 	m(1, 1) = a.y * a.y * (1 - cosTheta) + cosTheta;
-	m(1, 2) = a.y * a.z * (1 - cosTheta) + a.x * sinTheta;
+	m(1, 2) = a.y * a.z * (1 - cosTheta) - a.x * sinTheta;
 	m(1, 3) = 0;
 
-	m(2, 0) = a.x * a.z * (1 - cosTheta) + a.y * sinTheta;
-	m(2, 1) = a.y * a.z * (1 - cosTheta) - a.x * sinTheta;
+	m(2, 0) = a.x * a.z * (1 - cosTheta) - a.y * sinTheta;
+	m(2, 1) = a.y * a.z * (1 - cosTheta) + a.x * sinTheta;
 	m(2, 2) = a.z * a.z * (1 - cosTheta) + cosTheta;
 	m(2, 3) = 0;
 	return Transform(m, m.Transpose());
@@ -292,9 +292,9 @@ const Transform::PosRotScale Transform::Decompose() const {
 	tmpMat3.GetCol(2) /= rst.scale.z;
 
 	rst.rot.real = sqrt(tmpMat3.Tr() + 1.f) / 2.f;
-	rst.rot.imag.x = tmpMat3(1, 2) - tmpMat3(2, 1);
-	rst.rot.imag.y = tmpMat3(2, 0) - tmpMat3(0, 2);
-	rst.rot.imag.z = tmpMat3(0, 1) - tmpMat3(1, 0);
+	rst.rot.imag.x = tmpMat3(2, 1) - tmpMat3(1, 2);
+	rst.rot.imag.y = tmpMat3(0, 2) - tmpMat3(2, 0);
+	rst.rot.imag.z = tmpMat3(1, 0) - tmpMat3(0, 1);
 	rst.rot.imag /= 4.f * rst.rot.w;
 
 	return rst;
@@ -306,22 +306,22 @@ const EulerYXZf Transform::RotationEulerYXZ() const {
 	tmpMat3.GetCol(1).NormSelf();
 	tmpMat3.GetCol(2).NormSelf();
 
-	if (tmpMat3(2, 1) == -1.f) {
+	if (tmpMat3(1, 2) == -1.f) {
 		const float x = 90;
-		const float y = Degrees(atan2(-tmpMat3(0, 2), tmpMat3(0, 0)));
+		const float y = Degrees(atan2(-tmpMat3(2, 0), tmpMat3(0, 0)));
 		const float z = 0;
 		return EulerYXZf(x, y, z);
 	}
-	else if (tmpMat3(2, 1) == 1.f) {
+	else if (tmpMat3(1, 2) == 1.f) {
 		const float x = -90;
-		const float y = Degrees(atan2(-tmpMat3(0, 2), tmpMat3(0, 0)));
+		const float y = Degrees(atan2(-tmpMat3(2, 0), tmpMat3(0, 0)));
 		const float z = 0;
 		return EulerYXZf(x, y, z);
 	}
 	else {
-		const float x = Degrees(asin(-tmpMat3(2, 1)));
-		const float y = Degrees(atan2(tmpMat3(2, 0), tmpMat3(2, 2)));
-		const float z = Degrees(atan2(tmpMat3(0, 1), tmpMat3(1, 1)));
+		const float x = Degrees(asin(-tmpMat3(1, 2)));
+		const float y = Degrees(atan2(tmpMat3(0, 2), tmpMat3(2, 2)));
+		const float z = Degrees(atan2(tmpMat3(1, 0), tmpMat3(1, 1)));
 		return EulerYXZf(x, y, z);
 	}
 }

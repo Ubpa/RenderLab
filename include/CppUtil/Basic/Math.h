@@ -33,11 +33,17 @@ namespace CppUtil {
 			}
 
 			template<typename T>
-			T ToZero(T val, T bound = static_cast<T>(0.000001)) {
-				if (val<bound && val > -bound)
-					return static_cast<T>(0);
-				else
+			T ToVal(T orig, T val, T bound = static_cast<T>(0.000001)) {
+				const auto delta = orig - val;
+				if (delta < bound && delta > -bound)
 					return val;
+				else
+					return orig;
+			}
+
+			template<typename T>
+			T ToZero(T orig, T bound = static_cast<T>(0.000001)) {
+				return ToVal(orig, static_cast<T>(0), bound);
 			}
 
 			// [-0x7FFFFFFFF, 0x7FFFFFFF]

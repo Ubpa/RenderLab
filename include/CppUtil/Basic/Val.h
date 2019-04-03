@@ -25,10 +25,15 @@ namespace CppUtil {
 	using Val = Basic::Val<N, T>;
 
 	using Val2f = Val<2, float>;
+	using Val2i = Val<2, int>;
 	using Val2 = Val2f;
+
 	using Val3f = Val<3, float>;
+	using Val3i = Val<3, int>;
 	using Val3 = Val3f;
+
 	using Val4f = Val<4, float>;
+	using Val4i = Val<4, int>;
 	using Val4 = Val4f;
 }
 

@@ -5,6 +5,10 @@
 
 #include <CppUtil/Basic/RGB.h>
 
+#include <CppUtil/Basic/Val2.h>
+#include <CppUtil/Basic/Val3.h>
+#include <CppUtil/Basic/Val4.h>
+
 #include <qstring.h>
 
 #include <functional>
@@ -41,6 +45,10 @@ namespace Ui {
 		void AddEditVal(const std::string & text, volatile int & val) {
 			AddEditVal(text, val, [&val](int v) {val = v; });
 		}
+		void AddEditVal(const std::vector<std::string> & texts, const CppUtil::Val3 & val, const CppUtil::Val3 & singleStep, const std::function<void(const CppUtil::Val3 &)> & slot);
+		void AddEditVal(const std::vector<std::string> & texts, CppUtil::Val3 & val, const CppUtil::Val3 & singleStep) {
+			AddEditVal(texts, val, singleStep, [&](const CppUtil::Val3 & newVal) {val = newVal; });
+		}
 
 		// slider
 		void AddEditVal(const std::string & text, double val, double minVal , double maxVal, int stepNum, const std::function<void(double)> & slot);
@@ -51,6 +59,11 @@ namespace Ui {
 		template <typename numT>
 		void AddEditVal(const std::string & text, volatile numT & val, double minVal, double maxVal, int stepNum) {
 			AddEditVal(text, val, minVal, maxVal, stepNum, [&val](double v) {val = v; });
+		}
+
+		void AddEditVal(const std::vector<std::string> & texts, const CppUtil::Val3 & val, const CppUtil::Val3 & minVal, const CppUtil::Val3 & maxVal, const CppUtil::Val3i & stepNum, const std::function<void(const CppUtil::Val3 &)> & slot);
+		void AddEditVal(const std::vector<std::string> & texts, CppUtil::Val3 & val, const CppUtil::Val3 & minVal, const CppUtil::Val3 & maxVal, const CppUtil::Val3i & stepNum) {
+			AddEditVal(texts, val, minVal, maxVal, stepNum, [&](const CppUtil::Val3 & newVal) {val = newVal; });
 		}
 
 		// checkbox
