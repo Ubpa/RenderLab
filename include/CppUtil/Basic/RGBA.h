@@ -66,6 +66,9 @@ namespace CppUtil {
 			const RGBA Over(const RGBA & rgba) const {
 				// rstA = 1 - (1-a)(1-rgba.a)
 				const auto rstA = a + rgba.a - a * rgba.a;
+				if (rstA == static_cast<T>(0))
+					return RGBA(0, 0, 0, 0);
+
 				const auto rstRGB = (ToRGB() + rgba.ToRGB()*a) / rstA;
 				return RGBA(rstRGB, rstA);
 			}
@@ -113,12 +116,14 @@ namespace CppUtil {
 
 			template <typename U>
 			const RGBA operator/(U f) const {
+				assert(f != static_cast<U>(0));
 				const float inv = (float)1 / f;
 				return RGBA(r * inv, g * inv, b * inv, a * inv);
 			}
 
 			template <typename U>
 			RGBA & operator/=(U f) {
+				assert(f != static_cast<U>(0));
 				const float inv = (float)1 / f;
 				r *= inv;
 				g *= inv;

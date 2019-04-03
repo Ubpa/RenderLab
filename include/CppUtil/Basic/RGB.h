@@ -92,12 +92,14 @@ namespace CppUtil {
 
 			template <typename U>
 			const RGB operator/(U f) const {
+				assert(f != static_cast<U>(0));
 				const float inv = (float)1 / f;
 				return RGB(r * inv, g * inv, b * inv);
 			}
 
 			template <typename U>
 			RGB & operator/=(U f) {
+				assert(f != static_cast<U>(0));
 				const float inv = (float)1 / f;
 				r *= inv;
 				g *= inv;

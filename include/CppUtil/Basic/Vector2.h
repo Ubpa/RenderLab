@@ -40,6 +40,16 @@ namespace CppUtil {
 				return (*this) /= Length();
 			}
 
+			const Vector Abs() const {
+				return Vector(abs(x), abs(y));
+			}
+
+			Vector & AbsSelf() {
+				x = abs(x);
+				y = abs(y);
+				return *this;
+			}
+
 		public:
 			template<typename U>
 			const Vector operator+(const Vector<valNum, U> &v) const {

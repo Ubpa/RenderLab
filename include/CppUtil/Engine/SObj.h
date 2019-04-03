@@ -18,7 +18,7 @@ namespace CppUtil {
 		class SObj final : public Basic::Node<SObj> {
 			ELE_SETUP(SObj)
 		public:
-			SObj(SObj::Ptr parent = nullptr, const std::string & name = "")
+			SObj(SObj::Ptr parent = nullptr, const std::string & name = "SObj")
 				: Node(parent), name(name) { }
 
 			bool Save(const std::string & path);

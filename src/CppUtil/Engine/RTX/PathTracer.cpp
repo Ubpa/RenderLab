@@ -139,7 +139,7 @@ const RGBf PathTracer::SampleLightImpl(
 	const Normalf dirInWorld = lightToWorld(dir_ToLight).Norm();
 
 	// shadow ray 处于世界坐标
-	ray.Init(posInLightSpace, dirInWorld);
+	ray.Init(posInWorldSpace, dirInWorld);
 	visibilityChecker->Init(ray, dist_ToLight - 0.001f);
 	bvhAccel->Accept(visibilityChecker);
 	auto shadowRst = visibilityChecker->GetRst();

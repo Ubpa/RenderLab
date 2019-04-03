@@ -74,11 +74,15 @@ namespace CppUtil {
 		public:
 			const Vector<3, T> GetAxis() const {
 				const auto sinHalfTheta = sqrt(static_cast<T>(1) - real * real);
-				return imag / sinHalfTheta;
+				return sinHalfTheta == 0 ? Vector<3, T>(0) : imag / sinHalfTheta;
 			}
 
 			T GetTheta() const {
 				return Math::Degrees(static_cast<T>(2)*acos(real));
+			}
+
+			bool IsIdentity() const {
+				return imag.IsZero() && abs(real) == 1;
 			}
 
 			T ModularLength() const { return sqrt(imag.Length2() + real * real); }

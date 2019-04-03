@@ -115,9 +115,9 @@ const Transform Transform::Translate(const float x, const float y, const float z
 	);
 
 	Mat4f minv(
-		1, 0, 0, x,
-		0, 1, 0, y,
-		0, 0, 1, z,
+		1, 0, 0, -x,
+		0, 1, 0, -y,
+		0, 0, 1, -z,
 		0, 0, 0, 1
 	);
 
@@ -181,6 +181,13 @@ const Transform Transform::Rotate(const Vec3 &axis, const float theta) {
 	m(2, 2) = a.z * a.z * (1 - cosTheta) + cosTheta;
 	m(2, 3) = 0;
 	return Transform(m, m.Transpose());
+}
+
+const Transform Transform::Rotate(const Quatf & q) {
+	if (q.IsIdentity())
+		return Transform(1.f);
+	else
+		return Rotate(q.GetAxis(), q.GetTheta());
 }
 
 const Transform Transform::LookAt(const Point3 &pos, const Point3 &target, const Vec3 &up) {

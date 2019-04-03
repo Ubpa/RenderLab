@@ -91,9 +91,7 @@ namespace CppUtil {
 			}
 			
 			static const Transform Rotate(const Vec3 &axis, float theta);
-			static const Transform Rotate(const Quatf & q) {
-				return Rotate(q.GetAxis(), q.GetTheta());
-			}
+			static const Transform Rotate(const Quatf & q);
 
 			/*
 			将世界坐标转换到相机坐标

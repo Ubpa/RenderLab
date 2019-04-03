@@ -18,14 +18,17 @@ using namespace CppUtil::Basic;
 using namespace std;
 
 Image::Image()
-	:data(NULL), width(0), height(0), channel(0){ }
+	:data(nullptr), width(0), height(0), channel(0) { }
 
-Image::Image(int width, int height, int channel){
+Image::Image(int width, int height, int channel)
+	: data(nullptr)
+{
 	GenBuffer(width, height, channel);
 }
 
-Image::Image(const string & path, bool flip) {
-	data = NULL;
+Image::Image(const string & path, bool flip)
+	: data(nullptr)
+{
 	Load(path.c_str(), flip);
 }
 
