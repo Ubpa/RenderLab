@@ -103,9 +103,11 @@ void Hierarchy::DeleteSObj() {
 	if (sobj == scene->GetRoot())
 		return;
 
+	scene->SetWriteLock(true);
 	sobj->GetParent()->DelChild(sobj);
 
 	DelItem(item);
+	scene->SetWriteLock(false);
 }
 
 void Hierarchy::SetScene(CppUtil::Basic::Ptr<CppUtil::Engine::Scene> scene) {

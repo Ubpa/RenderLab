@@ -5,6 +5,7 @@
 
 #include <string>
 #include <vector>
+#include <mutex>
 
 namespace CppUtil {
 	namespace Engine {
@@ -34,6 +35,8 @@ namespace CppUtil {
 			// ID >= 1, return "" if error
 			const std::string GetName(int ID) const;
 
+			void SetWriteLock(bool isLock);
+
 		public:
 			std::string name;
 
@@ -41,6 +44,8 @@ namespace CppUtil {
 			Basic::Ptr<SObj> root;
 			std::map<std::string, int> name2ID;
 			std::map<int, std::string> ID2name;
+
+			mutable std::mutex writeLock;
 		};
 	}
 }

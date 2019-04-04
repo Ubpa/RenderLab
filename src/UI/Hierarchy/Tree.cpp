@@ -171,13 +171,13 @@ void Tree::contextMenuEvent(QContextMenuEvent *event) {
 	QMenu mainMenu;
 
 	if (currentItem()) {
-		mainMenu.addAction("Rename", this, [=]() {
+		mainMenu.addAction("Rename", this, []() {
 			Hierarchy::GetInstance()->RenameCurItem();
 		});
 	}
 
 	if (currentItem() && Hierarchy::GetInstance()->GetSObj(currentItem()) != Hierarchy::GetInstance()->GetRoot()) {
-		mainMenu.addAction("Delete", this, [=]() {
+		mainMenu.addAction("Delete", this, []() {
 			Hierarchy::GetInstance()->DeleteSObj();
 		});
 	}
@@ -186,7 +186,7 @@ void Tree::contextMenuEvent(QContextMenuEvent *event) {
 	spitLine0->setSeparator(true);
 	mainMenu.addAction(spitLine0);
 
-	mainMenu.addAction("Create Empty", this, [=]() {
+	mainMenu.addAction("Create Empty", this, []() {
 		Hierarchy::GetInstance()->CreateSObj("SObj");
 	});
 
@@ -194,21 +194,21 @@ void Tree::contextMenuEvent(QContextMenuEvent *event) {
 	auto genObjMenu = new QMenu;
 	genObjMenu->setTitle("Create 3D Object");
 
-	genObjMenu->addAction("Cube", this, [=]() {
+	genObjMenu->addAction("Cube", this, []() {
 		auto sobj = Hierarchy::GetInstance()->CreateSObj("Cube");
 		auto transform = ToPtr(new CmptTransform(sobj));
 		auto geometry = ToPtr(new CmptGeometry(sobj, TriMesh::GenCube()));
 		auto material = ToPtr(new CmptMaterial(sobj, ToPtr(new BSDF_Diffuse)));
 	});
 
-	genObjMenu->addAction("Sphere", this, [=]() {
+	genObjMenu->addAction("Sphere", this, []() {
 		auto sobj = Hierarchy::GetInstance()->CreateSObj("Sphere");
 		auto transform = ToPtr(new CmptTransform(sobj));
 		auto geometry = ToPtr(new CmptGeometry(sobj, ToPtr(new Sphere)));
 		auto material = ToPtr(new CmptMaterial(sobj, ToPtr(new BSDF_Diffuse)));
 	});
 
-	genObjMenu->addAction("Plane", this, [=]() {
+	genObjMenu->addAction("Plane", this, []() {
 		auto sobj = Hierarchy::GetInstance()->CreateSObj("Plane");
 		auto transform = ToPtr(new CmptTransform(sobj));
 		auto geometry = ToPtr(new CmptGeometry(sobj, ToPtr(new Plane)));
@@ -221,7 +221,7 @@ void Tree::contextMenuEvent(QContextMenuEvent *event) {
 	auto genLightMenu = new QMenu;
 	genLightMenu->setTitle("Create Light");
 
-	genLightMenu->addAction("Area Light", this, [=]() {
+	genLightMenu->addAction("Area Light", this, []() {
 		auto sobj = Hierarchy::GetInstance()->CreateSObj("Area Light");
 		auto areaLight = ToPtr(new AreaLight);
 		auto light = ToPtr(new CmptLight(sobj, areaLight));
@@ -230,7 +230,7 @@ void Tree::contextMenuEvent(QContextMenuEvent *event) {
 		auto lightGeo = ToPtr(new CmptGeometry(sobj, lightPlane));
 	});
 
-	genLightMenu->addAction("Point Light", this, [=]() {
+	genLightMenu->addAction("Point Light", this, []() {
 		auto sobj = Hierarchy::GetInstance()->CreateSObj("Point Light");
 		auto light = ToPtr(new CmptLight(sobj, ToPtr(new PointLight)));
 		auto transform = ToPtr(new CmptTransform(sobj));
@@ -238,7 +238,7 @@ void Tree::contextMenuEvent(QContextMenuEvent *event) {
 
 	mainMenu.addMenu(genLightMenu);
 
-	mainMenu.addAction("Create Camera", this, [=]() {
+	mainMenu.addAction("Create Camera", this, []() {
 		auto sobj = Hierarchy::GetInstance()->CreateSObj("Camera");
 		auto transform = ToPtr(new CmptTransform(sobj));
 		auto camera = ToPtr(new CmptCamera(sobj));

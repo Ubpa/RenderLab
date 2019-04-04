@@ -158,16 +158,18 @@ void Attribute::ComponentVisitor::Visit(CmptGeometry::Ptr geo) {
 	});
 
 	Grid::pSlotMap pSlotMap(new Grid::SlotMap);
+	Grid::wpSlotMap wpSlotMap = pSlotMap;
+
 	QComboBox * combobox = new QComboBox;
 
 	(*pSlotMap)["None"] = [=]() {
 		grid->Clear();
-		grid->AddComboBox("Type", "None", pSlotMap);
+		grid->AddComboBox("Type", "None", wpSlotMap.lock());
 		geo->primitive = nullptr;
 	};
 	(*pSlotMap)["Sphere"] = [=]() {
 		grid->Clear();
-		grid->AddComboBox("Type", "Sphere", pSlotMap);
+		grid->AddComboBox("Type", "Sphere", wpSlotMap.lock());
 
 		auto sphere = ToPtr(new Sphere);
 		geo->primitive = sphere;
@@ -175,7 +177,7 @@ void Attribute::ComponentVisitor::Visit(CmptGeometry::Ptr geo) {
 	};
 	(*pSlotMap)["Plane"] = [=]() {
 		grid->Clear();
-		grid->AddComboBox("Type", "Plane", pSlotMap);
+		grid->AddComboBox("Type", "Plane", wpSlotMap.lock());
 
 		auto plane = ToPtr(new Plane);
 		geo->primitive = plane;
@@ -259,11 +261,12 @@ void Attribute::ComponentVisitor::Visit(CmptMaterial::Ptr cmpt) {
 	};
 
 	Grid::pSlotMap pSlotMap(new Grid::SlotMap);
+	Grid::wpSlotMap wpSlotMap = pSlotMap;
 
 	for (int i = 0; i < bsdfNum; i++) {
 		(*pSlotMap)[get<0>(bsdfArr[i])] = [=]() {
 			grid->Clear();
-			grid->AddComboBox("Type", get<0>(bsdfArr[i]), pSlotMap);
+			grid->AddComboBox("Type", get<0>(bsdfArr[i]), wpSlotMap.lock());
 
 			auto bsdf = get<1>(bsdfArr[i])();
 			cmpt->material = bsdf;
@@ -373,11 +376,12 @@ void Attribute::ComponentVisitor::Visit(CmptLight::Ptr cmpt) {
 	};
 
 	Grid::pSlotMap pSlotMap(new Grid::SlotMap);
+	Grid::wpSlotMap wpSlotMap = pSlotMap;
 
 	for (int i = 0; i < lightNum; i++) {
 		(*pSlotMap)[get<0>(lightArr[i])] = [=]() {
 			grid->Clear();
-			grid->AddComboBox("Type", get<0>(lightArr[i]), pSlotMap);
+			grid->AddComboBox("Type", get<0>(lightArr[i]), wpSlotMap.lock());
 
 			auto lightbase = get<1>(lightArr[i])();
 			cmpt->light = lightbase;
@@ -428,14 +432,20 @@ void Attribute::SetSObj(SObj::Ptr sobj) {
 		return;
 
 	// clear
+	componentType2item.clear();
+
+	for (auto pair : item2grid)
+		pair.second->Clear();
+	item2grid.clear();
+
+	// 一个 component 对应一个 widget
 	int num = tbox->count();
 	while (num-- > 0) {
 		// remove item 不会删除 item
 		auto item = tbox->widget(0);
 		tbox->removeItem(0);
-		delete item;
+		item->deleteLater();
 	}
-	item2grid.clear();
 
 	if (sobj == nullptr)
 		return;

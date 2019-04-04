@@ -54,6 +54,8 @@ void PLDM_Generator::Init() {
 }
 
 void PLDM_Generator::Visit(Scene::Ptr scene) {
+	scene->SetWriteLock(true);
+
 	if (!raster || !scene || !scene->GetRoot()) {
 		printf("WARN: PLDM_Generator raster or scene or root is nullptr\n");
 		return;
@@ -122,6 +124,8 @@ void PLDM_Generator::Visit(Scene::Ptr scene) {
 
 	glBindFramebuffer(GL_FRAMEBUFFER, lastFBO);
 	glViewport(viewport[0], viewport[1], viewport[2], viewport[3]);
+
+	scene->SetWriteLock(false);
 }
 
 void PLDM_Generator::Visit(SObj::Ptr sobj) {

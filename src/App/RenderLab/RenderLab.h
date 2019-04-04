@@ -49,7 +49,6 @@ private:
 
 private:
 	// setting
-	std::vector<CppUtil::Basic::Ptr<CppUtil::Engine::PathTracer>> pathTracers;
 	int maxDepth;
 	int maxLoop;
 };

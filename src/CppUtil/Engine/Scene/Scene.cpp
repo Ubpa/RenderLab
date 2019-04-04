@@ -11,6 +11,13 @@ using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
 using namespace std;
 
+void Scene::SetWriteLock(bool isLock) {
+	if (isLock)
+		writeLock.lock();
+	else
+		writeLock.unlock();
+}
+
 const CmptCamera::Ptr Scene::GetCmptCamera() const {
 	if (!root)
 		return nullptr;

@@ -43,8 +43,7 @@ void Picker::Init() {
 		rayIntersector->Init(&ray);
 		viewer->GetScene()->GetRoot()->Accept(rayIntersector);
 		auto closestRst = rayIntersector->GetRst();
-		if (closestRst.closestSObj)
-			Ui::Attribute::GetInstance()->SetSObj(closestRst.closestSObj);
+		Ui::Attribute::GetInstance()->SetSObj(closestRst.closestSObj);
 	}));
 	EventMngr::GetInstance().Reg(Qt::LeftButton, (void*)viewer->GetOGLW(), EventMngr::MOUSE_PRESS, MRB_PressOp);
 }
