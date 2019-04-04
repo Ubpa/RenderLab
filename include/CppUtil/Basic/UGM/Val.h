@@ -1,5 +1,5 @@
-#ifndef _CPPUTIL_BASIC_MATH_VAL_H_
-#define _CPPUTIL_BASIC_MATH_VAL_H_
+#ifndef _CPPUTIL_BASIC_MATH_UGM_VAL_H_
+#define _CPPUTIL_BASIC_MATH_UGM_VAL_H_
 
 #include <CppUtil/Basic/Math.h>
 
@@ -37,4 +37,4 @@ namespace CppUtil {
 	using Val4 = Val4f;
 }
 
-#endif // !_CPPUTIL_BASIC_MATH_VAL_H_
+#endif // !_CPPUTIL_BASIC_MATH_UGM_VAL_H_

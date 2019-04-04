@@ -1,7 +1,7 @@
-#ifndef _CPPUTIL_BASIC_MATH_VAL2_H_
-#define _CPPUTIL_BASIC_MATH_VAL2_H_
+#ifndef _CPPUTIL_BASIC_MATH_UGM_VAL2_H_
+#define _CPPUTIL_BASIC_MATH_UGM_VAL2_H_
 
-#include <CppUtil/Basic/Val.h>
+#include <CppUtil/Basic/UGM/Val.h>
 
 #include <algorithm>
 
@@ -15,46 +15,48 @@ namespace CppUtil {
 
 		public:
 			template<typename U, typename V>
-			Val(U x, V y) :
+			const Val(U x, V y) :
 				x(static_cast<T>(x)),
 				y(static_cast<T>(y)) { }
 
-			explicit Val(T val) : Val(val, val) { }
+			explicit const Val(T val) : Val(val, val) { }
 
-			Val() : Val(static_cast<T>(0)) { }
+			const Val() : Val(static_cast<T>(0)) { }
 
 			template<typename U, int N>
-			Val(U(&arr)[N]) : Val(arr[0], arr[1]) { assert(N >= 2); }
+			const Val(U(&arr)[N]) : Val(arr[0], arr[1]) { assert(N >= 2); }
 
 			template<typename U>
-			Val(const Val<2, U> & xy) : Val(xy.x, xy.y) { }
+			const Val(const Val<2, U> & xy) : Val(xy.x, xy.y) { }
 
 			template<typename U>
-			Val(const Val<3, U> & val3) : Val(val3.x, val3.y) { }
+			const Val(const Val<3, U> & val3) : Val(val3.x, val3.y) { }
 
 			template<typename U>
-			Val(const Val<4, U> & val4) : Val(val4.x, val4.y) { }
+			const Val(const Val<4, U> & val4) : Val(val4.x, val4.y) { }
 
 		public:
 			bool HasNaN() const { return std::isnan(x) || std::isnan(y); }
-			bool IsZero() const {
-				static constexpr T zero = static_cast<T>(0);
-				return Math::ToZero(x) == zero && Math::ToZero(y) == zero;
+			const bool IsVal(T val) const {
+				return Math::ToVal(x, val) == val && Math::ToVal(y, val) == val;
+			}
+			const bool IsZero() const {
+				return IsVal(static_cast<T>(0));
 			}
 
-			const T * Data() const { return _data; }
-			T * Data() { return _data; }
+			const T * Data() const & { return _data; }
+			T * Data() & { return _data; }
 
-			T MinComponent() const {
+			const T & MinComponent() const {
 				return std::min(x, y);
 			}
-			T MaxComponent() const {
+			const T & MaxComponent() const {
 				return std::max(x, y);
 			}
-			int MinDim() const {
+			const int MinDim() const {
 				return x < y ? 0 : 1;
 			}
-			int MaxDim() const {
+			const int MaxDim() const {
 				return x > y ? 0 : 1;
 			}
 
@@ -62,13 +64,12 @@ namespace CppUtil {
 			const T & operator[](int i) const { assert(i >= 0 && i <= (valNum - 1)); return _data[i]; }
 			T & operator[](int i) { assert(i >= 0 && i <= (valNum - 1)); return _data[i]; }
 
-			bool operator==(const Val & rhs) const {
+			const bool operator==(const Val & rhs) const {
 				return x == rhs.x && y == rhs.y;
 			}
-			bool operator!=(const Val & rhs) const {
+			const bool operator!=(const Val & rhs) const {
 				return x != rhs.x || y != rhs.y;
 			}
-
 			Val & operator=(const Val & rhs) {
 				x = rhs.x;
 				y = rhs.y;
@@ -88,4 +89,4 @@ namespace CppUtil {
 	}
 }
 
-#endif // !_CPPUTIL_BASIC_MATH_VAL2_H_
+#endif // !_CPPUTIL_BASIC_MATH_UGM_VAL2_H_

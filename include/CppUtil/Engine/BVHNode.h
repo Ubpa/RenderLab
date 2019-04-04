@@ -2,7 +2,7 @@
 #define _ENGINE_PRIMITIVE_BVH_NODE_H_
 
 #include <CppUtil/Basic/Element.h>
-#include <CppUtil/Basic/BBox.h>
+#include <CppUtil/Basic/UGM/BBox.h>
 
 #include <vector>
 

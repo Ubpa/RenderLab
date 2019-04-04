@@ -5,7 +5,7 @@
 
 #include <CppUtil/Engine/Ray.h>
 
-#include <CppUtil/Basic/RGB.h>
+#include <CppUtil/Basic/UGM/RGB.h>
 
 namespace CppUtil {
 	namespace Engine {

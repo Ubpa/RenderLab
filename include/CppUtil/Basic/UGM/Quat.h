@@ -1,8 +1,8 @@
-#ifndef _CPPUTIL_BASIC_MATH_QUAT_H_
-#define _CPPUTIL_BASIC_MATH_QUAT_H_
+#ifndef _CPPUTIL_BASIC_MATH_UGM_QUAT_H_
+#define _CPPUTIL_BASIC_MATH_UGM_QUAT_H_
 
-#include <CppUtil/Basic/Val4.h>
-#include <CppUtil/Basic/Point3.h>
+#include <CppUtil/Basic/UGM/ext/Basic_Val4.h>
+#include <CppUtil/Basic/UGM/Point3.h>
 
 #include <CppUtil/Basic/Math.h>
 
@@ -12,10 +12,10 @@ namespace CppUtil {
 		class EulerYXZ;
 
 		template <typename T>
-		class Quat : public Val<4, T>{
+		class Quat : public EXT::Basic_Val<4,T,Quat<T>> {
 		public:
 			template<typename U, typename V>
-			Quat(U real, const Val<3, V> & imag) : Val<4, T>(imag, real) { }
+			Quat(U real, const Val<3, V> & imag) : EXT::Basic_Val<4, T, Quat<T>>(imag, real) { }
 			
 			Quat() : Quat(1, Val<3, T>(0)) { }
 			
@@ -192,4 +192,4 @@ namespace CppUtil {
 	using Quatf = Basic::Quat<float>;
 }
 
-#endif // !_CPPUTIL_BASIC_MATH_QUAT_H_
+#endif // !_CPPUTIL_BASIC_MATH_UGM_QUAT_H_

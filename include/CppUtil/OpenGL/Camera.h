@@ -1,7 +1,7 @@
 #ifndef _OPENGL_CAMERA_CAMERA_H_
 #define _OPENGL_CAMERA_CAMERA_H_
 
-#include <CppUtil/Basic/Transform.h>
+#include <CppUtil/Basic/UGM/Transform.h>
 
 namespace CppUtil {
 	namespace OpenGL {

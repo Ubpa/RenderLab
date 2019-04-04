@@ -1,8 +1,9 @@
 #ifndef _CPPUTIL_BASIC_MATH_BBOX_H_
 #define _CPPUTIL_BASIC_MATH_BBOX_H_
 
-#include <CppUtil/Basic/Point3.h>
-#include <CppUtil/Basic/Vector3.h>
+#include <CppUtil/Basic/UGM/Point3.h>
+#include <CppUtil/Basic/UGM/Vector3.h>
+
 #include <CppUtil/Basic/Math.h>
 
 #include <limits>

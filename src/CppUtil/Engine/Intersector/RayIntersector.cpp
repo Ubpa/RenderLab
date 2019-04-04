@@ -14,7 +14,7 @@
 #include <CppUtil/Engine/TriMesh.h>
 
 #include <CppUtil/Basic/Math.h>
-#include <CppUtil/Basic/Transform.h>
+#include <CppUtil/Basic/UGM/Transform.h>
 
 using namespace CppUtil;
 using namespace CppUtil::Engine;

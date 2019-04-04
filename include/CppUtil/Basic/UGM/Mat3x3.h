@@ -1,9 +1,10 @@
-#ifndef _CPPUTIL_BASIC_MATH_MAT_3X3_H_
-#define _CPPUTIL_BASIC_MATH_MAT_3X3_H_
+#ifndef _CPPUTIL_BASIC_MATH_UGM_MAT_3X3_H_
+#define _CPPUTIL_BASIC_MATH_UGM_MAT_3X3_H_
+
+#include <CppUtil/Basic/UGM/Point.h>
+#include <CppUtil/Basic/UGM/Vector3.h>
 
 #include <CppUtil/Basic/Error.h>
-#include <CppUtil/Basic/Point.h>
-#include <CppUtil/Basic/Vector3.h>
 
 namespace CppUtil {
 	namespace Basic {
@@ -223,4 +224,4 @@ namespace CppUtil {
 
 }
 
-#endif // !_CPPUTIL_BASIC_MATH_MAT_3X3_H_
+#endif // !_CPPUTIL_BASIC_MATH_UGM_MAT_3X3_H_

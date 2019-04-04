@@ -1,7 +1,7 @@
-#ifndef _CPPUTIL_BASIC_MATH_VAL3_H_
-#define _CPPUTIL_BASIC_MATH_VAL3_H_
+#ifndef _CPPUTIL_BASIC_MATH_UGM_VAL3_H_
+#define _CPPUTIL_BASIC_MATH_UGM_VAL3_H_
 
-#include <CppUtil/Basic/Val.h>
+#include <CppUtil/Basic/UGM/Val.h>
 
 #include <algorithm>
 
@@ -42,18 +42,20 @@ namespace CppUtil {
 
 		public:
 			bool HasNaN() const { return std::isnan(x) || std::isnan(y) || std::isnan(z); }
+			bool IsVal(T val) const {
+				return Math::ToVal(x, val) == val && Math::ToVal(y, val) == val && Math::ToVal(z, val) == val;
+			}
 			bool IsZero() const {
-				static constexpr T zero = static_cast<T>(0);
-				return Math::ToZero(x) == zero && Math::ToZero(y) == zero && Math::ToZero(z) == zero;
+				return IsVal(static_cast<T>(0));
 			}
 
 			const T * Data() const { return _data; }
 			T * Data() { return _data; }
 
-			T MinComponent() const {
+			constexpr const T & MinComponent() const {
 				return std::min(x, std::min(y, z));
 			}
-			T MaxComponent() const {
+			constexpr const T & MaxComponent() const {
 				return std::max(x, std::max(y, z));
 			}
 			int MinDim() const {
@@ -95,4 +97,4 @@ namespace CppUtil {
 	}
 }
 
-#endif // !_CPPUTIL_BASIC_MATH_VAL3_H_
+#endif // !_CPPUTIL_BASIC_MATH_UGM_VAL3_H_

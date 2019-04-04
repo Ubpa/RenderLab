@@ -1,8 +1,6 @@
 #ifndef _BASIC_MATH_MATH_H_
 #define _BASIC_MATH_MATH_H_
 
-
-
 #include <vector>
 #include <sstream>
 #include <string>
@@ -33,7 +31,7 @@ namespace CppUtil {
 			}
 
 			template<typename T>
-			T ToVal(T orig, T val, T bound = static_cast<T>(0.000001)) {
+			constexpr T ToVal(T orig, T val, T bound = static_cast<T>(0.000001)) {
 				const auto delta = orig - val;
 				if (delta < bound && delta > -bound)
 					return val;
@@ -42,7 +40,7 @@ namespace CppUtil {
 			}
 
 			template<typename T>
-			T ToZero(T orig, T bound = static_cast<T>(0.000001)) {
+			constexpr T ToZero(T orig, T bound = static_cast<T>(0.000001)) {
 				return ToVal(orig, static_cast<T>(0), bound);
 			}
 

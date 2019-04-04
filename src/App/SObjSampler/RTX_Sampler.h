@@ -3,7 +3,7 @@
 
 #include <CppUtil/Basic/HeapObj.h>
 
-#include <CppUtil/Basic/Point2.h>
+#include <CppUtil/Basic/UGM/Point2.h>
 
 #include <functional>
 #include <vector>

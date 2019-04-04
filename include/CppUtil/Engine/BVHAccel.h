@@ -3,8 +3,8 @@
 
 #include <CppUtil/Basic/Element.h>
 
-#include <CppUtil/Basic/BBox.h>
-#include <CppUtil/Basic/Transform.h>
+#include <CppUtil/Basic/UGM/BBox.h>
+#include <CppUtil/Basic/UGM/Transform.h>
 
 #include <vector>
 #include <map>

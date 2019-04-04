@@ -1,8 +1,9 @@
 #ifndef _CPPUTIL_BASIC_MATH_MAT_4X4_H_
 #define _CPPUTIL_BASIC_MATH_MAT_4X4_H_
 
+#include <CppUtil/Basic/UGM/Vector4.h>
+
 #include <CppUtil/Basic/Error.h>
-#include <CppUtil/Basic/Vector4.h>
 
 namespace CppUtil {
 	namespace Basic {

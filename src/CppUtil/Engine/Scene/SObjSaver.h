@@ -3,13 +3,13 @@
 
 #include <CppUtil/Basic/EleVisitor.h>
 #include <3rdParty/tinyxml2.h>
-#include <CppUtil/Basic/Transform.h>
+#include <CppUtil/Basic/UGM/Transform.h>
 
-#include <CppUtil/Basic/Point.h>
-#include <CppUtil/Basic/Vector.h>
-#include <CppUtil/Basic/Normal.h>
-#include <CppUtil/Basic/RGB.h>
-#include <CppUtil/Basic/RGBA.h>
+#include <CppUtil/Basic/UGM/Point.h>
+#include <CppUtil/Basic/UGM/Vector.h>
+#include <CppUtil/Basic/UGM/Normal.h>
+#include <CppUtil/Basic/UGM/RGB.h>
+#include <CppUtil/Basic/UGM/RGBA.h>
 
 #include <stack>
 #include <functional>

@@ -1,25 +1,18 @@
-#ifndef _CPPUTIL_BASIC_MATH_RGB_H_
-#define _CPPUTIL_BASIC_MATH_RGB_H_
+#ifndef _CPPUTIL_BASIC_MATH_UGM_RGB_H_
+#define _CPPUTIL_BASIC_MATH_UGM_RGB_H_
 
-#include <CppUtil/Basic/Val3.h>
+#include <CppUtil/Basic/UGM/ext/Basic_Val3.h>
 
 namespace CppUtil {
 	namespace Basic {
 		template<typename T>
-		class RGB : public Val<3, T> {
+		class RGB : public EXT::Basic_Val<3,T,RGB<T>> {
 		public:
-			using Val<3, T>::Val;
+			using EXT::Basic_Val<3, T, RGB<T>>::Basic_Val;
 
 		public:
 			T Illumination() const { return static_cast<T>(0.2126) * r + static_cast<T>(0.7152) * g + static_cast<T>(0.0722) * b; }
 			T Gray() const { return r * static_cast<T>(0.299) + g * static_cast<T>(0.587) + b * static_cast<T>(0.114); }
-
-			static const RGB Lerp(const RGB & c0, const RGB & c1, float t) {
-				return (1.f - t)*c0 + t * c1;
-			}
-			const RGB LerpWith(const RGB & c1, float t) const {
-				return Lerp(*this, c1, t);
-			}
 
 		public:
 			const RGB operator+(const RGB & rgb) const {
@@ -130,4 +123,4 @@ namespace CppUtil {
 	using RGBf = RGB<float>;
 }
 
-#endif // !_CPPUTIL_BASIC_MATH_RGB_H_
+#endif // !_CPPUTIL_BASIC_MATH_UGM_RGB_H_

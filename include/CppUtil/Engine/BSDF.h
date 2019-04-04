@@ -2,11 +2,11 @@
 #define _ENGINE_MATERIAL_BSDF_H_
 
 #include <CppUtil/Engine/Material.h>
-#include <CppUtil/Basic/Point2.h>
-#include <CppUtil/Basic/Vector.h>
-#include <CppUtil/Basic/Normal.h>
-#include <CppUtil/Basic/Point.h>
-#include <CppUtil/Basic/RGB.h>
+#include <CppUtil/Basic/UGM/Point2.h>
+#include <CppUtil/Basic/UGM/Vector.h>
+#include <CppUtil/Basic/UGM/Normal.h>
+#include <CppUtil/Basic/UGM/Point.h>
+#include <CppUtil/Basic/UGM/RGB.h>
 
 namespace CppUtil {
 	namespace Engine {

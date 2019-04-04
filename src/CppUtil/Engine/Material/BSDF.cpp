@@ -1,6 +1,6 @@
 #include <CppUtil/Engine/BSDF.h>
 
-#include <CppUtil/Basic/Mat3x3.h>
+#include <CppUtil/Basic/UGM/Mat3x3.h>
 
 #include <CppUtil/Basic/Math.h>
 

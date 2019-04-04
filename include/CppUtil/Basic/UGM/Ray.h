@@ -1,8 +1,8 @@
-#ifndef _CPPUTIL_BASIC_MATH_RAY_H_
-#define _CPPUTIL_BASIC_MATH_RAY_H_
+#ifndef _CPPUTIL_BASIC_MATH_UGM_RAY_H_
+#define _CPPUTIL_BASIC_MATH_UGM_RAY_H_
 
-#include <CppUtil/Basic/Point3.h>
-#include <CppUtil/Basic/Vector3.h>
+#include <CppUtil/Basic/UGM/Point3.h>
+#include <CppUtil/Basic/UGM/Vector3.h>
 
 namespace CppUtil {
 	namespace Basic {
@@ -27,4 +27,4 @@ namespace CppUtil {
 	}
 }
 
-#endif // !_CPPUTIL_BASIC_MATH_RAY_H_
+#endif // !_CPPUTIL_BASIC_MATH_UGM_RAY_H_

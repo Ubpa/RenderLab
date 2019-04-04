@@ -3,7 +3,7 @@
 
 #include <CppUtil/Engine/Component.h>
 
-#include <CppUtil/Basic/Transform.h>
+#include <CppUtil/Basic/UGM/Transform.h>
 
 namespace CppUtil {
 	namespace Engine {

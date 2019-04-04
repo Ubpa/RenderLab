@@ -7,7 +7,7 @@
 #include <CppUtil/OpenGL/Shader.h>
 #include <CppUtil/OpenGL/Texture.h>
 
-#include <CppUtil/Basic/Transform.h>
+#include <CppUtil/Basic/UGM/Transform.h>
 
 namespace CppUtil {
 	namespace Basic {

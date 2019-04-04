@@ -1,15 +1,16 @@
-#ifndef _CPPUTIL_BASIC_MATH_VECTOR2_H_
-#define _CPPUTIL_BASIC_MATH_VECTOR2_H_
+#ifndef _CPPUTIL_BASIC_MATH_UGM_VECTOR2_H_
+#define _CPPUTIL_BASIC_MATH_UGM_VECTOR2_H_
 
-#include <CppUtil/Basic/Val2.h>
-#include <CppUtil/Basic/Vector.h>
+#include <CppUtil/Basic/UGM/Vector.h>
+
+#include <CppUtil/Basic/UGM/ext/Basic_Val2.h>
 
 namespace CppUtil {
 	namespace Basic {
 		template <typename T>
-		class Vector<2, T> : public Val<2, T> {
+		class Vector<2, T> : public EXT::Basic_Val<2, T, Vector<2,T>> {
 		public:
-			using Val<2, T>::Val;
+			using EXT::Basic_Val<2, T, Vector<2, T>>::Basic_Val;
 
 		public:
 			T Length2() const { return x * x + y * y; }
@@ -40,24 +41,14 @@ namespace CppUtil {
 				return (*this) /= Length();
 			}
 
-			const Vector Abs() const {
-				return Vector(abs(x), abs(y));
-			}
-
-			Vector & AbsSelf() {
-				x = abs(x);
-				y = abs(y);
-				return *this;
-			}
-
 		public:
 			template<typename U>
-			const Vector operator+(const Vector<valNum, U> &v) const {
+			const Vector operator+(const Vector<2, U> &v) const {
 				return Vector(x + v.x, y + v.y);
 			}
 
 			template<typename U>
-			const Vector &operator+=(const Vector<valNum, U> &v) {
+			const Vector &operator+=(const Vector<2, U> &v) {
 				x += v.x;
 				y += v.y;
 				return *this;
@@ -76,12 +67,12 @@ namespace CppUtil {
 			const Vector operator-() const { return Vector(-x, -y); }
 
 			template<typename U>
-			const Vector operator-(const Vector<valNum, U> &v) const {
+			const Vector operator-(const Vector<2, U> &v) const {
 				return Vector(x - v.x, y - v.y);
 			}
 
 			template<typename U>
-			const Vector &operator-=(const Vector<valNum, U> &v) {
+			const Vector &operator-=(const Vector<2, U> &v) {
 				x -= v.x;
 				y -= v.y;
 				return *this;
@@ -110,12 +101,12 @@ namespace CppUtil {
 			}
 
 			template<typename U>
-			const Vector operator*(const Vector<valNum, U> & rhs) const {
+			const Vector operator*(const Vector<2, U> & rhs) const {
 				return Vector(x*rhs.x, y*rhs.y);
 			}
 
 			template<typename U>
-			Vector & operator*=(const Vector<valNum, U> & rhs) const {
+			Vector & operator*=(const Vector<2, U> & rhs) const {
 				x *= rhs.x;
 				y *= rhs.y;
 				return *this;
@@ -138,14 +129,14 @@ namespace CppUtil {
 			}
 
 			template<typename U>
-			const Vector operator/(const Vector<valNum, U> & rhs) const {
+			const Vector operator/(const Vector<2, U> & rhs) const {
 				assert(rhs.x != static_cast<U>(0));
 				assert(rhs.y != static_cast<U>(0));
 				return Vector(x / rhs.x, y / rhs.y);
 			}
 
 			template<typename U>
-			Vector & operator/=(const Vector<valNum, U> & rhs) const {
+			Vector & operator/=(const Vector<2, U> & rhs) const {
 				assert(rhs.x != static_cast<U>(0));
 				assert(rhs.y != static_cast<U>(0));
 				x /= rhs.x;
@@ -156,4 +147,4 @@ namespace CppUtil {
 	}
 }
 
-#endif // !_CPPUTIL_BASIC_MATH_VECTOR2_H_
+#endif // !_CPPUTIL_BASIC_MATH_UGM_VECTOR2_H_

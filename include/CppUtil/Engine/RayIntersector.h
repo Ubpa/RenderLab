@@ -2,10 +2,10 @@
 #define _ENGINE_INTERSECTOR_RAY_INTERSECTOR_H_
 
 #include <CppUtil/Engine/Intersector.h>
-#include <CppUtil/Basic/Point.h>
-#include <CppUtil/Basic/Point2.h>
-#include <CppUtil/Basic/Normal.h>
-#include <CppUtil/Basic/BBox.h>
+#include <CppUtil/Basic/UGM/Point.h>
+#include <CppUtil/Basic/UGM/Point2.h>
+#include <CppUtil/Basic/UGM/Normal.h>
+#include <CppUtil/Basic/UGM/BBox.h>
 
 #include <CppUtil/Engine/Ray.h>
 

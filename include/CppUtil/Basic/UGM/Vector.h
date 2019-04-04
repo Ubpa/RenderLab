@@ -1,5 +1,5 @@
-#ifndef _CPPUTIL_BASIC_MATH_VECTOR_H_
-#define _CPPUTIL_BASIC_MATH_VECTOR_H_
+#ifndef _CPPUTIL_BASIC_MATH_UGM_VECTOR_H_
+#define _CPPUTIL_BASIC_MATH_UGM_VECTOR_H_
 
 namespace CppUtil {
 	namespace Basic {
@@ -38,4 +38,4 @@ namespace CppUtil {
 	using Vec4 = Vec4f;
 }
 
-#endif // !_CPPUTIL_BASIC_MATH_VECTOR_H_
+#endif // !_CPPUTIL_BASIC_MATH_UGM_VECTOR_H_

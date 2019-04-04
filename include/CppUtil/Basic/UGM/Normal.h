@@ -1,10 +1,10 @@
 #ifndef _CPPUTIL_BASIC_MATH_NORMAL_H_
 #define _CPPUTIL_BASIC_MATH_NORMAL_H_
 
-#include <CppUtil/Basic/Vector3.h>
-#include <CppUtil/Basic/Point2.h>
-#include <CppUtil/Basic/Mat3x3.h>
-#include <CppUtil/Basic/Math.h>
+#include "Vector3.h"
+#include "Point2.h"
+#include "Mat3x3.h"
+#include "Math.h"
 
 namespace CppUtil {
 	namespace Basic {

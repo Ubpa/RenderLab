@@ -2,9 +2,9 @@
 #define _BASIC_IMAGE_IMAGE_H_
 
 #include <CppUtil/Basic/HeapObj.h>
-#include <CppUtil/Basic/RGB.h>
-#include <CppUtil/Basic/RGBA.h>
-#include <CppUtil/Basic/Point2.h>
+#include <CppUtil/Basic/UGM/RGB.h>
+#include <CppUtil/Basic/UGM/RGBA.h>
+#include <CppUtil/Basic/UGM/Point2.h>
 
 #include <string>
 

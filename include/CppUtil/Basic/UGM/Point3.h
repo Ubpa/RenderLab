@@ -1,16 +1,15 @@
-#ifndef _CPPUTIL_BASIC_MATH_POINT3_H_
-#define _CPPUTIL_BASIC_MATH_POINT3_H_
+#ifndef _CPPUTIL_BASIC_MATH_UGM_POINT3_H_
+#define _CPPUTIL_BASIC_MATH_UGM_POINT3_H_
 
-#include <CppUtil/Basic/Val3.h>
-#include <CppUtil/Basic/Point.h>
-#include <CppUtil/Basic/Vector3.h>
+#include <CppUtil/Basic/UGM/Point.h>
+#include <CppUtil/Basic/UGM/Vector3.h>
 
 namespace CppUtil {
 	namespace Basic {
 		template <typename T>
-		class Point<3, T> : public Val<3, T> {
+		class Point<3, T> : public EXT::Basic_Val<3, T, Point<3, T>> {
 		public:
-			using Val<3, T>::Val;
+			using EXT::Basic_Val<3, T, Point<3, T>>::Basic_Val;
 
 		public:
 			static float Distance2(const Point & p0, const Point & p1) {
@@ -101,4 +100,4 @@ namespace CppUtil {
 	}
 }
 
-#endif // !_CPPUTIL_BASIC_MATH_POINT3_H_
+#endif // !_CPPUTIL_BASIC_MATH_UGM_POINT3_H_

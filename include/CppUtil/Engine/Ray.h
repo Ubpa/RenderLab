@@ -1,7 +1,7 @@
 #ifndef _ENGINE_PRIMITIVE_RAY_H_
 #define _ENGINE_PRIMITIVE_RAY_H_
 
-#include <CppUtil/Basic/Ray.h>
+#include <CppUtil/Basic/UGM/Ray.h>
 
 namespace CppUtil {
 	namespace Engine {

@@ -2,7 +2,7 @@
 #define _ENGINE_PRIMITIVE_SPHERE_H_
 
 #include <CppUtil/Engine/Primitive.h>
-#include <CppUtil/Basic/BBox.h>
+#include <CppUtil/Basic/UGM/BBox.h>
 
 namespace CppUtil {
 	namespace Engine {

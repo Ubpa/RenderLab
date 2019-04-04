@@ -4,7 +4,7 @@
 typedef unsigned int uint;
 
 #include <CppUtil/Basic/Element.h>
-#include <CppUtil/Basic/BBox.h>
+#include <CppUtil/Basic/UGM/BBox.h>
 
 namespace CppUtil {
 	namespace Engine {

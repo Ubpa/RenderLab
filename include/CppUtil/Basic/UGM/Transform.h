@@ -1,14 +1,14 @@
-#ifndef _CPPUTIL_BASIC_MATH_TRANSFORM_H_
-#define _CPPUTIL_BASIC_MATH_TRANSFORM_H_
+#ifndef _CPPUTIL_BASIC_MATH_UGM_TRANSFORM_H_
+#define _CPPUTIL_BASIC_MATH_UGM_TRANSFORM_H_
 
-#include <CppUtil/Basic/Point3.h>
-#include <CppUtil/Basic/Vector3.h>
-#include <CppUtil/Basic/Normal.h>
-#include <CppUtil/Basic/Quat.h>
-#include <CppUtil/Basic/EulerYXZ.h>
-#include <CppUtil/Basic/Mat4x4.h>
-#include <CppUtil/Basic/BBox.h>
-#include <CppUtil/Basic/Ray.h>
+#include <CppUtil/Basic/UGM/Point3.h>
+#include <CppUtil/Basic/UGM/Vector3.h>
+#include <CppUtil/Basic/UGM/Normal.h>
+#include <CppUtil/Basic/UGM/Quat.h>
+#include <CppUtil/Basic/UGM/EulerYXZ.h>
+#include <CppUtil/Basic/UGM/Mat4x4.h>
+#include <CppUtil/Basic/UGM/BBox.h>
+#include <CppUtil/Basic/UGM/Ray.h>
 
 namespace CppUtil {
 	namespace Basic {
@@ -154,4 +154,4 @@ namespace CppUtil {
 	using Transform = Basic::Transform;
 }
 
-#endif // !_CPPUTIL_BASIC_MATH_TRANSFORM_H_
+#endif // !_CPPUTIL_BASIC_MATH_UGM_TRANSFORM_H_

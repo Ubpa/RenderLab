@@ -3,8 +3,8 @@
 
 #include <CppUtil/Engine/RayTracer.h>
 
-#include <CppUtil/Basic/Transform.h>
-#include <CppUtil/Basic/Mat3x3.h>
+#include <CppUtil/Basic/UGM/Transform.h>
+#include <CppUtil/Basic/UGM/Mat3x3.h>
 
 #include <vector>
 #include <map>

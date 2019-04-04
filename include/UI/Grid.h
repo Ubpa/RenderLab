@@ -3,11 +3,11 @@
 
 #include <CppUtil/Basic/HeapObj.h>
 
-#include <CppUtil/Basic/RGB.h>
+#include <CppUtil/Basic/UGM/RGB.h>
 
-#include <CppUtil/Basic/Val2.h>
-#include <CppUtil/Basic/Val3.h>
-#include <CppUtil/Basic/Val4.h>
+#include <CppUtil/Basic/UGM/Val2.h>
+#include <CppUtil/Basic/UGM/Val3.h>
+#include <CppUtil/Basic/UGM/Val4.h>
 
 #include <qstring.h>
 

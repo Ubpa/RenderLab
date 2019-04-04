@@ -2,7 +2,7 @@
 #define _BASIC_IMAGE_IMG_PIXEL_SET_H_
 
 #include <CppUtil/Basic/RandSet.h>
-#include <CppUtil/Basic/Point2.h>
+#include <CppUtil/Basic/UGM/Point2.h>
 
 namespace CppUtil {
 	namespace Basic {

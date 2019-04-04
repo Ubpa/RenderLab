@@ -3,10 +3,10 @@
 
 typedef unsigned int uint;
 
-#include <CppUtil/Basic/Val2.h>
-#include <CppUtil/Basic/Val3.h>
-#include <CppUtil/Basic/Val4.h>
-#include <CppUtil/Basic/Transform.h>
+#include <CppUtil/Basic/UGM/Val2.h>
+#include <CppUtil/Basic/UGM/Val3.h>
+#include <CppUtil/Basic/UGM/Val4.h>
+#include <CppUtil/Basic/UGM/Transform.h>
 
 #include <string>
 

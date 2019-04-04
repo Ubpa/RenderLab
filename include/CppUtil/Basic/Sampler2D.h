@@ -1,7 +1,7 @@
 #ifndef _BASIC_SAMPLER_SAMPLER_2D_H_
 #define _BASIC_SAMPLER_SAMPLER_2D_H_
 
-#include <CppUtil/Basic/Val2.h>
+#include <CppUtil/Basic/UGM/Val2.h>
 
 namespace CppUtil {
 	namespace Basic {

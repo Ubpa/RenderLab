@@ -3,10 +3,10 @@
 
 #include <CppUtil/Basic/Element.h>
 
-#include <CppUtil/Basic/RGB.h>
-#include <CppUtil/Basic/Point3.h>
-#include <CppUtil/Basic/Vector3.h>
-#include <CppUtil/Basic/Normal.h>
+#include <CppUtil/Basic/UGM/RGB.h>
+#include <CppUtil/Basic/UGM/Point3.h>
+#include <CppUtil/Basic/UGM/Vector3.h>
+#include <CppUtil/Basic/UGM/Normal.h>
 
 namespace CppUtil {
 	namespace Engine {

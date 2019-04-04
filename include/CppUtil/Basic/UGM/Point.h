@@ -1,7 +1,7 @@
-#ifndef _CPPUTIL_BASIC_MATH_POINT_H_
-#define _CPPUTIL_BASIC_MATH_POINT_H_
+#ifndef _CPPUTIL_BASIC_MATH_UGM_POINT_H_
+#define _CPPUTIL_BASIC_MATH_UGM_POINT_H_
 
-#include <CppUtil/Basic/Val.h>
+#include <CppUtil/Basic/UGM/Val.h>
 
 namespace CppUtil {
 	namespace Basic {
@@ -24,4 +24,4 @@ namespace CppUtil {
 	using Point4 = Point4f;
 }
 
-#endif // !_CPPUTIL_BASIC_MATH_POINT_H_
+#endif // !_CPPUTIL_BASIC_MATH_UGM_POINT_H_

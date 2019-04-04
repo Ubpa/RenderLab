@@ -1,7 +1,7 @@
 #ifndef _BASIC_MATH_PERLIN_H_
 #define _BASIC_MATH_PERLIN_H_
 
-#include <CppUtil/Basic/Vector3.h>
+#include <CppUtil/Basic/UGM/Vector3.h>
 
 #include <vector>
 
