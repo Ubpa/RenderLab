@@ -54,7 +54,7 @@ bool VisibilityChecker::Intersect(const BBoxf & bbox, float & t0, float & t1) {
 
 		tMin = max(t0, tMin);
 		tMax = min(t1, tMax);
-		if (tMax <= tMin)
+		if (tMax < tMin)
 			return false;
 	}
 

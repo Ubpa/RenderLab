@@ -5,326 +5,324 @@
         <SObj>
             <name>camera</name>
             <components>
-                <Camera>
+                <CmptCamera>
                     <fov>50.000000</fov>
                     <ar>1.333333</ar>
                     <nearPlane>0.001000</nearPlane>
                     <farPlane>1000.000000</farPlane>
-                </Camera>
-                <Transform>
-                    <Position>0.000000 0.750000 2.300000</Position>
-                    <Rotation>0.000000 -0.000000 0.000000</Rotation>
-                    <Scale>1.000000 1.000000 1.000000</Scale>
-                </Transform>
+                </CmptCamera>
+                <CmptTransform>
+                    <Position>0 0.75 2.3</Position>
+                    <Rotation>0 0 0 1</Rotation>
+                    <Scale>1 1 1</Scale>
+                </CmptTransform>
             </components>
             <children/>
         </SObj>
         <SObj>
             <name>Cornell Box</name>
             <components>
-                <Transform>
-                    <Position>0.000000 0.000000 0.000000</Position>
-                    <Rotation>0.000000 -0.000000 0.000000</Rotation>
-                    <Scale>1.000000 1.000000 1.000000</Scale>
-                </Transform>
+                <CmptTransform>
+                    <Position>0 0 0</Position>
+                    <Rotation>0 0 0 1</Rotation>
+                    <Scale>1 1 1</Scale>
+                </CmptTransform>
             </components>
             <children>
-                <SObj>
-                    <name>point light</name>
-                    <components>
-                        <Light>
-                            <lightBase>
-                                <Point_Light>
-                                    <color>1.000000 1.000000 1.000000</color>
-                                    <intensity>20.000000</intensity>
-                                    <linear>0.700000</linear>
-                                    <quadratic>4.000000</quadratic>
-                                </Point_Light>
-                            </lightBase>
-                        </Light>
-                        <Transform>
-                            <Position>0.000000 0.750000 -0.500000</Position>
-                            <Rotation>0.000000 -0.000000 0.000000</Rotation>
-                            <Scale>0.800000 1.000000 0.600000</Scale>
-                        </Transform>
-                    </components>
-                    <children/>
-                </SObj>
-                <SObj>
-                    <name>Cube</name>
-                    <components>
-                        <Transform>
-                            <Position>0.000000 0.750000 0.000000</Position>
-                            <Rotation>0.000000 -0.000000 0.000000</Rotation>
-                            <Scale>1.000000 1.000000 0.050000</Scale>
-                        </Transform>
-                        <Geometry>
-                            <primitive>
-                                <TriMesh>
-                                    <cube/>
-                                </TriMesh>
-                            </primitive>
-                        </Geometry>
-                        <Material>
-                            <materialBase>
-                                <BSDF_FrostedGlass>
-                                    <IOR>1.500000</IOR>
-                                    <colorFactor>1.000000 1.000000 1.000000</colorFactor>
-                                    <colorTexture/>
-                                    <roughnessFactor>0.200000</roughnessFactor>
-                                    <roughnessTexture/>
-                                    <aoTexture/>
-                                    <normalTexture/>
-                                </BSDF_FrostedGlass>
-                            </materialBase>
-                        </Material>
-                    </components>
-                    <children/>
-                </SObj>
-                <SObj>
-                    <name>FrontLights</name>
-                    <components>
-                        <Transform>
-                            <Position>0.000000 0.000000 0.000000</Position>
-                            <Rotation>0.000000 -0.000000 0.000000</Rotation>
-                            <Scale>1.000000 1.000000 1.000000</Scale>
-                        </Transform>
-                    </components>
-                    <children>
-                        <SObj>
-                            <name>RD</name>
-                            <components>
-                                <Light>
-                                    <lightBase>
-                                        <Point_Light>
-                                            <color>1.000000 1.000000 1.000000</color>
-                                            <intensity>8.000000</intensity>
-                                            <linear>0.700000</linear>
-                                            <quadratic>1.800000</quadratic>
-                                        </Point_Light>
-                                    </lightBase>
-                                </Light>
-                                <Transform>
-                                    <Position>0.750000 0.250000 1.000000</Position>
-                                    <Rotation>0.000000 -0.000000 0.000000</Rotation>
-                                    <Scale>1.000000 1.000000 1.000000</Scale>
-                                </Transform>
-                            </components>
-                            <children/>
-                        </SObj>
-                        <SObj>
-                            <name>RU</name>
-                            <components>
-                                <Light>
-                                    <lightBase>
-                                        <Point_Light>
-                                            <color>1.000000 1.000000 1.000000</color>
-                                            <intensity>8.000000</intensity>
-                                            <linear>0.700000</linear>
-                                            <quadratic>1.800000</quadratic>
-                                        </Point_Light>
-                                    </lightBase>
-                                </Light>
-                                <Transform>
-                                    <Position>0.750000 1.250000 1.000000</Position>
-                                    <Rotation>0.000000 -0.000000 0.000000</Rotation>
-                                    <Scale>1.000000 1.000000 1.000000</Scale>
-                                </Transform>
-                            </components>
-                            <children/>
-                        </SObj>
-                        <SObj>
-                            <name>LD</name>
-                            <components>
-                                <Light>
-                                    <lightBase>
-                                        <Point_Light>
-                                            <color>1.000000 1.000000 1.000000</color>
-                                            <intensity>8.000000</intensity>
-                                            <linear>0.700000</linear>
-                                            <quadratic>1.800000</quadratic>
-                                        </Point_Light>
-                                    </lightBase>
-                                </Light>
-                                <Transform>
-                                    <Position>-0.750000 0.250000 1.000000</Position>
-                                    <Rotation>0.000000 -0.000000 0.000000</Rotation>
-                                    <Scale>1.000000 1.000000 1.000000</Scale>
-                                </Transform>
-                            </components>
-                            <children/>
-                        </SObj>
-                        <SObj>
-                            <name>LU</name>
-                            <components>
-                                <Light>
-                                    <lightBase>
-                                        <Point_Light>
-                                            <color>1.000000 1.000000 1.000000</color>
-                                            <intensity>8.000000</intensity>
-                                            <linear>0.700000</linear>
-                                            <quadratic>1.800000</quadratic>
-                                        </Point_Light>
-                                    </lightBase>
-                                </Light>
-                                <Transform>
-                                    <Position>-0.750000 1.250000 1.000000</Position>
-                                    <Rotation>0.000000 -0.000000 0.000000</Rotation>
-                                    <Scale>1.000000 1.000000 1.000000</Scale>
-                                </Transform>
-                            </components>
-                            <children/>
-                        </SObj>
-                    </children>
-                </SObj>
                 <SObj>
                     <name>Walls</name>
                     <components/>
                     <children>
                         <SObj>
-                            <name>wall ceil</name>
-                            <components>
-                                <Material>
-                                    <materialBase>
-                                        <BSDF_FrostedGlass>
-                                            <IOR>20.000000</IOR>
-                                            <colorFactor>1.000000 1.000000 1.000000</colorFactor>
-                                            <colorTexture/>
-                                            <roughnessFactor>1.000000</roughnessFactor>
-                                            <roughnessTexture/>
-                                            <aoTexture/>
-                                            <normalTexture/>
-                                        </BSDF_FrostedGlass>
-                                    </materialBase>
-                                </Material>
-                                <Geometry>
-                                    <primitive>
-                                        <Plane/>
-                                    </primitive>
-                                </Geometry>
-                                <Transform>
-                                    <Position>0.000000 1.500000 0.000000</Position>
-                                    <Rotation>-3.141592 3.141592 0.000000</Rotation>
-                                    <Scale>2.000000 1.000000 2.000000</Scale>
-                                </Transform>
-                            </components>
-                            <children/>
-                        </SObj>
-                        <SObj>
                             <name>wall back</name>
                             <components>
-                                <Material>
-                                    <materialBase>
+                                <CmptMaterial>
+                                    <material>
                                         <BSDF_FrostedGlass>
                                             <IOR>20.000000</IOR>
-                                            <colorFactor>1.000000 1.000000 1.000000</colorFactor>
-                                            <colorTexture>
-                                                <path>D:/CS/GithubRepository/RenderLab/data/textures/tex_square.png</path>
-                                            </colorTexture>
-                                            <roughnessFactor>1.000000</roughnessFactor>
-                                            <roughnessTexture/>
-                                            <aoTexture/>
-                                            <normalTexture/>
-                                        </BSDF_FrostedGlass>
-                                    </materialBase>
-                                </Material>
-                                <Geometry>
-                                    <primitive>
-                                        <Plane/>
-                                    </primitive>
-                                </Geometry>
-                                <Transform>
-                                    <Position>0.000000 0.750000 -1.000000</Position>
-                                    <Rotation>1.570796 -0.000000 0.000000</Rotation>
-                                    <Scale>2.000000 1.000000 1.500000</Scale>
-                                </Transform>
-                            </components>
-                            <children/>
-                        </SObj>
-                        <SObj>
-                            <name>wall down</name>
-                            <components>
-                                <Material>
-                                    <materialBase>
-                                        <BSDF_FrostedGlass>
-                                            <IOR>20.000000</IOR>
-                                            <colorFactor>1.000000 1.000000 1.000000</colorFactor>
+                                            <colorFactor>0.2 0.6 0.2</colorFactor>
                                             <colorTexture/>
                                             <roughnessFactor>1.000000</roughnessFactor>
                                             <roughnessTexture/>
                                             <aoTexture/>
                                             <normalTexture/>
                                         </BSDF_FrostedGlass>
-                                    </materialBase>
-                                </Material>
-                                <Geometry>
+                                    </material>
+                                </CmptMaterial>
+                                <CmptGeometry>
                                     <primitive>
                                         <Plane/>
                                     </primitive>
-                                </Geometry>
-                                <Transform>
-                                    <Position>0.000000 0.000000 0.000000</Position>
-                                    <Rotation>0.000000 -0.000000 0.000000</Rotation>
-                                    <Scale>2.000000 1.000000 2.000000</Scale>
-                                </Transform>
+                                </CmptGeometry>
+                                <CmptTransform>
+                                    <Position>0 0.75 -1</Position>
+                                    <Rotation>0.707107 0 0 0.707107</Rotation>
+                                    <Scale>2 1 1.5</Scale>
+                                </CmptTransform>
                             </components>
                             <children/>
                         </SObj>
                         <SObj>
                             <name>wall left</name>
                             <components>
-                                <Material>
-                                    <materialBase>
+                                <CmptMaterial>
+                                    <material>
                                         <BSDF_FrostedGlass>
                                             <IOR>20.000000</IOR>
-                                            <colorFactor>0.600000 0.200000 0.200000</colorFactor>
+                                            <colorFactor>0.6 0.2 0.2</colorFactor>
                                             <colorTexture/>
                                             <roughnessFactor>1.000000</roughnessFactor>
                                             <roughnessTexture/>
                                             <aoTexture/>
                                             <normalTexture/>
                                         </BSDF_FrostedGlass>
-                                    </materialBase>
-                                </Material>
-                                <Geometry>
+                                    </material>
+                                </CmptMaterial>
+                                <CmptGeometry>
                                     <primitive>
                                         <Plane/>
                                     </primitive>
-                                </Geometry>
-                                <Transform>
-                                    <Position>-1.000000 0.750000 0.000000</Position>
-                                    <Rotation>0.000000 0.000000 -1.570796</Rotation>
-                                    <Scale>1.500000 1.000000 2.000000</Scale>
-                                </Transform>
+                                </CmptGeometry>
+                                <CmptTransform>
+                                    <Position>-1 0.75 0</Position>
+                                    <Rotation>0 0 -0.707107 0.707107</Rotation>
+                                    <Scale>1.5 1 2</Scale>
+                                </CmptTransform>
                             </components>
                             <children/>
                         </SObj>
                         <SObj>
                             <name>wall right</name>
                             <components>
-                                <Material>
-                                    <materialBase>
+                                <CmptMaterial>
+                                    <material>
                                         <BSDF_FrostedGlass>
                                             <IOR>20.000000</IOR>
-                                            <colorFactor>0.200000 0.200000 0.600000</colorFactor>
+                                            <colorFactor>0.2 0.2 0.6</colorFactor>
                                             <colorTexture/>
                                             <roughnessFactor>1.000000</roughnessFactor>
                                             <roughnessTexture/>
                                             <aoTexture/>
                                             <normalTexture/>
                                         </BSDF_FrostedGlass>
-                                    </materialBase>
-                                </Material>
-                                <Geometry>
+                                    </material>
+                                </CmptMaterial>
+                                <CmptGeometry>
                                     <primitive>
                                         <Plane/>
                                     </primitive>
-                                </Geometry>
-                                <Transform>
-                                    <Position>1.000000 0.750000 0.000000</Position>
-                                    <Rotation>0.000000 -0.000000 1.570796</Rotation>
-                                    <Scale>1.500000 1.000000 2.000000</Scale>
-                                </Transform>
+                                </CmptGeometry>
+                                <CmptTransform>
+                                    <Position>1 0.75 0</Position>
+                                    <Rotation>0 0 0.707107 0.707107</Rotation>
+                                    <Scale>1.5 1 2</Scale>
+                                </CmptTransform>
+                            </components>
+                            <children/>
+                        </SObj>
+                        <SObj>
+                            <name>wall ceil</name>
+                            <components>
+                                <CmptMaterial>
+                                    <material>
+                                        <BSDF_FrostedGlass>
+                                            <IOR>20.000000</IOR>
+                                            <colorFactor>1 1 1</colorFactor>
+                                            <colorTexture/>
+                                            <roughnessFactor>1.000000</roughnessFactor>
+                                            <roughnessTexture/>
+                                            <aoTexture/>
+                                            <normalTexture/>
+                                        </BSDF_FrostedGlass>
+                                    </material>
+                                </CmptMaterial>
+                                <CmptGeometry>
+                                    <primitive>
+                                        <Plane/>
+                                    </primitive>
+                                </CmptGeometry>
+                                <CmptTransform>
+                                    <Position>0 1.5 0</Position>
+                                    <Rotation>0 0 -1 -4.37114e-08</Rotation>
+                                    <Scale>2 1 2</Scale>
+                                </CmptTransform>
+                            </components>
+                            <children/>
+                        </SObj>
+                        <SObj>
+                            <name>wall down</name>
+                            <components>
+                                <CmptMaterial>
+                                    <material>
+                                        <BSDF_FrostedGlass>
+                                            <IOR>20.000000</IOR>
+                                            <colorFactor>1 1 1</colorFactor>
+                                            <colorTexture/>
+                                            <roughnessFactor>1.000000</roughnessFactor>
+                                            <roughnessTexture/>
+                                            <aoTexture/>
+                                            <normalTexture/>
+                                        </BSDF_FrostedGlass>
+                                    </material>
+                                </CmptMaterial>
+                                <CmptGeometry>
+                                    <primitive>
+                                        <Plane/>
+                                    </primitive>
+                                </CmptGeometry>
+                                <CmptTransform>
+                                    <Position>0 0 0</Position>
+                                    <Rotation>0 0 0 1</Rotation>
+                                    <Scale>3 0.666667 2</Scale>
+                                </CmptTransform>
+                            </components>
+                            <children/>
+                        </SObj>
+                    </children>
+                </SObj>
+                <SObj>
+                    <name>Cube</name>
+                    <components>
+                        <CmptTransform>
+                            <Position>0 0.75 0</Position>
+                            <Rotation>0 0 0 1</Rotation>
+                            <Scale>0.75 0.75 0.025</Scale>
+                        </CmptTransform>
+                        <CmptGeometry>
+                            <primitive>
+                                <TriMesh>
+                                    <cube/>
+                                </TriMesh>
+                            </primitive>
+                        </CmptGeometry>
+                        <CmptMaterial>
+                            <material>
+                                <BSDF_FrostedGlass>
+                                    <IOR>1.500000</IOR>
+                                    <colorFactor>1 1 1</colorFactor>
+                                    <colorTexture/>
+                                    <roughnessFactor>0.300000</roughnessFactor>
+                                    <roughnessTexture/>
+                                    <aoTexture/>
+                                    <normalTexture/>
+                                </BSDF_FrostedGlass>
+                            </material>
+                        </CmptMaterial>
+                    </components>
+                    <children/>
+                </SObj>
+                <SObj>
+                    <name>point light</name>
+                    <components>
+                        <CmptLight>
+                            <light>
+                                <Point_Light>
+                                    <color>1 1 1</color>
+                                    <intensity>20.000000</intensity>
+                                    <linear>0.700000</linear>
+                                    <quadratic>4.000000</quadratic>
+                                </Point_Light>
+                            </light>
+                        </CmptLight>
+                        <CmptTransform>
+                            <Position>0 0.75 -0.5</Position>
+                            <Rotation>0 0 0 1</Rotation>
+                            <Scale>0.8 1 0.6</Scale>
+                        </CmptTransform>
+                    </components>
+                    <children/>
+                </SObj>
+                <SObj>
+                    <name>FrontLights</name>
+                    <components>
+                        <CmptTransform>
+                            <Position>0 0 0</Position>
+                            <Rotation>0 0 0 1</Rotation>
+                            <Scale>1 1 1</Scale>
+                        </CmptTransform>
+                    </components>
+                    <children>
+                        <SObj>
+                            <name>LD</name>
+                            <components>
+                                <CmptLight>
+                                    <light>
+                                        <Point_Light>
+                                            <color>1 1 1</color>
+                                            <intensity>8.000000</intensity>
+                                            <linear>0.700000</linear>
+                                            <quadratic>1.800000</quadratic>
+                                        </Point_Light>
+                                    </light>
+                                </CmptLight>
+                                <CmptTransform>
+                                    <Position>-0.75 0.25 1</Position>
+                                    <Rotation>0 0 0 1</Rotation>
+                                    <Scale>1 1 1</Scale>
+                                </CmptTransform>
+                            </components>
+                            <children/>
+                        </SObj>
+                        <SObj>
+                            <name>RD</name>
+                            <components>
+                                <CmptLight>
+                                    <light>
+                                        <Point_Light>
+                                            <color>1 1 1</color>
+                                            <intensity>8.000000</intensity>
+                                            <linear>0.700000</linear>
+                                            <quadratic>1.800000</quadratic>
+                                        </Point_Light>
+                                    </light>
+                                </CmptLight>
+                                <CmptTransform>
+                                    <Position>0.75 0.25 1</Position>
+                                    <Rotation>0 0 0 1</Rotation>
+                                    <Scale>1 1 1</Scale>
+                                </CmptTransform>
+                            </components>
+                            <children/>
+                        </SObj>
+                        <SObj>
+                            <name>LU</name>
+                            <components>
+                                <CmptLight>
+                                    <light>
+                                        <Point_Light>
+                                            <color>1 1 1</color>
+                                            <intensity>8.000000</intensity>
+                                            <linear>0.700000</linear>
+                                            <quadratic>1.800000</quadratic>
+                                        </Point_Light>
+                                    </light>
+                                </CmptLight>
+                                <CmptTransform>
+                                    <Position>-0.75 1.25 1</Position>
+                                    <Rotation>0 0 0 1</Rotation>
+                                    <Scale>1 1 1</Scale>
+                                </CmptTransform>
+                            </components>
+                            <children/>
+                        </SObj>
+                        <SObj>
+                            <name>RU</name>
+                            <components>
+                                <CmptLight>
+                                    <light>
+                                        <Point_Light>
+                                            <color>1 1 1</color>
+                                            <intensity>8.000000</intensity>
+                                            <linear>0.700000</linear>
+                                            <quadratic>1.800000</quadratic>
+                                        </Point_Light>
+                                    </light>
+                                </CmptLight>
+                                <CmptTransform>
+                                    <Position>0.75 1.25 1</Position>
+                                    <Rotation>0 0 0 1</Rotation>
+                                    <Scale>1 1 1</Scale>
+                                </CmptTransform>
                             </components>
                             <children/>
                         </SObj>

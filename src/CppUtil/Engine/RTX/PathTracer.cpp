@@ -226,12 +226,12 @@ const RGBf PathTracer::SampleBSDF(
 	Normalf mat_w_in;
 	float matPD;
 	const RGBf matF = bsdf->Sample_f(w_out, texcoord, mat_w_in, matPD);
-	const Normalf matRayDirInWorld = surfaceToWorld * mat_w_in;
-	const float abs_cosTheta = abs(mat_w_in.z);
-	const int lightNum = static_cast<int>(lights.size());
-
 	if (matPD <= 0)
 		return RGBf(0);
+
+	const Normalf matRayDirInWorld = (surfaceToWorld * mat_w_in).Norm();
+	const float abs_cosTheta = abs(mat_w_in.z);
+	const int lightNum = static_cast<int>(lights.size());
 
 	// MSI
 	float sumPD = matPD;

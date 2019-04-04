@@ -20,8 +20,8 @@ const BBoxf Triangle::GetBBox() const {
 
 	for (int dim = 0; dim < 3; dim++) {
 		if (minP[dim] == maxP[dim]) {
-			minP[dim] -= 0.000001f;
-			maxP[dim] += 0.000001f;
+			minP[dim] -= 0.00001f;
+			maxP[dim] += 0.00001f;
 		}
 	}
 

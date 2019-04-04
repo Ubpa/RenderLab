@@ -57,7 +57,7 @@ RenderLab::RenderLab(QWidget *parent)
 	const size_t fps = 60;
 	timer->start(1000 / fps);
 
-	auto root = ToPtr(new SObj);
+	auto root = SObj::Load(ROOT_PATH + "data/SObjs/CB_Glass.xml");
 	scene = ToPtr(new Scene(root));
 
 	// viewer
@@ -69,7 +69,6 @@ RenderLab::RenderLab(QWidget *parent)
 
 	auto generator = [&]()->PathTracer::Ptr{
 		auto pathTracer = ToPtr(new PathTracer);
-		pathTracers.push_back(pathTracer);
 		pathTracer->maxDepth = maxDepth;
 
 		return pathTracer;
@@ -205,7 +204,6 @@ void RenderLab::InitSetting() {
 	
 	setting->AddTitle("[ PathTracer ]");
 	setting->AddEditVal("- Max Depth", maxDepth, 1, 20, [&](int val) {
-		for (auto pathTracer : pathTracers)
-			pathTracer->maxDepth = val;
+		maxDepth = val;
 	});
 }
