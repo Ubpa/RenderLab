@@ -4,7 +4,7 @@
 namespace CppUtil {
 	namespace Basic {
 		namespace EXT {
-			enum InnerProductType {
+			enum class InnerProductType {
 				Euclidean,
 			};
 

@@ -12,7 +12,7 @@ namespace CppUtil {
 				using BaseT::BaseT;
 
 			public:
-				static const ImplT Dot(const ImplT & lhs, const ImplT & rhs) {
+				static T Dot(const ImplT & lhs, const ImplT & rhs) {
 					return
 						lhs.x * rhs.x;
 				}

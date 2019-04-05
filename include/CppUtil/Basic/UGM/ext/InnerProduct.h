@@ -12,20 +12,8 @@ namespace CppUtil {
 				using InnerProduct_Base<N, T, innerProductType, BaseT, ImplT>::InnerProduct_Base;
 
 			public:
-				const ImplT Dot(const ImplT & v) const {
-					return Dot(*static_cast<const ImplT*>(this), v);
-				}
-
-				T Norm() const {
-					return Dot(*static_cast<const ImplT*>(this));
-				}
-
-				const ImplT Normalize() const {
-					return (*this) / Norm();
-				}
-
-				ImplT & NormalizeSelf() {
-					return (*this) /= Norm();
+				T Dot(const ImplT & v) const {
+					return InnerProduct_Base<N, T, innerProductType, BaseT, ImplT>::Dot(*static_cast<const ImplT*>(this), v);
 				}
 			};
 		}

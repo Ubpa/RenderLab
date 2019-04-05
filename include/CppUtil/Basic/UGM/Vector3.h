@@ -5,15 +5,16 @@
 
 #include <CppUtil/Basic/UGM/ext/Alias.h>
 #include <CppUtil/Basic/UGM/ext/Basic_Val3.h>
-#include <CppUtil/Basic/UGM/ext/Metric_Euclidean_3.h>
 #include <CppUtil/Basic/UGM/ext/Linearity_3.h>
+#include <CppUtil/Basic/UGM/ext/InnerProduct_Euclidean_3.h>
+#include <CppUtil/Basic/UGM/ext/Normed_InnerProduct.h>
 
 namespace CppUtil {
 	namespace Basic {
 		template <typename T>
-		class Vector<3, T> : public EXT::L_ME_B<3, T, Vector<3, T>> {
+		class Vector<3, T> : public EXT::NI_IE_L_B<3, T, Vector<3, T>> {
 		public:
-			using EXT::L_ME_B<3, T, Vector<3, T>>::L_ME_B;
+			using EXT::NI_IE_L_B<3, T, Vector<3, T>>::NI_IE_L_B;
 		};
 	}
 }

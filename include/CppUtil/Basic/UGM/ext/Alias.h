@@ -2,8 +2,10 @@
 #define _CPPUTIL_BASIC_MATH_UGM_EXT_ALIAS_H_
 
 #include <CppUtil/Basic/UGM/ext/Basic_Val.h>
-#include <CppUtil/Basic/UGM/ext/Metric.h>
 #include <CppUtil/Basic/UGM/ext/Linearity.h>
+#include <CppUtil/Basic/UGM/ext/InnerProduct.h>
+#include <CppUtil/Basic/UGM/ext/Normed.h>
+#include <CppUtil/Basic/UGM/ext/Metric.h>
 
 namespace CppUtil {
 	namespace Basic {
@@ -17,11 +19,17 @@ namespace CppUtil {
 			template<int N, typename T, typename ImplT>
 			using L_B = Linearity<N, T, Basic_Val<N, T, ImplT>, ImplT>;
 
-			template<int N, typename T, MetricType metricT, typename ImplT>
-			using L_M_B = Linearity<N, T, M_B<N, T, metricT, ImplT>, ImplT>;
+			template<int N, typename T, typename BaseT, typename ImplT>
+			using IE = InnerProduct<N, T, InnerProductType::Euclidean, BaseT, ImplT>;
 
 			template<int N, typename T, typename ImplT>
-			using L_ME_B = L_M_B<N, T, MetricType::Euclidean, ImplT>;
+			using IE_L_B = IE<N, T, L_B<N, T, ImplT>, ImplT>;
+
+			template<int N, typename T, typename BaseT, typename ImplT>
+			using NI = Normed<N, T, NormType::InnerProduct, BaseT, ImplT>;
+
+			template<int N, typename T, typename ImplT>
+			using NI_IE_L_B = NI<N, T, IE_L_B<N, T, ImplT>, ImplT>;
 		}
 	}
 }

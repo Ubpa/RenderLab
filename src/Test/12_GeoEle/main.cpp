@@ -1,5 +1,6 @@
 #include <CppUtil/Basic/UGM/Point2.h>
 #include <CppUtil/Basic/UGM/Vector1.h>
+#include <CppUtil/Basic/UGM/Vector3.h>
 
 #include <CppUtil/Basic/Timer.h>
 
@@ -47,6 +48,13 @@ int main() {
 	{
 		Vec1 v(3.f);
 		cout << v.LerpWith(Vec1(4.f), 0.5f) << endl;
+	}
+
+	{
+		Vec3 v(3, 1, 3);
+		v.NormalizeSelf();
+		cout << v << endl;
+		cout << v.Norm() << endl;
 	}
 
 	return 0;
