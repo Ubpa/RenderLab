@@ -20,6 +20,9 @@ namespace CppUtil {
 	template <int N, typename T>
 	using Vector = Basic::Vector<N, T>;
 
+	using Vec1f = Vector<1, float>;
+	using Vec1 = Vec1f;
+
 	using Vec2f = Vector<2, float>;
 	using Vec2i = Vector<2, int>;
 	using Vec2 = Vec2f;

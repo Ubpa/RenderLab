@@ -12,10 +12,13 @@ namespace CppUtil {
 	template <int N, typename T>
 	using Point = Basic::Point<N, T>;
 
-	using Point2 = Point<2, float>;
+	using Point1f = Point<1, float>;
+	using Point1 = Point1f;
+
+	using Point2f = Point<2, float>;
 	using Point2i = Point<2, int>;
 	using Point2ui = Point<2, unsigned int>;
-	using Point2 = Point2;
+	using Point2 = Point2f;
 
 	using Point3 = Point<3, float>;
 	using Point3 = Point3;

@@ -1,4 +1,5 @@
 #include <CppUtil/Basic/UGM/Point2.h>
+#include <CppUtil/Basic/UGM/Vector1.h>
 
 #include <CppUtil/Basic/Timer.h>
 
@@ -43,5 +44,10 @@ int main() {
 
 	cout << "k*(v0+v1) == k * v0 + k * v1 : " << (k*(v0 + v1) == k * v0 + k * v1) << endl;
 	
+	{
+		Vec1 v(3.f);
+		cout << v.LerpWith(Vec1(4.f), 0.5f) << endl;
+	}
+
 	return 0;
 }

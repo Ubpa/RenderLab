@@ -24,6 +24,10 @@ namespace CppUtil {
 	template <int N, typename T>
 	using Val = Basic::Val<N, T>;
 
+	using Val1f = Val<1, float>;
+	using Val1i = Val<1, int>;
+	using Val1 = Val1f;
+
 	using Val2f = Val<2, float>;
 	using Val2i = Val<2, int>;
 	using Val2 = Val2f;
