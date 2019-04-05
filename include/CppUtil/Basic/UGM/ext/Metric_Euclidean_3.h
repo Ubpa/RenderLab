@@ -12,7 +12,7 @@ namespace CppUtil {
 				using BaseT::BaseT;
 
 			public:
-				static T Distance3(const ImplT & lhs, const ImplT & rhs) {
+				static T Distance2(const ImplT & lhs, const ImplT & rhs) {
 					const T dx = lhs.x - rhs.x;
 					const T dy = lhs.y - rhs.y;
 					const T dz = lhs.z - rhs.z;

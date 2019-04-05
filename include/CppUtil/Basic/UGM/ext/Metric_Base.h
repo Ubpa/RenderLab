@@ -7,7 +7,7 @@ namespace CppUtil {
 	namespace Basic {
 		namespace EXT {
 			enum MetricType {
-				Euclidean,
+				Euclidean, // 要求子类是数组类型
 			};
 
 			template <int N, typename T, MetricType metricT, typename BaseT, typename ImplT>
