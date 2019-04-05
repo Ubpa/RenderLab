@@ -80,10 +80,11 @@ namespace CppUtil {
 			T & operator[](int i) { assert(i >= 0 && i <= (valNum - 1)); return _data[i]; }
 
 			bool operator==(const Val & rhs) const {
-				return x == rhs.x && y == rhs.y && z == rhs.z && w == rhs.w;
+				return Math::Equal(x, rhs.x) && Math::Equal(y, rhs.y) && Math::Equal(z, rhs.z) && Math::Equal(w, rhs.w);
 			}
+
 			bool operator!=(const Val & rhs) const {
-				return x != rhs.x || y != rhs.y || z != rhs.z || w != rhs.w;
+				return !Math::Equal(x, rhs.x) || !Math::Equal(y, rhs.y) || !Math::Equal(z, rhs.z) || !Math::Equal(w, rhs.w);
 			}
 
 			Val & operator=(const Val & rhs) {

@@ -3,8 +3,6 @@
 
 #include <CppUtil/Basic/UGM/ext/Basic_Val_Base.h>
 
-#include <type_traits>
-
 namespace CppUtil {
 	namespace Basic {
 		namespace EXT {
@@ -32,6 +30,15 @@ namespace CppUtil {
 
 				const ImplT MaxWith(const ImplT & v) {
 					return Max(*this, v);
+				}
+
+			protected:
+				ImplT & ToImplT() {
+					return *static_cast<ImplT *>(this);
+				}
+
+				const ImplT & ToImplT() const {
+					return *static_cast<const ImplT *>(this);
 				}
 			};
 		}

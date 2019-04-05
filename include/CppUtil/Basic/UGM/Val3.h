@@ -21,7 +21,7 @@ namespace CppUtil {
 				y(static_cast<T>(y)),
 				z(static_cast<T>(z)) { }
 
-			Val(T val) : Val(val, val, val) { }
+			explicit Val(T val) : Val(val, val, val) { }
 
 			Val() : Val(static_cast<T>(0)) { }
 
@@ -70,10 +70,11 @@ namespace CppUtil {
 			T & operator[](int i) { assert(i >= 0 && i <= (valNum - 1)); return _data[i]; }
 
 			bool operator==(const Val & rhs) const {
-				return x == rhs.x && y == rhs.y && z == rhs.z;
+				return Math::Equal(x, rhs.x) && Math::Equal(y, rhs.y) && Math::Equal(z, rhs.z);
 			}
+
 			bool operator!=(const Val & rhs) const {
-				return x != rhs.x || y != rhs.y || z != rhs.z;
+				return !Math::Equal(x, rhs.x) || !Math::Equal(y, rhs.y) || !Math::Equal(z, rhs.z);
 			}
 
 			Val & operator=(const Val & rhs) {

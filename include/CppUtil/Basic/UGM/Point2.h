@@ -1,33 +1,19 @@
 #ifndef _CPPUTIL_BASIC_MATH_UGM_POINT2_H_
 #define _CPPUTIL_BASIC_MATH_UGM_POINT2_H_
 
-#include <CppUtil/Basic/UGM/Val2.h>
 #include <CppUtil/Basic/UGM/Point.h>
 #include <CppUtil/Basic/UGM/Vector2.h>
 
+#include <CppUtil/Basic/UGM/ext/Alias.h>
 #include <CppUtil/Basic/UGM/ext/Basic_Val2.h>
+#include <CppUtil/Basic/UGM/ext/Metric_Euclidean_2.h>
 
 namespace CppUtil {
 	namespace Basic {
 		template <typename T>
-		class Point<2, T> : public EXT::Basic_Val<2, T, Point<2, T>> {
+		class Point<2, T> : public EXT::ME_B<2,T,Point<2,T>> {
 		public:
-			using EXT::Basic_Val<2, T, Point<2, T>>::Basic_Val;
-
-		public:
-			static float Distance2(const Point & p0, const Point & p1) {
-				return (p1 - p0).Length2();
-			}
-			float Distance2With(const Point & p) {
-				return Distance2(*this, p);
-			}
-
-			static float Distance(const Point & p0, const Point & p1) {
-				return (p1 - p0).Length();
-			}
-			float DistanceWith(const Point & p) {
-				return Distance(*this, p);
-			}
+			using EXT::ME_B<2, T, Point<2, T>>::ME_B;
 
 		public:
 			const Vector<2, T> operator-(const Point &p) const {

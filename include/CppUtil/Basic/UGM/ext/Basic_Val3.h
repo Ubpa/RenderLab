@@ -15,6 +15,25 @@ namespace CppUtil {
 				using Val<3, T>::Val;
 
 			public:
+				template<typename U>
+				const ImplT ToVal(U v) const {
+					const T T_v = static_cast<T>(v);
+					return ImplT(
+						Math::ToVal(x, T_v),
+						Math::ToVal(y, T_v),
+						Math::ToVal(z, T_v)
+					);
+				}
+
+				template<typename U>
+				ImplT & SelfToVal(U v) const {
+					const T T_v = static_cast<T>(v);
+					x = Math::ToVal(x, T_v);
+					y = Math::ToVal(y, T_v);
+					z = Math::ToVal(z, T_v);
+					return *static_cast<ImplT*>(this);
+				}
+
 				const ImplT Abs() const {
 					return ImplT(
 						abs(x),

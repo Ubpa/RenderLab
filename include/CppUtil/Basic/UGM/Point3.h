@@ -4,12 +4,16 @@
 #include <CppUtil/Basic/UGM/Point.h>
 #include <CppUtil/Basic/UGM/Vector3.h>
 
+#include <CppUtil/Basic/UGM/ext/Alias.h>
+#include <CppUtil/Basic/UGM/ext/Basic_Val3.h>
+#include <CppUtil/Basic/UGM/ext/Metric_Euclidean_3.h>
+
 namespace CppUtil {
 	namespace Basic {
 		template <typename T>
-		class Point<3, T> : public EXT::Basic_Val<3, T, Point<3, T>> {
+		class Point<3, T> : public EXT::ME_B<3,T,Point<3,T>> {
 		public:
-			using EXT::Basic_Val<3, T, Point<3, T>>::Basic_Val;
+			using EXT::ME_B<3, T, Point<3, T>>::ME_B;
 
 		public:
 			static float Distance2(const Point & p0, const Point & p1) {

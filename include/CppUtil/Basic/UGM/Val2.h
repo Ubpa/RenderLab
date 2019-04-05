@@ -64,12 +64,14 @@ namespace CppUtil {
 			const T & operator[](int i) const { assert(i >= 0 && i <= (valNum - 1)); return _data[i]; }
 			T & operator[](int i) { assert(i >= 0 && i <= (valNum - 1)); return _data[i]; }
 
-			const bool operator==(const Val & rhs) const {
-				return x == rhs.x && y == rhs.y;
+			bool operator==(const Val & rhs) const {
+				return Math::Equal(x, rhs.x) && Math::Equal(y, rhs.y);
 			}
-			const bool operator!=(const Val & rhs) const {
-				return x != rhs.x || y != rhs.y;
+
+			bool operator!=(const Val & rhs) const {
+				return !Math::Equal(x, rhs.x) || !Math::Equal(y, rhs.y);
 			}
+
 			Val & operator=(const Val & rhs) {
 				x = rhs.x;
 				y = rhs.y;

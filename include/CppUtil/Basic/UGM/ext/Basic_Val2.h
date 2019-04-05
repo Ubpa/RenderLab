@@ -15,6 +15,23 @@ namespace CppUtil {
 				using Val<2, T>::Val;
 
 			public:
+				template<typename U>
+				const ImplT ToVal(U v) const{
+					const T T_v = static_cast<T>(v);
+					return ImplT(
+						Math::ToVal(x, T_v),
+						Math::ToVal(y, T_v)
+					);
+				}
+
+				template<typename U>
+				ImplT & SelfToVal(U v) const {
+					const T T_v = static_cast<T>(v);
+					x = Math::ToVal(x, T_v);
+					y = Math::ToVal(y, T_v);
+					return *static_cast<ImplT*>(this);
+				}
+
 				const ImplT Abs() const {
 					return ImplT(
 						abs(x),
@@ -47,6 +64,20 @@ namespace CppUtil {
 						std::max(lhs.x, rhs.x),
 						std::max(lhs.y, rhs.y)
 					);
+				}
+
+				const ImplT operator*(const ImplT & v) const {
+					return ImplT(
+						lhs.x * rhs.x,
+						lhs.y * rhs.y
+					);
+				}
+
+				ImplT & operator*=(const ImplT & v) {
+					x *= v.x;
+					y *= v.y;
+					z *= v.z;
+
 				}
 			};
 		}
