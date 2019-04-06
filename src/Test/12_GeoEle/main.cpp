@@ -1,6 +1,7 @@
 #include <CppUtil/Basic/UGM/Point2.h>
 #include <CppUtil/Basic/UGM/Vector1.h>
 #include <CppUtil/Basic/UGM/Vector3.h>
+#include <CppUtil/Basic/UGM/RGB.h>
 
 #include <CppUtil/Basic/Timer.h>
 
@@ -55,6 +56,13 @@ int main() {
 		v.NormalizeSelf();
 		cout << v << endl;
 		cout << v.Norm() << endl;
+	}
+
+	{
+		RGBf light(0.8, 0.4, 0.4);
+		RGBf material(0.4, 0.8, 0.8);
+		cout << light * material << endl;
+		cout << "(light.Inverse_HadamardProduct() * light == RGBf::Indentity_HadamardProduct()) : " << (light.Inverse_HadamardProduct() * light == RGBf::Indentity_HadamardProduct()) << endl;
 	}
 
 	return 0;

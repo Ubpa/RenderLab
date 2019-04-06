@@ -77,7 +77,11 @@ namespace CppUtil {
 
 			void SetScale(const Vec3 & xyz);
 			void Scale(const Vec3 & scale) {
-				SetScale(this->scale * scale);
+				SetScale(Vec3(
+					scale.x * this->scale.x,
+					scale.y * this->scale.y,
+					scale.z * this->scale.z
+				));
 			}
 
 			void SetTransform(const Basic::Transform & transform);

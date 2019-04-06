@@ -6,6 +6,7 @@
 #include <CppUtil/Basic/UGM/ext/InnerProduct.h>
 #include <CppUtil/Basic/UGM/ext/Normed.h>
 #include <CppUtil/Basic/UGM/ext/Metric.h>
+#include <CppUtil/Basic/UGM/ext/HadamardProduct.h>
 
 namespace CppUtil {
 	namespace Basic {
@@ -18,6 +19,9 @@ namespace CppUtil {
 
 			template<int N, typename T, typename ImplT>
 			using L_B = Linearity<N, T, Basic_Val<N, T, ImplT>, ImplT>;
+
+			template<int N, typename T, typename ImplT>
+			using H_L_B = HadamardProduct<N, T, L_B<N, T, ImplT>, ImplT>;
 
 			template<int N, typename T, typename BaseT, typename ImplT>
 			using IE = InnerProduct<N, T, InnerProductType::Euclidean, BaseT, ImplT>;

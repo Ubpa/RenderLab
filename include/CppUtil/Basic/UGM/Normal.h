@@ -1,17 +1,18 @@
 #ifndef _CPPUTIL_BASIC_MATH_NORMAL_H_
 #define _CPPUTIL_BASIC_MATH_NORMAL_H_
 
-#include "Vector3.h"
-#include "Point2.h"
-#include "Mat3x3.h"
-#include "Math.h"
+#include <CppUtil/Basic/UGM/ext/Alias.h>
+#include <CppUtil/Basic/UGM/ext/Basic_Val3.h>
+#include <CppUtil/Basic/UGM/ext/Linearity_3.h>
+#include <CppUtil/Basic/UGM/ext/InnerProduct_Euclidean_3.h>
+#include <CppUtil/Basic/UGM/ext/Normed_InnerProduct.h>
 
 namespace CppUtil {
 	namespace Basic {
 		template <typename T>
-		class Normal : public Vector<3, T> {
+		class Normal : public EXT::NI_IE_L_B<3,T,Normal<T>> {
 		public:
-			using Vector<3, T>::Vector;
+			using EXT::NI_IE_L_B<3, T, Normal<T>>::NI_IE_L_B;
 
 		public:
 			const Point<2, T> ToTexcoord() const {

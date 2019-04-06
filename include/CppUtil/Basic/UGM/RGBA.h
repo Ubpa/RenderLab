@@ -51,71 +51,8 @@ namespace CppUtil {
 				const auto rstRGB = (ToRGB() + rgba.ToRGB()*a) / rstA;
 				return RGBA(rstRGB, rstA);
 			}
-
-		public:
-			const RGBA operator+(const RGBA &v) const {
-				return RGBA(r + v.r, g + v.g, b + v.b, a + v.a);
-			}
-
-			RGBA & operator+=(const RGBA &v) {
-				r += v.r;
-				g += v.g;
-				b += v.b;
-				a += v.a;
-				return *this;
-			}
-
-			const RGBA operator-(const RGBA &v) const {
-				return RGBA(r - v.r, g - v.g, b - v.b, a - v.a);
-			}
-
-			const RGBA operator-() const { return RGBA(-r, -g, -b, -a); }
-
-			RGBA & operator-=(const RGBA &v) {
-				r -= v.r;
-				g -= v.g;
-				b -= v.b;
-				a -= v.a;
-				return *this;
-			}
-
-			template <typename U>
-			const RGBA operator*(U s) const {
-				return RGBA(s * r, s * g, s * b, s * a);
-			}
-
-			template <typename U>
-			RGBA & operator*=(U s) {
-				r *= s;
-				g *= s;
-				b *= s;
-				a *= s;
-				return *this;
-			}
-
-			template <typename U>
-			const RGBA operator/(U f) const {
-				assert(f != static_cast<U>(0));
-				const float inv = (float)1 / f;
-				return RGBA(r * inv, g * inv, b * inv, a * inv);
-			}
-
-			template <typename U>
-			RGBA & operator/=(U f) {
-				assert(f != static_cast<U>(0));
-				const float inv = (float)1 / f;
-				r *= inv;
-				g *= inv;
-				b *= inv;
-				a *= inv;
-				return *this;
-			}
 		};
 
-		template<typename T, typename U>
-		const RGBA<T> operator*(U k, const RGBA<T> & rgba) {
-			return rgba * k;
-		}
 	}
 
 	template<typename T>

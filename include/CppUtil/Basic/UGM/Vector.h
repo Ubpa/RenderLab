@@ -5,16 +5,6 @@ namespace CppUtil {
 	namespace Basic {
 		template<int N, typename T>
 		class Vector;
-
-		//template<int N, typename T, typename U>
-		//const Vector<N, T> operator+(U k, const Vector<N, T> & v) {
-		//	return v + k;
-		//}
-
-		//template<int N, typename T, typename U>
-		//const Vector<N, T> operator-(U k, const Vector<N, T> & v) {
-		//	return -v + k;
-		//}
 	}
 
 	template <int N, typename T>
