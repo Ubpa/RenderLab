@@ -16,10 +16,11 @@ namespace CppUtil {
 					// x0 y0 z0
 					// x1 y1 z1
 					return ImplT(
-						lhs.y*rhs.z - lhs.z*rhs.y,
-						lhs.z*rhs.x - lhs.x*rhs.z,
-						lhs.x*rhs.y - lhs.y*rhs.x
+						lhs.y * rhs.z - rhs.y * lhs.z,
+						lhs.z * rhs.x - rhs.z * lhs.x,
+						lhs.x * rhs.y - rhs.x * lhs.y
 					);
+
 				}
 
 				const ImplT Cross(const ImplT & v) const {

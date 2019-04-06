@@ -5,6 +5,7 @@
 #include <CppUtil/Basic/UGM/Normal.h>
 
 #include <CppUtil/Basic/Timer.h>
+#include <glm/glm.hpp>
 
 #include <sstream>
 
@@ -71,6 +72,94 @@ int main() {
 		Normalf n1(1, 1, 0);
 		Normalf n2(-1, 1, 0);
 		cout << n1.Cross(n2) << endl;
+	}
+
+	{// ÐÔÄÜ²âÊÔ
+		{// Cross
+			stringstream ss;
+			ss << "Cross" << endl;
+			{
+				Timer timer;
+				glm::vec3 v(1, 2, 3);
+				glm::vec3 w(4, 5, 6);
+				timer.Start();
+				for (int i = 0; i < 500000000; i++) {
+					v = glm::cross(v, w);
+				}
+				timer.Stop();
+				ss << v.x << v.y << v.z << endl;
+				ss << "glm : " << timer.GetWholeTime() << endl;
+			}
+			{
+				Timer timer;
+				Vec3 v(7, 8, 9);
+				Vec3 w(10, 11, 12);
+				timer.Start();
+				for (int i = 0; i < 500000000; i++) {
+					v = Vec3::Cross(v, w);
+				}
+				timer.Stop();
+				ss << v << endl;
+				ss << "my : " << timer.GetWholeTime() << endl;
+			}
+			cout << ss.str() << endl;
+		}
+		{// Normalize
+			stringstream ss;
+			ss << "Normalize" << endl;
+			{
+				Timer timer;
+				glm::vec3 v(1, 2, 3);
+				timer.Start();
+				for (int i = 0; i < 100000000; i++) {
+					v = glm::normalize(v);
+				}
+				timer.Stop();
+				ss << v.x << v.y << v.z << endl;
+				ss << "glm : " << timer.GetWholeTime() << endl;
+			}
+			{
+				Timer timer;
+				Vec3 v(7, 8, 9);
+				timer.Start();
+				for (int i = 0; i < 100000000; i++) {
+					v = v.Normalize();
+				}
+				timer.Stop();
+				ss << v << endl;
+				ss << "my : " << timer.GetWholeTime() << endl;
+			}
+			cout << ss.str() << endl;
+		}
+		{// cosTheta
+			stringstream ss;
+			ss << "CosTheta" << endl;
+			{
+				Timer timer;
+				glm::vec3 v(1, 2, 3);
+				glm::vec3 w(4, 5, 6);
+				timer.Start();
+				for (int i = 0; i < 10000000; i++) {
+					v *= glm::dot(v, w) / (glm::length(v)*glm::length(w));
+				}
+				timer.Stop();
+				ss << v.x << v.y << v.z << endl;
+				ss << "glm : " << timer.GetWholeTime() << endl;
+			}
+			{
+				Timer timer;
+				Vec3 v(7, 8, 9);
+				Vec3 w(10, 11, 12);
+				timer.Start();
+				for (int i = 0; i < 10000000; i++) {
+					v *= Vec3::CosTheta(v, w);
+				}
+				timer.Stop();
+				ss << v << endl;
+				ss << "my : " << timer.GetWholeTime() << endl;
+			}
+			cout << ss.str() << endl;
+		}
 	}
 
 	return 0;

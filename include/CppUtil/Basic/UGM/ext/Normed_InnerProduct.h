@@ -22,8 +22,8 @@ namespace CppUtil {
 				}
 
 				static T CosTheta(const ImplT & lhs, const ImplT & rhs) {
-					assert(lhs.Normalize() * rhs.Normalize() != static_cast<T>(0));
-					return Dot(lhs, rhs) / (lhs.Normalize() * rhs.Normalize());
+					assert(lhs.Norm() * rhs.Norm() != static_cast<T>(0));
+					return Dot(lhs, rhs) / (lhs.Norm() * rhs.Norm());
 				}
 			};
 		}

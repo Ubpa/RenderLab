@@ -12,6 +12,8 @@ namespace CppUtil {
 				using InnerProduct_Base<N, T, innerProductType, BaseT, ImplT>::InnerProduct_Base;
 
 			public:
+				using InnerProduct_Base<N, T, innerProductType, BaseT, ImplT>::Dot;
+
 				T Dot(const ImplT & v) const {
 					return InnerProduct_Base<N, T, innerProductType, BaseT, ImplT>::Dot(*static_cast<const ImplT*>(this), v);
 				}
