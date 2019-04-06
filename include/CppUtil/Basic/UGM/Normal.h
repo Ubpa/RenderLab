@@ -7,12 +7,14 @@
 #include <CppUtil/Basic/UGM/ext/InnerProduct_Euclidean_3.h>
 #include <CppUtil/Basic/UGM/ext/Normed_InnerProduct.h>
 
+#include <CppUtil/Basic/UGM/Mat3x3.h>
+
 namespace CppUtil {
 	namespace Basic {
 		template <typename T>
-		class Normal : public EXT::NI_IE_L_B<3,T,Normal<T>> {
+		class Normal : public EXT::NI_C_IE_L_B_3<T, Normal<T>> {
 		public:
-			using EXT::NI_IE_L_B<3, T, Normal<T>>::NI_IE_L_B;
+			using EXT::NI_C_IE_L_B_3<T, Normal<T>>::NI_C_IE_L_B_3;
 
 		public:
 			const Point<2, T> ToTexcoord() const {
@@ -31,7 +33,7 @@ namespace CppUtil {
 			}
 
 			const Mat3x3<T> GenCoordSpace() const {
-				auto z = Norm();
+				const auto z = Normalize();
 				auto h = z;
 				if (fabs(h.x) <= fabs(h.y) && fabs(h.x) <= fabs(h.z))
 					h.x = 1.0;
@@ -40,8 +42,8 @@ namespace CppUtil {
 				else
 					h.z = 1.0;
 
-				auto y = h.Cross(z).Norm();
-				auto x = z.Cross(y).Norm();
+				const auto y = h.Cross(z).Normalize();
+				const auto x = z.Cross(y).Normalize();
 
 				return Mat3x3<T>(x, y, z);
 			}

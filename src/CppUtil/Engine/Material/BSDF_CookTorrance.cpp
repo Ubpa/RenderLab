@@ -39,7 +39,7 @@ float BSDF_CookTorrance::G(const Normalf & wo, const Normalf & wi, const Normalf
 }
 
 const RGBf BSDF_CookTorrance::F(const Normalf & wo, const Normalf & wi, const Point2 & texcoord) {
-	const Normalf h = (wo + wi).Norm();
+	const Normalf h = (wo + wi).Normalize();
 	float fr = Fr(wi, h);
 	float kd = 1 - fr;
 	return kd * albedo / Math::PI + NDF(h) * fr * G(wo, wi, h) / (4 * wo.z *wi.z) * refletance;
@@ -77,7 +77,7 @@ const RGBf BSDF_CookTorrance::Sample_f(const Normalf & wo, const Point2 & texcoo
 	float sinTheta = sqrt(1 - cosTheta * cosTheta);
 	float phi = 2 * Math::PI * Xi2;
 	wi = Normalf(sinTheta*cos(phi), sinTheta*sin(phi), cosTheta);
-	Normalf h = (wo + wi).Norm();
+	Normalf h = (wo + wi).Normalize();
 	pd = 1.0f / (2.0f * Math::PI);
 
 	float fr = Fr(wi, h);

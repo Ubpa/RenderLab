@@ -18,7 +18,7 @@ bool BSDF::LocalRefract(const Normalf & wo, Normalf & wi, float ior) {
 	wi.x = - wo.x * inv;
 	wi.y = - wo.y * inv;
 	wi.z = - Math::sgn(wo.z) * sqrt(discriminant);
-	wi.NormSelf();
+	wi.NormalizeSelf();
 
 	return true;
 }
@@ -26,5 +26,5 @@ bool BSDF::LocalRefract(const Normalf & wo, Normalf & wi, float ior) {
 const Normalf BSDF::TangentSpaceNormalToWorld(const Normalf & worldTangent, const Normalf & worldNormal, const Normalf & tangentSpaceNormal) {
 	const Normalf bitangent = worldTangent.Cross(worldNormal);
 	Mat3f TBN(worldTangent, bitangent, worldNormal);
-	return (TBN * tangentSpaceNormal).Norm();
+	return (TBN * tangentSpaceNormal).Normalize();
 }

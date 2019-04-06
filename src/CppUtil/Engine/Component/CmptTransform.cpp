@@ -4,7 +4,7 @@ using namespace CppUtil;
 using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
 
-void CmptTransform::Init(const Point3 & pos, const Vec3 & scale, const Quatf & rot) {
+void CmptTransform::Init(const Point3 & pos, const Scalef & scale, const Quatf & rot) {
 	position = pos;
 	this->scale = scale;
 	rotation = rot;

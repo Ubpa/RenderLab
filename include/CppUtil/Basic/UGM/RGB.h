@@ -16,9 +16,6 @@ namespace CppUtil {
 		public:
 			using EXT::H_L_B<3, T, RGB<T>>::H_L_B;
 
-			template<typename U>
-			RGB(const RGBA<U> rgba) : RGB(r*a, g*a, b*a) { }
-
 		public:
 			T Illumination() const { return static_cast<T>(0.2126) * r + static_cast<T>(0.7152) * g + static_cast<T>(0.0722) * b; }
 			T Gray() const { return r * static_cast<T>(0.299) + g * static_cast<T>(0.587) + b * static_cast<T>(0.114); }

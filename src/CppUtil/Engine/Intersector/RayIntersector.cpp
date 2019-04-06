@@ -73,8 +73,8 @@ void RayIntersector::Visit(BVHAccel::Ptr bvhAccel) {
 	bvhAccel->GetBVHRoot()->Accept(This());
 	if (rst.closestSObj) {
 		const auto & mat = bvhAccel->GetSObjL2WMat(rst.closestSObj);
-		rst.n = mat(rst.n).Norm();
-		rst.tangent = mat(rst.tangent).Norm();
+		rst.n = mat(rst.n).Normalize();
+		rst.tangent = mat(rst.tangent).Normalize();
 	}
 }
 
@@ -143,8 +143,8 @@ void RayIntersector::Visit(SObj::Ptr sobj) {
 	if (cmptTransform) {
 		cmptTransform->GetTransform().ApplyTo(*ray);
 		if (rst.closestSObj != origSObj) {
-			cmptTransform->GetTransform().ApplyTo(rst.n).NormSelf();
-			cmptTransform->GetTransform().ApplyTo(rst.tangent).NormSelf();
+			cmptTransform->GetTransform().ApplyTo(rst.n).NormalizeSelf();
+			cmptTransform->GetTransform().ApplyTo(rst.tangent).NormalizeSelf();
 		}
 	}
 }
@@ -272,7 +272,7 @@ void RayIntersector::Visit(Triangle::Ptr triangle) {
 	const auto & n2 = normals[idx2];
 	const auto & n3 = normals[idx3];
 
-	rst.n = (w * n1 + u * n2 + v * n3).Norm();
+	rst.n = (w * n1 + u * n2 + v * n3).Normalize();
 
 	// texcoord
 	const auto & texcoords = mesh->GetTexcoords();
@@ -289,5 +289,5 @@ void RayIntersector::Visit(Triangle::Ptr triangle) {
 	const auto & tg2 = tangents[idx2];
 	const auto & tg3 = tangents[idx3];
 
-	rst.tangent = (w * tg1 + u * tg2 + v * tg3).Norm();
+	rst.tangent = (w * tg1 + u * tg2 + v * tg3).Normalize();
 }

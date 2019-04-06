@@ -2,6 +2,7 @@
 
 #include <CppUtil/Basic/Image.h>
 #include <CppUtil/Basic/Math.h>
+#include <CppUtil/Basic/UGM/Scale.h>
 
 #include <qlabel.h>
 #include <qgridlayout.h>
@@ -373,8 +374,8 @@ void Grid::AddTitle(const string & text) {
 }
 
 void Grid::AddEditVal(const vector<string> & texts, const Val3 & val, const Val3 & minVal, const Val3 & maxVal, const Val3i & stepNum, const function<void(const Val3 &)> & slot) {
-	auto f_step = (Vec3(maxVal) - Vec3(minVal)) / Vec3(stepNum);
-	auto i_val = (Vec3(val) - Vec3(minVal)) / f_step;
+	auto f_step = (Scalef(maxVal) - Scalef(minVal)) / Scalef(stepNum);
+	auto i_val = (Scalef(val) - Scalef(minVal)) / f_step;
 	QSlider * horizontalSliders[3] = {
 		new QSlider,
 		new QSlider,

@@ -12,7 +12,7 @@ namespace CppUtil {
 			CmptTransform(
 				Basic::Ptr<SObj> sobj,
 				const Point3 & pos = Point3(0),
-				const Vec3 & scale = Vec3f(1.0f),
+				const Scalef & scale = Scalef(1.0f),
 				const Quatf & rot = Quatf()
 			) :
 				Component(sobj),
@@ -24,7 +24,7 @@ namespace CppUtil {
 			CmptTransform(
 				Basic::Ptr<SObj> sobj,
 				const Point3 & pos,
-				const Vec3 & scale,
+				const Scalef & scale,
 				const Vec3 & axis,
 				float theta
 			) : CmptTransform(sobj, pos, scale, Quatf(axis, theta)) { }
@@ -32,16 +32,16 @@ namespace CppUtil {
 			CmptTransform(
 				Basic::Ptr<SObj> sobj,
 				const Point3 & pos,
-				const Vec3 & scale,
+				const Scalef & scale,
 				const EulerYXZf euler
 			) : CmptTransform(sobj, pos, scale, euler.ToQuat()) { }
 
 		public:
-			void Init(const Point3 & pos = Point3(0), const Vec3 & scale = Vec3f(1.0f), const Quatf & rot = Quatf());
-			void Init(const Point3 & pos, const Vec3 & scale, const Vec3 & axis, float theta) {
+			void Init(const Point3 & pos = Point3(0), const Scalef & scale = Scalef(1.0f), const Quatf & rot = Quatf());
+			void Init(const Point3 & pos, const Scalef & scale, const Vec3 & axis, float theta) {
 				Init(pos, scale, Quatf(axis, theta));
 			}
-			void Init(const Point3 & pos, const Vec3 & scale, const EulerYXZf euler) {
+			void Init(const Point3 & pos, const Scalef & scale, const EulerYXZf euler) {
 				Init(pos, scale, euler.ToQuat());
 			}
 
@@ -49,7 +49,7 @@ namespace CppUtil {
 			const Point3 & GetPosition() const { return position; }
 			const Quatf & GetRotation() const { return rotation; }
 			const EulerYXZf GetRotationEuler() const;
-			const Vec3 & GetScale() const { return scale; }
+			const Scalef & GetScale() const { return scale; }
 			const Basic::Transform & GetTransform() const;
 
 		public:
@@ -76,12 +76,8 @@ namespace CppUtil {
 			}
 
 			void SetScale(const Vec3 & xyz);
-			void Scale(const Vec3 & scale) {
-				SetScale(Vec3(
-					scale.x * this->scale.x,
-					scale.y * this->scale.y,
-					scale.z * this->scale.z
-				));
+			void Scale(const Scalef & scale) {
+				SetScale(this->scale * scale);
 			}
 
 			void SetTransform(const Basic::Transform & transform);
@@ -94,7 +90,7 @@ namespace CppUtil {
 
 			Point3 position;
 			Quatf rotation;
-			Vec3 scale;
+			Scalef scale;
 
 			mutable bool dirtyTransform;
 			mutable Basic::Transform transform;

@@ -17,14 +17,14 @@ namespace CppUtil {
 
 		public:
 			static float Distance2(const Point & p0, const Point & p1) {
-				return (p1 - p0).Length2();
+				return (p1 - p0).Norm2();
 			}
 			float Distance2With(const Point & p) {
 				return Distance2(*this, p);
 			}
 
 			static float Distance(const Point & p0, const Point & p1) {
-				return (p1 - p0).Length();
+				return (p1 - p0).Norm();
 			}
 			float DistanceWith(const Point & p) {
 				return Distance(*this, p);

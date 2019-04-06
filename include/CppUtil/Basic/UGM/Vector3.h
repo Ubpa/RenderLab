@@ -12,25 +12,9 @@
 namespace CppUtil {
 	namespace Basic {
 		template <typename T>
-		class Vector<3, T> : public EXT::NI_IE_L_B<3, T, Vector<3, T>> {
+		class Vector<3, T> : public EXT::NI_C_IE_L_B_3<T, Vector<3, T>> {
 		public:
-			using EXT::NI_IE_L_B<3, T, Vector<3, T>>::NI_IE_L_B;
-
-		public:
-			static const Vector Cross(const Vector & lhs, Vector & rhs) {
-				//  i  j  k
-				// x0 y0 z0
-				// x1 y1 z1
-				return Vector(
-					lhs.y*rhs.z - lhs.z*rhs.y,
-					lhs.z*rhs.x - lhs.x*rhs.z,
-					lhs.x*rhs.y - lhs.y*rhs.x
-				);
-			}
-
-			const Vector Cross(const Vector & v) const {
-				return Cross(*this, v);
-			}
+			using EXT::NI_C_IE_L_B_3<T, Vector<3, T>>::NI_C_IE_L_B_3;
 		};
 	}
 }

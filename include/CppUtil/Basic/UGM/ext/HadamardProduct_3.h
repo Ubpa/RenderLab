@@ -14,6 +14,11 @@ namespace CppUtil {
 				using BaseT::BaseT;
 
 			public:
+				using BaseT::operator*;
+				using BaseT::operator*=;
+				using BaseT::operator/;
+				using BaseT::operator/=;
+
 				const ImplT operator*(const ImplT & v) const {
 					return ImplT(
 						x * v.x,

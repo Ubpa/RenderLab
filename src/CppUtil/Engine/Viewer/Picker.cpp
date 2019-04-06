@@ -35,7 +35,7 @@ void Picker::Init() {
 
 		// y 需要反过来
 		Point3 posOnScreen(x / float(pOGWL->w), 1 - y / float(pOGWL->h), 1);
-		Point3 posInNorm = Vec3(posOnScreen) * 2.0f - 1.0f;
+		Point3 posInNorm = Vec3(posOnScreen) * 2.0f - Vec3(1.0f);
 		Point3 posInWorld = (camera->GetProjectionMatrix() * camera->GetViewMatrix()).Inverse()(posInNorm);
 
 		Vec3 dir = posInWorld - camera->GetPos();

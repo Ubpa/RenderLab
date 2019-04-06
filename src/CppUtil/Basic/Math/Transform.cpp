@@ -1,6 +1,7 @@
 #include <CppUtil/Basic/UGM/Transform.h>
 #include <CppUtil/Basic/Math.h>
 #include <CppUtil/Basic/Error.h>
+#include <CppUtil/Basic/UGM/Mat3x3.h>
 
 #include <cmath>
 
@@ -8,7 +9,7 @@ using namespace CppUtil;
 using namespace CppUtil::Basic;
 using namespace CppUtil::Basic::Math;
 
-void Transform::Init(const Point3 & pos, const Vec3 & scale, const Quatf & rot) {
+void Transform::Init(const Point3 & pos, const Scalef & scale, const Quatf & rot) {
 	(*this) = Translate(pos) * Scale(scale) * Rotate(rot);
 }
 
@@ -160,7 +161,7 @@ const Transform Transform::RotateZ(const float theta) {
 }
 
 const Transform Transform::Rotate(const Vec3 &axis, const float theta) {
-	Vec3 a = axis.Norm();
+	Vec3 a = axis.Normalize();
 	float sinTheta = std::sin(Radians(theta));
 	float cosTheta = std::cos(Radians(theta));
 	Mat4f m;
@@ -212,8 +213,8 @@ const Transform Transform::LookAt(const Point3 &pos, const Point3 &target, const
 	// [ 0    1 ]
 
 
-	const Vec3 front = (target - pos).Norm();
-	const Vec3 right = front.Cross(up).Norm();
+	const Vec3 front = (target - pos).Normalize();
+	const Vec3 right = front.Cross(up).Normalize();
 	const Vec3 camUp = right.Cross(front);
 
 	Mat4f worldToCamera;
@@ -283,9 +284,9 @@ const Transform::PosRotScale Transform::Decompose() const {
 	rst.pos = m.GetCol(3);
 
 	Mat3f tmpMat3(m);
-	rst.scale.x = tmpMat3.GetCol(0).Length();
-	rst.scale.y = tmpMat3.GetCol(1).Length();
-	rst.scale.z = tmpMat3.GetCol(2).Length();
+	rst.scale.x = tmpMat3.GetCol(0).Norm();
+	rst.scale.y = tmpMat3.GetCol(1).Norm();
+	rst.scale.z = tmpMat3.GetCol(2).Norm();
 
 	tmpMat3.GetCol(0) /= rst.scale.x;
 	tmpMat3.GetCol(1) /= rst.scale.y;
@@ -302,9 +303,9 @@ const Transform::PosRotScale Transform::Decompose() const {
 
 const EulerYXZf Transform::RotationEulerYXZ() const {
 	Mat3f tmpMat3(m);
-	tmpMat3.GetCol(0).NormSelf();
-	tmpMat3.GetCol(1).NormSelf();
-	tmpMat3.GetCol(2).NormSelf();
+	tmpMat3.GetCol(0).NormalizeSelf();
+	tmpMat3.GetCol(1).NormalizeSelf();
+	tmpMat3.GetCol(2).NormalizeSelf();
 
 	if (tmpMat3(1, 2) == -1.f) {
 		const float x = 90;

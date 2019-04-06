@@ -1,5 +1,7 @@
 #include <CppUtil/Engine/AreaLight.h>
 
+#include <CppUtil/Basic/UGM/Point2.h>
+
 using namespace CppUtil;
 using namespace CppUtil::Engine;
 
@@ -13,7 +15,7 @@ const RGBf AreaLight::Sample_L(const Point3 & p, Normalf & wi, float & distToLig
 	Point3 posOnLight(sample.x*width / 2, 0, sample.y*height / 2);
 
 	const auto d = posOnLight - p;
-	const float sqDist = d.Length2();
+	const float sqDist = d.Norm2();
 	const float dist = sqrt(sqDist);
 
 	wi = d / dist;
@@ -30,7 +32,7 @@ float AreaLight::PDF(const Point3 & p, const Normalf & wi) const {
 		return 0;
 	
 	const auto d = posOnLight - p;
-	const float sqDist = d.Length2();
+	const float sqDist = d.Norm2();
 	const float dist = sqrt(sqDist);
 	const float cosTheta = d.y / dist;
 	const float area = width * height;
@@ -43,7 +45,7 @@ const RGBf AreaLight::GetL(const Point3 & p, const Vec3 & dirToLight, float & di
 		return RGBf(0);
 
 	const auto d = posOnLight - p;
-	distToLight = d.Length();
+	distToLight = d.Norm();
 
 	return intensity * color;
 }

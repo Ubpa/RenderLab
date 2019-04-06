@@ -9,6 +9,7 @@
 #include <CppUtil/Basic/UGM/Mat4x4.h>
 #include <CppUtil/Basic/UGM/BBox.h>
 #include <CppUtil/Basic/UGM/Ray.h>
+#include <CppUtil/Basic/UGM/Scale.h>
 
 namespace CppUtil {
 	namespace Basic {
@@ -21,20 +22,20 @@ namespace CppUtil {
 			Transform(const float mat[4][4]) : m(Mat4f(mat)), mInv(m.Inverse()) { }
 			Transform(const Mat4f & m) : m(m), mInv(m.Inverse()) { }
 			Transform(const Mat4f & m, const Mat4f & mInv) : m(m), mInv(mInv) {}
-			Transform(const Point3 & pos, const Vec3 & scale = Vec3f(1.0f), const Quatf & rot = Quatf()) { Init(pos, scale, rot); }
-			Transform(const Point3 & pos, const Vec3 & scale, const Vec3 & axis, float theta) { Init(pos, scale, axis, theta); }
-			Transform(const Point3 & pos, const Vec3 & scale, const EulerYXZf & euler) { Init(pos, scale, euler); }
+			Transform(const Point3 & pos, const Scalef & scale = Vec3f(1.0f), const Quatf & rot = Quatf()) { Init(pos, scale, rot); }
+			Transform(const Point3 & pos, const Scalef & scale, const Vec3 & axis, float theta) { Init(pos, scale, axis, theta); }
+			Transform(const Point3 & pos, const Scalef & scale, const EulerYXZf & euler) { Init(pos, scale, euler); }
 
 		public:
 			const Mat4f & GetMatrix() const { return m; }
 			const Mat4f & GetInverseMatrix() const { return mInv; }
 
 		public:
-			void Init(const Point3 & pos, const Vec3 & scale = Vec3f(1.0f), const Quatf & rot = Quatf());
-			void Init(const Point3 & pos, const Vec3 & scale, const Vec3 & axis, float theta) {
+			void Init(const Point3 & pos, const Scalef & scale = Vec3f(1.0f), const Quatf & rot = Quatf());
+			void Init(const Point3 & pos, const Scalef & scale, const Vec3 & axis, float theta) {
 				Init(pos, scale, Quatf(axis, theta));
 			}
-			void Init(const Point3 & pos, const Vec3 & scale, const EulerYXZf & euler) {
+			void Init(const Point3 & pos, const Scalef & scale, const EulerYXZf & euler) {
 				Init(pos, scale, euler.ToQuat());
 			}
 
@@ -49,7 +50,7 @@ namespace CppUtil {
 			struct PosRotScale {
 				Point3 pos;
 				Quatf rot;
-				Vec3 scale;
+				Scalef scale;
 			};
 			const PosRotScale Decompose() const;
 
@@ -60,8 +61,8 @@ namespace CppUtil {
 				return Decompose().rot;
 			}
 			const EulerYXZf RotationEulerYXZ() const;
-			const Vec3 Scale() const {
-				return Vec3(m.GetCol(0).Length(), m.GetCol(1).Length(), m.GetCol(2).Length());
+			const Scalef Scale() const {
+				return Scalef(m.GetCol(0).Norm(), m.GetCol(1).Norm(), m.GetCol(2).Norm());
 			}
 
 			bool operator==(const Transform & rhs)const {
@@ -78,7 +79,7 @@ namespace CppUtil {
 				return Translate(delta.x, delta.y, delta.z);
 			}
 			static const Transform Scale(float x, float y, float z);
-			static const Transform Scale(const Vec3 & scale) {
+			static const Transform Scale(const Scalef & scale) {
 				return Scale(scale.x, scale.y, scale.z);
 			}
 			static const Transform RotateX(float theta);

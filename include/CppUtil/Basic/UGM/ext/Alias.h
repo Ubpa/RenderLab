@@ -4,6 +4,7 @@
 #include <CppUtil/Basic/UGM/ext/Basic_Val.h>
 #include <CppUtil/Basic/UGM/ext/Linearity.h>
 #include <CppUtil/Basic/UGM/ext/InnerProduct.h>
+#include <CppUtil/Basic/UGM/ext/CrossProduct.h>
 #include <CppUtil/Basic/UGM/ext/Normed.h>
 #include <CppUtil/Basic/UGM/ext/Metric.h>
 #include <CppUtil/Basic/UGM/ext/HadamardProduct.h>
@@ -34,6 +35,12 @@ namespace CppUtil {
 
 			template<int N, typename T, typename ImplT>
 			using NI_IE_L_B = NI<N, T, IE_L_B<N, T, ImplT>, ImplT>;
+
+			template<typename T, typename ImplT>
+			using C_IE_L_B_3 = CrossProduct<T, IE_L_B<3, T, ImplT>, ImplT>;
+
+			template<typename T, typename ImplT>
+			using NI_C_IE_L_B_3 = NI<3, T, C_IE_L_B_3<T, ImplT>, ImplT>;
 		}
 	}
 }

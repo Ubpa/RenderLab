@@ -16,7 +16,7 @@ namespace CppUtil {
 	}
 
 	template<typename T>
-	using Scale = Basic::SCALE<T>;
+	using Scale = Basic::Scale<T>;
 
 	using Scalef = Scale<float>;
 }

@@ -99,7 +99,7 @@ const RGBf PathTracer::Trace(ERay & ray, int depth, RGBf pathThroughput) {
 	const auto worldToSurface = surfaceToWorld.Transpose();
 
 	// w_out 处于表面坐标系，向外
-	const Normalf w_out = (worldToSurface * (-ray.d)).Norm();
+	const Normalf w_out = (worldToSurface * (-ray.d)).Normalize();
 
 	// SampleLightMode mode = depth > 0 ? SampleLightMode::RandomOne : SampleLightMode::ALL;
 	SampleLightMode mode = SampleLightMode::RandomOne;
@@ -136,7 +136,7 @@ const RGBf PathTracer::SampleLightImpl(
 
 	PD *= factorPD;
 
-	const Normalf dirInWorld = lightToWorld(dir_ToLight).Norm();
+	const Normalf dirInWorld = lightToWorld(dir_ToLight).Normalize();
 
 	// shadow ray 处于世界坐标
 	ray.Init(posInWorldSpace, dirInWorld);
@@ -147,13 +147,13 @@ const RGBf PathTracer::SampleLightImpl(
 		return RGBf(0);
 
 	// w_in 处于表面坐标系，应该是单位向量
-	const Normalf w_in = (worldToSurface * dirInWorld).Norm();
+	const Normalf w_in = (worldToSurface * dirInWorld).Normalize();
 
 	// 多重重要性采样 Multiple Importance Sampling (MIS)
 	if (!light->IsDelta()) {
 		for (int k = 0; k < lightNum; k++) {
 			if (k != lightID && !lights[k]->IsDelta()) {
-				const auto dirInLight = worldToLightVec[k](dirInWorld).Norm();
+				const auto dirInLight = worldToLightVec[k](dirInWorld).Normalize();
 				PD += lights[k]->PDF(posInLightSpace, dirInLight) * factorPD;
 			}
 		}
@@ -229,7 +229,7 @@ const RGBf PathTracer::SampleBSDF(
 	if (matPD <= 0)
 		return RGBf(0);
 
-	const Normalf matRayDirInWorld = (surfaceToWorld * mat_w_in).Norm();
+	const Normalf matRayDirInWorld = (surfaceToWorld * mat_w_in).Normalize();
 	const float abs_cosTheta = abs(mat_w_in.z);
 	const int lightNum = static_cast<int>(lights.size());
 

@@ -34,7 +34,7 @@ namespace CppUtil {
 
 			template<typename U>
 			void Init(const Vector<3, U> & axis, float theta) {
-				imag = static_cast<Vector<3,T>>(axis.Norm());
+				imag = static_cast<Vector<3,T>>(axis.Normalize());
 				const T halfTheta = Math::Radians(theta) / static_cast<T>(2);
 				imag *= sin(halfTheta);
 				real = cos(halfTheta);
@@ -85,7 +85,7 @@ namespace CppUtil {
 				return imag.IsZero() && Math::ToVal(abs(real),static_cast<T>(1)) == static_cast<T>(1);
 			}
 
-			T ModularLength() const { return sqrt(imag.Length2() + real * real); }
+			T ModularLength() const { return sqrt(imag.Norm2() + real * real); }
 
 			Quat Conjugate() const { return Quat(real, -imag); }
 

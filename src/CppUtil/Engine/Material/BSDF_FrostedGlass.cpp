@@ -67,7 +67,7 @@ const RGBf BSDF_FrostedGlass::F(const Normalf & wo, const Normalf & wi, const Po
 	float alpha = roughness * roughness;
 
 	if (isReflect) {
-		Normalf h = (wo + wi).Norm();
+		Normalf h = (wo + wi).Normalize();
 
 		h *= Math::sgn(h.z);// 使 h 指向外侧
 		float bsdfVal = Fr(wo, h, ior) * GGX_D(h, alpha) * GGX_G(wo, wi, h, alpha) / abs(4.f * wo.z * wi.z);
@@ -78,7 +78,7 @@ const RGBf BSDF_FrostedGlass::F(const Normalf & wo, const Normalf & wi, const Po
 		if (!entering)
 			swap(etai, etat);
 
-		Normalf h = -(etai * wo + etat * wi).Norm();
+		Normalf h = -(etai * wo + etat * wi).Normalize();
 		h *= Math::sgn(h.z);// 使 h 指向外侧
 
 		float HoWo = h.Dot(wo);
@@ -103,7 +103,7 @@ float BSDF_FrostedGlass::PDF(const Normalf & wo, const Normalf & wi, const Point
 	Normalf h;
 	float dwh_dwi;
 	if (isReflect) {
-		h = (wo + wi).Norm();
+		h = (wo + wi).Normalize();
 
 		dwh_dwi = 1.0f / (4.0f * abs(wi.Dot(h)));
 	}
@@ -113,7 +113,7 @@ float BSDF_FrostedGlass::PDF(const Normalf & wo, const Normalf & wi, const Point
 		if (!entering)
 			swap(etai, etat);
 
-		h = -(etai * wo + etat * wi).Norm();
+		h = -(etai * wo + etat * wi).Normalize();
 
 		float HoWo = h.Dot(wo);
 		float HoWi = h.Dot(wi);
@@ -221,7 +221,7 @@ void BSDF_FrostedGlass::ChangeNormal(const Point2 & texcoord, const Normalf & ta
 		return;
 
 	const auto rgb = normalTexture->Sample(texcoord, Image::Mode::BILINEAR).ToRGB();
-	Normalf tangentSpaceNormal = 2.f * Vec3(rgb.r, rgb.g, rgb.b) - 1.f;
+	Normalf tangentSpaceNormal = 2.f * Vec3(rgb.r, rgb.g, rgb.b) - Vec3(1.f);
 
 	normal = TangentSpaceNormalToWorld(tangent, normal, tangentSpaceNormal);
 }

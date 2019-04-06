@@ -208,7 +208,7 @@ const RGBAf Image::SampleBilinear(float u, float v) const {
 
 	float tx = abs(xf - (x0 + 0.5f));
 	float ty = abs(yf - (y0 + 0.5f));
-	RGBAf mixColor = (1 - ty)*((1 - tx)*colors[0] + tx * colors[1]) + ty * ((1 - tx)*colors[2] + tx * colors[3]);
+	RGBAf mixColor = RGBAf::Lerp(RGBAf::Lerp(colors[0], colors[1], tx), RGBAf::Lerp(colors[2], colors[3], tx), ty);
 
 	return mixColor;
 }

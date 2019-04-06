@@ -133,7 +133,7 @@ void TriMesh::GenTangents() {
 		const Normalf & t = tan1[a];
 
 		// Gram-Schmidt orthogonalize
-		tangents[a] = (t - n * n.Dot(t)).Norm();
+		tangents[a] = (t - n * n.Dot(t)).Normalize();
 
 		// Calculate handedness
 		tangents[a] *= (n.Cross(t).Dot(tan2[a]) < 0.0F) ? -1.0F : 1.0F;

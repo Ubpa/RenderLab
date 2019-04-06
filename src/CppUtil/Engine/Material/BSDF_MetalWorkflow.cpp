@@ -13,17 +13,17 @@ const RGBf BSDF_MetalWorkflow::F(const Normalf & wo, const Normalf & wi, const P
 	auto roughness = GetRoughness(texcoord);
 	auto ao = GetAO(texcoord);
 
-	auto h = (wo + wi).Norm();
+	auto h = (wo + wi).Normalize();
 	auto diffuse = albedo / Math::PI;
 	auto fr = Fr(wi, h, albedo, metallic);
 
-	return ao * ((1 - metallic)*(1.0f - fr)*diffuse + MS_BRDF(wo, wi, fr, albedo, roughness));
+	return ao * ((1 - metallic)*(RGBf(1.0f) - fr)*diffuse + MS_BRDF(wo, wi, fr, albedo, roughness));
 }
 
 float BSDF_MetalWorkflow::PDF(const Normalf & wo, const Normalf & wi, const Point2 & texcoord) {
 	auto roughness = GetRoughness(texcoord);
 
-	const auto h = (wo + wi).Norm();
+	const auto h = (wo + wi).Normalize();
 	return NDF(h, roughness) / 4.0f;
 }
 
@@ -64,16 +64,16 @@ const RGBf BSDF_MetalWorkflow::Sample_f(const Normalf & wo, const Point2 & texco
 	auto fr = Fr(wi, h, albedo, metallic);
 	auto diffuse = albedo / Math::PI;
 
-	return ao * ((1 - metallic)*(1.0f - fr)*diffuse + MS_BRDF(wo, wi, fr, albedo, roughness));
+	return ao * ((1 - metallic)*(RGBf(1.f) - fr)*diffuse + MS_BRDF(wo, wi, fr, albedo, roughness));
 }
 
 const RGBf BSDF_MetalWorkflow::MS_BRDF(const Normalf & wo, const Normalf & wi, const RGBf & albedo, float metallic, float roughness) {
-	const auto h = (wo + wi).Norm();
+	const auto h = (wo + wi).Normalize();
 	return NDF(h, roughness)*Fr(wi, h, albedo, metallic)*G(wo, wi, roughness) / (4 * wo.z*wi.z);
 }
 
 const RGBf BSDF_MetalWorkflow::MS_BRDF(const Normalf & wo, const Normalf & wi, const RGBf & fr, const RGBf & albedo, float roughness) {
-	const auto h = (wo + wi).Norm();
+	const auto h = (wo + wi).Normalize();
 	return NDF(h, roughness) * G(wo, wi, roughness) / (4 * wo.z* wi.z) * fr;
 }
 
@@ -148,7 +148,7 @@ void BSDF_MetalWorkflow::ChangeNormal(const Point2 & texcoord, const Normalf & t
 		return;
 
 	const auto rgb = normalTexture->Sample(texcoord, Image::Mode::BILINEAR).ToRGB();
-	Normalf tangentSpaceNormal = 2.f * Vec3(rgb.r, rgb.g, rgb.b) - 1.f;
+	Normalf tangentSpaceNormal = 2.f * Vec3(rgb.r, rgb.g, rgb.b) - Vec3(1.f);
 
 	normal = TangentSpaceNormalToWorld(tangent, normal, tangentSpaceNormal);
 }

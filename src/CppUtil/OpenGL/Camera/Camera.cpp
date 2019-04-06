@@ -61,10 +61,10 @@ void Camera::updateCameraVectors() {
 	front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
 	front.y = sin(glm::radians(pitch));
 	front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-	front.NormSelf();
+	front.NormalizeSelf();
 	// Also re-calculate the Right and Up vector
-	right = front.Cross(worldUp).Norm();  // Normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
-	up = right.Cross(front).Norm();
+	right = front.Cross(worldUp).Normalize();  // Normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
+	up = right.Cross(front).Normalize();
 }
 
 // Returns the projection matrix calculated using zoom, ratioWH, nearPlane, farPlane

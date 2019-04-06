@@ -14,6 +14,12 @@ namespace CppUtil {
 				using BaseT::BaseT;
 
 			public:
+				// 以后要加入识别，看子类是否含有对应的运算符
+				using BaseT::operator*;
+				using BaseT::operator*=;
+				using BaseT::operator/;
+				using BaseT::operator/=;
+
 				const ImplT operator*(const ImplT & v) const {
 					return ImplT(
 						x * v.x

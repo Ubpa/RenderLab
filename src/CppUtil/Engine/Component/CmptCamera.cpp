@@ -12,9 +12,9 @@ using namespace CppUtil::Basic::Math;
 
 void CmptCamera::Coordinate::Init(const Transform & tsfm) {
 	pos = tsfm.Position();
-	front = tsfm(Normalf(0, 0, -1)).Norm();
-	right = tsfm(Normalf(1, 0, 0)).Norm();
-	up = tsfm(Normalf(0, 1, 0)).Norm();
+	front = tsfm(Normalf(0, 0, -1)).Normalize();
+	right = tsfm(Normalf(1, 0, 0)).Normalize();
+	up = tsfm(Normalf(0, 1, 0)).Normalize();
 }
 
 CmptCamera::CmptCamera(Basic::Ptr<SObj> sobj, float fov, float ar, float near, float far)
