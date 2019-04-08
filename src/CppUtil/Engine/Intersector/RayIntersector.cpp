@@ -22,12 +22,12 @@ using namespace CppUtil::Basic;
 using namespace std;
 
 RayIntersector::RayIntersector() {
-	Reg<BVHAccel>();
-	Reg<BVHNode<Element, BVHAccel>>();
-	Reg<SObj>();
-	Reg<Sphere>();
-	Reg<Plane>();
-	Reg<Triangle>();
+	RegMemberFunc<BVHAccel>(&RayIntersector::Visit);
+	RegMemberFunc<BVHNode<ElementBase, BVHAccel>>(&RayIntersector::Visit);
+	RegMemberFunc<SObj>(&RayIntersector::Visit);
+	RegMemberFunc<Sphere>(&RayIntersector::Visit);
+	RegMemberFunc<Plane>(&RayIntersector::Visit);
+	RegMemberFunc<Triangle>(&RayIntersector::Visit);
 }
 
 void RayIntersector::Init(ERay * ray) {
@@ -68,7 +68,7 @@ bool RayIntersector::Intersect(const BBoxf & bbox, float & t0, float & t1) {
 	return true;
 }
 
-void RayIntersector::Visit(BVHAccel::Ptr bvhAccel) {
+void RayIntersector::Visit(Ptr<BVHAccel> bvhAccel) {
 	rst.closestSObj = nullptr;
 	bvhAccel->GetBVHRoot()->Accept(This());
 	if (rst.closestSObj) {
@@ -78,7 +78,7 @@ void RayIntersector::Visit(BVHAccel::Ptr bvhAccel) {
 	}
 }
 
-void RayIntersector::Visit(BVHNode<Element, BVHAccel>::Ptr bvhNode) {
+void RayIntersector::Visit(Ptr<BVHNode<ElementBase, BVHAccel>> bvhNode) {
 	if (bvhNode->IsLeaf()) {
 		const auto origin = ray->o;
 		const auto dir = ray->d;
@@ -149,7 +149,7 @@ void RayIntersector::Visit(Ptr<SObj> sobj) {
 	}
 }
 
-void RayIntersector::Visit(Sphere::Ptr sphere) {
+void RayIntersector::Visit(Ptr<Sphere> sphere) {
 	const auto & dir = ray->d;
 	const auto & origin = ray->o;
 
@@ -185,7 +185,7 @@ void RayIntersector::Visit(Sphere::Ptr sphere) {
 	rst.tangent = rst.n.ToTangent();
 }
 
-void RayIntersector::Visit(Plane::Ptr plane) {
+void RayIntersector::Visit(Ptr<Plane> plane) {
 	const auto & dir = ray->d;
 	const auto & origin = ray->o;
 	const float tMin = ray->tMin;
@@ -210,7 +210,7 @@ void RayIntersector::Visit(Plane::Ptr plane) {
 	rst.tangent = Normalf(1, 0, 0);
 }
 
-void RayIntersector::Visit(Triangle::Ptr triangle) {
+void RayIntersector::Visit(Ptr<Triangle> triangle) {
 	const auto mesh = triangle->GetMesh();
 	const int idx1 = triangle->idx[0];
 	const int idx2 = triangle->idx[1];

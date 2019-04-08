@@ -24,23 +24,23 @@ using namespace std;
 PathTracer::PathTracer()
 	:
 	maxDepth(20),
-	bvhAccel(ToPtr(new BVHAccel)),
-	rayIntersector(ToPtr(new RayIntersector)),
-	visibilityChecker(ToPtr(new VisibilityChecker))
+	bvhAccel(BVHAccel::New()),
+	rayIntersector(RayIntersector::New()),
+	visibilityChecker(VisibilityChecker::New())
 { }
 
-void PathTracer::Init(Scene::Ptr scene) {
+void PathTracer::Init(Ptr<Scene> scene) {
 	lights.clear();
 	worldToLightVec.clear();
 	lightToWorldVec.clear();
 	lightToIdx.clear();
 
 	auto cmptLights = scene->GetCmptLights();
-	for (int i = 0; i < cmptLights.size(); i++) {
+	for (size_t i = 0; i < cmptLights.size(); i++) {
 		auto cmptLight = cmptLights[i];
 		auto light = cmptLight->light;
 
-		lightToIdx[light] = i;
+		lightToIdx[light] = static_cast<int>(i);
 
 		lights.push_back(light);
 
@@ -83,11 +83,11 @@ const RGBf PathTracer::Trace(ERay & ray, int depth, RGBf pathThroughput) {
 		emitL = cmptLight->light->GetMaxL(worldToLightVec[idx](ray.o));
 	}
 
-	auto material = closestRst.closestSObj->GetComponent<CmptMaterial>();
-	if (material == nullptr)
+	auto cmptMaterial = closestRst.closestSObj->GetComponent<CmptMaterial>();
+	if (cmptMaterial == nullptr)
 		return emitL;
 
-	auto bsdf = BSDF::Ptr::Cast(material->material);
+	auto bsdf = dynamic_pointer_cast<BSDFBase>(cmptMaterial->material);
 	if (bsdf == nullptr)
 		return emitL;
 
@@ -116,7 +116,7 @@ const RGBf PathTracer::SampleLightImpl(
 	const Point3 & posInWorldSpace,
 	const Point3 & posInLightSpace,
 	const Mat3f & worldToSurface,
-	const Basic::Ptr<BSDF> bsdf,
+	const Basic::Ptr<BSDFBase> bsdf,
 	const Normalf & w_out,
 	const Point2 & texcoord,
 	const float factorPD
@@ -175,7 +175,7 @@ const RGBf PathTracer::SampleLight(
 	const Point3 & posInWorldSpace,
 	const std::vector<Point3> & posInLightSpaceVec,
 	const Mat3f & worldToSurface,
-	const Basic::Ptr<BSDF> bsdf,
+	const Basic::Ptr<BSDFBase> bsdf,
 	const Normalf & w_out,
 	const Point2 & texcoord,
 	const SampleLightMode mode
@@ -208,7 +208,7 @@ const RGBf PathTracer::SampleLight(
 }
 
 const RGBf PathTracer::SampleBSDF(
-	const Basic::Ptr<BSDF> bsdf,
+	const Basic::Ptr<BSDFBase> bsdf,
 	const SampleLightMode mode,
 	const Normalf & w_out,
 	const Mat3f & surfaceToWorld,

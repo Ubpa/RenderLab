@@ -7,7 +7,7 @@
 
 namespace CppUtil {
 	namespace Basic {
-		class Element;
+		class ElementBase;
 
 		template <typename T>
 		class BBox;
@@ -23,14 +23,13 @@ namespace CppUtil {
 		template <typename T, typename HolderT>
 		class BVHNode;
 
-		class VisibilityChecker : public Intersector {
-			ELEVISITOR_SETUP(VisibilityChecker)
+		class VisibilityChecker final : public Intersector<VisibilityChecker> {
 		public:
-			struct Rst : public Intersector::Rst {
+			struct Rst : public IntersectorBase::Rst {
 				friend class VisibilityChecker;
 
 				Rst(bool isIntersect = false)
-					: Intersector::Rst(isIntersect) { }
+					: IntersectorBase::Rst(isIntersect) { }
 
 				bool IsIntersect() const { return isIntersect; }
 			};
@@ -38,6 +37,13 @@ namespace CppUtil {
 		public:
 			VisibilityChecker();
 
+		public:
+			static const Basic::Ptr<VisibilityChecker> New() { return Basic::New<VisibilityChecker>(); }
+
+		protected:
+			virtual ~VisibilityChecker() = default;
+
+		public:
 			void Init(const Ray & ray, float tMax);
 
 			Rst & GetRst() { return rst; }
@@ -45,7 +51,7 @@ namespace CppUtil {
 		private:
 			// 设置 rst，如果相交，则会修改 ray.tMax
 			void Visit(Basic::Ptr<BVHAccel> bvhAccel);
-			void Visit(Basic::Ptr<BVHNode<Basic::Element, BVHAccel>> bvhNode);
+			void Visit(Basic::Ptr<BVHNode<Basic::ElementBase, BVHAccel>> bvhNode);
 			void Visit(Basic::Ptr<Sphere> sphere);
 			void Visit(Basic::Ptr<Plane> plane);
 			void Visit(Basic::Ptr<Triangle> triangle);

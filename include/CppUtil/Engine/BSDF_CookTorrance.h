@@ -7,11 +7,11 @@ namespace CppUtil {
 	namespace Engine {
 		class BSDF_CookTorrance final : public BSDF<BSDF_CookTorrance> {
 		public:
-			BSDF_CookTorrance(float ior, float m, const RGBf & refletance = RGBf(1.f), const RGBf & albedo = RGBf(1.f))
+			BSDF_CookTorrance(float ior = 1.5f, float m = 0.2f, const RGBf & refletance = RGBf(1.f), const RGBf & albedo = RGBf(1.f))
 				: ior(ior), m(m), refletance(refletance) , albedo(albedo){ }
 
 		public:
-			static const Basic::Ptr<BSDF_CookTorrance> New(float ior, float m, const RGBf & refletance = RGBf(1.f), const RGBf & albedo = RGBf(1.f)) {
+			static const Basic::Ptr<BSDF_CookTorrance> New(float ior = 1.5f, float m = 0.2f, const RGBf & refletance = RGBf(1.f), const RGBf & albedo = RGBf(1.f)) {
 				return Basic::New<BSDF_CookTorrance>(ior, m, refletance, albedo);
 			}
 

@@ -26,8 +26,8 @@ const string SObjLoader::To(const Key & key, string *) {
 }
 
 template<>
-const Image::Ptr SObjLoader::To(const Key & key, Image::Ptr *) {
-	return ToPtr(new Image(key));
+const Ptr<Image> SObjLoader::To(const Key & key, Ptr<Image> *) {
+	return Image::New(key);
 }
 
 // ------------ Basic ----------------
@@ -41,10 +41,10 @@ void SObjLoader::LoadNode(EleP ele, const FuncMap & funcMap) {
 }
 
 template<>
-static Image::Ptr SObjLoader::Load(EleP ele, Image::Ptr*) {
+static Ptr<Image> SObjLoader::Load(EleP ele, Ptr<Image>*) {
 	FuncMap funcMap;
 
-	Image::Ptr img = nullptr;
+	Ptr<Image> img = nullptr;
 
 	Reg_Text_val(funcMap, str::Image::path, img);
 
@@ -56,22 +56,22 @@ static Image::Ptr SObjLoader::Load(EleP ele, Image::Ptr*) {
 // ------------ SObj ----------------
 
 template<>
-static SObj::Ptr SObjLoader::Load(XMLElement * ele, SObj::Ptr*) {
+static Ptr<SObj> SObjLoader::Load(XMLElement * ele, Ptr<SObj>*) {
 	if (ele == nullptr)
 		return nullptr;
 
-	auto sobj = ToPtr(new SObj(nullptr));
+	auto sobj = SObj::New();
 
 	FuncMap funcMap;
 
 	Reg_Text_val(funcMap, str::SObj::name, sobj->name);
-	Reg_Load_Lambda(funcMap, str::SObj::components, [&](const vector<Component::Ptr> & components) {
+	Reg_Load_Lambda(funcMap, str::SObj::components, [&](const vector<Ptr<ComponentBase>> & components) {
 		for (const auto cmpt : components)
-			cmpt->AttachSObj(sobj);
+			sobj->AttachComponent(cmpt);
 	});
-	Reg_Load_Lambda(funcMap, str::SObj::children, [&](const vector<SObj::Ptr> & children) {
+	Reg_Load_Lambda(funcMap, str::SObj::children, [&](const vector<Ptr<SObj>> & children) {
 		for (const auto child : children)
-			child->SetParent(sobj);
+			sobj->AddChild(child);
 	});
 
 	LoadNode(ele, funcMap);
@@ -79,36 +79,36 @@ static SObj::Ptr SObjLoader::Load(XMLElement * ele, SObj::Ptr*) {
 	return sobj;
 }
 
-SObj::Ptr SObjLoader::Load(const string & path) {
+Ptr<SObj> SObjLoader::Load(const string & path) {
 	XMLDocument doc;
 
 	if (doc.LoadFile(path.c_str()) != XML_SUCCESS)
 		return nullptr;
 
-	auto tmp = ToPtr(new SObj(nullptr));
+	auto tmp = SObj::New();
 
-	return Load<SObj::Ptr>(doc.FirstChildElement(str::SObj::type));
+	return Load<Ptr<SObj>>(doc.FirstChildElement(str::SObj::type));
 }
 
 template<>
-static vector<Component::Ptr> SObjLoader::Load(XMLElement * ele, vector<Component::Ptr>*) {
+static vector<Ptr<ComponentBase>> SObjLoader::Load(XMLElement * ele, vector<Ptr<ComponentBase>>*) {
 	FuncMap funcMap;
 
-	vector<Component::Ptr> cmpts;
+	vector<Ptr<ComponentBase>> cmpts;
 
-	Reg_Load_Lambda(funcMap, str::CmptCamera::type, [&](const CmptCamera::Ptr & cmpt) {
+	Reg_Load_Lambda(funcMap, str::CmptCamera::type, [&](const Ptr<CmptCamera> & cmpt) {
 		cmpts.push_back(cmpt);
 	});
-	Reg_Load_Lambda(funcMap, str::CmptGeometry::type, [&](const CmptGeometry::Ptr & cmpt) {
+	Reg_Load_Lambda(funcMap, str::CmptGeometry::type, [&](const Ptr<CmptGeometry> & cmpt) {
 		cmpts.push_back(cmpt);
 	});
-	Reg_Load_Lambda(funcMap, str::CmptLight::type, [&](const CmptLight::Ptr & cmpt) {
+	Reg_Load_Lambda(funcMap, str::CmptLight::type, [&](const Ptr<CmptLight> & cmpt) {
 		cmpts.push_back(cmpt);
 	});
-	Reg_Load_Lambda(funcMap, str::CmptMaterial::type, [&](const CmptMaterial::Ptr & cmpt) {
+	Reg_Load_Lambda(funcMap, str::CmptMaterial::type, [&](const Ptr<CmptMaterial> & cmpt) {
 		cmpts.push_back(cmpt);
 	});
-	Reg_Load_Lambda(funcMap, str::CmptTransform::type, [&](const CmptTransform::Ptr & cmpt) {
+	Reg_Load_Lambda(funcMap, str::CmptTransform::type, [&](const Ptr<CmptTransform> & cmpt) {
 		cmpts.push_back(cmpt);
 	});
 
@@ -118,12 +118,12 @@ static vector<Component::Ptr> SObjLoader::Load(XMLElement * ele, vector<Componen
 }
 
 template<>
-static vector<SObj::Ptr> SObjLoader::Load(XMLElement * ele, vector<SObj::Ptr>*) {
-	vector<SObj::Ptr> children;
+static vector<Ptr<SObj>> SObjLoader::Load(XMLElement * ele, vector<Ptr<SObj>>*) {
+	vector<Ptr<SObj>> children;
 
 	FuncMap funcMap;
 
-	Reg_Load_Lambda(funcMap, str::SObj::type, [&](const SObj::Ptr & child) {
+	Reg_Load_Lambda(funcMap, str::SObj::type, [&](const Ptr<SObj> & child) {
 		children.push_back(child);
 	});
 
@@ -135,8 +135,8 @@ static vector<SObj::Ptr> SObjLoader::Load(XMLElement * ele, vector<SObj::Ptr>*) 
 // ------------ Camera ----------------
 
 template<>
-static CmptCamera::Ptr SObjLoader::Load(XMLElement * ele, CmptCamera::Ptr*){
-	auto cmpt = ToPtr(new CmptCamera(nullptr));
+static Ptr<CmptCamera> SObjLoader::Load(XMLElement * ele, Ptr<CmptCamera>*){
+	auto cmpt = CmptCamera::New(nullptr);
 
 	FuncMap funcMap;
 	Reg_Text_setVal(funcMap, str::CmptCamera::fov, cmpt, &CmptCamera::SetFOV);
@@ -152,11 +152,11 @@ static CmptCamera::Ptr SObjLoader::Load(XMLElement * ele, CmptCamera::Ptr*){
 // ------------ Geometry ----------------
 
 template<>
-static CmptGeometry::Ptr SObjLoader::Load(XMLElement * ele, CmptGeometry::Ptr*){
-	auto geometry = ToPtr(new CmptGeometry(nullptr, nullptr));
+static Ptr<CmptGeometry> SObjLoader::Load(XMLElement * ele, Ptr<CmptGeometry>*){
+	auto geometry = CmptGeometry::New(nullptr, nullptr);
 
 	FuncMap funcMap;
-	Reg_Load_val<Primitive::Ptr>(funcMap, str::CmptGeometry::primitive, geometry->primitive);
+	Reg_Load_val<Ptr<PrimitiveBase>>(funcMap, str::CmptGeometry::primitive, geometry->primitive);
 
 	LoadNode(ele, funcMap);
 
@@ -164,14 +164,14 @@ static CmptGeometry::Ptr SObjLoader::Load(XMLElement * ele, CmptGeometry::Ptr*){
 }
 
 template<>
-static Primitive::Ptr SObjLoader::Load(XMLElement * ele, Primitive::Ptr*) {
-	Primitive::Ptr primitive = nullptr;
+static Ptr<PrimitiveBase> SObjLoader::Load(XMLElement * ele, Ptr<PrimitiveBase>*) {
+	Ptr<PrimitiveBase> primitive = nullptr;
 
 	FuncMap funcMap;
 	
-	Reg_Load_val<Sphere::Ptr>(funcMap, str::Sphere::type, primitive);
-	Reg_Load_val<Plane::Ptr>(funcMap, str::Plane::type, primitive);
-	Reg_Load_val<TriMesh::Ptr>(funcMap, str::TriMesh::type, primitive);
+	Reg_Load_val<Ptr<Sphere>>(funcMap, str::Sphere::type, primitive);
+	Reg_Load_val<Ptr<Plane>>(funcMap, str::Plane::type, primitive);
+	Reg_Load_val<Ptr<TriMesh>>(funcMap, str::TriMesh::type, primitive);
 
 	LoadNode(ele, funcMap);
 
@@ -179,18 +179,18 @@ static Primitive::Ptr SObjLoader::Load(XMLElement * ele, Primitive::Ptr*) {
 }
 
 template<>
-static Sphere::Ptr SObjLoader::Load(XMLElement * ele, Sphere::Ptr *) {
-	return ToPtr(new Sphere);
+static Ptr<Sphere> SObjLoader::Load(XMLElement * ele, Ptr<Sphere> *) {
+	return Sphere::New();
 }
 
 template<>
-static Plane::Ptr SObjLoader::Load(XMLElement * ele, Plane::Ptr*) {
-	return ToPtr(new Plane);
+static Ptr<Plane> SObjLoader::Load(XMLElement * ele, Ptr<Plane>*) {
+	return Plane::New();
 }
 
 template<>
-static TriMesh::Ptr SObjLoader::Load(XMLElement * ele, TriMesh::Ptr*) {
-	TriMesh::Ptr triMesh;
+static Ptr<TriMesh> SObjLoader::Load(XMLElement * ele, Ptr<TriMesh>*) {
+	Ptr<TriMesh> triMesh;
 	FuncMap funcMap;
 	funcMap[str::TriMesh::ENUM_TYPE::INVALID] = [&](XMLElement * ele) {
 		triMesh = nullptr;
@@ -221,11 +221,11 @@ static TriMesh::Ptr SObjLoader::Load(XMLElement * ele, TriMesh::Ptr*) {
 // ------------ Light ----------------
 
 template<>
-static CmptLight::Ptr SObjLoader::Load(XMLElement * ele, CmptLight::Ptr*){
-	auto cmpt = ToPtr(new CmptLight(nullptr, nullptr));
+static Ptr<CmptLight> SObjLoader::Load(XMLElement * ele, Ptr<CmptLight>*){
+	auto cmpt = CmptLight::New(nullptr, nullptr);
 
 	FuncMap funcMap;
-	Reg_Load_val<Light::Ptr>(funcMap, str::CmptLight::light, cmpt->light);
+	Reg_Load_val<Ptr<LightBase>>(funcMap, str::CmptLight::light, cmpt->light);
 
 	LoadNode(ele, funcMap);
 
@@ -233,13 +233,13 @@ static CmptLight::Ptr SObjLoader::Load(XMLElement * ele, CmptLight::Ptr*){
 }
 
 template<>
-static Light::Ptr SObjLoader::Load(XMLElement * ele, Light::Ptr*) {
-	Light::Ptr light = nullptr;
+static Ptr<LightBase> SObjLoader::Load(XMLElement * ele, Ptr<LightBase>*) {
+	Ptr<LightBase> light = nullptr;
 
 	FuncMap funcMap;
 
-	Reg_Load_val<AreaLight::Ptr>(funcMap, str::AreaLight::type, light);
-	Reg_Load_val<PointLight::Ptr>(funcMap, str::PointLight::type, light);
+	Reg_Load_val<Ptr<AreaLight>>(funcMap, str::AreaLight::type, light);
+	Reg_Load_val<Ptr<PointLight>>(funcMap, str::PointLight::type, light);
 
 	LoadNode(ele, funcMap);
 
@@ -247,8 +247,8 @@ static Light::Ptr SObjLoader::Load(XMLElement * ele, Light::Ptr*) {
 }
 
 template<>
-static AreaLight::Ptr SObjLoader::Load(XMLElement * ele, AreaLight::Ptr*) {
-	auto areaLight = ToPtr(new AreaLight);
+static Ptr<AreaLight> SObjLoader::Load(XMLElement * ele, Ptr<AreaLight>*) {
+	auto areaLight = AreaLight::New();
 
 	FuncMap funcMap;
 	Reg_Text_val(funcMap, str::AreaLight::color, areaLight->color);
@@ -262,8 +262,8 @@ static AreaLight::Ptr SObjLoader::Load(XMLElement * ele, AreaLight::Ptr*) {
 }
 
 template<>
-static PointLight::Ptr SObjLoader::Load(XMLElement * ele, PointLight::Ptr*) {
-	auto pointLight = ToPtr(new PointLight);
+static Ptr<PointLight> SObjLoader::Load(XMLElement * ele, Ptr<PointLight>*) {
+	auto pointLight = PointLight::New();
 
 	FuncMap funcMap;
 	Reg_Text_val(funcMap, str::PointLight::color, pointLight->color);
@@ -279,11 +279,11 @@ static PointLight::Ptr SObjLoader::Load(XMLElement * ele, PointLight::Ptr*) {
 // ------------ Material ----------------
 
 template<>
-static CmptMaterial::Ptr SObjLoader::Load(XMLElement * ele, CmptMaterial::Ptr*){
-	auto cmpt = ToPtr(new CmptMaterial(nullptr, nullptr));
+static Ptr<CmptMaterial> SObjLoader::Load(XMLElement * ele, Ptr<CmptMaterial>*){
+	auto cmpt = CmptMaterial::New(nullptr, nullptr);
 
 	FuncMap funcMap;
-	Reg_Load_val<Material::Ptr>(funcMap, str::CmptMaterial::material, cmpt->material);
+	Reg_Load_val<Ptr<MaterialBase>>(funcMap, str::CmptMaterial::material, cmpt->material);
 
 	LoadNode(ele, funcMap);
 
@@ -291,18 +291,18 @@ static CmptMaterial::Ptr SObjLoader::Load(XMLElement * ele, CmptMaterial::Ptr*){
 }
 
 template<>
-static Material::Ptr SObjLoader::Load(XMLElement * ele, Material::Ptr*) {
-	Material::Ptr material = nullptr;
+static Ptr<MaterialBase> SObjLoader::Load(XMLElement * ele, Ptr<MaterialBase>*) {
+	Ptr<MaterialBase> material = nullptr;
 
 	FuncMap funcMap;
 
-	Reg_Load_val<BSDF_CookTorrance::Ptr>(funcMap, str::BSDF_CookTorrance::type, material);
-	Reg_Load_val<BSDF_Diffuse::Ptr>(funcMap, str::BSDF_Diffuse::type, material);
-	Reg_Load_val<BSDF_Emission::Ptr>(funcMap, str::BSDF_Emission::type, material);
-	Reg_Load_val<BSDF_Glass::Ptr>(funcMap, str::BSDF_Glass::type, material);
-	Reg_Load_val<BSDF_MetalWorkflow::Ptr>(funcMap, str::BSDF_MetalWorkflow::type, material);
-	Reg_Load_val<BSDF_Mirror::Ptr>(funcMap, str::BSDF_Mirror::type, material);
-	Reg_Load_val<BSDF_FrostedGlass::Ptr>(funcMap, str::BSDF_FrostedGlass::type, material);
+	Reg_Load_val<Ptr<BSDF_CookTorrance>>(funcMap, str::BSDF_CookTorrance::type, material);
+	Reg_Load_val<Ptr<BSDF_Diffuse>>(funcMap, str::BSDF_Diffuse::type, material);
+	Reg_Load_val<Ptr<BSDF_Emission>>(funcMap, str::BSDF_Emission::type, material);
+	Reg_Load_val<Ptr<BSDF_Glass>>(funcMap, str::BSDF_Glass::type, material);
+	Reg_Load_val<Ptr<BSDF_MetalWorkflow>>(funcMap, str::BSDF_MetalWorkflow::type, material);
+	Reg_Load_val<Ptr<BSDF_Mirror>>(funcMap, str::BSDF_Mirror::type, material);
+	Reg_Load_val<Ptr<BSDF_FrostedGlass>>(funcMap, str::BSDF_FrostedGlass::type, material);
 
 	LoadNode(ele, funcMap);
 
@@ -310,8 +310,8 @@ static Material::Ptr SObjLoader::Load(XMLElement * ele, Material::Ptr*) {
 }
 
 template<>
-static BSDF_CookTorrance::Ptr SObjLoader::Load(XMLElement * ele, BSDF_CookTorrance::Ptr*) {
-	auto bsdf = ToPtr(new BSDF_CookTorrance(1.5f, 0.2f));
+static Ptr<BSDF_CookTorrance> SObjLoader::Load(XMLElement * ele, Ptr<BSDF_CookTorrance>*) {
+	auto bsdf = BSDF_CookTorrance::New();
 
 	FuncMap funcMap;
 
@@ -326,13 +326,13 @@ static BSDF_CookTorrance::Ptr SObjLoader::Load(XMLElement * ele, BSDF_CookTorran
 }
 
 template<>
-static BSDF_Diffuse::Ptr SObjLoader::Load(XMLElement * ele, BSDF_Diffuse::Ptr*){
-	auto bsdf = ToPtr(new BSDF_Diffuse);
+static Ptr<BSDF_Diffuse> SObjLoader::Load(XMLElement * ele, Ptr<BSDF_Diffuse>*){
+	auto bsdf = BSDF_Diffuse::New();
 
 	FuncMap funcMap;
 
 	Reg_Text_val(funcMap, str::BSDF_Diffuse::colorFactor, bsdf->colorFactor);
-	Reg_Load_val<Image::Ptr>(funcMap, str::BSDF_Diffuse::albedoTexture, bsdf->albedoTexture);
+	Reg_Load_val<Ptr<Image>>(funcMap, str::BSDF_Diffuse::albedoTexture, bsdf->albedoTexture);
 
 	LoadNode(ele, funcMap);
 
@@ -340,8 +340,8 @@ static BSDF_Diffuse::Ptr SObjLoader::Load(XMLElement * ele, BSDF_Diffuse::Ptr*){
 }
 
 template<>
-static BSDF_Emission::Ptr SObjLoader::Load(XMLElement * ele, BSDF_Emission::Ptr*) {
-	auto bsdf = ToPtr(new BSDF_Emission);
+static Ptr<BSDF_Emission> SObjLoader::Load(XMLElement * ele, Ptr<BSDF_Emission>*) {
+	auto bsdf = BSDF_Emission::New();
 
 	FuncMap funcMap;
 
@@ -354,8 +354,8 @@ static BSDF_Emission::Ptr SObjLoader::Load(XMLElement * ele, BSDF_Emission::Ptr*
 }
 
 template<>
-static BSDF_Glass::Ptr SObjLoader::Load(XMLElement * ele, BSDF_Glass::Ptr*) {
-	auto bsdf = ToPtr(new BSDF_Glass);
+static Ptr<BSDF_Glass> SObjLoader::Load(XMLElement * ele, Ptr<BSDF_Glass>*) {
+	auto bsdf = BSDF_Glass::New();
 
 	FuncMap funcMap;
 
@@ -369,19 +369,19 @@ static BSDF_Glass::Ptr SObjLoader::Load(XMLElement * ele, BSDF_Glass::Ptr*) {
 }
 
 template<>
-static BSDF_MetalWorkflow::Ptr SObjLoader::Load(XMLElement * ele, BSDF_MetalWorkflow::Ptr*) {
-	auto bsdf = ToPtr(new BSDF_MetalWorkflow);
+static Ptr<BSDF_MetalWorkflow> SObjLoader::Load(XMLElement * ele, Ptr<BSDF_MetalWorkflow>*) {
+	auto bsdf = BSDF_MetalWorkflow::New();
 
 	FuncMap funcMap;
 
 	Reg_Text_val(funcMap, str::BSDF_MetalWorkflow::colorFactor, bsdf->colorFactor);
-	Reg_Load_val<Image::Ptr>(funcMap, str::BSDF_MetalWorkflow::albedoTexture, bsdf->albedoTexture);
+	Reg_Load_val<Ptr<Image>>(funcMap, str::BSDF_MetalWorkflow::albedoTexture, bsdf->albedoTexture);
 	Reg_Text_val(funcMap, str::BSDF_MetalWorkflow::metallicFactor, bsdf->metallicFactor);
-	Reg_Load_val<Image::Ptr>(funcMap, str::BSDF_MetalWorkflow::metallicTexture, bsdf->metallicTexture);
+	Reg_Load_val<Ptr<Image>>(funcMap, str::BSDF_MetalWorkflow::metallicTexture, bsdf->metallicTexture);
 	Reg_Text_val(funcMap, str::BSDF_MetalWorkflow::roughnessFactor, bsdf->roughnessFactor);
-	Reg_Load_val<Image::Ptr>(funcMap, str::BSDF_MetalWorkflow::roughnessTexture, bsdf->roughnessTexture);
-	Reg_Load_val<Image::Ptr>(funcMap, str::BSDF_MetalWorkflow::aoTexture, bsdf->aoTexture);
-	Reg_Load_val<Image::Ptr>(funcMap, str::BSDF_MetalWorkflow::normalTexture, bsdf->normalTexture);
+	Reg_Load_val<Ptr<Image>>(funcMap, str::BSDF_MetalWorkflow::roughnessTexture, bsdf->roughnessTexture);
+	Reg_Load_val<Ptr<Image>>(funcMap, str::BSDF_MetalWorkflow::aoTexture, bsdf->aoTexture);
+	Reg_Load_val<Ptr<Image>>(funcMap, str::BSDF_MetalWorkflow::normalTexture, bsdf->normalTexture);
 
 	LoadNode(ele, funcMap);
 
@@ -389,8 +389,8 @@ static BSDF_MetalWorkflow::Ptr SObjLoader::Load(XMLElement * ele, BSDF_MetalWork
 }
 
 template<>
-static BSDF_Mirror::Ptr SObjLoader::Load(XMLElement * ele, BSDF_Mirror::Ptr*) {
-	auto bsdf = ToPtr(new BSDF_Mirror);
+static Ptr<BSDF_Mirror> SObjLoader::Load(XMLElement * ele, Ptr<BSDF_Mirror>*) {
+	auto bsdf = BSDF_Mirror::New();
 
 	FuncMap funcMap;
 
@@ -402,18 +402,18 @@ static BSDF_Mirror::Ptr SObjLoader::Load(XMLElement * ele, BSDF_Mirror::Ptr*) {
 }
 
 template<>
-static BSDF_FrostedGlass::Ptr SObjLoader::Load(XMLElement * ele, BSDF_FrostedGlass::Ptr*) {
-	auto bsdf = ToPtr(new BSDF_FrostedGlass);
+static Ptr<BSDF_FrostedGlass> SObjLoader::Load(XMLElement * ele, Ptr<BSDF_FrostedGlass>*) {
+	auto bsdf = BSDF_FrostedGlass::New();
 
 	FuncMap funcMap;
 
 	Reg_Text_val(funcMap, str::BSDF_FrostedGlass::IOR, bsdf->ior);
 	Reg_Text_val(funcMap, str::BSDF_FrostedGlass::colorFactor, bsdf->colorFactor);
-	Reg_Load_val<Image::Ptr>(funcMap, str::BSDF_FrostedGlass::colorTexture, bsdf->colorTexture);
+	Reg_Load_val<Ptr<Image>>(funcMap, str::BSDF_FrostedGlass::colorTexture, bsdf->colorTexture);
 	Reg_Text_val(funcMap, str::BSDF_FrostedGlass::roughnessFactor, bsdf->roughnessFactor);
-	Reg_Load_val<Image::Ptr>(funcMap, str::BSDF_FrostedGlass::roughnessTexture, bsdf->roughnessTexture);
-	Reg_Load_val<Image::Ptr>(funcMap, str::BSDF_FrostedGlass::aoTexture, bsdf->aoTexture);
-	Reg_Load_val<Image::Ptr>(funcMap, str::BSDF_FrostedGlass::normalTexture, bsdf->normalTexture);
+	Reg_Load_val<Ptr<Image>>(funcMap, str::BSDF_FrostedGlass::roughnessTexture, bsdf->roughnessTexture);
+	Reg_Load_val<Ptr<Image>>(funcMap, str::BSDF_FrostedGlass::aoTexture, bsdf->aoTexture);
+	Reg_Load_val<Ptr<Image>>(funcMap, str::BSDF_FrostedGlass::normalTexture, bsdf->normalTexture);
 
 	LoadNode(ele, funcMap);
 
@@ -423,8 +423,8 @@ static BSDF_FrostedGlass::Ptr SObjLoader::Load(XMLElement * ele, BSDF_FrostedGla
 // ------------ Transform ----------------
 
 template<>
-static CmptTransform::Ptr SObjLoader::Load(XMLElement * ele, CmptTransform::Ptr*){
-	auto cmpt = ToPtr(new CmptTransform(nullptr));
+static Ptr<CmptTransform> SObjLoader::Load(XMLElement * ele, Ptr<CmptTransform>*){
+	auto cmpt = CmptTransform::New(nullptr);
 
 	FuncMap funcMap;
 	Reg_Text_setVal(funcMap, str::CmptTransform::Position, cmpt, &CmptTransform::SetPosition);

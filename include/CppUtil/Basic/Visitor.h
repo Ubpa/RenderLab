@@ -34,7 +34,7 @@ namespace CppUtil {
 			}
 
 		private:
-			template<typename ImplT>
+			template<typename ImplT, typename BaseT>
 			friend class Visitor;
 			friend class VisitorDynamic;
 
@@ -42,10 +42,10 @@ namespace CppUtil {
 			TypeMap< std::function< void(Basic::Ptr<ElementBase>) > > visitOps;
 		};
 
-		template<typename ImplT>
-		class Visitor : public HeapObj<ImplT, VisitorBase> {
+		template<typename ImplT, typename BaseT = VisitorBase>
+		class Visitor : public HeapObj<ImplT, BaseT> {
 		protected:
-			using HeapObj<ImplT, VisitorBase>::HeapObj;
+			using HeapObj<ImplT, BaseT>::HeapObj;
 			virtual ~Visitor() = default;
 
 		protected:
@@ -53,7 +53,7 @@ namespace CppUtil {
 			void RegMemberFunc(void (ImplT::*visitFunc)(Basic::Ptr<EleType>)) {
 				ImplT * obj = dynamic_cast<ImplT*>(this);
 				visitOps[typeid(EleType)] = [obj, visitFunc](Basic::Ptr<ElementBase> pEle) {
-					(obj->*visitFunc)(EleType::Cast(pEle));
+					(obj->*visitFunc)(EleType::PtrCast(pEle));
 				};
 			}
 		};
@@ -68,7 +68,7 @@ namespace CppUtil {
 				using ptrE = FunctionTraitsLambda<LambadaExpr>::arg<0>::type;
 				using EleType = ptrE::element_type;
 				const Func func = [lambdaVisitFunc](Basic::Ptr<ElementBase> pEle) {
-					lambdaVisitFunc(EleType::Cast(pEle));
+					lambdaVisitFunc(EleType::PtrCast(pEle));
 				};
 				visitOps[typeid(EleType)] = func;
 			}

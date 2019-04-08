@@ -70,18 +70,18 @@ namespace CppUtil {
 			using BaseT::BaseT;
 
 		public:
-			// !!! 不可在构造函数中使用
+			// !!! 不可在构造函数中使用，将初始化任务放到 Init() 中
 			const Ptr<ImplT> This() { return shared_from_this(); }
-			// !!! 不可在构造函数中使用
+			// !!! 不可在构造函数中使用，将初始化任务放到 Init() 中
 			const CPtr<ImplT> This() const { return shared_from_this(); }
-			// !!! 不可在构造函数中使用
+			// !!! 不可在构造函数中使用，将初始化任务放到 Init() 中
 			const WPtr<ImplT> WThis() noexcept { return weak_from_this(); }
-			// !!! 不可在构造函数中使用
+			// !!! 不可在构造函数中使用，将初始化任务放到 Init() 中
 			const WCPtr<ImplT> WThis() const noexcept { return weak_from_this(); }
 
 		public:
 			template<typename T>
-			static const Ptr<ImplT> Cast(const Ptr<T> & ptrT) {
+			static const Ptr<ImplT> PtrCast(const Ptr<T> & ptrT) {
 				return std::dynamic_pointer_cast<ImplT>(ptrT);
 			}
 

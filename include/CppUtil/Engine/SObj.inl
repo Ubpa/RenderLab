@@ -13,7 +13,7 @@ struct SObj::Wrapper<T, true> {
 		if (target == components.end())
 			return nullptr;
 
-		return T::Cast(target->second);
+		return T::PtrCast(target->second);
 	}
 };
 

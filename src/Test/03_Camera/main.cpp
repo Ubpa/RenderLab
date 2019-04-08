@@ -14,7 +14,7 @@ using namespace std;
 
 int main() {
 	ERay ray;
-	CmptCamera::Ptr camera = ToPtr(new CmptCamera(nullptr));
+	auto camera = CmptCamera::New(nullptr);
 	camera->InitCoordinate();
 	camera->SetRay(ray, 0.5f, 0.5f);
 

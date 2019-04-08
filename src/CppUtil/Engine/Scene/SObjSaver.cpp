@@ -8,29 +8,29 @@ using namespace tinyxml2;
 using namespace std;
 
 SObjSaver::SObjSaver() {
-	Reg<SObj>();
+	RegMemberFunc<SObj>(&SObjSaver::Visit);
 
-	Reg<CmptCamera>();
+	RegMemberFunc<CmptCamera>(&SObjSaver::Visit);
 
-	Reg<CmptGeometry>();
-	Reg<Sphere>();
-	Reg<Plane>();
-	Reg<TriMesh>();
+	RegMemberFunc<CmptGeometry>(&SObjSaver::Visit);
+	RegMemberFunc<Sphere>(&SObjSaver::Visit);
+	RegMemberFunc<Plane>(&SObjSaver::Visit);
+	RegMemberFunc<TriMesh>(&SObjSaver::Visit);
 
-	Reg<CmptLight>();
-	Reg<AreaLight>();
-	Reg<PointLight>();
+	RegMemberFunc<CmptLight>(&SObjSaver::Visit);
+	RegMemberFunc<AreaLight>(&SObjSaver::Visit);
+	RegMemberFunc<PointLight>(&SObjSaver::Visit);
 
-	Reg<CmptMaterial>();
-	Reg<BSDF_CookTorrance>();
-	Reg<BSDF_Diffuse>();
-	Reg<BSDF_Emission>();
-	Reg<BSDF_Glass>();
-	Reg<BSDF_MetalWorkflow>();
-	Reg<BSDF_Mirror>();
-	Reg<BSDF_FrostedGlass>();
+	RegMemberFunc<CmptMaterial>(&SObjSaver::Visit);
+	RegMemberFunc<BSDF_CookTorrance>(&SObjSaver::Visit);
+	RegMemberFunc<BSDF_Diffuse>(&SObjSaver::Visit);
+	RegMemberFunc<BSDF_Emission>(&SObjSaver::Visit);
+	RegMemberFunc<BSDF_Glass>(&SObjSaver::Visit);
+	RegMemberFunc<BSDF_MetalWorkflow>(&SObjSaver::Visit);
+	RegMemberFunc<BSDF_Mirror>(&SObjSaver::Visit);
+	RegMemberFunc<BSDF_FrostedGlass>(&SObjSaver::Visit);
 
-	Reg<CmptTransform>();
+	RegMemberFunc<CmptTransform>(&SObjSaver::Visit);
 }
 
 void SObjSaver::Init(const string & path) {
@@ -45,24 +45,24 @@ void SObjSaver::Member(XMLElement * parent, const function<void()> & func) {
 	parentEleStack.pop_back();
 }
 
-void SObjSaver::NewEle(const char * const name, Image::CPtr img) {
+void SObjSaver::NewEle(const char * const name, CPtr<Image> img) {
 	Member(NewEle(name), [=]() {
 		Visit(img);
 	});
 }
 
-void SObjSaver::Visit(Image::CPtr img) {
+void SObjSaver::Visit(CPtr<Image> img) {
 	if (!img || !img->IsValid() || img->GetPath().empty())
 		return;
 
 	NewEle(str::Image::path, img->GetPath());
 }
 
-void SObjSaver::Visit(Image::Ptr img) {
-	Visit(Image::CPtr(img));
+void SObjSaver::Visit(Ptr<Image> img) {
+	Visit(CPtr<Image>(img));
 }
 
-void SObjSaver::Visit(SObj::Ptr sobj) {
+void SObjSaver::Visit(Ptr<SObj> sobj) {
 	// sobj
 	auto ele = doc.NewElement(str::SObj::type);
 	if (parentEleStack.empty())
@@ -92,7 +92,7 @@ void SObjSaver::Visit(SObj::Ptr sobj) {
 		doc.SaveFile(path.c_str());
 }
 
-void SObjSaver::Visit(CmptCamera::Ptr cmpt) {
+void SObjSaver::Visit(Ptr<CmptCamera> cmpt) {
 	NewEle(str::CmptCamera::type, [=]() {
 		NewEle(str::CmptCamera::fov, cmpt->GetFOV());
 		NewEle(str::CmptCamera::ar, cmpt->GetAspectRatio());
@@ -101,7 +101,7 @@ void SObjSaver::Visit(CmptCamera::Ptr cmpt) {
 	});
 }
 
-void SObjSaver::Visit(CmptGeometry::Ptr cmpt) {
+void SObjSaver::Visit(Ptr<CmptGeometry> cmpt) {
 	NewEle(str::CmptGeometry::type, [=]() {
 		NewEle(str::CmptGeometry::primitive, [=]() {
 			if (cmpt->primitive)
@@ -110,15 +110,15 @@ void SObjSaver::Visit(CmptGeometry::Ptr cmpt) {
 	});
 }
 
-void SObjSaver::Visit(Sphere::Ptr sphere) {
+void SObjSaver::Visit(Ptr<Sphere> sphere) {
 	NewEle(str::Sphere::type);
 }
 
-void SObjSaver::Visit(Plane::Ptr plane) {
+void SObjSaver::Visit(Ptr<Plane> plane) {
 	NewEle(str::Plane::type);
 }
 
-void SObjSaver::Visit(TriMesh::Ptr mesh) {
+void SObjSaver::Visit(Ptr<TriMesh> mesh) {
 	NewEle(str::TriMesh::type, [=]() {
 		if (mesh->GetType() == TriMesh::ENUM_TYPE::INVALID)
 			return;
@@ -152,7 +152,7 @@ void SObjSaver::Visit(TriMesh::Ptr mesh) {
 	});
 }
 
-void SObjSaver::Visit(CmptLight::Ptr cmpt) {
+void SObjSaver::Visit(Ptr<CmptLight> cmpt) {
 	NewEle(str::CmptLight::type, [=]() {
 		NewEle(str::CmptLight::light, [=]() {
 			if (cmpt->light)
@@ -161,7 +161,7 @@ void SObjSaver::Visit(CmptLight::Ptr cmpt) {
 	});
 }
 
-void SObjSaver::Visit(AreaLight::Ptr areaLight) {
+void SObjSaver::Visit(Ptr<AreaLight> areaLight) {
 	NewEle(str::AreaLight::type, [=]() {
 		NewEle(str::AreaLight::color, areaLight->color);
 		NewEle(str::AreaLight::intensity, areaLight->intensity);
@@ -170,7 +170,7 @@ void SObjSaver::Visit(AreaLight::Ptr areaLight) {
 	});
 }
 
-void SObjSaver::Visit(PointLight::Ptr pointLight) {
+void SObjSaver::Visit(Ptr<PointLight> pointLight) {
 	NewEle(str::PointLight::type, [=]() {
 		NewEle(str::PointLight::color, pointLight->color);
 		NewEle(str::PointLight::intensity, pointLight->intensity);
@@ -179,7 +179,7 @@ void SObjSaver::Visit(PointLight::Ptr pointLight) {
 	});
 }
 
-void SObjSaver::Visit(CmptMaterial::Ptr cmpt) {
+void SObjSaver::Visit(Ptr<CmptMaterial> cmpt) {
 	NewEle(str::CmptMaterial::type, [=]() {
 		NewEle(str::CmptMaterial::material, [=]() {
 			if (cmpt->material)
@@ -188,7 +188,7 @@ void SObjSaver::Visit(CmptMaterial::Ptr cmpt) {
 	});
 }
 
-void SObjSaver::Visit(BSDF_CookTorrance::Ptr bsdf){
+void SObjSaver::Visit(Ptr<BSDF_CookTorrance> bsdf){
 	NewEle(str::BSDF_CookTorrance::type, [=]() {
 		NewEle(str::BSDF_CookTorrance::ior, bsdf->ior);
 		NewEle(str::BSDF_CookTorrance::roughness, bsdf->m);
@@ -197,7 +197,7 @@ void SObjSaver::Visit(BSDF_CookTorrance::Ptr bsdf){
 	});
 }
 
-void SObjSaver::Visit(BSDF_Diffuse::Ptr bsdf){
+void SObjSaver::Visit(Ptr<BSDF_Diffuse> bsdf){
 	NewEle(str::BSDF_Diffuse::type, [=]() {
 		NewEle(str::BSDF_Diffuse::colorFactor, bsdf->colorFactor);
 		NewEle(str::BSDF_Diffuse::albedoTexture, [=]() {
@@ -206,14 +206,14 @@ void SObjSaver::Visit(BSDF_Diffuse::Ptr bsdf){
 	});
 }
 
-void SObjSaver::Visit(BSDF_Emission::Ptr bsdf){
+void SObjSaver::Visit(Ptr<BSDF_Emission> bsdf){
 	NewEle(str::BSDF_Emission::type, [=]() {
 		NewEle(str::BSDF_Emission::color, bsdf->color);
 		NewEle(str::BSDF_Emission::intensity, bsdf->intensity);
 	});
 }
 
-void SObjSaver::Visit(BSDF_Glass::Ptr bsdf){
+void SObjSaver::Visit(Ptr<BSDF_Glass> bsdf){
 	NewEle(str::BSDF_Glass::type, [=]() {
 		NewEle(str::BSDF_Glass::ior, bsdf->ior);
 		NewEle(str::BSDF_Glass::transmittance, bsdf->transmittance);
@@ -221,7 +221,7 @@ void SObjSaver::Visit(BSDF_Glass::Ptr bsdf){
 	});
 }
 
-void SObjSaver::Visit(BSDF_MetalWorkflow::Ptr bsdf){
+void SObjSaver::Visit(Ptr<BSDF_MetalWorkflow> bsdf){
 	NewEle(str::BSDF_MetalWorkflow::type, [=]() {
 		NewEle(str::BSDF_MetalWorkflow::colorFactor, bsdf->colorFactor);
 		NewEle(str::BSDF_MetalWorkflow::albedoTexture, [=]() {
@@ -248,7 +248,7 @@ void SObjSaver::Visit(BSDF_MetalWorkflow::Ptr bsdf){
 	});
 }
 
-void SObjSaver::Visit(BSDF_FrostedGlass::Ptr bsdf) {
+void SObjSaver::Visit(Ptr<BSDF_FrostedGlass> bsdf) {
 	NewEle(str::BSDF_FrostedGlass::type, [=]() {
 		NewEle(str::BSDF_FrostedGlass::IOR, bsdf->ior);
 
@@ -264,13 +264,13 @@ void SObjSaver::Visit(BSDF_FrostedGlass::Ptr bsdf) {
 	});
 }
 
-void SObjSaver::Visit(BSDF_Mirror::Ptr bsdf){
+void SObjSaver::Visit(Ptr<BSDF_Mirror> bsdf){
 	NewEle(str::BSDF_Mirror::type, [=]() {
 		NewEle(str::BSDF_Mirror::reflectance, bsdf->reflectance);
 	});
 }
 
-void SObjSaver::Visit(CmptTransform::Ptr cmpt) {
+void SObjSaver::Visit(Ptr<CmptTransform> cmpt) {
 	NewEle(str::CmptTransform::type, [=]() {
 		NewEle(str::CmptTransform::Position, cmpt->GetPosition());
 		NewEle(str::CmptTransform::Rotation, cmpt->GetRotation());

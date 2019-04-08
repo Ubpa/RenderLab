@@ -18,11 +18,11 @@ using namespace std;
 VisibilityChecker::VisibilityChecker()
 	: rst(false)
 {
-	Reg<BVHAccel>();
-	Reg<BVHNode<Element, BVHAccel>>();
-	Reg<Sphere>();
-	Reg<Plane>();
-	Reg<Triangle>();
+	RegMemberFunc<BVHAccel>(&VisibilityChecker::Visit);
+	RegMemberFunc<BVHNode<ElementBase, BVHAccel>>(&VisibilityChecker::Visit);
+	RegMemberFunc<Sphere>(&VisibilityChecker::Visit);
+	RegMemberFunc<Plane>(&VisibilityChecker::Visit);
+	RegMemberFunc<Triangle>(&VisibilityChecker::Visit);
 }
 
 void VisibilityChecker::Init(const ERay & ray, const float tMax) {
@@ -64,11 +64,11 @@ bool VisibilityChecker::Intersect(const BBoxf & bbox, float & t0, float & t1) {
 	return true;
 }
 
-void VisibilityChecker::Visit(BVHAccel::Ptr bvhAccel) {
+void VisibilityChecker::Visit(Ptr<BVHAccel> bvhAccel) {
 	bvhAccel->GetBVHRoot()->Accept(This());
 }
 
-void VisibilityChecker::Visit(BVHNode<Element, BVHAccel>::Ptr bvhNode) {
+void VisibilityChecker::Visit(Ptr<BVHNode<ElementBase, BVHAccel>> bvhNode) {
 	if (bvhNode->IsLeaf()) {
 		const auto origin = ray.o;
 		const auto dir = ray.d;
@@ -120,7 +120,7 @@ void VisibilityChecker::Visit(BVHNode<Element, BVHAccel>::Ptr bvhNode) {
 	}
 }
 
-void VisibilityChecker::Visit(Sphere::Ptr sphere) {
+void VisibilityChecker::Visit(Ptr<Sphere> sphere) {
 	const auto & dir = ray.d;
 	const auto & origin = ray.o;
 
@@ -152,7 +152,7 @@ void VisibilityChecker::Visit(Sphere::Ptr sphere) {
 	rst.isIntersect = true;
 }
 
-void VisibilityChecker::Visit(Plane::Ptr plane) {
+void VisibilityChecker::Visit(Ptr<Plane> plane) {
 	const auto & dir = ray.d;
 	const auto & origin = ray.o;
 	const float tMin = ray.tMin;
@@ -173,7 +173,7 @@ void VisibilityChecker::Visit(Plane::Ptr plane) {
 	rst.isIntersect = true;
 }
 
-void VisibilityChecker::Visit(Triangle::Ptr triangle) {
+void VisibilityChecker::Visit(Ptr<Triangle> triangle) {
 	const auto mesh = triangle->GetMesh();
 	const int idx1 = triangle->idx[0];
 	const int idx2 = triangle->idx[1];

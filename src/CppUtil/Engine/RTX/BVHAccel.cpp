@@ -2,7 +2,7 @@
 
 #include <CppUtil/Engine/SObj.h>
 
-#include <CppUtil/Basic/EleVisitor.h>
+#include <CppUtil/Basic/Visitor.h>
 
 #include <CppUtil/Engine/CmptGeometry.h>
 #include <CppUtil/Engine/Sphere.h>
@@ -19,18 +19,26 @@ BVHAccel::BVHAccel()
 
 // ------------ BVHInitVisitor ------------
 
-class BVHAccel::BVHInitVisitor : public EleVisitor {
-	ELEVISITOR_SETUP(BVHInitVisitor)
+class BVHAccel::BVHInitVisitor : public Visitor<BVHAccel::BVHInitVisitor> {
 public:
 	BVHInitVisitor(BVHAccel * holder)
 		: holder(holder) {
-		Reg<CmptGeometry>();
-		Reg<Sphere>();
-		Reg<Plane>();
-		Reg<TriMesh>();
+		RegMemberFunc<CmptGeometry>(&BVHAccel::BVHInitVisitor::Visit);
+		RegMemberFunc<Sphere>(&BVHAccel::BVHInitVisitor::Visit);
+		RegMemberFunc<Plane>(&BVHAccel::BVHInitVisitor::Visit);
+		RegMemberFunc<TriMesh>(&BVHAccel::BVHInitVisitor::Visit);
 	}
-private:
-	void Visit(CmptGeometry::Ptr geo) {
+
+public:
+	static const Ptr<BVHInitVisitor> New(BVHAccel * holder) {
+		return Basic::New<BVHInitVisitor>(holder);
+	}
+
+protected:
+	virtual ~BVHInitVisitor() = default;
+
+public:
+	void Visit(Ptr<CmptGeometry> geo) {
 		auto primitive = geo->primitive;
 		if (!primitive)
 			return;
@@ -45,19 +53,19 @@ private:
 		geo->primitive->Accept(This());
 	}
 
-	void Visit(Sphere::Ptr sphere) {
+	void Visit(Ptr<Sphere> sphere) {
 		const auto matrix = holder->GetEleL2WMat(sphere);
 		holder->elements.push_back(sphere);
 		holder->ele2bbox[sphere] = matrix(sphere->GetBBox());
 	}
 
-	void Visit(Plane::Ptr plane) {
+	void Visit(Ptr<Plane> plane) {
 		const auto matrix = holder->GetEleL2WMat(plane);
 		holder->elements.push_back(plane);
 		holder->ele2bbox[plane] = matrix(plane->GetBBox());
 	}
 
-	void Visit(TriMesh::Ptr mesh) {
+	void Visit(Ptr<TriMesh> mesh) {
 		const auto matrix = holder->GetEleL2WMat(mesh);
 		auto triangles = mesh->GetTriangles();
 		for (auto triangle : triangles) {
@@ -70,9 +78,13 @@ private:
 	BVHAccel * holder;
 };
 
-const Transform & BVHAccel::GetEleW2LMat(Element::Ptr element) const {
-	auto triangle = Triangle::Ptr::Cast(element);
-	Primitive::Ptr primitive = triangle ? static_cast<Primitive::Ptr>(triangle->GetMesh()) : Primitive::Ptr::Cast(element);
+const Transform & BVHAccel::GetEleW2LMat(Ptr<ElementBase> element) const {
+	Ptr<PrimitiveBase> primitive = nullptr;
+	auto triangle = Triangle::PtrCast(element);
+	if (triangle)
+		primitive = triangle->GetMesh();
+	else
+		primitive = dynamic_pointer_cast<PrimitiveBase>(element);
 
 	const auto target = worldToLocalMatrixes.find(primitive);
 	assert(target != worldToLocalMatrixes.cend());
@@ -80,9 +92,13 @@ const Transform & BVHAccel::GetEleW2LMat(Element::Ptr element) const {
 	return target->second;
 }
 
-const Transform & BVHAccel::GetEleL2WMat(Element::Ptr element) const {
-	auto triangle = Triangle::Ptr::Cast(element);
-	Primitive::Ptr primitive = triangle ? static_cast<Primitive::Ptr>(triangle->GetMesh()) : Primitive::Ptr::Cast(element);
+const Transform & BVHAccel::GetEleL2WMat(Ptr<ElementBase> element) const {
+	Ptr<PrimitiveBase> primitive = nullptr;
+	auto triangle = Triangle::PtrCast(element);
+	if (triangle)
+		primitive = triangle->GetMesh();
+	else
+		primitive = dynamic_pointer_cast<PrimitiveBase>(element);
 
 	const auto target = localToWorldMatrixes.find(primitive);
 	assert(target != localToWorldMatrixes.cend());
@@ -97,9 +113,13 @@ const Transform & BVHAccel::GetSObjL2WMat(Ptr<SObj> sobj) const {
 	return target->second;
 }
 
-const Ptr<SObj> BVHAccel::GetSObj(Element::Ptr element) const{
-	auto triangle = Triangle::Ptr::Cast(element);
-	Primitive::Ptr primitive = triangle ? static_cast<Primitive::Ptr>(triangle->GetMesh()) : Primitive::Ptr::Cast(element);
+const Ptr<SObj> BVHAccel::GetSObj(Ptr<ElementBase> element) const{
+	Ptr<PrimitiveBase> primitive = nullptr;
+	auto triangle = Triangle::PtrCast(element);
+	if (triangle)
+		primitive = triangle->GetMesh();
+	else
+		primitive = dynamic_pointer_cast<PrimitiveBase>(element);
 
 	const auto target = primitive2sobj.find(primitive);
 	assert(target != primitive2sobj.cend());
@@ -107,7 +127,7 @@ const Ptr<SObj> BVHAccel::GetSObj(Element::Ptr element) const{
 	return target->second;
 }
 
-const BBoxf & BVHAccel::GetBBox(Element::Ptr element) const {
+const BBoxf & BVHAccel::GetBBox(Ptr<ElementBase> element) const {
 	const auto target = ele2bbox.find(element);
 	assert(target != ele2bbox.cend());
 
@@ -129,8 +149,8 @@ void BVHAccel::Init(Ptr<SObj> root) {
 	Clear();
 
 	auto geos = root->GetComponentsInChildren<CmptGeometry>();
-	auto initVisitor = ToPtr(new BVHInitVisitor(this));
+	auto initVisitor = BVHInitVisitor::New(this);
 	for (auto geo : geos)
 		geo->Accept(initVisitor);
-	bvhRoot = ToPtr(new BVHNode<Element, BVHAccel>(this, elements, 0, elements.size()));
+	bvhRoot = BVHNode<ElementBase, BVHAccel>::New(this, elements, 0, elements.size());
 }

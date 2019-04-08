@@ -11,17 +11,16 @@
 
 namespace CppUtil {
 	namespace Engine {
-		class Light;
+		class LightBase;
 		class BVHAccel;
 
 		class RayIntersector;
 		class VisibilityChecker;
 
-		class BSDF;
+		class BSDFBase;
 
 		// 只能用于单线程
-		class PathTracer : public RayTracer {
-			HEAP_OBJ_SETUP(PathTracer)
+		class PathTracer : public RayTracer<PathTracer> {
 		public:
 			PathTracer();
 
@@ -44,7 +43,7 @@ namespace CppUtil {
 				const Point3 & posInWorldSpace,
 				const std::vector<Point3> & posInLightSpaceVec,
 				const Mat3f & worldToSurface,
-				Basic::Ptr<BSDF> bsdf,
+				Basic::Ptr<BSDFBase> bsdf,
 				const Normalf & w_out,
 				const Point2 & texcoord,
 				SampleLightMode mode
@@ -56,14 +55,14 @@ namespace CppUtil {
 				const Point3 & posInWorldSpace,
 				const Point3 & posInLightSpace,
 				const Mat3f & worldToSurface,
-				Basic::Ptr<BSDF> bsdf,
+				Basic::Ptr<BSDFBase> bsdf,
 				const Normalf & w_out,
 				const Point2 & texcoord,
 				float factorPD
 			) const;
 
 			const RGBf SampleBSDF(
-				Basic::Ptr<BSDF> bsdf,
+				Basic::Ptr<BSDFBase> bsdf,
 				SampleLightMode mode,
 				const Normalf & w_out,
 				const Mat3f & surfaceToWorld,
@@ -79,8 +78,8 @@ namespace CppUtil {
 			int maxDepth;
 
 		private:
-			std::vector<Basic::Ptr<Light>> lights;
-			std::map<Basic::Ptr<Light>, int> lightToIdx;
+			std::vector<Basic::Ptr<LightBase>> lights;
+			std::map<Basic::Ptr<LightBase>, int> lightToIdx;
 			std::vector<Transform> worldToLightVec;
 			std::vector<Transform> lightToWorldVec;
 

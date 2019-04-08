@@ -14,15 +14,15 @@ void CppUtil::Engine::BVHNode<T, HolderT>::Build(size_t maxLeafSize) {
 	}
 
 	// get best partition
-	std::vector<T::Ptr> bestPartition[2];
+	std::vector<Basic::Ptr<T>> bestPartition[2];
 	double minCost = DBL_MAX;
 	for (int dim = 0; dim < 3; dim++) {
 		// 1. compute buckets
 		double bucketLen = bb.Diagonal()[dim] / bucketNum;
 		double left = bb.minP[dim];
-		std::vector<std::vector<T::Ptr>> buckets(bucketNum);
+		std::vector<std::vector<Basic::Ptr<T>>> buckets(bucketNum);
 		std::vector<BBoxf> boxesOfBuckets(bucketNum);
-		for (int i = 0; i < range; i++) {
+		for (size_t i = 0; i < range; i++) {
 			BBoxf box = GetBBox(objs[i + start]);
 			double center = box.Center()[dim];
 			int bucketID = min(static_cast<int>((center - left) / bucketLen), bucketNum - 1);

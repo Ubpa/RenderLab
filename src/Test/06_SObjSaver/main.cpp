@@ -16,61 +16,61 @@ using namespace CppUtil::Engine;
 using namespace std;
 
 int main() {
-	auto sobj = ToPtr(new SObj(nullptr, "root"));
-	auto sobj1 = ToPtr(new SObj(sobj, "sobj1"));
-	auto sobj2 = ToPtr(new SObj(sobj, "sobj2"));
-	auto sobj3 = ToPtr(new SObj(sobj, "sobj3"));
-	auto sobj4 = ToPtr(new SObj(sobj2, "sobj4"));
-	auto sobj5 = ToPtr(new SObj(sobj, "sobj5"));
+	auto sobj = SObj::New(nullptr, "root");
+	auto sobj1 = SObj::New(sobj, "sobj1");
+	auto sobj2 = SObj::New(sobj, "sobj2");
+	auto sobj3 = SObj::New(sobj, "sobj3");
+	auto sobj4 = SObj::New(sobj2, "sobj4");
+	auto sobj5 = SObj::New(sobj, "sobj5");
 
-	auto sobj30 = ToPtr(new SObj(sobj3, "sobj30"));
-	auto sobj31 = ToPtr(new SObj(sobj3, "sobj31"));
-	auto sobj32 = ToPtr(new SObj(sobj3, "sobj32"));
-	auto sobj33 = ToPtr(new SObj(sobj3, "sobj33"));
-	auto sobj34 = ToPtr(new SObj(sobj3, "sobj34"));
-	auto sobj35 = ToPtr(new SObj(sobj3, "sobj35"));
+	auto sobj30 = SObj::New(sobj3, "sobj30");
+	auto sobj31 = SObj::New(sobj3, "sobj31");
+	auto sobj32 = SObj::New(sobj3, "sobj32");
+	auto sobj33 = SObj::New(sobj3, "sobj33");
+	auto sobj34 = SObj::New(sobj3, "sobj34");
+	auto sobj35 = SObj::New(sobj3, "sobj35");
 
 	{
-		auto camera = ToPtr(new CmptCamera(sobj1, 3, 3, 3, 3));
-		auto transform = ToPtr(new CmptTransform(sobj1));
+		auto camera = CmptCamera::New(sobj1, 3, 3, 3, 3);
+		auto transform = CmptTransform::New(sobj1);
 		transform->SetPosition(Vec3(3, 3, 3));
 		transform->SetRotation(EulerYXZf(3, 3, 3).ToQuat());
 		transform->SetScale(Vec3(3, 3, 3));
-		auto light = ToPtr(new CmptLight(sobj1, nullptr));
-		auto material = ToPtr(new CmptMaterial(sobj1, nullptr));
-		auto geometry = ToPtr(new CmptGeometry(sobj1, nullptr));
+		auto light = CmptLight::New(sobj1, nullptr);
+		auto material = CmptMaterial::New(sobj1, nullptr);
+		auto geometry = CmptGeometry::New(sobj1, nullptr);
 	}
 
 	{
-		auto geometry0 = ToPtr(new CmptGeometry(sobj2, ToPtr(new Sphere)));
-		auto geometry1 = ToPtr(new CmptGeometry(sobj3, ToPtr(new Plane)));
-		auto light = ToPtr(new CmptLight(sobj2, ToPtr(new AreaLight(Vec3(3),3.f,3.f,3.f))));
+		auto geometry0 = CmptGeometry::New(sobj2, Sphere::New());
+		auto geometry1 = CmptGeometry::New(sobj3, Plane::New());
+		auto light = CmptLight::New(sobj2, AreaLight::New(Vec3(3),3.f,3.f,3.f));
 	}
 
 	{
-		auto material0 = ToPtr(new CmptMaterial(sobj30, ToPtr(new BSDF_CookTorrance(3.f, 3.f, Vec3(3),Vec3(3)))));
-		auto material1 = ToPtr(new CmptMaterial(sobj31, ToPtr(new BSDF_Diffuse(Vec3(3.f)))));
-		auto material2 = ToPtr(new CmptMaterial(sobj32, ToPtr(new BSDF_Emission(Vec3(3.f),3.f))));
-		auto material3 = ToPtr(new CmptMaterial(sobj33, ToPtr(new BSDF_Glass(3.f,Vec3(3.f),Vec3(3.f)))));
-		auto material4 = ToPtr(new CmptMaterial(sobj34, ToPtr(new BSDF_MetalWorkflow(Vec3(3.f),3.f,3.f))));
-		auto material5 = ToPtr(new CmptMaterial(sobj35, ToPtr(new BSDF_Mirror(Vec3(3.f)))));
+		auto material0 = CmptMaterial::New(sobj30, BSDF_CookTorrance::New(3.f, 3.f, Vec3(3),Vec3(3)));
+		auto material1 = CmptMaterial::New(sobj31, BSDF_Diffuse::New(Vec3(3.f)));
+		auto material2 = CmptMaterial::New(sobj32, BSDF_Emission::New(Vec3(3.f),3.f));
+		auto material3 = CmptMaterial::New(sobj33, BSDF_Glass::New(3.f,Vec3(3.f),Vec3(3.f)));
+		auto material4 = CmptMaterial::New(sobj34, BSDF_MetalWorkflow::New(Vec3(3.f),3.f,3.f));
+		auto material5 = CmptMaterial::New(sobj35, BSDF_Mirror::New(Vec3(3.f)));
 	}
 
 	{
-		auto sobj_IronSphere = ToPtr(new SObj(sobj5, "rusted iron sphere"));
+		auto sobj_IronSphere = SObj::New(sobj5, "rusted iron sphere");
 
-		auto bsdfIron = ToPtr(new BSDF_MetalWorkflow(Vec3(3), 3.f, 3.f));
-		auto ironAlbedoImg = ToPtr(new Image((ROOT_PATH + "data/textures/pbr/rusted_iron/albedo.png").c_str()));
+		auto bsdfIron = BSDF_MetalWorkflow::New(Vec3(3), 3.f, 3.f);
+		auto ironAlbedoImg = Image::New((ROOT_PATH + "data/textures/pbr/rusted_iron/albedo.png").c_str());
 		bsdfIron->SetAlbedoTexture(ironAlbedoImg);
-		auto ironMatallicImg = ToPtr(new Image((ROOT_PATH + "data/textures/pbr/rusted_iron/metallic.png").c_str()));
+		auto ironMatallicImg = Image::New((ROOT_PATH + "data/textures/pbr/rusted_iron/metallic.png").c_str());
 		bsdfIron->SetMetallicTexture(ironMatallicImg);
-		auto ironRoughnessImg = ToPtr(new Image((ROOT_PATH + "data/textures/pbr/rusted_iron/roughness.png").c_str()));
+		auto ironRoughnessImg = Image::New((ROOT_PATH + "data/textures/pbr/rusted_iron/roughness.png").c_str());
 		bsdfIron->SetRoughnessTexture(ironRoughnessImg);
-		auto ironAOImg = ToPtr(new Image((ROOT_PATH + "data/textures/pbr/rusted_iron/ao.png").c_str()));
+		auto ironAOImg = Image::New((ROOT_PATH + "data/textures/pbr/rusted_iron/ao.png").c_str());
 		bsdfIron->SetAOTexture(ironAOImg);
-		auto ironNormalImg = ToPtr(new Image((ROOT_PATH + "data/textures/pbr/rusted_iron/normal.png").c_str()));
+		auto ironNormalImg = Image::New((ROOT_PATH + "data/textures/pbr/rusted_iron/normal.png").c_str());
 		bsdfIron->SetNormalTexture(ironNormalImg);
-		auto materialIron = ToPtr(new CmptMaterial(sobj_IronSphere, bsdfIron));
+		auto materialIron = CmptMaterial::New(sobj_IronSphere, bsdfIron);
 	}
 
 	sobj->Save(ROOT_PATH + "data/out/write.xml");

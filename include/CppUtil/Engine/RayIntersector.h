@@ -11,7 +11,7 @@
 
 namespace CppUtil {
 	namespace Basic {
-		class Element;
+		class ElementBase;
 	}
 
 	namespace Engine {
@@ -25,17 +25,16 @@ namespace CppUtil {
 		class BVHNode;
 
 		// 寻找最近的交点
-		class RayIntersector : public Intersector {
-			ELEVISITOR_SETUP(RayIntersector)
+		class RayIntersector final : public Intersector<RayIntersector> {
 		public:
 			// isIntersect 用于判断与 Primitive 是否相交
 			// closestSObj 用于记录最近的SObj
 			// n 用于记录最近的相交处的法向
-			struct Rst : public Intersector::Rst {
+			struct Rst : public IntersectorBase::Rst {
 				friend class RayIntersector;
 
 				Rst(bool isIntersect = false)
-					: Intersector::Rst(isIntersect), closestSObj(nullptr), n(0) { }
+					: IntersectorBase::Rst(isIntersect), closestSObj(nullptr), n(0) { }
 
 				Basic::Ptr<SObj> closestSObj;
 				Normalf n;
@@ -48,13 +47,19 @@ namespace CppUtil {
 
 			void Init(Ray * ray);
 
+		protected:
+			virtual ~RayIntersector() = default;
+			
+		public:
+			static const Basic::Ptr<RayIntersector> New() { return Basic::New<RayIntersector>(); }
+
 		public:
 			Rst & GetRst() { return rst; }
 
 		private:
 			// 设置 rst，如果相交，则会修改 ray.tMax
 			void Visit(Basic::Ptr<BVHAccel> bvhAccel);
-			void Visit(Basic::Ptr<BVHNode<Basic::Element, BVHAccel>> bvhNode);
+			void Visit(Basic::Ptr<BVHNode<Basic::ElementBase, BVHAccel>> bvhNode);
 			void Visit(Basic::Ptr<SObj> sobj);
 			void Visit(Basic::Ptr<Sphere> sphere);
 			void Visit(Basic::Ptr<Plane> plane);

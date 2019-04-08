@@ -1,7 +1,7 @@
 #ifndef _CPPUTIL_ENGINE_SCENE_SOBJ_SAVER_H_
 #define _CPPUTIL_ENGINE_SCENE_SOBJ_SAVER_H_
 
-#include <CppUtil/Basic/EleVisitor.h>
+#include <CppUtil/Basic/Visitor.h>
 #include <3rdParty/tinyxml2.h>
 #include <CppUtil/Basic/UGM/Transform.h>
 
@@ -45,10 +45,15 @@ namespace CppUtil {
 
 		class CmptTransform;
 
-		class SObjSaver : public Basic::EleVisitor {
-			ELEVISITOR_SETUP(SObjSaver)
+		class SObjSaver : public Basic::Visitor<SObjSaver>{
 		public:
 			SObjSaver();
+
+		public:
+			static const Basic::Ptr<SObjSaver> New() {
+				return Basic::New<SObjSaver>();
+			}
+
 			void Init(const std::string & path);
 
 		private:

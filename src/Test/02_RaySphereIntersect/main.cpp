@@ -10,10 +10,10 @@ using namespace CppUtil::Engine;
 
 int main() {
 	ERay ray(Point3(0, 0, 2), Vec3(0, 0, -1));
-	auto intersector = ToPtr(new RayIntersector);
+	auto intersector = RayIntersector::New();
 	intersector->Init(&ray);
 
-	auto sphere = ToPtr(new Sphere);
+	auto sphere = Sphere::New();
 	sphere->Accept(intersector);
 
 	if (intersector->GetRst().IsIntersect()) {

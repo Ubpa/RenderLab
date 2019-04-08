@@ -11,12 +11,22 @@ namespace CppUtil {
 	namespace Engine {
 		class Scene;
 
-		class RayTracer : public Basic::HeapObj {
-			HEAP_OBJ_SETUP(RayTracer)
+		class RayTracerBase : public Basic::HeapObjBase {
+		protected:
+			RayTracerBase() = default;
+			virtual ~RayTracerBase() = default;
+
 		public:
 			// ray 处于世界坐标系
 			virtual const RGBf Trace(Ray & ray) = 0;
 			virtual void Init(Basic::Ptr<Scene> scene) {}
+		};
+
+		template<typename ImplT, typename BaseT = RayTracerBase>
+		class RayTracer : public Basic::HeapObj<ImplT, BaseT> {
+		protected:
+			using HeapObj<ImplT, BaseT>::HeapObj;
+			virtual ~RayTracer() = default;
 		};
 	}
 }
