@@ -52,7 +52,7 @@ RTGIwRRF::RTGIwRRF(QWidget *parent, Qt::WindowFlags flags)
 	Init();
 }
 
-void RTGIwRRF::UI_Op(Operation::Ptr op) {
+void RTGIwRRF::UI_Op(Ptr<Op> op) {
 	op->Run();
 }
 
@@ -64,22 +64,22 @@ void RTGIwRRF::Init() {
 
 void RTGIwRRF::InitScene() {
 	auto root = SObj::Load(ROOT_PATH+"data/SObjs/App/RTGIwRRF/CB_Glass.xml");
-	scene = ToPtr(new Scene(root, "scene"));
+	scene = Scene::New(root, "scene");
 }
 
 void RTGIwRRF::InitRaster() {
-	rrfRaster = ToPtr(new RRF_Raster(scene));
-	roamer = ToPtr(new Roamer(ui.OGLW_Raster));
+	rrfRaster = RRF_Raster::New(scene);
+	roamer = Roamer::New(ui.OGLW_Raster);
 	roamer->SetLock(false);
 
-	ui.OGLW_Raster->SetInitOp(ToPtr(new LambdaOp([=]() {
-		roamer->Init();
-		rrfRaster->Init();
+	ui.OGLW_Raster->SetInitOp(LambdaOp_New(([=]() {
+		roamer->OGL_Init();
+		rrfRaster->OGL_Init();
 	})));
 
-	ui.OGLW_Raster->SetPaintOp(ToPtr(new LambdaOp([=]() {
+	ui.OGLW_Raster->SetPaintOp(LambdaOp_New([=]() {
 		rrfRaster->Draw();
-	})));
+	}));
 }
 
 void RTGIwRRF::InitTimer() {

@@ -22,9 +22,13 @@ namespace CppUtil {
 			virtual ~Picker() = default;
 
 		public:
-			void Init();
+			void OGL_Init();
 
 			Viewer * GetViewer() const { return viewer; }
+
+		private:
+			using Basic::HeapObj<Picker>::Init;
+
 		private:
 			Viewer * viewer;
 

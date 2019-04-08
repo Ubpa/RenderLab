@@ -39,7 +39,7 @@ int main(int argc, char *argv[]) {
 	else
 		outpath = imgpath.substr(0, imgpath.rfind('.')) + "_denoised.png";
 
-	auto img = ToPtr(new Image((prefix+imgpath).c_str()));
+	auto img = Image::New(prefix + imgpath);
 	
 	OptixAIDenoiser::GetInstance().Denoise(img);
 	

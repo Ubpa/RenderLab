@@ -6,13 +6,21 @@
 
 namespace App {
 	class SampleRaster : public CppUtil::Engine::RasterBase {
-		ELEVISITOR_SETUP(SampleRaster)
 	public:
 		SampleRaster(CppUtil::Basic::Ptr<CppUtil::Engine::Scene> scene)
 			: RasterBase(scene), haveSampled(false) { }
 
+	public:
+		static const CppUtil::Basic::Ptr<SampleRaster> New(CppUtil::Basic::Ptr<CppUtil::Engine::Scene> scene) {
+			return CppUtil::Basic::New<SampleRaster>(scene);
+		}
+
+	protected:
+		virtual ~SampleRaster() = default;
+
+	public:
 		void Draw();
-		void Init();
+		void OGL_Init();
 
 		enum ENUM_TYPE {
 			DirectIllum,

@@ -11,7 +11,6 @@ namespace App {
 	class Model;
 
 	class ModelKDTree : public CppUtil::Basic::KDTree<ModelKDTree, CppUtil::Basic::Ptr<Model>> {
-		HEAP_OBJ_SETUP(ModelKDTree)
 	public:
 		typedef CppUtil::Basic::Ptr<Model> ModelPtr;
 		typedef CppUtil::Basic::KDTree<ModelKDTree, ModelPtr> BaseT;
@@ -19,7 +18,7 @@ namespace App {
 	public:
 		explicit ModelKDTree (
 			const int ID = -1,
-			ModelKDTree::Ptr parent = nullptr,
+			CppUtil::Basic::Ptr<ModelKDTree> parent = nullptr,
 			const int inputDim = -1,
 			const int outputDim = -1,
 			const int axis = -1,
@@ -30,6 +29,22 @@ namespace App {
 			ID(ID),
 			inputDim(inputDim),
 			outputDim(outputDim) { }
+
+	public:
+		static const CppUtil::Basic::Ptr<ModelKDTree> New(
+			const int ID = -1,
+			CppUtil::Basic::Ptr<ModelKDTree> parent = nullptr,
+			const int inputDim = -1,
+			const int outputDim = -1,
+			const int axis = -1,
+			const float spiltVal = 0,
+			ModelPtr modelPtr = nullptr)
+		{
+			return CppUtil::Basic::New<ModelKDTree>(ID, parent, inputDim, outputDim, axis, spiltVal, modelPtr);
+		}
+
+	protected:
+		virtual ~ModelKDTree() = default;
 
 	public:
 		int GetInputDim() const { return inputDim; }

@@ -49,7 +49,7 @@ namespace CppUtil {
 		protected:// Use for SubClass
 			void Draw();
 
-			void Init();
+			void OGL_Init();
 
 			void SetPointLightDepthMap(const OpenGL::Shader & shader, int base);
 			void SetCurShader(const OpenGL::Shader & shader) { curShader = shader; }

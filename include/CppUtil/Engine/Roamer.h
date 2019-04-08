@@ -26,7 +26,7 @@ namespace CppUtil {
 			virtual ~Roamer() = default;
 
 		public:
-			void Init();
+			void OGL_Init();
 			void SetWH(int w, int h);
 
 			QT::RawAPI_OGLW * GetOGLW() { return pOGLW; }

@@ -11,25 +11,25 @@ using namespace App;
 using namespace CppUtil::Basic;
 using namespace std;
 
-void Layer::InitAfterGenSharePtr() {
+void Layer::Init() {
 	if (model.expired())
 		return;
 
-	model.lock()->AddLayer(CThis());
+	model.lock()->AddLayer(This());
 }
 
-bool Layer::SetModel(Model::CPtr model) const {
+bool Layer::SetModel(CPtr<Model> model) const {
 	static constexpr bool ERROR = false;
 
 	if (!this->model.expired())
 		return ERROR;
 
 	this->model = model;
-	model->AddLayer(CThis());
+	model->AddLayer(This());
 	return true;
 }
 
-int Layer::GetIDof(Unit::CPtr unit) const {
+int Layer::GetIDof(CPtr<Unit> unit) const {
 	static constexpr int ERROR = -1;
 	
 	if (unit == nullptr)
@@ -49,7 +49,7 @@ int Layer::GetID() const {
 	if (model.expired())
 		return ERROR;
 
-	return model.lock()->GetIDof(CThis());
+	return model.lock()->GetIDof(This());
 }
 
 const string Layer::GetFuncName() const {
@@ -64,7 +64,7 @@ const string Layer::GetFuncName() const {
 	return name.str();
 }
 
-bool Layer::AddUnit(Unit::CPtr unit) const {
+bool Layer::AddUnit(CPtr<Unit> unit) const {
 	static auto const & ERROR = false;
 
 	if (unit == nullptr) {
@@ -72,7 +72,7 @@ bool Layer::AddUnit(Unit::CPtr unit) const {
 		return ERROR;
 	}
 
-	if (unit->GetLayer() != nullptr && unit->GetLayer() != CThis()) {
+	if (unit->GetLayer() != nullptr && unit->GetLayer() != This()) {
 		printf("ERROR: unit's layer is not this layer\n");
 		return ERROR;
 	}
@@ -85,7 +85,7 @@ bool Layer::AddUnit(Unit::CPtr unit) const {
 			return ERROR;
 		}
 
-		unit->SetLayer(CThis());
+		unit->SetLayer(This());
 		units.push_back(unit);
 
 		break;

@@ -8,7 +8,7 @@
 
 namespace CppUtil {
 	namespace Basic {
-		class Operation;
+		class Op;
 	}
 	namespace Engine {
 		class Scene;
@@ -35,7 +35,7 @@ private slots:
 	void on_btn_SaveRayTracerImg_clicked();
 	void on_btn_Denoise_clicked();
 
-	void UI_Op(CppUtil::Basic::Ptr<CppUtil::Basic::Operation> op);
+	void UI_Op(CppUtil::Basic::Ptr<CppUtil::Basic::Op> op);
 
 private:
 	void InitSetting();

@@ -58,23 +58,23 @@ RenderLab::RenderLab(QWidget *parent)
 	timer->start(1000 / fps);
 
 	auto root = SObj::Load(ROOT_PATH + "data/SObjs/CB_Glass.xml");
-	scene = ToPtr(new Scene(root));
+	scene = Scene::New(root);
 
 	// viewer
-	viewer = ToPtr(new Viewer(ui.OGLW_Raster, scene));
+	viewer = Viewer::New(ui.OGLW_Raster, scene);
 
 	// raytracer
 	PaintImgOpCreator pioc(ui.OGLW_RayTracer);
 	paintImgOp = pioc.GenScenePaintOp();
 
-	auto generator = [&]()->PathTracer::Ptr{
-		auto pathTracer = ToPtr(new PathTracer);
+	auto generator = [&]()->Ptr<PathTracer>{
+		auto pathTracer = PathTracer::New();
 		pathTracer->maxDepth = maxDepth;
 
 		return pathTracer;
 	};
 
-	rtxRenderer = ToPtr(new RTX_Renderer(generator));
+	rtxRenderer = RTX_Renderer::New(generator);
 	rtxRenderer->maxLoop = maxLoop;
 	
 	// init ui
@@ -96,31 +96,31 @@ void RenderLab::on_btn_RenderStart_clicked(){
 	ui.frame_Setting->setEnabled(false);
 	ui.tbox_Attribute->setEnabled(false);
 
-	OpThread::Ptr drawImgThread = ToPtr(new OpThread);
+	auto drawImgThread = OpThread::New();
 	drawImgThread->UIConnect(this, &RenderLab::UI_Op);
 
-	auto drawImgOp = ToPtr(new LambdaOp([=]() {
+	auto drawImgOp = LambdaOp_New([=]() {
 		paintImgOp->SetOp(1024, 768);
 		auto img = paintImgOp->GetImg();
 
-		OpThread::Ptr controller = ToPtr(new OpThread);
+		auto controller = OpThread::New();
 		controller->UIConnect(this, &RenderLab::UI_Op);
-		auto controllOp = ToPtr(new LambdaOp([=]() {
+		auto controllOp = LambdaOp_New([=]() {
 			while (!drawImgThread->IsStop()) {
-				controller->UI_Op_Run([&, this]() {
+				controller->UI_Op_Run(LambdaOp_New([&, this]() {
 					ui.rtxProgress->setValue(rtxRenderer->ProgressRate() * ui.rtxProgress->maximum());
-				});
+				}));
 				Sleep(100);
 			}
 			rtxRenderer->Stop();
-		}));
+		});
 		controller->SetOp(controllOp);
 		controller->start();
 
 		rtxRenderer->Run(scene, img);
 
 		controller->terminate();
-		drawImgThread->UI_Op_Run([=]() {
+		drawImgThread->UI_Op_Run(LambdaOp_New([=]() {
 			ui.btn_RenderStart->setEnabled(true);
 			ui.btn_RenderStop->setEnabled(false);
 
@@ -129,8 +129,8 @@ void RenderLab::on_btn_RenderStart_clicked(){
 			ui.tbox_Attribute->setEnabled(true);
 			ui.btn_Denoise->setEnabled(true);
 			//ui.rtxProgress->setValue(rtxRenderer->ProgressRate() * ui.rtxProgress->maximum());
-		});
-	}));
+		}));
+	});
 	drawImgThread->SetOp(drawImgOp);
 	GS::Reg("drawImgThread", drawImgThread);
 
@@ -139,7 +139,7 @@ void RenderLab::on_btn_RenderStart_clicked(){
 
 void RenderLab::on_btn_RenderStop_clicked() {
 	ui.btn_RenderStop->setEnabled(false);
-	OpThread::Ptr drawImgThread;
+	Ptr<OpThread> drawImgThread;
 	GS::GetV("drawImgThread", drawImgThread);
 	if (!drawImgThread)
 		return;
@@ -155,7 +155,7 @@ void RenderLab::on_btn_SaveRayTracerImg_clicked() {
 		return;
 	
 	// should not use grabFramebuffer to get the image because of the border
-	Image::Ptr img = ToPtr(new Image(*paintImgOp->GetImg()));
+	auto img = Image::New(*paintImgOp->GetImg());
 	img->SaveAsPNG(fileName.toStdString(), true);
 }
 
@@ -175,21 +175,21 @@ void RenderLab::on_btn_Denoise_clicked() {
 	ui.btn_SaveRayTracerImg->setEnabled(false);
 	ui.btn_Denoise->setEnabled(false);
 
-	auto denoiseThread = ToPtr(new OpThread);
+	auto denoiseThread = OpThread::New();
 	denoiseThread->UIConnect(this, &RenderLab::UI_Op);
-	auto denoiseOp = [=]() {
+	auto denoiseOp = LambdaOp_New([=]() {
 		OptixAIDenoiser::GetInstance().Denoise(paintImgOp->GetImg());
-		denoiseThread->UI_Op(ToPtr(new LambdaOp([&]() {
+		denoiseThread->UI_Op(LambdaOp_New([&]() {
 			ui.btn_RenderStart->setEnabled(true);
 			ui.btn_SaveRayTracerImg->setEnabled(true);
 			ui.btn_Denoise->setEnabled(true);
-		})));
-	};
+		}));
+	});
 	denoiseThread->SetOp(denoiseOp);
 	denoiseThread->start();
 }
 
-void RenderLab::UI_Op(Operation::Ptr op) {
+void RenderLab::UI_Op(Ptr<Op> op) {
 	op->Run();
 }
 

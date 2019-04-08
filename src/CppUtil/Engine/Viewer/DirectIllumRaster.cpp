@@ -47,8 +47,8 @@ void DirectIllumRaster::Draw() {
 	RasterBase::Draw();
 }
 
-void DirectIllumRaster::Init() {
-	RasterBase::Init();
+void DirectIllumRaster::OGL_Init() {
+	RasterBase::OGL_Init();
 
 	InitShaders();
 }

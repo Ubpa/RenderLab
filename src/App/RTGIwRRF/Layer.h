@@ -20,14 +20,25 @@ namespace App {
 		ReLU,
 		tanh)
 
-	class Layer : public CppUtil::Basic::HeapObj {
-		HEAP_OBJ_SETUP(Layer)
+	class Layer : public CppUtil::Basic::HeapObj<Layer> {
 	public:
 		explicit Layer(CppUtil::Basic::CPtr<Model> model = nullptr,
 			const int inputDim = -1,
 			const Connection & connection = Connection::Dense,
 			const Activation & activation = Activation::Identity)
 			: model(model), inputDim(inputDim), connection(connection), activation(activation) { }
+
+	public:
+		static const CppUtil::Basic::Ptr<Layer> New(CppUtil::Basic::CPtr<Model> model = nullptr,
+			const int inputDim = -1,
+			const Connection & connection = Connection::Dense,
+			const Activation & activation = Activation::Identity)
+		{
+			return CppUtil::Basic::New<Layer>(model, inputDim, connection, activation);
+		}
+
+	protected:
+		virtual ~Layer() = default;
 
 	public:
 		const std::vector<CppUtil::Basic::CPtr<Unit>> & GetUnits() const { return units; }
@@ -48,8 +59,8 @@ namespace App {
 		bool AddUnit(CppUtil::Basic::CPtr<Unit> unit) const;
 		const std::string GenFunc(bool genUnits = true) const;
 
-	public:
-		void InitAfterGenSharePtr();
+	private:
+		virtual void Init() override;
 
 	private:
 		mutable CppUtil::Basic::WCPtr<Model> model;

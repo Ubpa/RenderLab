@@ -15,9 +15,9 @@ using namespace CppUtil::Basic;
 Viewer::Viewer(RawAPI_OGLW * pOGLW, Ptr<Scene> scene)
 	: pOGLW(pOGLW), scene(scene), raster(DirectIllumRaster::New(scene)), roamer(Roamer::New(pOGLW)), picker(Picker::New(this)) {
 	pOGLW->SetInitOp(LambdaOp_New([this]() {
-		this->GetRoamer()->Init();
-		this->GetRaster()->Init();
-		this->GetPicker()->Init();
+		this->GetRoamer()->OGL_Init();
+		this->GetRaster()->OGL_Init();
+		this->GetPicker()->OGL_Init();
 	}));
 
 	pOGLW->SetPaintOp(LambdaOp_New([this]() {

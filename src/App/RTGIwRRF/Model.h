@@ -9,12 +9,20 @@
 namespace App {
 	class Layer;
 
-	class Model : public CppUtil::Basic::HeapObj {
-		HEAP_OBJ_SETUP(Model)
+	class Model : public CppUtil::Basic::HeapObj<Model> {
 	public:
 		explicit Model(const std::string & name = "",
 			const int inputDim = -1, const int outputDim = -1)
 			: name(name), inputDim(inputDim), outputDim(outputDim) { }
+
+	public:
+		static const CppUtil::Basic::Ptr<Model> New(const std::string & name = "",
+			const int inputDim = -1, const int outputDim = -1) {
+			return CppUtil::Basic::New<Model>(name, inputDim, outputDim);
+		}
+
+	protected:
+		virtual ~Model() = default;
 
 	public:
 		const std::string GetFuncName() const { return name; }

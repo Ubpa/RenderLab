@@ -76,7 +76,7 @@ void RasterBase::Draw() {
 	scene->GetRoot()->Accept(This());
 }
 
-void RasterBase::Init() {
+void RasterBase::OGL_Init() {
 	glGenBuffers(1, &lightsUBO);
 	glBindBuffer(GL_UNIFORM_BUFFER, lightsUBO);
 	glBufferData(GL_UNIFORM_BUFFER, 400, NULL, GL_DYNAMIC_DRAW);
@@ -85,7 +85,7 @@ void RasterBase::Init() {
 
 	InitVAOs();
 
-	pldmGenerator->Init();
+	pldmGenerator->OGL_Init();
 }
 
 void RasterBase::InitVAOs() {

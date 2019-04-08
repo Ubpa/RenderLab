@@ -10,21 +10,21 @@ using namespace App;
 using namespace CppUtil::Basic;
 using namespace std;
 
-void Unit::InitAfterGenSharePtr() {
+void Unit::Init() {
 	if (layer.expired())
 		return;
 
-	layer.lock()->AddUnit(CThis());
+	layer.lock()->AddUnit(This());
 }
 
-bool Unit::SetLayer(Layer::CPtr layer) const {
+bool Unit::SetLayer(CPtr<Layer> layer) const {
 	static constexpr bool ERROR = false;
 
 	if (!this->layer.expired())
 		return ERROR;
 
 	this->layer = layer;
-	layer->AddUnit(CThis());
+	layer->AddUnit(This());
 	return true;
 }
 
@@ -50,7 +50,7 @@ int Unit::GetID() const {
 		return ERROR;
 	}
 
-	return layer.lock()->GetIDof(CThis());
+	return layer.lock()->GetIDof(This());
 }
 
 const string Unit::GenComputeExpr() const {

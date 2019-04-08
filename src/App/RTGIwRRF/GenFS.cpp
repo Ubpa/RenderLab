@@ -2,7 +2,6 @@
 
 #include "ModelKDTree.h"
 #include "Model.h"
-#include "Layer.h"
 #include "Unit.h"
 
 #include <CppUtil/Basic/File.h>
@@ -106,7 +105,7 @@ const GenFS::Matf GenFS::LoadMatrix(const string & path) {
 	return rst;
 }
 
-const Layer::Ptr GenFS::LoadLayer(const string & path, const Connection & connection, const Activation & activation) {
+const Ptr<Layer> GenFS::LoadLayer(const string & path, const Connection & connection, const Activation & activation) {
 	static auto const & ERROR = ErrorRetVal(LoadLayer);
 
 	auto rst = LoadMatrix(path);
@@ -127,15 +126,15 @@ const Layer::Ptr GenFS::LoadLayer(const string & path, const Connection & connec
 			rstT[row][col] = rst[col][row];
 	}
 
-	auto layer = ToPtr(new Layer(nullptr, static_cast<int>(h) - 1, connection, activation));
+	auto layer = Layer::New(nullptr, static_cast<int>(h) - 1, connection, activation);
 
 	for (auto const & weights : rstT)
-		auto unit = ToPtr(new Unit(layer, weights));
+		auto unit = Unit::New(layer, weights);
 
 	return layer;
 }
 
-const Model::Ptr GenFS::LoadModel(
+const Ptr<Model> GenFS::LoadModel(
 	const int ID,
 	const int secID,
 	const std::string & dir,
@@ -159,7 +158,7 @@ const Model::Ptr GenFS::LoadModel(
 	const string dense1Path = dir + wholeID + "_dense1.csv";
 	const string dense2Path = dir + wholeID + "_dense2.csv";
 
-	auto model = ToPtr(new Model(modelName, inputDim, outputDim));
+	auto model = Model::New(modelName, inputDim, outputDim);
 
 	auto dense0 = LoadLayer(dense0Path, connections[0], activations[0]);
 	if (IsError(dense0))
@@ -179,7 +178,7 @@ const Model::Ptr GenFS::LoadModel(
 	return model;
 }
 
-const ModelKDTree::Ptr GenFS::LoadModelKDTree(
+const Ptr<ModelKDTree> GenFS::LoadModelKDTree(
 	const int id,
 	const string & dir,
 	const vector<Connection> & connections,
@@ -205,7 +204,7 @@ const ModelKDTree::Ptr GenFS::LoadModelKDTree(
 	return LoadModelKDTreeFromJson(id, dir, doc.MemberBegin(), doc.MemberEnd(), connections, activations);
 }
 
-const ModelKDTree::Ptr GenFS::LoadModelKDTreeFromJson(
+const Ptr<ModelKDTree> GenFS::LoadModelKDTreeFromJson(
 	const int id,
 	const string & dir,
 	Value::MemberIterator begin,
@@ -216,8 +215,8 @@ const ModelKDTree::Ptr GenFS::LoadModelKDTreeFromJson(
 	constexpr int inputDim = 17;
 	constexpr int outputDim = 3;
 
-	ModelKDTree::Ptr leftChild = nullptr;
-	ModelKDTree::Ptr rightChild = nullptr;
+	Ptr<ModelKDTree> leftChild = nullptr;
+	Ptr<ModelKDTree> rightChild = nullptr;
 
 	for (auto it = begin; it != end; ++it) {
 		string name = it->name.GetString();
@@ -238,7 +237,7 @@ const ModelKDTree::Ptr GenFS::LoadModelKDTreeFromJson(
 	int axis = -1;
 	float spiltVal = 0;
 	int nodeID = -1;
-	Model::Ptr model = nullptr;
+	Ptr<Model> model = nullptr;
 	for (auto it = begin; it != end; ++it) {
 		string name = it->name.GetString();
 		if (name == KEY::_names()[KEY::spiltAxis])
@@ -255,7 +254,7 @@ const ModelKDTree::Ptr GenFS::LoadModelKDTreeFromJson(
 			continue;
 	}
 
-	auto modelKDTree = ToPtr(new ModelKDTree(nodeID, nullptr, inputDim, outputDim, axis, spiltVal, model));
+	auto modelKDTree = ModelKDTree::New(nodeID, nullptr, inputDim, outputDim, axis, spiltVal, model);
 
 	modelKDTree->SetLeft(leftChild);
 	modelKDTree->SetRight(rightChild);

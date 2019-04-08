@@ -19,7 +19,7 @@ namespace CppUtil {
 
 		public:
 			void Draw();
-			void Init();
+			void OGL_Init();
 
 		protected:
 			virtual void Visit(Basic::Ptr<BSDF_Diffuse> bsdf);

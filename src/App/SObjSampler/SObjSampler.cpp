@@ -81,7 +81,7 @@ SObjSampler::SObjSampler(const ArgMap & argMap, QWidget *parent,Qt::WindowFlags 
 	Init();
 }
 
-void SObjSampler::UI_Op(Operation::Ptr op) {
+void SObjSampler::UI_Op(Ptr<Op> op) {
 	op->Run();
 }
 
@@ -98,32 +98,32 @@ void SObjSampler::InitScene() {
 	string prefix = isNotFromRootPath ? "" : ROOT_PATH;
 
 	auto root = SObj::Load(prefix + path);
-	scene = ToPtr(new Scene(root, "scene"));
+	scene = Scene::New(root, "scene");
 }
 
 void SObjSampler::InitRaster() {
 	initDataMap = false;
 
-	sampleRaster = ToPtr(new SampleRaster(scene));
-	roamer = ToPtr(new Roamer(ui.OGLW_Raster));
+	sampleRaster = SampleRaster::New(scene);
+	roamer = Roamer::New(ui.OGLW_Raster);
 	roamer->SetLock(true);
 	auto camera = scene->GetCmptCamera();
 	auto transform = camera->GetSObj()->GetComponent<CmptTransform>();
 	auto eulerAngle = transform->GetRotationEuler();
 	roamer->GetCamera()->SetPose(transform->GetPosition(), - eulerAngle.y - 90, eulerAngle.x);
 
-	ui.OGLW_Raster->SetInitOp(ToPtr(new LambdaOp([=]() {
-		roamer->Init();
-		sampleRaster->Init();
-	})));
+	ui.OGLW_Raster->SetInitOp(LambdaOp_New([=]() {
+		roamer->OGL_Init();
+		sampleRaster->OGL_Init();
+	}));
 
-	auto paintOp = ToPtr(new OpQueue);
+	auto paintOp = OpQueue::New();
 
-	paintOp->Push(ToPtr(new LambdaOp([=]() {
+	paintOp->Push(LambdaOp_New([=]() {
 		sampleRaster->Draw();
-	})));
+	}));
 
-	paintOp->Push(ToPtr(new LambdaOp([=]() {
+	paintOp->Push(LambdaOp_New([=]() {
 		dataMap[ENUM_TYPE::DirectIllum] = sampleRaster->GetData(SampleRaster::ENUM_TYPE::DirectIllum);
 		dataMap[ENUM_TYPE::POSITION] = sampleRaster->GetData(SampleRaster::ENUM_TYPE::POSITION);
 		dataMap[ENUM_TYPE::VIEW_DIR] = sampleRaster->GetData(SampleRaster::ENUM_TYPE::VIEW_DIR);
@@ -131,15 +131,15 @@ void SObjSampler::InitRaster() {
 		dataMap[ENUM_TYPE::MAT_COLOR] = sampleRaster->GetData(SampleRaster::ENUM_TYPE::MAT_COLOR);
 		dataMap[ENUM_TYPE::IOR_ROUGHNESS_ID] = sampleRaster->GetData(SampleRaster::ENUM_TYPE::IOR_ROUGHNESS_ID);
 		initDataMap = true;
-	}, false)));
+	}, false));
 
 	ui.OGLW_Raster->SetPaintOp(paintOp);
 }
 
 void SObjSampler::InitRTX() {
 	int maxDepth = GetArgAs<int>(ENUM_ARG::maxdepth);
-	auto generator = [=]()->RayTracer::Ptr {
-		auto pathTracer = ToPtr(new PathTracer);
+	auto generator = [=]()->Ptr<PathTracer> {
+		auto pathTracer = PathTracer::New();
 		pathTracer->maxDepth = maxDepth;
 
 		return pathTracer;
@@ -150,9 +150,9 @@ void SObjSampler::InitRTX() {
 	paintImgOp->SetOp(512, 512);
 	int maxLoop = GetArgAs<int>(ENUM_ARG::maxloop);
 	int sampleNum = GetArgAs<int>(ENUM_ARG::samplenum);
-	rtxSampler = ToPtr(new RTX_Sampler(generator, maxLoop, sampleNum));
+	rtxSampler = RTX_Sampler::New(generator, maxLoop, sampleNum);
 
-	drawImgThread = ToPtr(new OpThread([&]() {
+	drawImgThread = OpThread::New(LambdaOp_New([&]() {
 		rtxSampler->Run(scene, paintImgOp->GetImg());
 		Sleep(100);
 
@@ -303,7 +303,7 @@ void SObjSampler::SaveData() {
 	csv.Save(prefix + path);
 	File idMapFile(prefix + path + "_ID_name.txt", File::WRITE);
 	for (auto & pair : ID2name)
-		idMapFile.Printf("%d : %s\n", pair.first, pair.second);
+		idMapFile.Printf("%d : %s\n", pair.first, pair.second.c_str());
 	idMapFile.Close();
 
 	printf("Save data complete\n");

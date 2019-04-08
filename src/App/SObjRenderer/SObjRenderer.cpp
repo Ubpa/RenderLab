@@ -72,7 +72,7 @@ SObjRenderer::SObjRenderer(const ArgMap & argMap, QWidget *parent, Qt::WindowFla
 	Init();
 }
 
-void SObjRenderer::UI_Op(Operation::Ptr op) {
+void SObjRenderer::UI_Op(Ptr<Op> op) {
 	op->Run();
 }
 
@@ -89,18 +89,18 @@ void SObjRenderer::InitScene() {
 	string prefix = isNotFromRootPath ? "" : ROOT_PATH;
 
 	auto root = SObj::Load(prefix + path);
-	scene = ToPtr(new Scene(root, "scene"));
+	scene = Scene::New(root, "scene");
 }
 
 void SObjRenderer::InitRaster() {
-	viewer = ToPtr(new Viewer(ui.OGLW_Raster, scene));
+	viewer = Viewer::New(ui.OGLW_Raster, scene);
 	viewer->SetLock(true);
 }
 
 void SObjRenderer::InitRTX() {
 	int maxDepth = GetArgAs<int>(ENUM_ARG::maxdepth);
-	auto generator = [=]()->RayTracer::Ptr{
-		auto pathTracer = ToPtr(new PathTracer);
+	auto generator = [=]()->Ptr<PathTracer>{
+		auto pathTracer = PathTracer::New();
 		pathTracer->maxDepth = maxDepth;
 
 		return pathTracer;
@@ -110,10 +110,10 @@ void SObjRenderer::InitRTX() {
 	paintImgOp = pioc.GenScenePaintOp();
 	paintImgOp->SetOp(512, 512);
 	auto img = paintImgOp->GetImg();
-	rtxRenderer = ToPtr(new RTX_Renderer(generator));
+	rtxRenderer = RTX_Renderer::New(generator);
 	rtxRenderer->maxLoop = GetArgAs<int>(ENUM_ARG::samplenum);
 
-	drawImgThread = ToPtr(new OpThread([=]() {
+	drawImgThread = OpThread::New(LambdaOp_New([=]() {
 		rtxRenderer->Run(scene, img);
 		if (!GetArgAs<bool>(ENUM_ARG::notdenoise))
 			OptixAIDenoiser::GetInstance().Denoise(img);

@@ -24,6 +24,13 @@ namespace CppUtil {
 		public:
 			PathTracer();
 
+		public:
+			static const Basic::Ptr<PathTracer> New() { return Basic::New<PathTracer>(); }
+
+		protected:
+			virtual ~PathTracer() = default;
+
+		public:
 			virtual const RGBf Trace(Ray & ray) { return Trace(ray, 0, RGBf(1.f)); }
 
 			virtual void Init(Basic::Ptr<Scene> scene);

@@ -13,7 +13,7 @@
 
 namespace CppUtil {
 	namespace Basic {
-		class Operation;
+		class Op;
 	}
 
 	namespace Engine {
@@ -70,7 +70,7 @@ namespace App{
 	public:
 		CppUtil::Basic::Ptr<CppUtil::Engine::Scene> GetScene()const { return scene; }
 
-		void UI_Op(CppUtil::Basic::Ptr<CppUtil::Basic::Operation> op);
+		void UI_Op(CppUtil::Basic::Ptr<CppUtil::Basic::Op> op);
 
 	private:
 		void Init();
@@ -87,7 +87,7 @@ namespace App{
 		CppUtil::Basic::Ptr<CppUtil::Engine::Scene> scene;
 		CppUtil::Basic::Ptr<RTX_Sampler> rtxSampler;
 		CppUtil::Basic::Ptr<CppUtil::QT::OpThread> drawImgThread;
-		CppUtil::Basic::Ptr<App::SampleRaster> sampleRaster;
+		CppUtil::Basic::Ptr<SampleRaster> sampleRaster;
 		CppUtil::Basic::Ptr<CppUtil::Engine::Roamer> roamer;
 		QTimer * timer;
 

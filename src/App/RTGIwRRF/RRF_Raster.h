@@ -15,13 +15,21 @@ namespace App {
 		GLOBAL)
 
 	class RRF_Raster : public CppUtil::Engine::RasterBase {
-		ELEVISITOR_SETUP(RRF_Raster)
 	public:
 		RRF_Raster(CppUtil::Basic::Ptr<CppUtil::Engine::Scene> scene)
 			: RasterBase(scene) { }
+		
+	public:
+		static const CppUtil::Basic::Ptr<RRF_Raster> New(CppUtil::Basic::Ptr<CppUtil::Engine::Scene> scene) {
+			return CppUtil::Basic::New<RRF_Raster>(scene);
+		}
 
+	protected:
+		virtual ~RRF_Raster() = default;
+
+	public:
 		void Draw();
-		void Init();
+		void OGL_Init();
 
 	protected:
 		virtual void Visit(CppUtil::Basic::Ptr<CppUtil::Engine::SObj> sobj);

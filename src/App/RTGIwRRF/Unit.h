@@ -11,12 +11,20 @@
 namespace App {
 	class Layer;
 
-	class Unit : public CppUtil::Basic::HeapObj {
-		HEAP_OBJ_SETUP(Unit)
+	class Unit : public CppUtil::Basic::HeapObj<Unit> {
 	public:
 		explicit Unit(CppUtil::Basic::CPtr<Layer> layer = nullptr,
 			const std::vector<float> & weights = std::vector<float>())
 			: layer(layer), weights(weights) { }
+
+	public:
+		static const CppUtil::Basic::Ptr<Unit> New(CppUtil::Basic::CPtr<Layer> layer = nullptr,
+			const std::vector<float> & weights = std::vector<float>()) {
+			return CppUtil::Basic::New<Unit>(layer, weights);
+		}
+
+	protected:
+		virtual ~Unit() = default;
 
 	public:
 		int GetInputDim() const { return static_cast<int>(weights.size()) - 1; }
@@ -30,8 +38,8 @@ namespace App {
 	public:
 		const std::string GenComputeExpr() const;
 
-	public:
-		void InitAfterGenSharePtr();
+	private:
+		virtual void Init() override;
 
 	private:
 		mutable CppUtil::Basic::WCPtr<Layer> layer;

@@ -10,7 +10,7 @@ using namespace App;
 using namespace CppUtil::Basic;
 using namespace std;
 
-int Model::GetIDof(Layer::CPtr layer) const {
+int Model::GetIDof(CPtr<Layer> layer) const {
 	static constexpr int ERROR = -1;
 
 	if (layer == nullptr) {
@@ -18,7 +18,7 @@ int Model::GetIDof(Layer::CPtr layer) const {
 		return ERROR;
 	}
 
-	if (layer->GetModel() != CThis()) {
+	if (layer->GetModel() != This()) {
 		printf("ERROR: layer's model is not this model\n");
 		return ERROR;
 	}
@@ -31,7 +31,7 @@ int Model::GetIDof(Layer::CPtr layer) const {
 	return ERROR;
 }
 
-bool Model::AddLayer(Layer::CPtr layer) const {
+bool Model::AddLayer(CPtr<Layer> layer) const {
 	static constexpr bool ERROR = false;
 
 	if (layer == nullptr) {
@@ -39,7 +39,7 @@ bool Model::AddLayer(Layer::CPtr layer) const {
 		return ERROR;
 	}
 
-	if (layer->GetModel() != nullptr && layer->GetModel() != CThis()) {
+	if (layer->GetModel() != nullptr && layer->GetModel() != This()) {
 		printf("ERROR: layer's model is not this model.\n");
 		return ERROR;
 	}
@@ -55,7 +55,7 @@ bool Model::AddLayer(Layer::CPtr layer) const {
 	}
 
 	layers.push_back(layer);
-	layer->SetModel(CThis());
+	layer->SetModel(This());
 
 	return true;
 }

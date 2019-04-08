@@ -27,7 +27,7 @@ using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
 using namespace std;
 
-RTX_Sampler::RTX_Sampler(const function<RayTracer::Ptr()> & generator, int maxLoop, int sampleNum)
+RTX_Sampler::RTX_Sampler(const function<Ptr<RayTracerBase>()> & generator, int maxLoop, int sampleNum)
 	:
 	generator(generator),
 	threadNum(THREAD_NUM),
@@ -40,7 +40,7 @@ RTX_Sampler::RTX_Sampler(const function<RayTracer::Ptr()> & generator, int maxLo
 	}
 }
 
-void RTX_Sampler::Run(Scene::Ptr scene, Image::Ptr img) {
+void RTX_Sampler::Run(Ptr<Scene> scene, Ptr<Image> img) {
 	const float lightNum = static_cast<float>(scene->GetCmptLights().size());
 
 	jobs.clear();

@@ -5,14 +5,17 @@
 
 namespace Ui {
 	class Setting : public Grid {
-		HEAP_OBJ_SETUP(Setting)
 	public:
-		static Setting::Ptr GetInstance() {
-			static auto instance = ToPtr(new Setting);
+		using Grid::Grid;
+
+	protected:
+		virtual ~Setting() = default;
+
+	public:
+		static CppUtil::Basic::Ptr<Setting> GetInstance() {
+			static auto instance = CppUtil::Basic::New<Setting>();
 			return instance;
 		}
-	private:
-		Setting() = default;
 	};
 }
 

@@ -21,7 +21,7 @@ Roamer::Roamer(RawAPI_OGLW * pOGLW)
 	: pOGLW(pOGLW), camera(new Camera(Point3(0,0.75,2.3))), lock(false) {
 }
 
-void Roamer::Init() {
+void Roamer::OGL_Init() {
 	glGenBuffers(1, &cameraUBO);
 	glBindBuffer(GL_UNIFORM_BUFFER, cameraUBO);
 	glBufferData(GL_UNIFORM_BUFFER, 160, NULL, GL_DYNAMIC_DRAW);

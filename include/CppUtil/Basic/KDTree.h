@@ -6,34 +6,33 @@
 namespace CppUtil {
 	namespace Basic {
 		template <typename NodeT, typename DataT>
-		class KDTree : public Basic::HeapObj {
-			HEAP_OBJ_SETUP(KDTree)
+		class KDTree : public HeapObj<NodeT> {
 		public:
-			KDTree(Basic::Ptr<NodeT> parent, int axis, float spiltVal, const DataT & data)
+			KDTree(Ptr<NodeT> parent, int axis, float spiltVal, const DataT & data)
 				: parent(parent), axis(axis), spiltVal(spiltVal), data(data) { }
 
 		public:
 			int GetAxis() const { return axis; }
 			float GetSpiltVal() const { return spiltVal; }
 			const DataT & GetData() const { return data; }
-			const Basic::Ptr<NodeT> GetParent() const { return parent.lock(); }
-			const Basic::Ptr<NodeT> GetLeft() const { return left; }
-			const Basic::Ptr<NodeT> GetRight() const { return right; }
+			const Ptr<NodeT> GetParent() const { return parent.lock(); }
+			const Ptr<NodeT> GetLeft() const { return left; }
+			const Ptr<NodeT> GetRight() const { return right; }
 			bool IsLeaf() const { return left == nullptr && right == nullptr; }
 			bool HasTwoChild() const { return left != nullptr && right != nullptr; }
 			bool HasSingleChild() const { return (left == nullptr && right != nullptr) || (left != nullptr && right == nullptr); }
 
 		public:
-			bool SetParent(const Basic::Ptr<NodeT> parent);
-			bool SetLeft(const Basic::Ptr<NodeT> child);
-			bool SetRight(const Basic::Ptr<NodeT> child);
+			bool SetParent(const Ptr<NodeT> parent);
+			bool SetLeft(const Ptr<NodeT> child);
+			bool SetRight(const Ptr<NodeT> child);
 
 		public:
-			Basic::Ptr<NodeT> left;
-			Basic::Ptr<NodeT> right;
+			Ptr<NodeT> left;
+			Ptr<NodeT> right;
 
 		private:
-			Basic::WPtr<NodeT> parent;
+			WPtr<NodeT> parent;
 
 			int axis;
 			float spiltVal;
@@ -41,7 +40,7 @@ namespace CppUtil {
 		};
 
 		template <typename NodeT, typename DataT>
-		bool KDTree<NodeT, DataT>::SetParent(const Basic::Ptr<NodeT> parent) {
+		bool KDTree<NodeT, DataT>::SetParent(const Ptr<NodeT> parent) {
 			if (!this->parent.expired())
 				return false;
 
@@ -50,8 +49,8 @@ namespace CppUtil {
 		}
 
 		template <typename NodeT, typename DataT>
-		bool KDTree<NodeT, DataT>::SetLeft(const Basic::Ptr<NodeT> child) {
-			if (child != nullptr && !child->SetParent(Basic::Ptr<NodeT>::Cast(This())))
+		bool KDTree<NodeT, DataT>::SetLeft(const Ptr<NodeT> child) {
+			if (child != nullptr && !child->SetParent(This()))
 				return false;
 
 			left = child;
@@ -59,8 +58,8 @@ namespace CppUtil {
 		}
 
 		template <typename NodeT, typename DataT>
-		bool KDTree<NodeT, DataT>::SetRight(const Basic::Ptr<NodeT> child) {
-			if (child != nullptr && !child->SetParent(Basic::Ptr<NodeT>::Cast(This())))
+		bool KDTree<NodeT, DataT>::SetRight(const Ptr<NodeT> child) {
+			if (child != nullptr && !child->SetParent(This()))
 				return false;
 
 			right = child;

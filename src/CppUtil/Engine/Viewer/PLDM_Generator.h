@@ -37,7 +37,7 @@ namespace CppUtil {
 			virtual ~PLDM_Generator() = default;
 			
 		public:
-			void Init();
+			void OGL_Init();
 			const OpenGL::Texture GetDepthCubeMap(Basic::CPtr<CmptLight> light) const;
 			float GetLightFar() const { return lightFar; }
 

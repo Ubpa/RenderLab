@@ -22,8 +22,8 @@ namespace CppUtil {
 		};
 
 		template<typename LambdaExpr>
-		const Ptr<LambdaOp<LambdaExpr>> LambdaOp_New(const LambdaExpr & op) {
-			return CppUtil::Basic::New<LambdaOp<LambdaExpr>>(op);
+		const Ptr<LambdaOp<LambdaExpr>> LambdaOp_New(const LambdaExpr & op, bool isHold = true) {
+			return CppUtil::Basic::New<LambdaOp<LambdaExpr>>(op, isHold);
 		}
 	}
 }

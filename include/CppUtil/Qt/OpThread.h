@@ -15,6 +15,16 @@ namespace CppUtil {
 			Q_OBJECT
 		public:
 			OpThread(Basic::Ptr<Basic::Op> op = nullptr);
+			
+		public:
+			static const Basic::Ptr<OpThread> New(Basic::Ptr<Basic::Op> op = nullptr) {
+				return Basic::New<OpThread>(op);
+			}
+
+		protected:
+			virtual ~OpThread() = default;
+
+		public:
 			void SetOp(Basic::Ptr<Basic::Op> op) { this->op = op; }
 			void Stop() { isStop = true; }
 			bool IsStop() const { return isStop; }
@@ -28,7 +38,6 @@ namespace CppUtil {
 				connect(this, &OpThread::UI_Op, obj, f);
 			}
 			void UI_Op_Run(Basic::Ptr<Basic::Op> op);
-			void UI_Op_Run(std::function<void()> op);
 
 		protected:
 			virtual void run();

@@ -19,8 +19,8 @@ using namespace CppUtil::Basic;
 using namespace Define;
 using namespace std;
 
-void SampleRaster::Init() {
-	RasterBase::Init();
+void SampleRaster::OGL_Init() {
+	RasterBase::OGL_Init();
 
 	scene->GenID();
 
@@ -76,13 +76,13 @@ void SampleRaster::Draw() {
 	screen.Draw(shader_screen);
 }
 
-void SampleRaster::Visit(SObj::Ptr sobj) {
+void SampleRaster::Visit(Ptr<SObj> sobj) {
 	shader_sampleFrostedGlass.SetInt("ID", scene->GetID(sobj));
 
 	RasterBase::Visit(sobj);
 }
 
-void SampleRaster::Visit(BSDF_FrostedGlass::Ptr bsdf) {
+void SampleRaster::Visit(Ptr<BSDF_FrostedGlass> bsdf) {
 	SetCurShader(shader_sampleFrostedGlass);
 
 	string strBSDF = "bsdf.";
@@ -90,7 +90,7 @@ void SampleRaster::Visit(BSDF_FrostedGlass::Ptr bsdf) {
 	shader_sampleFrostedGlass.SetFloat(strBSDF + "roughnessFactor", bsdf->roughnessFactor);
 
 	const int texNum = 4;
-	Image::CPtr imgs[texNum] = { bsdf->colorTexture, bsdf->roughnessTexture, bsdf->aoTexture, bsdf->normalTexture };
+	CPtr<Image> imgs[texNum] = { bsdf->colorTexture, bsdf->roughnessTexture, bsdf->aoTexture, bsdf->normalTexture };
 	string names[texNum] = { "Color", "Roughness", "AO", "Normal" };
 
 	for (int i = 0; i < texNum; i++) {

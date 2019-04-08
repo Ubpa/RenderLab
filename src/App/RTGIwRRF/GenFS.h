@@ -7,7 +7,10 @@
 
 #include <3rdParty/enum.h>
 
+#include <vector>
+
 namespace App {
+	class Layer;
 	class Model;
 	class ModelKDTree;
 
@@ -34,7 +37,7 @@ namespace App {
 
 		static const Matf LoadMatrix(const std::string & path);
 
-		static const Layer::Ptr LoadLayer(const std::string & path, const Connection & connection, const Activation & activation);
+		static const CppUtil::Basic::Ptr<Layer> LoadLayer(const std::string & path, const Connection & connection, const Activation & activation);
 
 		static const CppUtil::Basic::Ptr<Model> LoadModel(
 			const int ID,

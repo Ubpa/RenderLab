@@ -11,7 +11,7 @@
 
 namespace CppUtil {
 	namespace Basic {
-		class Operation;
+		class Op;
 	}
 
 	namespace Engine {
@@ -55,7 +55,7 @@ public:
 public:
 	CppUtil::Basic::Ptr<CppUtil::Engine::Scene> GetScene()const { return scene; }
 
-	void UI_Op(CppUtil::Basic::Ptr<CppUtil::Basic::Operation> op);
+	void UI_Op(CppUtil::Basic::Ptr<CppUtil::Basic::Op> op);
 
 private:
 	void Init();
