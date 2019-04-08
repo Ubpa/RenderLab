@@ -10,8 +10,11 @@
 
 namespace CppUtil {
 	namespace Engine {
-		class BSDF : public Material {
-			ELE_SETUP(BSDF)
+		class BSDFBase : public MaterialBase {
+		protected:
+			BSDFBase() = default;
+			virtual ~BSDFBase() = default;
+
 		public:
 			virtual const RGBf F(const Normalf & wo, const Normalf & wi, const Point2 & texcoord) = 0;
 
@@ -36,6 +39,13 @@ namespace CppUtil {
 
 		protected:
 			static const Normalf TangentSpaceNormalToWorld(const Normalf & worldTangent, const Normalf & worldNormal, const Normalf & tangentSpaceNormal);
+		};
+
+		template<typename ImplT, typename BaseT = BSDFBase>
+		class BSDF : public Material<ImplT, BaseT> {
+		protected:
+			BSDF() = default;
+			virtual ~BSDF() = default;
 		};
 	}
 }

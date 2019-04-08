@@ -11,23 +11,31 @@ namespace CppUtil {
 	namespace Engine {
 
 		// Disney
-		class BSDF_MetalWorkflow : public BSDF {
-			ELE_SETUP(BSDF_MetalWorkflow)
+		class BSDF_MetalWorkflow : public BSDF<BSDF_MetalWorkflow> {
 		public:
 			BSDF_MetalWorkflow(const RGBf & colorFactor = RGBf(1.f), float roughnessFactor = 1.f, float metallicFactor = 1.f)
 				: colorFactor(colorFactor), roughnessFactor(roughnessFactor), metallicFactor(metallicFactor),
 				albedoTexture(nullptr), metallicTexture(nullptr), aoTexture(nullptr) { }
 
-			virtual const RGBf F(const Normalf & wo, const Normalf & wi, const Point2 & texcoord);
+		public:
+			static const Basic::Ptr<BSDF_MetalWorkflow> New(const RGBf & colorFactor = RGBf(1.f), float roughnessFactor = 1.f, float metallicFactor = 1.f) {
+				return Basic::New<BSDF_MetalWorkflow>(colorFactor, roughnessFactor, metallicFactor);
+			}
+
+		protected:
+			virtual ~BSDF_MetalWorkflow() = default;
+
+		public:
+			virtual const RGBf F(const Normalf & wo, const Normalf & wi, const Point2 & texcoord) override;
 
 			// probability density function
-			virtual float PDF(const Normalf & wo, const Normalf & wi, const Point2 & texcoord);
+			virtual float PDF(const Normalf & wo, const Normalf & wi, const Point2 & texcoord) override;
 
 			// PD is probability density
 			// return albedo
-			virtual const RGBf Sample_f(const Normalf & wo, const Point2 & texcoord, Normalf & wi, float & PD);
+			virtual const RGBf Sample_f(const Normalf & wo, const Point2 & texcoord, Normalf & wi, float & PD) override;
 
-			virtual void ChangeNormal(const Point2 & texcoord, const Normalf & tangent, Normalf & normal) const;
+			virtual void ChangeNormal(const Point2 & texcoord, const Normalf & tangent, Normalf & normal) const override;
 
 		public:
 			Basic::CPtr<Basic::Image> GetAlbedoTexture() const { return albedoTexture; }

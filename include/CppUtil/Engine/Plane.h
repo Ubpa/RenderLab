@@ -6,8 +6,14 @@
 
 namespace CppUtil {
 	namespace Engine {
-		class Plane : public Primitive {
-			ELE_SETUP(Plane)
+		class Plane final : public Primitive<Plane> {
+		public:
+			Plane() = default;
+		public:
+			static const Basic::Ptr<Plane> New() { return Basic::New<Plane>(); }
+
+		protected:
+			virtual ~Plane() = default;
 
 		public:
 			// primitive 局部坐标系内的 bbox

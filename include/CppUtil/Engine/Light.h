@@ -10,10 +10,12 @@
 
 namespace CppUtil {
 	namespace Engine {
-		class Light : public Basic::Element {
-			ELE_SETUP(Light)
-		public:
+		class LightBase : public Basic::ElementBase {
+		protected:
+			LightBase() = default;
+			virtual ~LightBase() = default;
 
+		public:
 			// 采样 L 函数
 			// !!! p，wi 处于灯的坐标空间中
 			// @arg0  in，以 p 点来计算 distToLight 和 PD
@@ -36,8 +38,15 @@ namespace CppUtil {
 			// 概率密度函数
 			// !!! p，wi 处于灯的坐标空间中
 			virtual float PDF(const Point3 & p, const Normalf & wi) const = 0;
-			
+
 			virtual bool IsDelta() const = 0;
+		};
+
+		template<typename ImplT, typename BaseT = LightBase>
+		class Light : public Basic::Element<ImplT, BaseT> {
+		protected:
+			Light() = default;
+			virtual ~Light() = default;
 		};
 	}
 }

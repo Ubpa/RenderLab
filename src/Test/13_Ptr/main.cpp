@@ -27,6 +27,7 @@ public:
 
 protected:
 	virtual void Init() override {
+		cout << "Init Node" << endl;
 		if (!parent.expired())
 			parent.lock()->children.push_back(This());
 	}
@@ -56,6 +57,12 @@ public:
 		cout << name << endl;
 		for (const auto child : GetChildren())
 			child->Print(depth + 1);
+	}
+
+protected:
+	virtual void Init() override {
+		cout << "Init SObj " << name << ", ";
+		Node<SObj>::Init();
 	}
 
 private:

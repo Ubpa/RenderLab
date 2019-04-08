@@ -9,8 +9,7 @@ namespace CppUtil {
 	}
 
 	namespace Engine {
-		class BSDF_FrostedGlass : public Engine::BSDF {
-			ELE_SETUP(BSDF_FrostedGlass)
+		class BSDF_FrostedGlass : public BSDF<BSDF_FrostedGlass> {
 		public:
 			BSDF_FrostedGlass(const RGBf & colorFactor = RGBf(1.f), float roughnessFactor = 1.f, float ior = 1.5f)
 				: colorFactor(colorFactor), roughnessFactor(roughnessFactor), ior(ior),
@@ -19,16 +18,25 @@ namespace CppUtil {
 				aoTexture(nullptr),
 				normalTexture(nullptr) { }
 
-			virtual const RGBf F(const Normalf & wo, const Normalf & wi, const Point2 & texcoord);
+		public:
+			static const Basic::Ptr<BSDF_FrostedGlass> New(const RGBf & colorFactor = RGBf(1.f), float roughnessFactor = 1.f, float ior = 1.5f) {
+				return Basic::New<BSDF_FrostedGlass>(colorFactor, roughnessFactor, ior);
+			}
+
+		protected:
+			virtual ~BSDF_FrostedGlass() = default;
+
+		public:
+			virtual const RGBf F(const Normalf & wo, const Normalf & wi, const Point2 & texcoord) override;
 
 			// probability density function
-			virtual float PDF(const Normalf & wo, const Normalf & wi, const Point2 & texcoord);
+			virtual float PDF(const Normalf & wo, const Normalf & wi, const Point2 & texcoord) override;
 
 			// PD is probability density
 			// return albedo
-			virtual const RGBf Sample_f(const Normalf & wo, const Point2 & texcoord, Normalf & wi, float & PD);
+			virtual const RGBf Sample_f(const Normalf & wo, const Point2 & texcoord, Normalf & wi, float & PD) override;
 
-			virtual void ChangeNormal(const Point2 & texcoord, const Normalf & tangent, Normalf & normal) const;
+			virtual void ChangeNormal(const Point2 & texcoord, const Normalf & tangent, Normalf & normal) const override;
 
 		private:
 			static float GGX_D(const Normalf & h, float alpha);

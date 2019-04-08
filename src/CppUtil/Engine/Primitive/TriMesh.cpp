@@ -35,7 +35,7 @@ TriMesh::TriMesh(const vector<uint> & indice,
 	// traingel 的 mesh 在 init 的时候设置
 	// 因为现在还没有生成 share_ptr
 	for (uint i = 0; i < indice.size(); i += 3)
-		triangles.push_back(ToPtr(new Triangle(indice[i], indice[i+1], indice[i+2])));
+		triangles.push_back(Triangle::New(indice[i], indice[i+1], indice[i+2]));
 
 	GenTangents();
 }
@@ -67,15 +67,16 @@ TriMesh::TriMesh(uint triNum, uint vertexNum,
 		this->indice.push_back(indice[3 * i + 1]);
 		this->indice.push_back(indice[3 * i + 2]);
 
-		triangles.push_back(ToPtr(new Triangle(indice[3 * i], indice[3 * i + 1], indice[3 * i + 2])));
+		triangles.push_back(Triangle::New(indice[3 * i], indice[3 * i + 1], indice[3 * i + 2]));
 	}
 
 	GenTangents();
 }
 
-void TriMesh::InitAfterGenSharePtr() {
+void TriMesh::Init() {
+	auto triMesh = This();
 	for (auto triangle : triangles)
-		triangle->mesh = This();
+		triangle->mesh = triMesh;
 }
 
 void TriMesh::GenTangents() {
@@ -85,7 +86,7 @@ void TriMesh::GenTangents() {
 	Normalf *tan1 = new Normalf[vertexCount * 2]();
 	Normalf *tan2 = tan1 + vertexCount;
 
-	for (int a = 0; a < triangleCount; a++)
+	for (size_t a = 0; a < triangleCount; a++)
 	{
 		uint i1 = indice[3 * a];
 		uint i2 = indice[3 * a + 1];
@@ -127,7 +128,7 @@ void TriMesh::GenTangents() {
 	}
 
 	tangents.resize(vertexCount);
-	for (int a = 0; a < vertexCount; a++)
+	for (size_t a = 0; a < vertexCount; a++)
 	{
 		const Normalf & n = normals[a];
 		const Normalf & t = tan1[a];
@@ -142,23 +143,23 @@ void TriMesh::GenTangents() {
 	delete[] tan1;
 }
 
-TriMesh::Ptr TriMesh::GenCube() {
+Ptr<TriMesh> TriMesh::GenCube() {
 	Cube cube;
-	auto cubeMesh = ToPtr(new TriMesh(cube.GetTriNum(), cube.GetVertexNum(),
-		cube.GetIndexArr(), cube.GetPosArr(), cube.GetNormalArr(), cube.GetTexCoordsArr(), ENUM_TYPE::CUBE));
+	auto cubeMesh = TriMesh::New(cube.GetTriNum(), cube.GetVertexNum(),
+		cube.GetIndexArr(), cube.GetPosArr(), cube.GetNormalArr(), cube.GetTexCoordsArr(), ENUM_TYPE::CUBE);
 	return cubeMesh;
 }
 
-TriMesh::Ptr TriMesh::GenSphere() {
+Ptr<TriMesh> TriMesh::GenSphere() {
 	Sphere sphere(50);
-	auto sphereMesh = ToPtr(new TriMesh(sphere.GetTriNum(), sphere.GetVertexNum(),
-		sphere.GetIndexArr(), sphere.GetPosArr(), sphere.GetNormalArr(), sphere.GetTexCoordsArr(), ENUM_TYPE::SPHERE));
+	auto sphereMesh = TriMesh::New(sphere.GetTriNum(), sphere.GetVertexNum(),
+		sphere.GetIndexArr(), sphere.GetPosArr(), sphere.GetNormalArr(), sphere.GetTexCoordsArr(), ENUM_TYPE::SPHERE);
 	return sphereMesh;
 }
 
-TriMesh::Ptr TriMesh::GenPlane() {
+Ptr<TriMesh> TriMesh::GenPlane() {
 	Plane plane;
-	auto planeMesh = ToPtr(new TriMesh(plane.GetTriNum(), plane.GetVertexNum(),
-		plane.GetIndexArr(), plane.GetPosArr(), plane.GetNormalArr(), plane.GetTexCoordsArr(), ENUM_TYPE::PLANE));
+	auto planeMesh = TriMesh::New(plane.GetTriNum(), plane.GetVertexNum(),
+		plane.GetIndexArr(), plane.GetPosArr(), plane.GetNormalArr(), plane.GetTexCoordsArr(), ENUM_TYPE::PLANE);
 	return planeMesh;
 }

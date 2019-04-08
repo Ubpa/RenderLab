@@ -15,8 +15,8 @@ namespace CppUtil {
 			virtual ~ElementBase() = default;
 		};
 
-		template<typename ImplT>
-		class Element : public HeapObj<ImplT, ElementBase> {
+		template<typename ImplT, typename BaseT = ElementBase>
+		class Element : public HeapObj<ImplT, BaseT> {
 		protected:
 			Element() = default;
 			virtual ~Element() = default;

@@ -10,14 +10,23 @@ namespace CppUtil {
 	namespace Engine {
 
 		template<typename T, typename HolderT>
-		class BVHNode : public Basic::Element {
-			ELE_SETUP(BVHNode)
+		class BVHNode final : public Basic::Element<BVHNode<T,HolderT>> {
 		public:
 			BVHNode(HolderT * holder, std::vector<Basic::Ptr<T>> & objs, size_t start, size_t range, size_t maxLeafSize = 4)
-				: holder(holder), objs(objs), start(start), range(range) {
+				: holder(holder), objs(objs), start(start), range(range)
+			{
 				Build(maxLeafSize);
 			}
 
+		public:
+			static const Basic::Ptr<BVHNode> New(HolderT * holder, std::vector<Basic::Ptr<T>> & objs, size_t start, size_t range, size_t maxLeafSize = 4) {
+				return Basic::New<BVHNode>(holder, objs, start, range, maxLeafSize);
+			}
+
+		private:
+			virtual ~BVHNode() = default;
+
+		public:
 			bool IsLeaf() const { return l == nullptr && r == nullptr; }
 
 			HolderT * GetHolder()const { return holder; }
@@ -25,8 +34,8 @@ namespace CppUtil {
 			const BBoxf & GetBBox() const { return bb; }
 			size_t GetStart() const { return start; }
 			size_t GetRange() const { return range; }
-			BVHNode::Ptr GetL() const { return l; }
-			BVHNode::Ptr GetR() const { return r; }
+			Basic::Ptr<BVHNode> GetL() const { return l; }
+			Basic::Ptr<BVHNode> GetR() const { return r; }
 
 			// 可通过 模板实例化 来自行定义
 			const BBoxf GetBBox(Basic::Ptr<T> obj) const {
@@ -44,8 +53,8 @@ namespace CppUtil {
 			BBoxf bb;       // bounding box of the node
 			size_t start;  // start index into the primitive list
 			size_t range;  // range of index into the primitive list
-			BVHNode::Ptr l;    // left child node
-			BVHNode::Ptr r;    // right child node
+			Basic::Ptr<BVHNode> l;    // left child node
+			Basic::Ptr<BVHNode> r;    // right child node
 		};
 
 #include <CppUtil/Engine/BVHNode.inl>

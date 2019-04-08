@@ -12,15 +12,24 @@ namespace CppUtil {
 
 		// 因为 Triangle 依赖于 Mesh，而且 Mesh 又可以取代 Triangle
 		// 所以不把 Triangle 当作 Primitive，只让 Mesh 当作 Primitive
-		class Triangle : public Basic::Element {
-			ELE_SETUP(Triangle)
+		class Triangle final : public Basic::Element<Triangle> {
 			friend class TriMesh;
 		public:
 			Triangle(uint idx0, uint idx1, uint idx2)
 				: mesh(Basic::Ptr<TriMesh>(nullptr)), idx{ idx0, idx1, idx2 } { }
 
-			Basic::Ptr<TriMesh> GetMesh() const { return mesh.lock(); }
+		public:
+			static const Basic::Ptr<Triangle> New(uint idx0, uint idx1, uint idx2) {
+				return Basic::New<Triangle>(idx0, idx1, idx2);
+			}
+
+		protected:
+			virtual ~Triangle() = default;
+
+		public:
+			const Basic::Ptr<TriMesh> GetMesh() const { return mesh.lock(); }
 			const BBoxf GetBBox() const;
+
 		public:
 			uint idx[3]; // index into the mesh attribute arrays
 

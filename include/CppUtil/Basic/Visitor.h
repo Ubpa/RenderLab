@@ -19,7 +19,7 @@ namespace CppUtil {
 			virtual ~VisitorBase() = default;
 
 		private:
-			template <typename ImplT>
+			template <typename ImplT, typename BaseT>
 			friend class Element;
 
 			// ¾²Ì¬£¨±àÒë£©ÆÚµÃµ½ typeid

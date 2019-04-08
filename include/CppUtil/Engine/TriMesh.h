@@ -9,8 +9,7 @@
 
 namespace CppUtil {
 	namespace Engine {
-		class TriMesh : public Primitive {
-			ELE_SETUP(TriMesh)
+		class TriMesh final : public Primitive<TriMesh> {
 		public:
 			enum ENUM_TYPE
 			{
@@ -36,8 +35,28 @@ namespace CppUtil {
 				ENUM_TYPE type = ENUM_TYPE::CODE);
 
 		public:
-			// 这个函数不应该主动调用
-			void InitAfterGenSharePtr();
+			static const Basic::Ptr<TriMesh> New(const std::vector<uint> & indice,
+				const std::vector<Point3> & positions,
+				const std::vector<Normalf> & normals,
+				const std::vector<Point2> & texcoords,
+				ENUM_TYPE type = ENUM_TYPE::CODE) {
+				return Basic::New<TriMesh>(indice, positions, normals, texcoords, type);
+			}
+
+			static const Basic::Ptr<TriMesh> New(uint triNum, uint vertexNum,
+				const uint * indice,
+				const float * positions,
+				const float * normals,
+				const float * texcoords,
+				ENUM_TYPE type = ENUM_TYPE::CODE) {
+				return Basic::New<TriMesh>(triNum, vertexNum, indice, positions, normals, texcoords, type);
+			}
+
+		private:
+			virtual ~TriMesh() = default;
+
+		private:
+			virtual void Init() override;
 
 		public:
 			ENUM_TYPE GetType() const { return type; }
@@ -47,12 +66,12 @@ namespace CppUtil {
 			const std::vector<Point2> & GetTexcoords() const { return texcoords; }
 			const std::vector<Normalf> & GetTangents() const { return tangents; }
 			const std::vector<uint> & GetIndice() const { return indice; }
-			const std::vector<Triangle::Ptr> & GetTriangles() const { return triangles; }
+			const std::vector<Basic::Ptr<Triangle>> & GetTriangles() const { return triangles; }
 
 		public:
-			static TriMesh::Ptr GenCube();
-			static TriMesh::Ptr GenSphere();
-			static TriMesh::Ptr GenPlane();
+			static Basic::Ptr<TriMesh> GenCube();
+			static Basic::Ptr<TriMesh> GenSphere();
+			static Basic::Ptr<TriMesh> GenPlane();
 
 		private:
 			void GenTangents();
@@ -66,7 +85,7 @@ namespace CppUtil {
 			std::vector<Point2> texcoords;
 			std::vector<Normalf> tangents;
 
-			std::vector<Triangle::Ptr> triangles;
+			std::vector<Basic::Ptr<Triangle>> triangles;
 		};
 	}
 }

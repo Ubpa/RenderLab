@@ -5,20 +5,28 @@
 
 namespace CppUtil {
 	namespace Engine {
-		class BSDF_CookTorrance : public BSDF {
-			ELE_SETUP(BSDF_CookTorrance)
+		class BSDF_CookTorrance final : public BSDF<BSDF_CookTorrance> {
 		public:
 			BSDF_CookTorrance(float ior, float m, const RGBf & refletance = RGBf(1.f), const RGBf & albedo = RGBf(1.f))
 				: ior(ior), m(m), refletance(refletance) , albedo(albedo){ }
 
-			virtual const RGBf F(const Normalf & wo, const Normalf & wi, const Point2 & texcoord);
+		public:
+			static const Basic::Ptr<BSDF_CookTorrance> New(float ior, float m, const RGBf & refletance = RGBf(1.f), const RGBf & albedo = RGBf(1.f)) {
+				return Basic::New<BSDF_CookTorrance>(ior, m, refletance, albedo);
+			}
+
+		protected:
+			virtual ~BSDF_CookTorrance() = default;
+
+		public:
+			virtual const RGBf F(const Normalf & wo, const Normalf & wi, const Point2 & texcoord) override;
 
 			// probability density function
-			virtual float PDF(const Normalf & wo, const Normalf & wi, const Point2 & texcoord);
+			virtual float PDF(const Normalf & wo, const Normalf & wi, const Point2 & texcoord) override;
 
 			// PD is probability density
 			// return albedo
-			virtual const RGBf Sample_f(const Normalf & wo, const Point2 & texcoord, Normalf & wi, float & PD);
+			virtual const RGBf Sample_f(const Normalf & wo, const Point2 & texcoord, Normalf & wi, float & PD) override;
 
 		private:
 			float NDF(const Normalf & h);

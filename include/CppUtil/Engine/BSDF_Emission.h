@@ -5,25 +5,33 @@
 
 namespace CppUtil {
 	namespace Engine {
-		class BSDF_Emission : public BSDF {
-			ELE_SETUP(BSDF_Emission)
+		class BSDF_Emission final : public BSDF<BSDF_Emission> {
 		public:
 			BSDF_Emission(const RGBf & color = RGBf(1.f), float intensity = 1.f)
 				: color(color), intensity(intensity) { }
 
-			virtual const RGBf F(const Normalf & wo, const Normalf & wi, const Point2 & texcoord) { return RGBf(0.f); }
+		public:
+			static const Basic::Ptr<BSDF_Emission> New(const RGBf & color = RGBf(1.f), float intensity = 1.f) {
+				return Basic::New<BSDF_Emission>(color, intensity);
+			}
+
+		protected:
+			virtual ~BSDF_Emission() = default;
+
+		public:
+			virtual const RGBf F(const Normalf & wo, const Normalf & wi, const Point2 & texcoord) override { return RGBf(0.f); }
 
 			// probability density function
-			virtual float PDF(const Normalf & wo, const Normalf & wi, const Point2 & texcoord) { return 0; }
+			virtual float PDF(const Normalf & wo, const Normalf & wi, const Point2 & texcoord) override { return 0; }
 
 			// PD is probability density
 			// return albedo
-			virtual const RGBf Sample_f(const Normalf & wo, const Point2 & texcoord, Normalf & wi, float & PD) {
+			virtual const RGBf Sample_f(const Normalf & wo, const Point2 & texcoord, Normalf & wi, float & PD) override {
 				PD = 0;
 				return RGBf(0.f);
 			}
 
-			virtual const RGBf GetEmission() const { return intensity * color; }
+			virtual const RGBf GetEmission() const override { return intensity * color; }
 
 		public:
 			RGBf color;

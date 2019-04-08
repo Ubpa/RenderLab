@@ -5,32 +5,32 @@
 
 using namespace CppUtil::Basic;
 
-void EventMngr::Reg(size_t event, Operation::Ptr op) {
+void EventMngr::Reg(size_t event, Ptr<Op> op) {
 	if (directory.find(event) == directory.end())
-		directory[event] = ToPtr(new OpQueue);
+		directory[event] = OpQueue::New();
 	directory[event]->Push(op);
 }
 
-void EventMngr::Reg(size_t event, void * target, Operation::Ptr op) {
+void EventMngr::Reg(size_t event, void * target, Ptr<Op> op) {
 	auto tuple2 = std::make_tuple(event, target);
 	if (directory20.find(tuple2) == directory20.end())
-		directory20[tuple2] = ToPtr(new OpQueue);
+		directory20[tuple2] = OpQueue::New();
 
 	directory20[tuple2]->Push(op);
 }
 
-void EventMngr::Reg(size_t event, ENUM_EVENT_TYPE eventType, Ptr<Operation> op) {
+void EventMngr::Reg(size_t event, ENUM_EVENT_TYPE eventType, Ptr<Op> op) {
 	auto tuple2 = std::make_tuple(event, eventType);
 	if (directory21.find(tuple2) == directory21.end())
-		directory21[tuple2] = ToPtr(new OpQueue);
+		directory21[tuple2] = OpQueue::New();
 
 	directory21[tuple2]->Push(op);
 }
 
-void EventMngr::Reg(size_t event, void * target, ENUM_EVENT_TYPE eventType, Operation::Ptr op) {
+void EventMngr::Reg(size_t event, void * target, ENUM_EVENT_TYPE eventType, Ptr<Op> op) {
 	auto tuple3 = std::make_tuple(event, target, eventType);
 	if (directory3.find(tuple3) == directory3.end())
-		directory3[tuple3] = ToPtr(new OpQueue);
+		directory3[tuple3] = OpQueue::New();
 
 	directory3[tuple3]->Push(op);
 }

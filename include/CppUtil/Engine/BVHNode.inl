@@ -80,8 +80,8 @@ void CppUtil::Engine::BVHNode<T, HolderT>::Build(size_t maxLeafSize) {
 	// recursion
 	if (bestPartition[0].size() == range || bestPartition[1].size() == range) {
 		size_t leftNum = range / 2;
-		l = ToPtr(new BVHNode(holder, objs, start, leftNum, maxLeafSize));
-		r = ToPtr(new BVHNode(holder, objs, start + leftNum, range - leftNum, maxLeafSize));
+		l = BVHNode::New(holder, objs, start, leftNum, maxLeafSize);
+		r = BVHNode::New(holder, objs, start + leftNum, range - leftNum, maxLeafSize);
 	}
 	else {
 		for (size_t i = 0; i < bestPartition[0].size(); i++)
@@ -89,7 +89,7 @@ void CppUtil::Engine::BVHNode<T, HolderT>::Build(size_t maxLeafSize) {
 		for (size_t i = 0; i < bestPartition[1].size(); i++)
 			objs[i + start + bestPartition[0].size()] = bestPartition[1][i];
 
-		l = ToPtr(new BVHNode(holder, objs, start, bestPartition[0].size(), maxLeafSize));
-		r = ToPtr(new BVHNode(holder, objs, start + bestPartition[0].size(), bestPartition[1].size(), maxLeafSize));
+		l = BVHNode::New(holder, objs, start, bestPartition[0].size(), maxLeafSize);
+		r = BVHNode::New(holder, objs, start + bestPartition[0].size(), bestPartition[1].size(), maxLeafSize);
 	}
 }

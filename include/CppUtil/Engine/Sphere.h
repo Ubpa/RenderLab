@@ -6,8 +6,15 @@
 
 namespace CppUtil {
 	namespace Engine {
-		class Sphere : public Primitive {
-			ELE_SETUP(Sphere)
+		class Sphere final : public Primitive<Sphere> {
+		public:
+			Sphere() = default;
+		public:
+			static const Basic::Ptr<Sphere> New() { return Basic::New<Sphere>(); }
+
+		protected:
+			virtual ~Sphere() = default;
+
 		public:
 			const BBoxf GetBBox() const {
 				return BBoxf(Point3(-1.f), Point3(1.f));

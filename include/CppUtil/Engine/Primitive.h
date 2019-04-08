@@ -5,10 +5,17 @@
 
 namespace CppUtil {
 	namespace Engine {
-		class Primitive : public Basic::Element {
-			ELE_SETUP(Primitive)
+		class PrimitiveBase : public Basic::ElementBase {
+		protected:
+			PrimitiveBase() = default;
+			virtual ~PrimitiveBase() = default;
+		};
+
+		template<typename ImplT>
+		class Primitive : public Basic::Element<ImplT, PrimitiveBase> {
 		protected:
 			Primitive() = default;
+			virtual ~Primitive() = default;
 		};
 	}
 }
