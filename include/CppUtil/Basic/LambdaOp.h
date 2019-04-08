@@ -1,25 +1,32 @@
-#ifndef _BASIC_OPERATION_LAMBDA_OP_H_
-#define _BASIC_OPERATION_LAMBDA_OP_H_
+#ifndef _CPPUTIL_BASIC_OPERATION_LAMBDA_OP_H_
+#define _CPPUTIL_BASIC_OPERATION_LAMBDA_OP_H_
 
-#include <CppUtil/Basic/Operation.h>
-#include <functional>
+#include <CppUtil/Basic/Op.h>
+#include <CppUtil/Basic/HeapObj.h>
 
 namespace CppUtil {
 	namespace Basic {
-		class LambdaOp : public Operation {
-			HEAP_OBJ_SETUP(LambdaOp)
+		// 要求无参数
+		template<typename LambdaExpr>
+		class LambdaOp : public Op, public HeapObj<LambdaOp<LambdaExpr>> {
 		public:
-			LambdaOp(const std::function<void()> & op = []() {}, bool isHold = true);
-			void SetOp(const std::function<void()> & op);
-			//------------
-			virtual void Run();
-		private:
-			LambdaOp(const LambdaOp&) = delete;
-			LambdaOp& operator=(const LambdaOp&) = delete;
+			LambdaOp(const LambdaExpr & op) : op(op) { }
 
-			std::function<void()> op;
+		protected:
+			virtual ~LambdaOp() = default;
+
+		public:
+			virtual void Run() override { op(); }
+
+		private:
+			LambdaExpr op;
 		};
+
+		template<typename LambdaExpr>
+		const Ptr<LambdaOp<LambdaExpr>> LambdaOp_New(const LambdaExpr & op) {
+			return CppUtil::Basic::New<LambdaOp<LambdaExpr>>(op);
+		}
 	}
 }
 
-#endif // !_BASIC_OPERATION_LAMBDA_OP_H_
+#endif // !_CPPUTIL_BASIC_OPERATION_LAMBDA_OP_H_

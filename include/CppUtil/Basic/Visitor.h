@@ -61,7 +61,7 @@ namespace CppUtil {
 	
 		class VisitorDynamic final : public Visitor<VisitorDynamic> {
 		public:
-			static const Ptr New() { return CppUtil::Basic::New<VisitorDynamic>(); }
+			static const Ptr<VisitorDynamic> New() { return CppUtil::Basic::New<VisitorDynamic>(); }
 
 		public:
 			template<typename LambadaExpr>

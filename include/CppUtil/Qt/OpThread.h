@@ -5,36 +5,29 @@
 
 #include <qthread.h>
 
-#include <functional>
-
 namespace CppUtil {
 	namespace Basic {
-		class Operation;
+		class Op;
 	}
 
 	namespace QT {
-		class OpThread : public QThread, public Basic::HeapObj {
+		class OpThread : public QThread, public Basic::HeapObj<OpThread> {
 			Q_OBJECT
-
-			HEAP_OBJ_SETUP(OpThread)
-
 		public:
-			OpThread(Basic::Ptr<Basic::Operation> op = nullptr);
-			OpThread(std::function<void()> op);
-			void SetOp(Basic::Ptr<Basic::Operation> op) { this->op = op; }
-			void SetOp(std::function<void()> op);
+			OpThread(Basic::Ptr<Basic::Op> op = nullptr);
+			void SetOp(Basic::Ptr<Basic::Op> op) { this->op = op; }
 			void Stop() { isStop = true; }
 			bool IsStop() const { return isStop; }
 
 		signals:
-			void UI_Op(Basic::Ptr<Basic::Operation> op);
+			void UI_Op(Basic::Ptr<Basic::Op> op);
 
 		public:
 			template<typename T>
-			void UIConnect(T * obj, void (T::* f)(Basic::Ptr<Basic::Operation> op)) {
+			void UIConnect(T * obj, void (T::* f)(Basic::Ptr<Basic::Op> op)) {
 				connect(this, &OpThread::UI_Op, obj, f);
 			}
-			void UI_Op_Run(Basic::Ptr<Basic::Operation> op);
+			void UI_Op_Run(Basic::Ptr<Basic::Op> op);
 			void UI_Op_Run(std::function<void()> op);
 
 		protected:
@@ -42,7 +35,7 @@ namespace CppUtil {
 
 		private:
 			volatile bool isStop;
-			Basic::Ptr<Basic::Operation> op;
+			Basic::Ptr<Basic::Op> op;
 		};
 	}
 }

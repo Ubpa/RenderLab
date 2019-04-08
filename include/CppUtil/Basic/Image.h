@@ -10,28 +10,35 @@
 
 namespace CppUtil {
 	namespace Basic {
-		class Image : public HeapObj{
-			HEAP_OBJ_SETUP_SELF_DEL(Image)
-
+		class Image : public HeapObj<Image> {
 		public:
 			Image();
 			Image(int width, int height, int channel);
 			Image(const std::string & path, bool flip = false);
 			Image(const Image & img);
+			Image(Image && img);
+
+		public:
+			static const Ptr<Image> New() { return CppUtil::Basic::New<Image>(); }
+			static const Ptr<Image> New(int width, int height, int channel) { return CppUtil::Basic::New<Image>(width, height, channel); }
+			static const Ptr<Image> New(const std::string & path, bool flip = false) { return CppUtil::Basic::New<Image>(path, flip); }
+			static const Ptr<Image> New(const Image & img) { return CppUtil::Basic::New<Image>(img); }
+			static const Ptr<Image> New(Image && img) { return CppUtil::Basic::New<Image>(std::move(img)); }
 			
 		public:
 			bool Load(const std::string & fileName, bool flip = false);
 			void GenBuffer(int width, int height, int channel);
-			void Free();
+			void Free() noexcept;
 			bool SaveAsPNG(const std::string & fileName, bool flip = false) const;
-			Image::Ptr GenFlip() const;
+			Ptr<Image> GenFlip() const;
 
-			Image & operator =(const Image & img);
+			Image & operator =(const Image & img) noexcept;
+			Image & operator =(Image && img) noexcept;
 
 		public:
 			bool IsValid() const;
-			float * GetData() { return data; }
-			const float * GetData() const { return data; }
+			float * GetData() & { return data; }
+			const float * GetData() const & { return data; }
 			int GetWidth() const { return width; }
 			int GetHeight() const { return height; }
 			int GetChannel() const { return channel; }
@@ -111,7 +118,8 @@ namespace CppUtil {
 			}
 
 		protected:
-			~Image();
+			virtual ~Image() noexcept;
+
 		private:
 			float * data;
 			int width;

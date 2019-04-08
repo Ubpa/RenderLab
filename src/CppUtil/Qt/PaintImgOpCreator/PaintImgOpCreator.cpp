@@ -26,7 +26,7 @@ using namespace std;
 
 const string rootPath = ROOT_PATH;
 
-ptr<VAO> GenImgVAO(int imgW, int imgH, int winW, int winH);
+Ptr<VAO> GenImgVAO(int imgW, int imgH, int winW, int winH);
 
 PaintImgOpCreator::PaintImgOp::PaintImgOp(RawAPI_OGLW * pOGLW)
 	: pOGLW(pOGLW), initOp(nullptr), paintOp(nullptr), resizeOp(nullptr), img(nullptr) { }
@@ -35,7 +35,7 @@ bool PaintImgOpCreator::PaintImgOp::SetOp(int w, int h) {
 	if (pOGLW == nullptr)
 		return false;
 
-	img = ToPtr(new Image(w, h, 3));
+	img = Image::New(w, h, 3);
 	pOGLW->SetInitOp(initOp);
 	pOGLW->SetPaintOp(paintOp);
 	pOGLW->SetResizeOp(resizeOp);
@@ -45,11 +45,11 @@ bool PaintImgOpCreator::PaintImgOp::SetOp(int w, int h) {
 PaintImgOpCreator::PaintImgOpCreator(RawAPI_OGLW * pOGLW)
 	: pOGLW(pOGLW) { }
 
-PaintImgOpCreator::PaintImgOp::Ptr PaintImgOpCreator::GenScenePaintOp() {
+Ptr<PaintImgOpCreator::PaintImgOp> PaintImgOpCreator::GenScenePaintOp() {
 	// init
-	PaintImgOp::Ptr paintImgOp = ToPtr(new PaintImgOp(pOGLW));
+	Ptr<PaintImgOp> paintImgOp = PaintImgOp::New(pOGLW);
 
-	auto initOp = ToPtr(new LambdaOp([paintImgOp]() {
+	auto initOp = LambdaOp_New([paintImgOp]() {
 		auto pOGLW = paintImgOp->GetOGLW();
 		auto img = paintImgOp->GetImg();
 		int imgW = img->GetWidth();
@@ -62,7 +62,7 @@ PaintImgOpCreator::PaintImgOp::Ptr PaintImgOpCreator::GenScenePaintOp() {
 		pOGLW->Reg("showImgTex", showImgTex);
 
 		//------------ VAO
-		ptr<VAO> imgVAO = GenImgVAO(imgW, imgH, winW, winH);
+		Ptr<VAO> imgVAO = GenImgVAO(imgW, imgH, winW, winH);
 		pOGLW->Reg("imgVAO", imgVAO);
 
 		//------------ Screen Shader
@@ -75,13 +75,13 @@ PaintImgOpCreator::PaintImgOp::Ptr PaintImgOpCreator::GenScenePaintOp() {
 		}
 		screenShader.SetInt("texture0", 0);
 		pOGLW->Reg("screenShader", screenShader);
-	}));
+	});
 
-	auto paintOp = ToPtr(new LambdaOp([paintImgOp]() {
+	auto paintOp = LambdaOp_New([paintImgOp]() {
 		auto pOGLW = paintImgOp->GetOGLW();
 
 		Texture * showImgTex;
-		ptr<VAO> imgVAO;
+		Ptr<VAO> imgVAO;
 		Shader * screenShader;
 
 		pOGLW->GetP("showImgTex", showImgTex);
@@ -99,9 +99,9 @@ PaintImgOpCreator::PaintImgOp::Ptr PaintImgOpCreator::GenScenePaintOp() {
 			showImgTex->Use(0);
 			imgVAO->Draw(*screenShader);
 		}
-	}));
+	});
 
-	auto resizeOp = ToPtr(new LambdaOp([paintImgOp]() {
+	auto resizeOp = LambdaOp_New([paintImgOp]() {
 		auto pOGLW = paintImgOp->GetOGLW();
 		auto img = paintImgOp->GetImg();
 		int imgW = img->GetWidth();
@@ -112,9 +112,9 @@ PaintImgOpCreator::PaintImgOp::Ptr PaintImgOpCreator::GenScenePaintOp() {
 
 		glViewport(0, 0, w, h);
 
-		ptr<VAO> imgVAO = GenImgVAO(imgW, imgH, w, h);
+		Ptr<VAO> imgVAO = GenImgVAO(imgW, imgH, w, h);
 		pOGLW->Reg("imgVAO", imgVAO);
-	}));
+	});
 
 	paintImgOp->initOp = initOp;
 	paintImgOp->paintOp = paintOp;
@@ -124,7 +124,7 @@ PaintImgOpCreator::PaintImgOp::Ptr PaintImgOpCreator::GenScenePaintOp() {
 	return paintImgOp;
 }
 
-ptr<VAO> GenImgVAO(int imgW, int imgH, int winW, int winH){
+Ptr<VAO> GenImgVAO(int imgW, int imgH, int winW, int winH){
 	float imgRatioWH = float(imgW) / float(imgH);
 	float winRatioWH = float(winW) / float(winH);
 	float minX, maxX, minY, maxY;
@@ -153,6 +153,6 @@ ptr<VAO> GenImgVAO(int imgW, int imgH, int winW, int winH){
 		maxX, maxY,  1.0f, 1.0f
 	};
 
-	ptr<VAO> imgVAO = ptr<VAO>(new VAO(&(data[0]), sizeof(data), { 2,2 }));
+	Ptr<VAO> imgVAO = Ptr<VAO>(new VAO(&(data[0]), sizeof(data), { 2,2 }));
 	return imgVAO;
 }

@@ -1,4 +1,5 @@
 #include <CppUtil/Basic/HeapObj.h>
+#include <CppUtil/Basic/LambdaOp.h>
 
 #include <iostream>
 #include <vector>
@@ -12,17 +13,17 @@ using namespace std;
 template<typename ImplT>
 class Node: public HeapObj<ImplT> {
 protected:// 构造函数 protected，无需写相应的 New 函数
-	Node(Ptr parent = nullptr)
+	Node(Ptr<ImplT> parent = nullptr)
 		: parent(parent) { }
 
 protected:// 定义一个默认的虚析构函数
-	virtual ~Node() = default;
+	virtual ~Node() { cout << "destruct Node" << endl; }
 
 public:
-	const Ptr GetParent() { return parent.lock(); }
-	const CPtr GetParent() const { return parent.lock(); }
-	vector<Ptr> & GetChildren() { return children; }
-	const vector<Ptr> & GetChildren() const { return children; }
+	const Ptr<ImplT> GetParent() { return parent.lock(); }
+	const CPtr<ImplT> GetParent() const { return parent.lock(); }
+	vector<Ptr<ImplT>> & GetChildren() { return children; }
+	const vector<Ptr<ImplT>> & GetChildren() const { return children; }
 
 protected:
 	virtual void Init() override {
@@ -31,19 +32,19 @@ protected:
 	}
 
 private:
-	WPtr parent;
-	vector<Ptr> children;
+	WPtr<ImplT> parent;
+	vector<Ptr<ImplT>> children;
 };
 
 class SObj final : public Node<SObj> {
 public:// 由于 New 需要用到构造函数，所以要 public
-	// 通过 New<SObj>(const string & name, SObj::Ptr parent = nullptr) 来创建
-	SObj(const string & name, SObj::Ptr parent = nullptr)
+	// 通过 New<SObj>(const string & name, Ptr<SObj> parent = nullptr) 来创建
+	SObj(const string & name, Ptr<SObj> parent = nullptr)
 		: name(name), Node<SObj>(parent) { }
 
 public:
 	// 通过写一个 static 方法，方便用户使用（利用了 IDE）
-	static const Ptr New(const string & name, SObj::Ptr parent = nullptr) {
+	static const Ptr<SObj> New(const string & name, Ptr<SObj> parent = nullptr) {
 		return CppUtil::Basic::New<SObj>(name, parent);
 	}
 
@@ -58,9 +59,9 @@ public:
 	}
 
 private:
-	virtual ~SObj() = default;// 防止堆对象的创建
+	virtual ~SObj() { cout << "destruct SObj " << name << endl; }// 防止堆对象的创建
 
-private:
+public:
 	string name;
 };
 
@@ -72,6 +73,13 @@ int main() {
 	const auto ace = SObj::New("E", ac);
 
 	a->Print();
+
+
+	Ptr<Op> op = LambdaOp_New([=]() {
+		cout << abd->name << endl;
+	});
+	cout << typeid(*op).name() << endl;
+	op->Run();
 
 	return 0;
 }

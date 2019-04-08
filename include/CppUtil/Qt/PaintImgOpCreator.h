@@ -5,7 +5,7 @@
 
 namespace CppUtil {
 	namespace Basic {
-		class Operation;
+		class Op;
 		class Image;
 	}
 
@@ -17,12 +17,18 @@ namespace CppUtil {
 			PaintImgOpCreator(RawAPI_OGLW * pOGLW);
 
 		public:
-			class PaintImgOp : public Basic::HeapObj {
-				HEAP_OBJ_SETUP(PaintImgOp)
-					friend class PaintImgOpCreator;
+			class PaintImgOp final : public Basic::HeapObj<PaintImgOp> {
+				friend class PaintImgOpCreator;
 
 			public:
 				PaintImgOp(QT::RawAPI_OGLW * pOGLW);
+
+			public:
+				static const Basic::Ptr<PaintImgOp> New(QT::RawAPI_OGLW * pOGLW) {
+					return Basic::New<PaintImgOp>(pOGLW);
+				}
+
+			public:
 				bool SetOp(int w, int h);
 				QT::RawAPI_OGLW * GetOGLW() { return pOGLW; }
 				Basic::Ptr<Basic::Image> GetImg() { return img; }
@@ -30,13 +36,16 @@ namespace CppUtil {
 			private:
 				QT::RawAPI_OGLW * pOGLW;
 
-				Basic::Ptr<Basic::Operation> initOp;
-				Basic::Ptr<Basic::Operation> paintOp;
-				Basic::Ptr<Basic::Operation> resizeOp;
+				Basic::Ptr<Basic::Op> initOp;
+				Basic::Ptr<Basic::Op> paintOp;
+				Basic::Ptr<Basic::Op> resizeOp;
 				Basic::Ptr<Basic::Image> img;
+
+			private:
+				virtual ~PaintImgOp() = default;
 			};
 
-			PaintImgOp::Ptr GenScenePaintOp();
+			Basic::Ptr<PaintImgOp> GenScenePaintOp();
 			
 		private:
 			QT::RawAPI_OGLW * pOGLW;

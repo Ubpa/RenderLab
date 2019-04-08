@@ -9,7 +9,7 @@
 
 namespace CppUtil {
 	namespace Basic {
-		class Operation;
+		class Op;
 		class OpQueue;
 
 		class EventMngr {
@@ -29,10 +29,10 @@ namespace CppUtil {
 				return instance;
 			}
 
-			void Reg(size_t event, Ptr<Operation> op);
-			void Reg(size_t event, ENUM_EVENT_TYPE eventType, Ptr<Operation> op);
-			void Reg(size_t event, void * target, Ptr<Operation> op);
-			void Reg(size_t event, void * target, ENUM_EVENT_TYPE eventType, Ptr<Operation> op);
+			void Reg(size_t event, Ptr<Op> op);
+			void Reg(size_t event, ENUM_EVENT_TYPE eventType, Ptr<Op> op);
+			void Reg(size_t event, void * target, Ptr<Op> op);
+			void Reg(size_t event, void * target, ENUM_EVENT_TYPE eventType, Ptr<Op> op);
 
 			void Response(size_t event);
 			void Response(size_t event, ENUM_EVENT_TYPE eventType);

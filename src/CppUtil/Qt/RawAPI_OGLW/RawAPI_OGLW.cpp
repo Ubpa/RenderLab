@@ -5,6 +5,8 @@
 
 #include <CppUtil/Basic/EventManager.h>
 
+#include <CppUtil/Basic/Op.h>
+
 #include <qevent.h>
 #include <qnamespace.h>
 
@@ -18,15 +20,15 @@ RawAPI_OGLW::RawAPI_OGLW(QWidget* parent,Qt::WindowFlags f)
 
 RawAPI_OGLW::~RawAPI_OGLW() { }
 
-void RawAPI_OGLW::SetInitOp(Operation::Ptr initOp) {
+void RawAPI_OGLW::SetInitOp(Ptr<Op> initOp) {
 	this->initOp = initOp;
 }
 
-void RawAPI_OGLW::SetPaintOp(Operation::Ptr paintOp) {
+void RawAPI_OGLW::SetPaintOp(Ptr<Op> paintOp) {
 	this->paintOp = paintOp;
 }
 
-void RawAPI_OGLW::SetResizeOp(Operation::Ptr resizeOp) {
+void RawAPI_OGLW::SetResizeOp(Ptr<Op> resizeOp) {
 	this->resizeOp = resizeOp;
 }
 

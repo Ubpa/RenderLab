@@ -66,7 +66,7 @@ void Image::GenBuffer(int width, int height, int channel) {
 	data = new float[width*height*channel]();
 }
 
-void Image::Free() {
+void Image::Free() noexcept {
 	delete[] data;
 
 	width = 0;
@@ -105,7 +105,7 @@ bool Image::SaveAsPNG(const string & fileName, bool flip) const {
 	return rst;
 }
 
-Image & Image::operator=(const Image & img) {
+Image & Image::operator=(const Image & img) noexcept {
 	Free();
 
 	width = img.width;
@@ -115,6 +115,19 @@ Image & Image::operator=(const Image & img) {
 	const int valNum = width * height * channel;
 	data = new float[valNum];
 	memcpy(data, img.data, valNum * sizeof(float));
+
+	return *this;
+}
+
+Image & Image::operator =(Image && img) noexcept {
+	Free();
+
+	width = img.width;
+	height = img.height;
+	channel = img.channel;
+
+	data = img.data;
+	img.data = nullptr;
 
 	return *this;
 }
@@ -129,11 +142,20 @@ Image::Image(const Image & img) {
 	memcpy(data, img.data, valNum * sizeof(float));
 }
 
-Image::Ptr Image::GenFlip() const {
+Image::Image(Image && img) {
+	width = img.width;
+	height = img.height;
+	channel = img.channel;
+	data = img.data;
+
+	img.data = nullptr;
+}
+
+Ptr<Image> Image::GenFlip() const {
 	if (!IsValid())
 		return nullptr;
 
-	auto img = ToPtr(new Image(width, height, channel));
+	auto img = Image::New(width, height, channel);
 
 	for (int i = 0; i < width; i++) {
 		for (int j = 0; j < height; j++)

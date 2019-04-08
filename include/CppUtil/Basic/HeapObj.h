@@ -8,9 +8,9 @@ namespace CppUtil {
 		// 由于 HeapObj 需要模板
 		// 可能需要一个公有的基类，所以提供了一个 HeapObj_Base
 		class HeapObj_Base {
-		// 将 new 的权限交给了 _New 函数
+		// 将 new 和 Delete 的权限交给了 New 函数
 		template<typename ImplT, typename ...Args>
-		friend const CppUtil::Basic::Ptr<ImplT> New(Args... args);
+		friend const Ptr<ImplT> New(Args && ... args);
 
 		protected:
 			// 由于构造函数中不可使用 This(), CThis(), WPtr(), WCPtr()
@@ -27,6 +27,12 @@ namespace CppUtil {
 
 			HeapObj_Base() = default;
 			virtual ~HeapObj_Base() = default;
+
+		private:
+			// 供给 New 来删除
+			static void Delete(HeapObj_Base * obj) {
+				delete obj;
+			}
 
 		private:
 			// private new 和 delete
@@ -47,9 +53,9 @@ namespace CppUtil {
 
 		// 调用 ImplT 的构造函数，然后生成 shared_ptr，然后调用 virtual 的 Init 函数
 		template<typename ImplT, typename ...Args>
-		const Ptr<ImplT> New(Args... args) {
-			const auto pImplT = CppUtil::Basic::Ptr<ImplT>(new ImplT(args...), &HeapObj_Base::operator delete);
-			static_cast<CppUtil::Basic::Ptr<HeapObj_Base>>(pImplT)->Init();
+		const Ptr<ImplT> New(Args && ... args) {
+			const auto pImplT = Ptr<ImplT>(new ImplT(args...), HeapObj_Base::Delete);
+			static_cast<Ptr<HeapObj_Base>>(pImplT)->Init();
 			return pImplT;
 		}
 		
@@ -61,29 +67,23 @@ namespace CppUtil {
 		private: virtual void Init() override;
 		protected: virtual ~ImplT();};
 		[创建]
-		ImplT::Ptr impl = New<Impl>(0);//根据构造函数的参数个数来决定
+		Ptr<ImplT> impl = New<Impl>(0);//根据构造函数的参数个数来决定
 		*/
 		template<typename ImplT>
 		class HeapObj : public HeapObj_Base, public std::enable_shared_from_this<ImplT> {
 		public:
-			typedef CppUtil::Basic::Ptr<ImplT> Ptr;
-			typedef CppUtil::Basic::CPtr<ImplT> CPtr;
-			typedef CppUtil::Basic::WPtr<ImplT> WPtr;
-			typedef CppUtil::Basic::WCPtr<ImplT> WCPtr;
-
-		public:
 			// !!! 不可在构造函数中使用
-			const Ptr This() { return shared_from_this(); }
+			const Ptr<ImplT> This() { return shared_from_this(); }
 			// !!! 不可在构造函数中使用
-			const CPtr CThis() const { return shared_from_this(); }
+			const CPtr<ImplT> CThis() const { return shared_from_this(); }
 			// !!! 不可在构造函数中使用
-			const WPtr WThis() noexcept { return weak_from_this(); }
+			const WPtr<ImplT> WThis() noexcept { return weak_from_this(); }
 			// !!! 不可在构造函数中使用
-			const WCPtr WCThis() const noexcept { return weak_from_this(); }
+			const WCPtr<ImplT> WCThis() const noexcept { return weak_from_this(); }
 
 		public:
 			template<typename T>
-			static const Ptr Cast(const Basic::Ptr<T> & ptrT) {
+			static const Ptr<ImplT> Cast(const Ptr<T> & ptrT) {
 				return std::dynamic_pointer_cast<ImplT>(ptrT);
 			}
 

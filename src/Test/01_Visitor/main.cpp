@@ -12,7 +12,7 @@ class A final : public Element<A> {
 public:
 	A(int n) :n(n) { }
 public:
-	static const Ptr New(int n) {return CppUtil::Basic::New<A>(n); }
+	static const Ptr<A> New(int n) {return CppUtil::Basic::New<A>(n); }
 
 public:
 	int n;
@@ -22,7 +22,7 @@ class B final : public Element<B> {
 public:
 	B(int n) :n(n) { }
 public:
-	static const Ptr New(int n) { return CppUtil::Basic::New<B>(n); }
+	static const Ptr<B> New(int n) { return CppUtil::Basic::New<B>(n); }
 public:
 	int n;
 };
@@ -35,11 +35,11 @@ public:
 	}
 
 public:
-	static const Ptr New(const std::string & name) { return CppUtil::Basic::New<Vc>(name); }
+	static const Ptr<Vc> New(const std::string & name) { return CppUtil::Basic::New<Vc>(name); }
 
 private:
-	void Visit(A::Ptr a) { std::cout << "Vc " << name << ": a's n is " << a->n << std::endl; }
-	void Visit(B::Ptr b) { std::cout << "Vc " << name << ": b's n is " << b->n << std::endl; }
+	void Visit(Ptr<A> a) { std::cout << "Vc " << name << ": a's n is " << a->n << std::endl; }
+	void Visit(Ptr<B> b) { std::cout << "Vc " << name << ": b's n is " << b->n << std::endl; }
 
 public:
 	std::string name;
@@ -53,11 +53,11 @@ public:
 	}
 
 public:
-	static const Ptr New(const std::string & name) { return CppUtil::Basic::New<Vd>(name); }
+	static const Ptr<Vd> New(const std::string & name) { return CppUtil::Basic::New<Vd>(name); }
 
 private:
-	void Visit(A::Ptr a) { std::cout << "Vd " << name << ": a's n is " << a->n << std::endl; }
-	void Visit(B::Ptr b) { std::cout << "Vd " << name << ": b's n is " << b->n << std::endl; }
+	void Visit(Ptr<A> a) { std::cout << "Vd " << name << ": a's n is " << a->n << std::endl; }
+	void Visit(Ptr<B> b) { std::cout << "Vd " << name << ": b's n is " << b->n << std::endl; }
 
 public:
 	std::string name;
@@ -68,10 +68,10 @@ int main() {
 	vector<Ptr<VisitorBase>> visitors = { Vc::New("v1") , Vd::New("v2") };
 
 	auto visitorDynamic = VisitorDynamic::New();
-	visitorDynamic->Reg([=](A::Ptr a) {
+	visitorDynamic->Reg([=](Ptr<A> a) {
 		std::cout << "visitorDynamic : a's n is " << a->n << std::endl;
 	});
-	visitorDynamic->Reg([=](B::Ptr b) {
+	visitorDynamic->Reg([=](Ptr<B> b) {
 		std::cout << "visitorDynamic : b's n is " << b->n << std::endl;
 	});
 	visitors.push_back(visitorDynamic);

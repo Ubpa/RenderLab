@@ -5,39 +5,25 @@
 using namespace CppUtil::Basic;
 using namespace std;
 
-OpQueue::OpQueue(bool isHold)
-	: Operation(isHold) { }
-
-//------------
-
-OpQueue & OpQueue::operator<<(Operation::Ptr op) {
-	if (op != nullptr)
-		opList.push_back(op);
-	return *this;
-}
-
-void OpQueue::Push(Operation::Ptr op) {
+void OpQueue::Push(CppUtil::Basic::Ptr<Op> op) {
 	if (op != nullptr)
 		opList.push_back(op);
 }
 
-size_t OpQueue::Size() const {
-	return opList.size();
-}
 
 void OpQueue::Run() {
-	stack< list<Operation::Ptr>::const_iterator > removeIt;
+	stack< list<CppUtil::Basic::Ptr<Op>>::const_iterator > removeIts;
 	for (auto it = opList.cbegin(); it != opList.cend(); ++it) {
 		(*it)->Run();
-		if (!(*it)->IsHold())
-			removeIt.push(it);
+		if (!(*it)->isHold)
+			removeIts.push(it);
 	}
 
-	while (!removeIt.empty()) {
-		opList.erase(removeIt.top());
-		removeIt.pop();
+	while (!removeIts.empty()) {
+		opList.erase(removeIts.top());
+		removeIts.pop();
 	}
 
 	if (opList.empty())
-		SetIsHold(false);
+		isHold = false;
 }

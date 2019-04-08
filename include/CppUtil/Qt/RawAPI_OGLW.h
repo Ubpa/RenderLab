@@ -1,15 +1,18 @@
 #ifndef _QT_RAW_API_OGLW_RAW_API_OGLW_H_
 #define _QT_RAW_API_OGLW_RAW_API_OGLW_H_
 
-#include <CppUtil/Basic/Operation.h>
+#include <CppUtil/Basic/GStorage.h>
+#include <CppUtil/Basic/Ptr.h>
 
 #include <qopenglwidget.h>
 #include <qopenglfunctions_3_3_core.h>
 #include <qopenglcontext.h>
 
-#include <CppUtil/Basic/GStorage.h>
-
 namespace CppUtil {
+	namespace Basic {
+		class Op;
+	}
+
 	namespace QT {
 
 		class RawAPI_OGLW : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core {
@@ -18,9 +21,9 @@ namespace CppUtil {
 			explicit RawAPI_OGLW(QWidget* parent = nullptr,Qt::WindowFlags f =Qt::WindowFlags());
 			~RawAPI_OGLW();
 
-			void SetInitOp(Basic::Operation::Ptr initOp);
-			void SetPaintOp(Basic::Operation::Ptr paintOp);
-			void SetResizeOp(Basic::Operation::Ptr resizeOp);
+			void SetInitOp(Basic::Ptr<Basic::Op> initOp);
+			void SetPaintOp(Basic::Ptr<Basic::Op> paintOp);
+			void SetResizeOp(Basic::Ptr<Basic::Op> resizeOp);
 
 			template<typename T>
 			bool Reg(const std::string & uniqueID, const T & item);
@@ -50,9 +53,9 @@ namespace CppUtil {
 			int angle;
 
 		private:
-			Basic::Operation::Ptr initOp;
-			Basic::Operation::Ptr paintOp;
-			Basic::Operation::Ptr resizeOp;
+			Basic::Ptr<Basic::Op> initOp;
+			Basic::Ptr<Basic::Op> paintOp;
+			Basic::Ptr<Basic::Op> resizeOp;
 
 			size_t ID;
 		};

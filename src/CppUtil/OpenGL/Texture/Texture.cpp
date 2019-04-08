@@ -26,7 +26,7 @@ Texture::Texture(uint ID, ENUM_TYPE type)
 Texture::Texture(ENUM_TYPE type)
 	: Texture(0, type) { }
 
-Texture::Texture(Image::CPtr img) : ID(0), type(ENUM_TYPE_2D_DYNAMIC) {
+Texture::Texture(CPtr<Image> img) : ID(0), type(ENUM_TYPE_2D_DYNAMIC) {
 	SetImg(*img);
 }
 
@@ -81,7 +81,7 @@ bool Texture::Load(const std::vector<std::string> & skybox) {
 	// -------------------------------------------------------
 	for (uint i = 0; i < skybox.size(); i++)
 	{
-		auto img = ToPtr(new Image(skybox[i].c_str()));
+		auto img = Image::New(skybox[i]);
 		if (!img->IsValid()) {
 			printf("Cubemap texture failed to load at path: %s\n", skybox[i].c_str());
 			type = ENUM_TYPE_NOT_VALID;
@@ -142,7 +142,7 @@ bool Texture::Load(const std::string & path, bool flip, bool gammaCorrection) {
 		return false;
 	}
 	
-	auto img = ToPtr(new Image(path.c_str(), flip));
+	auto img = Image::New(path, flip);
 	if (!img->IsValid()) {
 		printf("ERROR: Texture [%s] load failed\n", path.c_str());
 		type = ENUM_TYPE_NOT_VALID;

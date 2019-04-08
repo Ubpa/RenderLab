@@ -7,41 +7,32 @@
 
 namespace CppUtil {
 	namespace Basic {
-		template<typename T>
-		class Node : public Element {
-			ELE_SETUP(Node<T>)
-
-		public:
-			Node(Basic::Ptr<T> parent = nullptr)
+		template<typename ImplT>
+		class Node : public Element<ImplT> {
+		protected:
+			Node(Ptr parent = nullptr)
 				: parent(parent) { }
-
-			void AddChild(Basic::Ptr<T> child) {
+		public:
+			// 解除 child 的原父子关系，然后再设置新父子关系 
+			void AddChild(Ptr child) {
 				if (!child->parent.expired())
 					child->parent.lock()->DelChild(child);
 
-				child->parent = Basic::Ptr<T>::Cast(This());
+				child->parent = This();
 				children.insert(child);
 			}
 
-			void DelChild(Basic::Ptr<T> child) {
+			void DelChild(Ptr child) {
 				if (child->parent.lock() == This()) {
 					children.erase(child);
 					child->parent.reset();
 				}
 			}
 
-			void SetParent(Basic::Ptr<T> parent) {
-				parent->AddChild(Basic::Ptr<T>::Cast(This()));
-			}
+			const Ptr GetParent() const { return parent.lock(); }
+			const std::set<Ptr> & GetChildren() const { return children; }
 
-			Basic::Ptr<T> GetParent() const { return parent.lock(); }
-			const std::set<Basic::Ptr<T>> & GetChildren() const { return children; }
-
-			bool IsAncestorOf(Basic::CPtr<T> node) const {
-				return node->IsDescendantOf(Basic::CPtr<T>::Cast(CThis()));
-			}
-
-			bool IsDescendantOf(Basic::CPtr<T> node) const {
+			bool IsDescendantOf(Ptr node) const {
 				if (CThis() == node)
 					return true;
 
@@ -51,31 +42,35 @@ namespace CppUtil {
 				return parent.lock()->IsDescendantOf(node);
 			}
 
+			bool IsAncestorOf(Ptr node) const {
+				return node->IsDescendantOf(CThis());
+			}
+
 		public:
-			void TraverseAccept(CppUtil::Basic::EleVisitor::Ptr eleVisitor) {
-				eleVisitor->Visit(Basic::Ptr<T>::Cast(This()));
+			void TraverseAccept(Basic::Ptr<Visitor::VisitorBase> visitor) {
+				visitor->Visit(This());
 				for (auto child : GetChildren())
-					child->TraverseAccept(eleVisitor);
+					child->TraverseAccept(visitor);
 			}
 
-			void AscendAccept(CppUtil::Basic::EleVisitor::Ptr eleVisitor) {
-				eleVisitor->Visit(Basic::Ptr<T>::Cast(This()));
-				if (GetParent())
-					GetParent()->AscendAccept(eleVisitor);
+			void AscendAccept(Basic::Ptr<Visitor::VisitorBase> visitor) {
+				visitor->Visit(This());
+				const auto parent = GetParent();
+				if (parent)
+					parent->AscendAccept(visitor);
 			}
 
-			virtual void InitAfterGenSharePtr() = 0;
+		protected:
+			virtual void Init() override {
+				const auto parent = GetParent();
+				if (parent)
+					parent->AddChild(visitor);
+			}
 
 		private:
-			Basic::WPtr<T> parent;
-			std::set<Basic::Ptr<T>> children;
+			WPtr parent;
+			std::set<Ptr> children;
 		};
-
-		template<typename T>
-		void Node<T>::InitAfterGenSharePtr() {
-			if (GetParent())
-				GetParent()->AddChild(Basic::Ptr<T>::Cast(This()));
-		}
 	}
 }
 
