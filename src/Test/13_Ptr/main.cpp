@@ -36,14 +36,15 @@ private:
 };
 
 class SObj final : public Node<SObj> {
-public:// 由于 _New 需要用到构造函数，所以要 public
+public:// 由于 New 需要用到构造函数，所以要 public
+	// 通过 New<SObj>(const string & name, SObj::Ptr parent = nullptr) 来创建
 	SObj(const string & name, SObj::Ptr parent = nullptr)
 		: name(name), Node<SObj>(parent) { }
 
 public:
-	// 为每一个构造函数写一个对应的 New 函数
+	// 通过写一个 static 方法，方便用户使用（利用了 IDE）
 	static const Ptr New(const string & name, SObj::Ptr parent = nullptr) {
-		return _New<SObj>(name, parent);
+		return CppUtil::Basic::New<SObj>(name, parent);
 	}
 
 public:
@@ -57,16 +58,16 @@ public:
 	}
 
 private:
-	virtual ~SObj() = default;
+	virtual ~SObj() = default;// 防止堆对象的创建
 
 private:
 	string name;
 };
 
 int main() {
-	const auto a = SObj::New("A");
-	const auto ab = SObj::New("B", a);
-	const auto ac = SObj::New("C", a);
+	const auto a = New<SObj>("A");
+	const auto ab = New<SObj>("B", a);
+	const auto ac = New<SObj>("C", a);
 	const auto abd = SObj::New("D", ab);
 	const auto ace = SObj::New("E", ac);
 

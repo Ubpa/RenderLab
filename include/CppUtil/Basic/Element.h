@@ -2,26 +2,29 @@
 #define _BASIC_NODE_ELEMENT_H_
 
 #include <CppUtil/Basic/HeapObj.h>
-#include <CppUtil/Basic/EleVisitor.h>
-
-#define ELE_SETUP(CLASS) \
-HEAP_OBJ_SETUP(CLASS)\
-public:\
-virtual void Accept(CppUtil::Basic::EleVisitor::Ptr eleVisitor){\
-	eleVisitor->Visit(This());\
-}
-
-#define ELE_SETUP_SELF_DEL(CLASS) \
-HEAP_OBJ_SETUP_SELF_DEL(CLASS)\
-public:\
-virtual void Accept(CppUtil::Basic::EleVisitor::Ptr eleVisitor){\
-	eleVisitor->Visit(This());\
-}
+#include <CppUtil/Basic/Visitor.h>
 
 namespace CppUtil {
 	namespace Basic {
-		class Element : public HeapObj {
-			ELE_SETUP(Element)
+		class ElementBase {
+		public:
+			virtual void Accept(Basic::Ptr<VisitorBase> visitor) = 0;
+
+		protected:
+			ElementBase() = default;
+			virtual ~ElementBase() = default;
+		};
+
+		template<typename ImplT>
+		class Element : public ElementBase, public HeapObj<ImplT> {
+		protected:
+			Element() = default;
+			virtual ~Element() = default;
+
+		public:
+			virtual void Accept(Basic::Ptr<VisitorBase> visitor) override {
+				visitor->Visit(This());
+			}
 		};
 	}
 }

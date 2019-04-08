@@ -1,75 +1,98 @@
 #include <CppUtil/Basic/Element.h>
-#include <CppUtil/Basic/EleVisitor.h>
+#include <CppUtil/Basic/Visitor.h>
 
 #include <iostream>
+#include <vector>
 #include <string>
 
 using namespace CppUtil::Basic;
+using namespace std;
 
-class A : public Element {
-	ELE_SETUP(A)
+class A final : public Element<A> {
 public:
 	A(int n) :n(n) { }
-	
+public:
+	static const Ptr New(int n) {return CppUtil::Basic::New<A>(n); }
+
+public:
 	int n;
 };
 
-class B : public Element {
-	ELE_SETUP(B)
+class B final : public Element<B> {
 public:
 	B(int n) :n(n) { }
-
+public:
+	static const Ptr New(int n) { return CppUtil::Basic::New<B>(n); }
+public:
 	int n;
 };
 
-class Vc : public EleVisitor {
-	ELEVISITOR_SETUP(Vc)
+class Vc final : public Visitor<Vc> {
 public:
 	Vc(const std::string & name):name(name) {
-		Reg<A>();
-		Reg<B>();
+		RegMemberFunc<A>(&Vc::Visit);
+		RegMemberFunc<B>(&Vc::Visit);
 	}
+
+public:
+	static const Ptr New(const std::string & name) { return CppUtil::Basic::New<Vc>(name); }
 
 private:
 	void Visit(A::Ptr a) { std::cout << "Vc " << name << ": a's n is " << a->n << std::endl; }
 	void Visit(B::Ptr b) { std::cout << "Vc " << name << ": b's n is " << b->n << std::endl; }
+
+public:
 	std::string name;
 };
 
-class Vd : public EleVisitor {
-	ELEVISITOR_SETUP(Vd)
+class Vd final : public Visitor<Vd> {
 public:
 	Vd(const std::string & name) :name(name) {
-		Reg<A>();
-		Reg<B>();
+		RegMemberFunc<A>(&Vd::Visit);
+		RegMemberFunc<B>(&Vd::Visit);
 	}
+
+public:
+	static const Ptr New(const std::string & name) { return CppUtil::Basic::New<Vd>(name); }
 
 private:
 	void Visit(A::Ptr a) { std::cout << "Vd " << name << ": a's n is " << a->n << std::endl; }
 	void Visit(B::Ptr b) { std::cout << "Vd " << name << ": b's n is " << b->n << std::endl; }
+
+public:
 	std::string name;
 };
 
 int main() {
-	Element::Ptr eles[4] = { ToPtr(new A(1)) ,ToPtr(new A(2)),ToPtr(new B(3)),ToPtr(new B(4)) };
-	EleVisitor::Ptr visitors[2] = { ToPtr(new Vc("v1")) ,ToPtr(new Vd("v2")) };
+	vector<Ptr<ElementBase>> eles = { A::New(1) , A::New(2), B::New(3), B::New(4) };
+	vector<Ptr<VisitorBase>> visitors = { Vc::New("v1") , Vd::New("v2") };
 
-	const int elesNum = sizeof(eles) / sizeof(Element::Ptr);
-	const int visitorsNum = sizeof(visitors) / sizeof(EleVisitor::Ptr);
+	auto visitorDynamic = VisitorDynamic::New();
+	visitorDynamic->Reg([=](A::Ptr a) {
+		std::cout << "visitorDynamic : a's n is " << a->n << std::endl;
+	});
+	visitorDynamic->Reg([=](B::Ptr b) {
+		std::cout << "visitorDynamic : b's n is " << b->n << std::endl;
+	});
+	visitors.push_back(visitorDynamic);
 
 	/*
-	* Vc v1: a's n is 1
-	* Vd v2: a's n is 1
-	* Vc v1: a's n is 2
-	* Vd v2: a's n is 2
-	* Vc v1: b's n is 3
-	* Vd v2: b's n is 3
-	* Vc v1: b's n is 4
-	* Vd v2: b's n is 4
+	Vc v1: a's n is 1
+	Vd v2: a's n is 1
+	visitorDynamic : a's n is 1
+	Vc v1: a's n is 2
+	Vd v2: a's n is 2
+	visitorDynamic : a's n is 2
+	Vc v1: b's n is 3
+	Vd v2: b's n is 3
+	visitorDynamic : b's n is 3
+	Vc v1: b's n is 4
+	Vd v2: b's n is 4
+	visitorDynamic : b's n is 4
 	*/
 
-	for (int i = 0; i < elesNum; i++) {
-		for (int j = 0; j < visitorsNum; j++) {
+	for (size_t i = 0; i < eles.size(); i++) {
+		for (size_t j = 0; j < visitors.size(); j++) {
 			eles[i]->Accept(visitors[j]);
 		}
 	}

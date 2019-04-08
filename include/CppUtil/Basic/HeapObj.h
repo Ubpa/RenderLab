@@ -10,7 +10,7 @@ namespace CppUtil {
 		class HeapObj_Base {
 		// 将 new 的权限交给了 _New 函数
 		template<typename ImplT, typename ...Args>
-		friend const CppUtil::Basic::Ptr<ImplT> _New(Args... args);
+		friend const CppUtil::Basic::Ptr<ImplT> New(Args... args);
 
 		protected:
 			// 由于构造函数中不可使用 This(), CThis(), WPtr(), WCPtr()
@@ -47,7 +47,7 @@ namespace CppUtil {
 
 		// 调用 ImplT 的构造函数，然后生成 shared_ptr，然后调用 virtual 的 Init 函数
 		template<typename ImplT, typename ...Args>
-		const Ptr<ImplT> _New(Args... args) {
+		const Ptr<ImplT> New(Args... args) {
 			const auto pImplT = CppUtil::Basic::Ptr<ImplT>(new ImplT(args...), &HeapObj_Base::operator delete);
 			static_cast<CppUtil::Basic::Ptr<HeapObj_Base>>(pImplT)->Init();
 			return pImplT;
@@ -55,13 +55,13 @@ namespace CppUtil {
 		
 		/*
 		HeapObj 堆对象
-		[使用方法]
+		[类]
 		class ImplT final : public HeapObj<ImplT> {
-		HEAPOBJ
-		private: ImplT(int n);
-		public: static const Ptr New(int n) { return _New(n); }
+		public: ImplT(int n);
 		private: virtual void Init() override;
 		protected: virtual ~ImplT();};
+		[创建]
+		ImplT::Ptr impl = New<Impl>(0);//根据构造函数的参数个数来决定
 		*/
 		template<typename ImplT>
 		class HeapObj : public HeapObj_Base, public std::enable_shared_from_this<ImplT> {
@@ -80,6 +80,12 @@ namespace CppUtil {
 			const WPtr WThis() noexcept { return weak_from_this(); }
 			// !!! 不可在构造函数中使用
 			const WCPtr WCThis() const noexcept { return weak_from_this(); }
+
+		public:
+			template<typename T>
+			static const Ptr Cast(const Basic::Ptr<T> & ptrT) {
+				return std::dynamic_pointer_cast<ImplT>(ptrT);
+			}
 
 		protected:
 			// 这里 protected 构造函数和析构函数

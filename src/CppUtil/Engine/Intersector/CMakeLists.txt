@@ -16,6 +16,6 @@ set(STR_TARGET_SOURCES "${STR_TARGET_SOURCES} ${CMAKE_SOURCE_DIR}/include/CppUti
 set(STR_TARGET_SOURCES "${STR_TARGET_SOURCES} ${CMAKE_SOURCE_DIR}/include/CppUtil/Engine/VisibilityChecker.h")
 #多个库文件用 [空格] 分隔，如果为空，就输入[一个空格]
 #如：set(STR_TARGET_LIBS "lib1.lib lib2.lib")
-set(STR_TARGET_LIBS "Node Scene Primitive Component RTX")
+set(STR_TARGET_LIBS "Scene Primitive Component RTX")
 
 SETUP_PROJECT(${MODE} ${TARGET_NAME} ${STR_TARGET_SOURCES} ${STR_TARGET_LIBS})
