@@ -9,11 +9,19 @@ namespace CppUtil {
 	namespace Engine {
 		class Ray;
 
-		class CmptCamera : public Component {
-			COMPONENT_SETUP(CmptCamera)
+		class CmptCamera final : public Component<CmptCamera> {
 		public:
 			CmptCamera(Basic::Ptr<SObj> sobj, float fov = 60.f, float ar = 16.f / 9.f, float nearPlane = 0.001f, float farPlane = 1000.f);
 
+		public:
+			static const Basic::Ptr<CmptCamera> New(Basic::Ptr<SObj> sobj, float fov = 60.f, float ar = 16.f / 9.f, float nearPlane = 0.001f, float farPlane = 1000.f) {
+				return Basic::New<CmptCamera>(sobj, fov, ar, nearPlane, farPlane);
+			}
+
+		protected:
+			virtual ~CmptCamera() = default;
+
+		public:
 			float GetAspectRatio() const { return ar; }
 			void SetAspectRatio(float ar);
 			template<typename numT>
@@ -43,7 +51,7 @@ namespace CppUtil {
 
 			float w;
 			float h;
-			
+
 			struct Coordinate {
 				void Init(const Basic::Transform & tsfm);
 

@@ -13,10 +13,10 @@ namespace CppUtil {
 		friend const Ptr<ImplT> New(Args && ... args);
 
 		protected:
-			// 由于构造函数中不可使用 This(), CThis(), WPtr(), WCPtr()
+			// 由于构造函数中不可使用 This(), WPtr()
 			// 所以专门提供了一个 Init 函数
 			// 该函数会在 new 对象，生成 shared_ptr 后调用
-			// 所以该函数内部可使用 This(), CThis(), WPtr(), WCPtr()
+			// 所以该函数内部可使用 This(), WPtr()
 			virtual void Init() {}
 
 		protected:
@@ -73,11 +73,11 @@ namespace CppUtil {
 			// !!! 不可在构造函数中使用
 			const Ptr<ImplT> This() { return shared_from_this(); }
 			// !!! 不可在构造函数中使用
-			const CPtr<ImplT> CThis() const { return shared_from_this(); }
+			const CPtr<ImplT> This() const { return shared_from_this(); }
 			// !!! 不可在构造函数中使用
 			const WPtr<ImplT> WThis() noexcept { return weak_from_this(); }
 			// !!! 不可在构造函数中使用
-			const WCPtr<ImplT> WCThis() const noexcept { return weak_from_this(); }
+			const WCPtr<ImplT> WThis() const noexcept { return weak_from_this(); }
 
 		public:
 			template<typename T>

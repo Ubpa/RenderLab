@@ -44,7 +44,7 @@ namespace CppUtil {
 		template<typename ImplT, typename BaseT = BSDFBase>
 		class BSDF : public Material<ImplT, BaseT> {
 		protected:
-			BSDF() = default;
+			using Material<ImplT, BaseT>::Material;
 			virtual ~BSDF() = default;
 		};
 	}

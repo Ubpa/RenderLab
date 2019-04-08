@@ -45,7 +45,7 @@ namespace CppUtil {
 		template<typename ImplT, typename BaseT = LightBase>
 		class Light : public Basic::Element<ImplT, BaseT> {
 		protected:
-			Light() = default;
+			using Element<ImplT, BaseT>::Element;
 			virtual ~Light() = default;
 		};
 	}

@@ -115,7 +115,7 @@ void RasterBase::InitVAO_Plane() {
 	VAO_P3N3T2T3_Plane = VAO(P3_Plane_Vec_VBO_Data_Patch, plane->GetIndice().data(), static_cast<uint>(plane->GetIndice().size() * sizeof(uint)));
 }
 
-void RasterBase::Visit(SObj::Ptr sobj) {
+void RasterBase::Visit(Ptr<SObj> sobj) {
 	auto geometry = sobj->GetComponent<CmptGeometry>();
 	auto material = sobj->GetComponent<CmptMaterial>();
 	auto children = sobj->GetChildren();

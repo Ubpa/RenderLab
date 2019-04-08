@@ -2,7 +2,7 @@
 
 #include <CppUtil/Engine/CmptTransform.h>
 
-#include <CppUtil/Basic/EleVisitor.h>
+#include <CppUtil/Basic/Visitor.h>
 
 #include <CppUtil/Engine/SObj.h>
 
@@ -15,8 +15,8 @@ Transform CmptLight::GetLightToWorldMatrixWithoutScale() const {
 	if (!sobj)
 		return tsfm;
 
-	auto visitor = ToPtr(new EleVisitor);
-	visitor->Reg<SObj>([&tsfm](SObj::Ptr sobj) {
+	auto visitor = VisitorDynamic::New();
+	visitor->Reg([&tsfm](Ptr<SObj> sobj) {
 		auto cmptTransform = sobj->GetComponent<CmptTransform>();
 		if (!cmptTransform)
 			return;

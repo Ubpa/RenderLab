@@ -6,8 +6,7 @@
 
 namespace CppUtil {
 	namespace Engine {
-		class CmptTransform : public Component {
-			COMPONENT_SETUP(CmptTransform)
+		class CmptTransform final : public Component<CmptTransform> {
 		public:
 			CmptTransform(
 				Basic::Ptr<SObj> sobj,
@@ -35,6 +34,36 @@ namespace CppUtil {
 				const Scalef & scale,
 				const EulerYXZf euler
 			) : CmptTransform(sobj, pos, scale, euler.ToQuat()) { }
+
+		public:
+			static const Basic::Ptr<CmptTransform> New(
+				Basic::Ptr<SObj> sobj,
+				const Point3 & pos = Point3(0),
+				const Scalef & scale = Scalef(1.0f),
+				const Quatf & rot = Quatf())
+			{
+				return Basic::New<CmptTransform>(sobj, pos, scale, rot);
+			}
+			static const Basic::Ptr<CmptTransform> New(
+				Basic::Ptr<SObj> sobj,
+				const Point3 & pos,
+				const Scalef & scale,
+				const Vec3 & axis,
+				float theta)
+			{
+				return Basic::New<CmptTransform>(sobj, pos, scale, axis, theta);
+			}
+			static const Basic::Ptr<CmptTransform> New(
+				Basic::Ptr<SObj> sobj,
+				const Point3 & pos,
+				const Scalef & scale,
+				const EulerYXZf euler)
+			{
+				return Basic::New<CmptTransform>(sobj, pos, scale, euler);
+			}
+
+		protected:
+			virtual ~CmptTransform() = default;
 
 		public:
 			void Init(const Point3 & pos = Point3(0), const Scalef & scale = Scalef(1.0f), const Quatf & rot = Quatf());

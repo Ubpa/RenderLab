@@ -4,7 +4,7 @@
 #include <CppUtil/Basic/LStorage.h>
 #include <CppUtil/Basic/Node.h>
 #include <CppUtil/Basic/TypeMap.h>
-#include <CppUtil/Basic/EleVisitor.h>
+#include <CppUtil/Basic/Visitor.h>
 #include <CppUtil/Basic/UGM/Transform.h>
 
 #include <string>
@@ -12,27 +12,35 @@
 
 namespace CppUtil {
 	namespace Engine {
-		class Component;
+		class ComponentBase;
 
-		// 组件式编程，不要再派生子类了，就是用 component 来表达语义
+		// 组件式编程，不要再派生子类了，用 component 来表达语义
 		class SObj final : public Basic::Node<SObj> {
-			ELE_SETUP(SObj)
 		public:
-			SObj(SObj::Ptr parent = nullptr, const std::string & name = "SObj")
+			SObj(Basic::Ptr<SObj> parent = nullptr, const std::string & name = "SObj")
 				: Node(parent), name(name) { }
 
 			bool Save(const std::string & path);
-			static const SObj::Ptr Load(const std::string & path);
+
+		public:
+			static const Basic::Ptr<SObj> New(Basic::Ptr<SObj> parent = nullptr, const std::string & name = "SObj") {
+				return Basic::New<SObj>(parent, name);
+			}
+
+			static const Basic::Ptr<SObj> Load(const std::string & path);
+
+		protected:
+			virtual ~SObj() = default;
 
 		public:
 			template<typename T>
 			const Basic::Ptr<T> GetComponent(T * useless_parameter = nullptr) const;
 
-			bool HaveComponentSameTypeWith(Basic::Ptr<Component> ptr) const;
+			bool HaveComponentSameTypeWith(Basic::Ptr<ComponentBase> ptr) const;
 
-			const std::vector<Basic::Ptr<Component>> GetAllComponents() const;
+			const std::vector<Basic::Ptr<ComponentBase>> GetAllComponents() const;
 
-			void AttachComponent(Basic::Ptr<Component> component);
+			void AttachComponent(Basic::Ptr<ComponentBase> component);
 
 			template<typename T>
 			void DetachComponent(T * useless_parameter = nullptr);
@@ -57,11 +65,6 @@ namespace CppUtil {
 			}
 
 		public:
-			virtual void InitAfterGenSharePtr() {
-				Basic::Node<SObj>::InitAfterGenSharePtr();
-			}
-
-		public:
 			std::string name;
 
 		private:
@@ -69,7 +72,7 @@ namespace CppUtil {
 			struct Wrapper;
 
 		private:
-			Basic::TypeMap<Basic::Ptr<Component>> components;
+			Basic::TypeMap<Basic::Ptr<ComponentBase>> components;
 		};
 
 #include <CppUtil/Engine/SObj.inl>

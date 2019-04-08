@@ -14,7 +14,7 @@ namespace CppUtil {
 		template<typename ImplT, typename BaseT = MaterialBase>
 		class Material : public Basic::Element<ImplT, BaseT> {
 		protected:
-			Material() = default;
+			using Element<ImplT, BaseT>::Element;
 			virtual ~Material() = default;
 		};
 	}

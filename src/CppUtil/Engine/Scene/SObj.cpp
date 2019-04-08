@@ -6,7 +6,7 @@
 #include <CppUtil/Engine/Component.h>
 #include <CppUtil/Engine/CmptTransform.h>
 
-#include <CppUtil/Basic/EleVisitor.h>
+#include <CppUtil/Basic/Visitor.h>
 
 #include <iostream>
 
@@ -14,16 +14,17 @@ using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
 using namespace std;
 
-void SObj::AttachComponent(CppUtil::Basic::Ptr<Component> component) {
+void SObj::AttachComponent(Ptr<ComponentBase> component) {
 	auto target = components.find(typeid(*component));
 	if (target != components.end())
-		target->second->Detach();
+		target->second->SetSObj(nullptr);
 
+	component->SetSObj(This());
 	components[typeid(*component)] = component;
 }
 
-const std::vector<CppUtil::Basic::Ptr<Component>> SObj::GetAllComponents() const {
-	std::vector<CppUtil::Basic::Ptr<Component>> rst;
+const std::vector<Ptr<ComponentBase>> SObj::GetAllComponents() const {
+	std::vector<Ptr<ComponentBase>> rst;
 
 	for (auto & component : components)
 		rst.push_back(component.second);
@@ -34,8 +35,8 @@ const std::vector<CppUtil::Basic::Ptr<Component>> SObj::GetAllComponents() const
 const Transform SObj::GetLocalToWorldMatrix() {
 	Transform tsfm(1.0f);
 
-	auto getMatVisitor = ToPtr(new EleVisitor);
-	getMatVisitor->Reg<SObj>([&](SObj::Ptr sobj) {
+	auto getMatVisitor = VisitorDynamic::New();
+	getMatVisitor->Reg([&](Ptr<SObj> sobj) {
 		auto cmpt = sobj->GetComponent<CmptTransform>();
 		if (cmpt != nullptr)
 			tsfm = cmpt->GetTransform() * tsfm;
@@ -45,7 +46,7 @@ const Transform SObj::GetLocalToWorldMatrix() {
 	return tsfm;
 }
 
-bool SObj::HaveComponentSameTypeWith(Component::Ptr ptr) const {
+bool SObj::HaveComponentSameTypeWith(Ptr<ComponentBase> ptr) const {
 	if (ptr == nullptr)
 		return false;
 
@@ -53,12 +54,12 @@ bool SObj::HaveComponentSameTypeWith(Component::Ptr ptr) const {
 }
 
 bool SObj::Save(const string & path) {
-	auto saver = ToPtr(new SObjSaver);
+	auto saver = SObjSaver::New();
 	saver->Init(path);
 	Accept(saver);
 	return true;
 }
 
-const SObj::Ptr SObj::Load(const string & path) {
+const Ptr<SObj> SObj::Load(const string & path) {
 	return SObjLoader::Load(path);
 }

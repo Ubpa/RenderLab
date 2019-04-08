@@ -14,12 +14,20 @@ namespace CppUtil {
 		class CmptCamera;
 		class CmptLight;
 
-		class Scene : public Basic::Element {
-			ELE_SETUP(Scene)
+		class Scene : public Basic::Element<Scene> {
 		public:
 			Scene(Basic::Ptr<SObj> root, const std::string & name = "")
 				: root(root), name(name) { }
 
+		public:
+			static const Basic::Ptr<Scene> New(Basic::Ptr<SObj> root, const std::string & name = "") {
+				return Basic::New<Scene>(root, name);
+			}
+
+		protected:
+			virtual ~Scene() = default;
+
+		public:
 			const Basic::Ptr<SObj> GetRoot() const { return root; }
 
 			const Basic::Ptr<CmptCamera> GetCmptCamera() const;

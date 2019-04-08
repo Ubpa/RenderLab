@@ -45,7 +45,7 @@ namespace CppUtil {
 		template<typename ImplT>
 		class Visitor : public HeapObj<ImplT, VisitorBase> {
 		protected:
-			Visitor() = default;
+			using HeapObj<ImplT, VisitorBase>::HeapObj;
 			virtual ~Visitor() = default;
 
 		protected:

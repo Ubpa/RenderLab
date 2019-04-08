@@ -119,7 +119,7 @@ void RayIntersector::Visit(BVHNode<Element, BVHAccel>::Ptr bvhNode) {
 	}
 }
 
-void RayIntersector::Visit(SObj::Ptr sobj) {
+void RayIntersector::Visit(Ptr<SObj> sobj) {
 	auto geometry = sobj->GetComponent<CmptGeometry>();
 	auto children = sobj->GetChildren();
 

@@ -18,16 +18,16 @@ void Scene::SetWriteLock(bool isLock) {
 		writeLock.unlock();
 }
 
-const CmptCamera::Ptr Scene::GetCmptCamera() const {
+const Ptr<CmptCamera> Scene::GetCmptCamera() const {
 	if (!root)
 		return nullptr;
 
 	return root->GetComponentInChildren<CmptCamera>();
 }
 
-const vector<CmptLight::Ptr> Scene::GetCmptLights() const {
+const vector<Ptr<CmptLight>> Scene::GetCmptLights() const {
 	if (!root)
-		return vector<CmptLight::Ptr>();
+		return vector<Ptr<CmptLight>>();
 
 	return root->GetComponentsInChildren<CmptLight>();
 }
@@ -37,8 +37,8 @@ bool Scene::GenID() {
 	ID2name.clear();
 
 	bool isFailed = false;
-	auto visitor = ToPtr(new EleVisitor);
-	visitor->Reg<SObj>([&](SObj::Ptr sobj) {
+	auto visitor = VisitorDynamic::New();
+	visitor->Reg([&](Ptr<SObj> sobj) {
 		auto target = name2ID.find(sobj->name);
 		if (target != name2ID.end()) {
 			printf("ERROR: two sobjs have same name.\n");
@@ -74,7 +74,7 @@ bool Scene::GenID() {
 	return true;
 }
 
-int Scene::GetID(SObj::Ptr sobj) const {
+int Scene::GetID(Ptr<SObj> sobj) const {
 	auto target = name2ID.find(sobj->name);
 	if (target == name2ID.cend())
 		return 0;

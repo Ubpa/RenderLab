@@ -2,31 +2,37 @@
 #define _ENGINE_COMPONENT_COMPONENT_H_
 
 #include <CppUtil/Basic/Element.h>
-#include <functional>
-
-#define COMPONENT_SETUP(CLASS) \
-ELE_SETUP_SELF_DEL(CLASS) \
-virtual void InitAfterGenSharePtr() { AttachSObj(GetSObj()); } 
+#include <CppUtil/Engine/SObj.h>
 
 namespace CppUtil {
 	namespace Engine {
 		class SObj;
 
-		class Component : public Basic::Element {
-			ELE_SETUP(Component)
+		class ComponentBase : public Basic::ElementBase {
+		protected:
+			ComponentBase(Basic::Ptr<SObj> sobj) : wSObj(sobj) { }
+			virtual ~ComponentBase() = default;
+
 		public:
-			Component(Basic::Ptr<SObj> sobj);
-
-			void Detach();
-			void AttachSObj(Basic::Ptr<SObj> sobj);
-
-			Basic::Ptr<SObj> GetSObj() const { return wSObj.lock(); }
-			bool IsEnabled() const { return isEnabled; }
-			void SetEnable(bool isEnabled) { this->isEnabled = isEnabled; }
+			const Basic::Ptr<SObj> GetSObj() const { return wSObj.lock(); }
+			void SetSObj(Basic::Ptr<SObj> sobj) { wSObj = sobj; }
 
 		private:
 			Basic::WPtr<SObj> wSObj;
-			bool isEnabled;
+		};
+
+		template<typename ImplT, typename BaseT = ComponentBase>
+		class Component : public Basic::Element<ImplT, BaseT> {
+		protected:
+			Component(Basic::Ptr<SObj> sobj) : Element<ImplT, BaseT>(sobj) { }
+			virtual ~Component() = default;
+
+		protected:
+			virtual void Init() override {
+				auto sobj = GetSObj();
+				if (sobj)
+					sobj->AttachComponent(This());
+			}
 		};
 	}
 }

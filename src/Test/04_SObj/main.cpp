@@ -11,25 +11,25 @@ using namespace CppUtil::Basic;
 using namespace std;
 
 int main() {
-	SObj::Ptr sobj1 = ToPtr(new SObj(nullptr, "sobj_test"));
+	auto sobj1 = SObj::New(nullptr, "sobj_test");
 
 	cout << "new camera2, not attach" << endl;
-	CmptCamera::Ptr camera2 = ToPtr(new CmptCamera(nullptr));
+	auto camera2 = CmptCamera::New(nullptr);
 	cout << "camera2 have " << (camera2->GetSObj() ? "" : "not ") << "sobj." << endl;
 
 	{
-		SObj::Ptr sobj2 = ToPtr(new SObj(nullptr, "sobj_test"));
+		auto sobj2 = SObj::New(nullptr, "sobj_test");
 
 		cout << "enter scope" << endl << endl;
 
 		cout << "sobj1 have " << sobj1->GetAllComponents().size() << " components." << endl;
 
 		cout << "camera0 attach to sobj1" << endl;
-		CmptCamera::Ptr camera0 = ToPtr(new CmptCamera(sobj1));
+		auto camera0 = CmptCamera::New(sobj1);
 
 		cout << "camera1 attach to sobj1" << endl;
 		// 因为 sobj1 只能有一个 camera component，所以先会跟 camera0 解绑定
-		CmptCamera::Ptr camera1 = ToPtr(new CmptCamera(sobj1));
+		auto camera1 = CmptCamera::New(sobj1);
 
 		cout << "camera0 have " << (camera0->GetSObj() ? "" : "not ") << "sobj." << endl;
 		cout << "camera1 have " << (camera1->GetSObj() ? "" : "not ") << "sobj." << endl;
@@ -37,13 +37,13 @@ int main() {
 		cout << "sobj1 have " << sobj1->GetAllComponents().size() << " components." << endl;
 
 		cout << "datach camera1" << endl;
-		camera1->Detach();
+		camera1->GetSObj()->DetachComponent(camera1);
 		cout << "camera1 have " << (camera1->GetSObj() ? "" : "not ") << "sobj." << endl;
 		cout << "sobj1 have " << (sobj1->GetComponent<CmptCamera>() ? "" : "not ") << "a [ Camera ] component." << endl;
 
 
 		cout << "camera2 attach to sobj2" << endl;
-		camera2->AttachSObj(sobj2);
+		sobj2->AttachComponent(camera2);
 		cout << "camera2 have " << (camera2->GetSObj() ? "" : "not ") << "sobj." << endl;
 		cout << "sobj2 have " << sobj2->GetAllComponents().size() << " components." << endl;
 

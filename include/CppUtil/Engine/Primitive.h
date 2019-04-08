@@ -14,7 +14,7 @@ namespace CppUtil {
 		template<typename ImplT>
 		class Primitive : public Basic::Element<ImplT, PrimitiveBase> {
 		protected:
-			Primitive() = default;
+			using Element<ImplT, PrimitiveBase>::Element;
 			virtual ~Primitive() = default;
 		};
 	}

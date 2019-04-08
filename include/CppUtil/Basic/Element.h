@@ -18,7 +18,7 @@ namespace CppUtil {
 		template<typename ImplT, typename BaseT = ElementBase>
 		class Element : public HeapObj<ImplT, BaseT> {
 		protected:
-			Element() = default;
+			using HeapObj<ImplT, BaseT>::HeapObj;
 			virtual ~Element() = default;
 
 		public:

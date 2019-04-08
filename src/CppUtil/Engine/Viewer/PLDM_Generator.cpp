@@ -128,7 +128,7 @@ void PLDM_Generator::Visit(Scene::Ptr scene) {
 	scene->SetWriteLock(false);
 }
 
-void PLDM_Generator::Visit(SObj::Ptr sobj) {
+void PLDM_Generator::Visit(Ptr<SObj> sobj) {
 	auto geometry = sobj->GetComponent<CmptGeometry>();
 	auto children = sobj->GetChildren();
 	// 这种情况下不需要 transform

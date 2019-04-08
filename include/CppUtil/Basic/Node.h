@@ -7,14 +7,17 @@
 
 namespace CppUtil {
 	namespace Basic {
-		template<typename ImplT>
-		class Node : public Element<ImplT> {
+		template<typename ImplT, typename BaseT = ElementBase>
+		class Node : public Element<ImplT, BaseT> {
 		protected:
-			Node(Ptr parent = nullptr)
+			using Element<ImplT, BaseT>::Element;
+
+			Node(Ptr<ImplT> parent = nullptr)
 				: parent(parent) { }
+
 		public:
 			// 解除 child 的原父子关系，然后再设置新父子关系 
-			void AddChild(Ptr child) {
+			void AddChild(Ptr<ImplT> child) {
 				if (!child->parent.expired())
 					child->parent.lock()->DelChild(child);
 
@@ -22,18 +25,18 @@ namespace CppUtil {
 				children.insert(child);
 			}
 
-			void DelChild(Ptr child) {
+			void DelChild(Ptr<ImplT> child) {
 				if (child->parent.lock() == This()) {
 					children.erase(child);
 					child->parent.reset();
 				}
 			}
 
-			const Ptr GetParent() const { return parent.lock(); }
-			const std::set<Ptr> & GetChildren() const { return children; }
+			const Ptr<ImplT> GetParent() const { return parent.lock(); }
+			const std::set<Ptr<ImplT>> & GetChildren() const { return children; }
 
-			bool IsDescendantOf(Ptr node) const {
-				if (CThis() == node)
+			bool IsDescendantOf(Ptr<ImplT> node) const {
+				if (This() == node)
 					return true;
 
 				if (parent.expired())
@@ -42,19 +45,19 @@ namespace CppUtil {
 				return parent.lock()->IsDescendantOf(node);
 			}
 
-			bool IsAncestorOf(Ptr node) const {
-				return node->IsDescendantOf(CThis());
+			bool IsAncestorOf(Ptr<ImplT> node) const {
+				return node->IsDescendantOf(This());
 			}
 
 		public:
-			void TraverseAccept(Basic::Ptr<Visitor::VisitorBase> visitor) {
-				visitor->Visit(This());
+			void TraverseAccept(Ptr<VisitorBase> visitor) {
+				Element<ImplT, BaseT>::Accept(visitor);
 				for (auto child : GetChildren())
 					child->TraverseAccept(visitor);
 			}
 
-			void AscendAccept(Basic::Ptr<Visitor::VisitorBase> visitor) {
-				visitor->Visit(This());
+			void AscendAccept(Ptr<VisitorBase> visitor) {
+				Element<ImplT, BaseT>::Accept(visitor);
 				const auto parent = GetParent();
 				if (parent)
 					parent->AscendAccept(visitor);
@@ -64,12 +67,12 @@ namespace CppUtil {
 			virtual void Init() override {
 				const auto parent = GetParent();
 				if (parent)
-					parent->AddChild(visitor);
+					parent->AddChild(This());
 			}
 
 		private:
-			WPtr parent;
-			std::set<Ptr> children;
+			WPtr<ImplT> parent;
+			std::set<Ptr<ImplT>> children;
 		};
 	}
 }

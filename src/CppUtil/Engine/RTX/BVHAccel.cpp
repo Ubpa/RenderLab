@@ -90,14 +90,14 @@ const Transform & BVHAccel::GetEleL2WMat(Element::Ptr element) const {
 	return target->second;
 }
 
-const Transform & BVHAccel::GetSObjL2WMat(SObj::Ptr sobj) const {
+const Transform & BVHAccel::GetSObjL2WMat(Ptr<SObj> sobj) const {
 	const auto target = sobjL2W.find(sobj);
 	assert(target != sobjL2W.cend());
 
 	return target->second;
 }
 
-const SObj::Ptr BVHAccel::GetSObj(Element::Ptr element) const{
+const Ptr<SObj> BVHAccel::GetSObj(Element::Ptr element) const{
 	auto triangle = Triangle::Ptr::Cast(element);
 	Primitive::Ptr primitive = triangle ? static_cast<Primitive::Ptr>(triangle->GetMesh()) : Primitive::Ptr::Cast(element);
 
@@ -125,7 +125,7 @@ void BVHAccel::Clear() {
 	bvhRoot = nullptr;
 }
 
-void BVHAccel::Init(SObj::Ptr root) {
+void BVHAccel::Init(Ptr<SObj> root) {
 	Clear();
 
 	auto geos = root->GetComponentsInChildren<CmptGeometry>();
