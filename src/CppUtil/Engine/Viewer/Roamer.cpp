@@ -43,7 +43,7 @@ void Roamer::SetWH(int w, int h) {
 
 void Roamer::ListenerInit() {
 	// log mouse pos and track mouse
-	auto MRB_PressOp = ToPtr(new LambdaOp([this]() {
+	auto MRB_PressOp = LambdaOp_New([this]() {
 		if (this->lock)
 			return;
 
@@ -59,11 +59,11 @@ void Roamer::ListenerInit() {
 		pOGWL->Reg("lockY", y);
 
 		QApplication::setOverrideCursor(Qt::BlankCursor);
-	}));
+	});
 	EventMngr::GetInstance().Reg(Qt::RightButton, (void*)this->GetOGLW(), EventMngr::MOUSE_PRESS, MRB_PressOp);
 
 	// lock mouse and rotate camera
-	auto mouseMoveOp = ToPtr(new LambdaOp([this]() {
+	auto mouseMoveOp = LambdaOp_New([this]() {
 		if (this->lock)
 			return;
 
@@ -89,11 +89,11 @@ void Roamer::ListenerInit() {
 		UpdateCamera();
 
 		QCursor::setPos(pOGWL->mapToGlobal(QPoint(lockX, lockY)));
-	}));
+	});
 	EventMngr::GetInstance().Reg(Qt::NoButton, (void*)this->GetOGLW(), EventMngr::MOUSE_MOVE, mouseMoveOp);
 
 	// release mouse cursor
-	auto MRB_ReleaseOp = ToPtr(new LambdaOp([this]() {
+	auto MRB_ReleaseOp = LambdaOp_New([this]() {
 		if (this->lock)
 			return;
 
@@ -104,11 +104,11 @@ void Roamer::ListenerInit() {
 		pOGWL->Reg("lock", false);
 
 		QApplication::restoreOverrideCursor();
-	}));
+	});
 	EventMngr::GetInstance().Reg(Qt::RightButton, (void*)this->GetOGLW(), EventMngr::MOUSE_RELEASE, MRB_ReleaseOp);
 
 	// wheel
-	auto wheelOp = ToPtr(new LambdaOp([this]() {
+	auto wheelOp = LambdaOp_New([this]() {
 		if (this->lock)
 			return;
 
@@ -118,20 +118,20 @@ void Roamer::ListenerInit() {
 
 		this->GetCamera()->ProcessMouseScroll(angle*0.1f);
 		UpdateCamera();
-	}));
+	});
 	EventMngr::GetInstance().Reg(Qt::NoButton, (void*)this->GetOGLW(), EventMngr::MOUSE_WHEEL, wheelOp);
 
 	// Move
 	size_t moveKey[] = {Qt::Key_W,Qt::Key_S,Qt::Key_A,Qt::Key_D,Qt::Key_Q,Qt::Key_E };
 	for (size_t i = 0; i < 6; i++) {
-		auto op = ToPtr(new LambdaOp([this, moveKey, i]() {
+		auto op = LambdaOp_New([this, moveKey, i]() {
 			if (this->lock)
 				return;
 
 			auto pOGLW = this->GetOGLW();
 			this->GetCamera()->ProcessKeyboard(OpenGL::Camera::ENUM_Movement(OpenGL::Camera::MOVE_FORWARD + i), 0.015f);
 			UpdateCamera();
-		}));
+		});
 
 		EventMngr::GetInstance().Reg(moveKey[i], (void*)this->GetOGLW(), EventMngr::KB_PRESS, op);
 	}

@@ -45,7 +45,7 @@ namespace CppUtil {
 
 		class CmptTransform;
 
-		class SObjSaver : public Basic::Visitor<SObjSaver>{
+		class SObjSaver : public Basic::Visitor{
 		public:
 			SObjSaver();
 

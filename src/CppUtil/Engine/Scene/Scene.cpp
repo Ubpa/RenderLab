@@ -37,7 +37,7 @@ bool Scene::GenID() {
 	ID2name.clear();
 
 	bool isFailed = false;
-	auto visitor = VisitorDynamic::New();
+	auto visitor = Visitor::New();
 	visitor->Reg([&](Ptr<SObj> sobj) {
 		auto target = name2ID.find(sobj->name);
 		if (target != name2ID.end()) {

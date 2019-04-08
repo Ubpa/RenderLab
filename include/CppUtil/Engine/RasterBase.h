@@ -1,7 +1,7 @@
 #ifndef _CPPUTIL_ENGINE_VIEWER_RASTER_BASE_H_
 #define _CPPUTIL_ENGINE_VIEWER_RASTER_BASE_H_
 
-#include <CppUtil/Basic/EleVisitor.h>
+#include <CppUtil/Basic/Visitor.h>
 
 #include <CppUtil/OpenGL/VAO.h>
 #include <CppUtil/OpenGL/Shader.h>
@@ -33,18 +33,18 @@ namespace CppUtil {
 		class BSDF_MetalWorkflow;
 		class BSDF_FrostedGlass;
 
-		class RasterBase : public Basic::EleVisitor {
-			ELEVISITOR_SETUP(RasterBase)
-		public:
+		class RasterBase : public Basic::Visitor {
+		protected:
 			RasterBase(Basic::Ptr<Scene> scene);
+			virtual ~RasterBase() = default;
 
 		public:// Get Resources
-			OpenGL::VAO GetSphereVAO() const { return VAO_P3N3T2T3_Sphere; }
-			OpenGL::VAO GetPlaneVAO() const { return VAO_P3N3T2T3_Plane; }
+			const OpenGL::VAO GetSphereVAO() const { return VAO_P3N3T2T3_Sphere; }
+			const OpenGL::VAO GetPlaneVAO() const { return VAO_P3N3T2T3_Plane; }
 			// get or reg
-			OpenGL::Texture GetTex(Basic::CPtr<Basic::Image> img);
+			const OpenGL::Texture GetTex(Basic::CPtr<Basic::Image> img);
 			// get or reg
-			OpenGL::VAO GetMeshVAO(Basic::CPtr<TriMesh> mesh);
+			const OpenGL::VAO GetMeshVAO(Basic::CPtr<TriMesh> mesh);
 
 		protected:// Use for SubClass
 			void Draw();

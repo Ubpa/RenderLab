@@ -1,16 +1,19 @@
 #ifndef _UI_ATTRIBUTE_H_
 #define _UI_ATTRIBUTE_H_
 
-#include <CppUtil/Basic/HeapObj.h>
 #include <CppUtil/Basic/TypeMap.h>
+
+#include <CppUtil/Basic/Ptr.h>
 
 #include <qobject.h>
 #include <qtoolbox.h>
 
+#include <map>
+
 namespace CppUtil {
 	namespace Engine {
 		class SObj;
-		class Component;
+		class ComponentBase;
 	}
 }
 
@@ -18,14 +21,14 @@ namespace CppUtil {
 namespace Ui {
 	class Grid;
 
-	class Attribute : public CppUtil::Basic::HeapObj {
-		HEAP_OBJ_SETUP(Attribute)
-	private:
+	class Attribute final {
+	protected:
 		Attribute();
+
 	public:
 		static Attribute * GetInstance() {
-			static Attribute * instance = new Attribute;
-			return instance;
+			static Attribute instance;
+			return &instance;
 		}
 
 	public:

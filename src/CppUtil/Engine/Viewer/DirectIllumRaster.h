@@ -5,11 +5,19 @@
 
 namespace CppUtil {
 	namespace Engine {
-		class Raster : public RasterBase {
-			ELEVISITOR_SETUP(Raster)
+		class DirectIllumRaster final : public RasterBase {
 		public:
-			Raster(Basic::Ptr<Scene> scene) : RasterBase(scene) { }
+			DirectIllumRaster(Basic::Ptr<Scene> scene) : RasterBase(scene) { }
 
+		public:
+			static const Basic::Ptr<DirectIllumRaster> New(Basic::Ptr<Scene> scene) {
+				return Basic::New<DirectIllumRaster>(scene);
+			}
+
+		protected:
+			virtual ~DirectIllumRaster() = default;
+
+		public:
 			void Draw();
 			void Init();
 

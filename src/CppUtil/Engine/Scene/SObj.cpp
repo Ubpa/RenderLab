@@ -35,7 +35,7 @@ const std::vector<Ptr<ComponentBase>> SObj::GetAllComponents() const {
 const Transform SObj::GetLocalToWorldMatrix() {
 	Transform tsfm(1.0f);
 
-	auto getMatVisitor = VisitorDynamic::New();
+	auto getMatVisitor = Visitor::New();
 	getMatVisitor->Reg([&](Ptr<SObj> sobj) {
 		auto cmpt = sobj->GetComponent<CmptTransform>();
 		if (cmpt != nullptr)

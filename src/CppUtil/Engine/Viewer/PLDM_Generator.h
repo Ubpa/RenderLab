@@ -1,7 +1,7 @@
 #ifndef _CPPUTIL_ENGINE_VIEWER_PLDM_GENERATOR_H_
 #define _CPPUTIL_ENGINE_VIEWER_PLDM_GENERATOR_H_
 
-#include <CppUtil/Basic/EleVisitor.h>
+#include <CppUtil/Basic/Visitor.h>
 #include <CppUtil/OpenGL/FBO.h>
 #include <CppUtil/OpenGL/Texture.h>
 #include <CppUtil/OpenGL/VAO.h>
@@ -24,14 +24,21 @@ namespace CppUtil {
 
 
 		// Point Light Depth Map Generator
-		class PLDM_Generator: public Basic::EleVisitor {
-			ELEVISITOR_SETUP(PLDM_Generator)
+		class PLDM_Generator: public Basic::Visitor {
 		public:
 			PLDM_Generator(RasterBase * raster);
 
-			void Init();
+		public:
+			static const Basic::Ptr<PLDM_Generator> New(RasterBase * raster) {
+				return Basic::New<PLDM_Generator>(raster);
+			}
 
-			OpenGL::Texture GetDepthCubeMap(Basic::CPtr<CmptLight> light) const;
+		protected:
+			virtual ~PLDM_Generator() = default;
+			
+		public:
+			void Init();
+			const OpenGL::Texture GetDepthCubeMap(Basic::CPtr<CmptLight> light) const;
 			float GetLightFar() const { return lightFar; }
 
 		private:

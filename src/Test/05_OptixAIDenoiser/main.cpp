@@ -7,7 +7,7 @@ using namespace CppUtil::Engine;
 using namespace std;
 
 int main() {
-	auto img = ToPtr(new Image((ROOT_PATH + "/data/out/frastedGlass8.png").c_str()));
+	auto img = Image::New(ROOT_PATH + "/data/out/frastedGlass8.png");
 	
 	OptixAIDenoiser::GetInstance().Denoise(img);
 	

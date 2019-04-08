@@ -34,7 +34,7 @@ void SObj::DetachComponent(Basic::Ptr<T> component) {
 
 template<typename T>
 const CppUtil::Basic::Ptr<T> SObj::GetComponentInChildren() {
-	auto visitor = Basic::VisitorDynamic::New();
+	auto visitor = Basic::Visitor::New();
 
 	Basic::Ptr<T> componentOfT = nullptr;
 	visitor->Reg([&componentOfT, visitor](Basic::Ptr<SObj> sobj) {
@@ -57,7 +57,7 @@ const CppUtil::Basic::Ptr<T> SObj::GetComponentInChildren() {
 
 template<typename T>
 const std::vector<CppUtil::Basic::Ptr<T> > SObj::GetComponentsInChildren() {
-	auto visitor = Basic::VisitorDynamic::New();
+	auto visitor = Basic::Visitor::New();
 
 	std::vector<Basic::Ptr<T>> componentsOfT;
 

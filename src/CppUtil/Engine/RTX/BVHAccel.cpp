@@ -19,7 +19,7 @@ BVHAccel::BVHAccel()
 
 // ------------ BVHInitVisitor ------------
 
-class BVHAccel::BVHInitVisitor : public Visitor<BVHAccel::BVHInitVisitor> {
+class BVHAccel::BVHInitVisitor : public Visitor {
 public:
 	BVHInitVisitor(BVHAccel * holder)
 		: holder(holder) {

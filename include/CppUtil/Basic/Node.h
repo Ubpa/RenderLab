@@ -35,7 +35,7 @@ namespace CppUtil {
 			const Ptr<ImplT> GetParent() const { return parent.lock(); }
 			const std::set<Ptr<ImplT>> & GetChildren() const { return children; }
 
-			bool IsDescendantOf(Ptr<ImplT> node) const {
+			bool IsDescendantOf(CPtr<ImplT> node) const {
 				if (This() == node)
 					return true;
 
@@ -45,18 +45,18 @@ namespace CppUtil {
 				return parent.lock()->IsDescendantOf(node);
 			}
 
-			bool IsAncestorOf(Ptr<ImplT> node) const {
+			bool IsAncestorOf(CPtr<ImplT> node) const {
 				return node->IsDescendantOf(This());
 			}
 
 		public:
-			void TraverseAccept(Ptr<VisitorBase> visitor) {
+			void TraverseAccept(Ptr<Visitor> visitor) {
 				Element<ImplT, BaseT>::Accept(visitor);
 				for (auto child : GetChildren())
 					child->TraverseAccept(visitor);
 			}
 
-			void AscendAccept(Ptr<VisitorBase> visitor) {
+			void AscendAccept(Ptr<Visitor> visitor) {
 				Element<ImplT, BaseT>::Accept(visitor);
 				const auto parent = GetParent();
 				if (parent)

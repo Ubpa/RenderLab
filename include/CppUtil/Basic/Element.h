@@ -8,13 +8,14 @@ namespace CppUtil {
 	namespace Basic {
 		class ElementBase : public HeapObjBase {
 		public:
-			virtual void Accept(Ptr<VisitorBase> visitor) = 0;
+			virtual void Accept(Ptr<Visitor> visitor) = 0;
 
 		protected:
 			ElementBase() = default;
 			virtual ~ElementBase() = default;
 		};
 
+		// ImplT 需要一直传递到最终的类，然后用 final
 		template<typename ImplT, typename BaseT = ElementBase>
 		class Element : public HeapObj<ImplT, BaseT> {
 		protected:
@@ -22,7 +23,7 @@ namespace CppUtil {
 			virtual ~Element() = default;
 
 		public:
-			virtual void Accept(Ptr<VisitorBase> visitor) override {
+			virtual void Accept(Ptr<Visitor> visitor) override {
 				visitor->Visit(This());
 			}
 		};

@@ -22,10 +22,10 @@ using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
 
 Picker::Picker(Viewer * viewer)
-	: viewer(viewer), rayIntersector(ToPtr(new RayIntersector)) { }
+	: viewer(viewer), rayIntersector(RayIntersector::New()) { }
 
 void Picker::Init() {
-	auto MRB_PressOp = ToPtr(new LambdaOp([this]() {
+	auto MRB_PressOp = LambdaOp_New([this]() {
 		Viewer * viewer = this->GetViewer();
 		auto pOGWL = viewer->GetOGLW();
 		auto camera = viewer->GetRoamer()->GetCamera();
@@ -44,6 +44,6 @@ void Picker::Init() {
 		viewer->GetScene()->GetRoot()->Accept(rayIntersector);
 		auto closestRst = rayIntersector->GetRst();
 		Ui::Attribute::GetInstance()->SetSObj(closestRst.closestSObj);
-	}));
+	});
 	EventMngr::GetInstance().Reg(Qt::LeftButton, (void*)viewer->GetOGLW(), EventMngr::MOUSE_PRESS, MRB_PressOp);
 }

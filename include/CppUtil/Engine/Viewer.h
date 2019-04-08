@@ -11,19 +11,26 @@ namespace CppUtil {
 	namespace Engine {
 		class Scene;
 
-		class Raster;
+		class DirectIllumRaster;
 		class Roamer;
 		class Picker;
 
-		class Viewer : public Basic::HeapObj {
-			HEAP_OBJ_SETUP(Viewer)
+		class Viewer final : public Basic::HeapObj<Viewer> {
 		public:
 			Viewer(QT::RawAPI_OGLW * pOGLW, Basic::Ptr<Scene> scene);
 
 		public:
+			static const Basic::Ptr<Viewer> New(QT::RawAPI_OGLW * pOGLW, Basic::Ptr<Scene> scene) {
+				return Basic::New<Viewer>(pOGLW, scene);
+			}
+
+		protected:
+			virtual ~Viewer() = default;
+
+		public:
 			QT::RawAPI_OGLW * GetOGLW() const { return pOGLW; }
 			Basic::Ptr<Scene> GetScene() const { return scene; }
-			Basic::Ptr<Raster> GetRaster() const { return raster; }
+			Basic::Ptr<DirectIllumRaster> GetRaster() const { return raster; }
 			Basic::Ptr<Roamer> GetRoamer() const { return roamer; }
 			Basic::Ptr<Picker> GetPicker() const { return picker; }
 
@@ -34,7 +41,7 @@ namespace CppUtil {
 			QT::RawAPI_OGLW * pOGLW;
 			Basic::Ptr<Picker> picker;
 			Basic::Ptr<Scene> scene;
-			Basic::Ptr<Raster> raster;
+			Basic::Ptr<DirectIllumRaster> raster;
 			Basic::Ptr<Roamer> roamer;
 		};
 	}

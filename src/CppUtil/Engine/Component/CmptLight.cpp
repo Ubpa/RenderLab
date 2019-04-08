@@ -15,7 +15,7 @@ Transform CmptLight::GetLightToWorldMatrixWithoutScale() const {
 	if (!sobj)
 		return tsfm;
 
-	auto visitor = VisitorDynamic::New();
+	auto visitor = Visitor::New();
 	visitor->Reg([&tsfm](Ptr<SObj> sobj) {
 		auto cmptTransform = sobj->GetComponent<CmptTransform>();
 		if (!cmptTransform)

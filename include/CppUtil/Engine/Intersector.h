@@ -5,10 +5,10 @@
 
 namespace CppUtil {
 	namespace Engine {
-		class IntersectorBase : public Basic::VisitorBase {
+		class Intersector : public Basic::Visitor {
 		protected:
-			IntersectorBase() = default;
-			virtual ~IntersectorBase() = default;
+			Intersector() = default;
+			virtual ~Intersector() = default;
 
 		public:
 			struct Rst {
@@ -20,13 +20,6 @@ namespace CppUtil {
 			protected:
 				bool isIntersect;
 			};
-		};
-
-		template<typename ImplT, typename BaseT = IntersectorBase>
-		class Intersector : public Basic::Visitor<ImplT, BaseT> {
-		protected:
-			using Visitor<ImplT, BaseT>::Visitor;
-			virtual ~Intersector() = default;
 		};
 	}
 }

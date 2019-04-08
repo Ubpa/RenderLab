@@ -1,6 +1,6 @@
 #include <CppUtil/Engine/Viewer.h>
 
-#include "Raster.h"
+#include "DirectIllumRaster.h"
 #include <CppUtil/Engine/Roamer.h>
 #include "Picker.h"
 
@@ -12,26 +12,26 @@ using namespace CppUtil::Engine;
 using namespace CppUtil::QT;
 using namespace CppUtil::Basic;
 
-Viewer::Viewer(RawAPI_OGLW * pOGLW, CppUtil::Basic::Ptr<Scene> scene)
-	: pOGLW(pOGLW), scene(scene), raster(ToPtr(new Raster(scene))), roamer(ToPtr(new Roamer(pOGLW))), picker(ToPtr(new Picker(this))) {
-	pOGLW->SetInitOp(ToPtr(new LambdaOp([this]() {
+Viewer::Viewer(RawAPI_OGLW * pOGLW, Ptr<Scene> scene)
+	: pOGLW(pOGLW), scene(scene), raster(DirectIllumRaster::New(scene)), roamer(Roamer::New(pOGLW)), picker(Picker::New(this)) {
+	pOGLW->SetInitOp(LambdaOp_New([this]() {
 		this->GetRoamer()->Init();
 		this->GetRaster()->Init();
 		this->GetPicker()->Init();
-	})));
+	}));
 
-	pOGLW->SetPaintOp(ToPtr(new LambdaOp([this]() {
+	pOGLW->SetPaintOp(LambdaOp_New([this]() {
 		this->GetRaster()->Draw();
-	})));
+	}));
 
-	pOGLW->SetResizeOp(ToPtr(new LambdaOp([this]() {
+	pOGLW->SetResizeOp(LambdaOp_New([this]() {
 		auto pOGLW = this->GetOGLW();
 
 		int w = pOGLW->w;
 		int h = pOGLW->h;
 
 		this->GetRoamer()->SetWH(w, h);
-	})));
+	}));
 }
 
 void Viewer::SetLock(bool isLock) {

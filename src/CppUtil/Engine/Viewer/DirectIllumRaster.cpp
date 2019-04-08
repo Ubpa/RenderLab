@@ -1,4 +1,4 @@
-#include "Raster.h"
+#include "DirectIllumRaster.h"
 
 #include <CppUtil/Engine/Scene.h>
 #include <CppUtil/Engine/SObj.h>
@@ -43,30 +43,30 @@ using namespace std;
 
 const string rootPath = ROOT_PATH;
 
-void Raster::Draw() {
+void DirectIllumRaster::Draw() {
 	RasterBase::Draw();
 }
 
-void Raster::Init() {
+void DirectIllumRaster::Init() {
 	RasterBase::Init();
 
 	InitShaders();
 }
 
-void Raster::InitShaders() {
+void DirectIllumRaster::InitShaders() {
 	InitShaderBasic();
 	InitShaderDiffuse();
 	InitShaderMetalWorkflow();
 	InitShaderFrostedGlass();
 }
 
-void Raster::InitShaderBasic() {
+void DirectIllumRaster::InitShaderBasic() {
 	shader_basic = Shader(rootPath + str_Basic_P3_vs, rootPath + str_Basic_fs);
 
 	BindBlock(shader_basic);
 }
 
-void Raster::InitShaderDiffuse() {
+void DirectIllumRaster::InitShaderDiffuse() {
 	shader_diffuse = Shader(rootPath + str_Basic_P3N3T2_vs, rootPath + "data/shaders/Engine/BSDF_Diffuse.fs");
 	
 	BindBlock(shader_diffuse);
@@ -76,7 +76,7 @@ void Raster::InitShaderDiffuse() {
 	SetShaderForShadow(shader_diffuse, 1);
 }
 
-void Raster::InitShaderMetalWorkflow() {
+void DirectIllumRaster::InitShaderMetalWorkflow() {
 	shader_metalWorkflow = Shader(rootPath + str_Basic_P3N3T2T3_vs, rootPath + "data/shaders/Engine/BSDF_MetalWorkflow.fs");
 
 	BindBlock(shader_metalWorkflow);
@@ -90,7 +90,7 @@ void Raster::InitShaderMetalWorkflow() {
 	SetShaderForShadow(shader_metalWorkflow, 5);
 }
 
-void Raster::InitShaderFrostedGlass() {
+void DirectIllumRaster::InitShaderFrostedGlass() {
 	shader_frostedGlass = Shader(rootPath + str_Basic_P3N3T2T3_vs, rootPath + "data/shaders/Engine/BSDF_FrostedGlass.fs");
 
 	BindBlock(shader_frostedGlass);
@@ -103,7 +103,7 @@ void Raster::InitShaderFrostedGlass() {
 	SetShaderForShadow(shader_frostedGlass, 4);
 }
 
-void Raster::Visit(BSDF_Diffuse::Ptr bsdf) {
+void DirectIllumRaster::Visit(Ptr<BSDF_Diffuse> bsdf) {
 	SetCurShader(shader_diffuse);
 
 	string strBSDF = "bsdf.";
@@ -118,31 +118,31 @@ void Raster::Visit(BSDF_Diffuse::Ptr bsdf) {
 	SetPointLightDepthMap(shader_diffuse, 1);
 }
 
-void Raster::Visit(BSDF_Glass::Ptr bsdf) {
+void DirectIllumRaster::Visit(Ptr<BSDF_Glass> bsdf) {
 	SetCurShader(shader_basic);
 
 	shader_basic.SetVec3f("color", bsdf->transmittance);
 }
 
-void Raster::Visit(BSDF_Mirror::Ptr bsdf) {
+void DirectIllumRaster::Visit(Ptr<BSDF_Mirror> bsdf) {
 	SetCurShader(shader_basic);
 
 	shader_basic.SetVec3f("color", bsdf->reflectance);
 }
 
-void Raster::Visit(BSDF_Emission::Ptr bsdf) {
+void DirectIllumRaster::Visit(Ptr<BSDF_Emission> bsdf) {
 	SetCurShader(shader_basic);
 
 	shader_basic.SetVec3f("color", bsdf->GetEmission());
 }
 
-void Raster::Visit(BSDF_CookTorrance::Ptr bsdf) {
+void DirectIllumRaster::Visit(Ptr<BSDF_CookTorrance> bsdf) {
 	SetCurShader(shader_basic);
 
 	shader_basic.SetVec3f("color", bsdf->refletance);
 }
 
-void Raster::Visit(BSDF_MetalWorkflow::Ptr bsdf) {
+void DirectIllumRaster::Visit(Ptr<BSDF_MetalWorkflow> bsdf) {
 	SetCurShader(shader_metalWorkflow);
 
 	string strBSDF = "bsdf.";
@@ -151,7 +151,7 @@ void Raster::Visit(BSDF_MetalWorkflow::Ptr bsdf) {
 	shader_metalWorkflow.SetFloat(strBSDF + "roughnessFactor", bsdf->roughnessFactor);
 
 	const int texNum = 5;
-	Image::CPtr imgs[texNum] = { bsdf->albedoTexture, bsdf->metallicTexture, bsdf->roughnessTexture, bsdf->aoTexture, bsdf->normalTexture };
+	CPtr<Image> imgs[texNum] = { bsdf->albedoTexture, bsdf->metallicTexture, bsdf->roughnessTexture, bsdf->aoTexture, bsdf->normalTexture };
 	string names[texNum] = { "Albedo", "Metallic", "Roughness", "AO", "Normal" };
 
 	for (int i = 0; i < texNum; i++) {
@@ -167,7 +167,7 @@ void Raster::Visit(BSDF_MetalWorkflow::Ptr bsdf) {
 	SetPointLightDepthMap(shader_metalWorkflow, texNum);
 }
 
-void Raster::Visit(BSDF_FrostedGlass::Ptr bsdf) {
+void DirectIllumRaster::Visit(Ptr<BSDF_FrostedGlass> bsdf) {
 	SetCurShader(shader_frostedGlass);
 
 	string strBSDF = "bsdf.";
@@ -175,7 +175,7 @@ void Raster::Visit(BSDF_FrostedGlass::Ptr bsdf) {
 	shader_frostedGlass.SetFloat(strBSDF + "roughnessFactor", bsdf->roughnessFactor);
 
 	const int texNum = 4;
-	Image::CPtr imgs[texNum] = { bsdf->colorTexture, bsdf->roughnessTexture, bsdf->aoTexture, bsdf->normalTexture };
+	CPtr<Image> imgs[texNum] = { bsdf->colorTexture, bsdf->roughnessTexture, bsdf->aoTexture, bsdf->normalTexture };
 	string names[texNum] = { "Color", "Roughness", "AO", "Normal" };
 
 	for (int i = 0; i < texNum; i++) {

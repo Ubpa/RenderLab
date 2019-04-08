@@ -196,23 +196,23 @@ void Tree::contextMenuEvent(QContextMenuEvent *event) {
 
 	genObjMenu->addAction("Cube", this, []() {
 		auto sobj = Hierarchy::GetInstance()->CreateSObj("Cube");
-		auto transform = ToPtr(new CmptTransform(sobj));
-		auto geometry = ToPtr(new CmptGeometry(sobj, TriMesh::GenCube()));
-		auto material = ToPtr(new CmptMaterial(sobj, ToPtr(new BSDF_Diffuse)));
+		auto transform = CmptTransform::New(sobj);
+		auto geometry = CmptGeometry::New(sobj, TriMesh::GenCube());
+		auto material = CmptMaterial::New(sobj, BSDF_Diffuse::New());
 	});
 
 	genObjMenu->addAction("Sphere", this, []() {
 		auto sobj = Hierarchy::GetInstance()->CreateSObj("Sphere");
-		auto transform = ToPtr(new CmptTransform(sobj));
-		auto geometry = ToPtr(new CmptGeometry(sobj, ToPtr(new Sphere)));
-		auto material = ToPtr(new CmptMaterial(sobj, ToPtr(new BSDF_Diffuse)));
+		auto transform = CmptTransform::New(sobj);
+		auto geometry = CmptGeometry::New(sobj, Sphere::New());
+		auto material = CmptMaterial::New(sobj, BSDF_Diffuse::New());
 	});
 
 	genObjMenu->addAction("Plane", this, []() {
 		auto sobj = Hierarchy::GetInstance()->CreateSObj("Plane");
-		auto transform = ToPtr(new CmptTransform(sobj));
-		auto geometry = ToPtr(new CmptGeometry(sobj, ToPtr(new Plane)));
-		auto material = ToPtr(new CmptMaterial(sobj, ToPtr(new BSDF_Diffuse)));
+		auto transform = CmptTransform::New(sobj);
+		auto geometry = CmptGeometry::New(sobj, Plane::New());
+		auto material = CmptMaterial::New(sobj, BSDF_Diffuse::New());
 	});
 
 	mainMenu.addMenu(genObjMenu);
@@ -223,25 +223,25 @@ void Tree::contextMenuEvent(QContextMenuEvent *event) {
 
 	genLightMenu->addAction("Area Light", this, []() {
 		auto sobj = Hierarchy::GetInstance()->CreateSObj("Area Light");
-		auto areaLight = ToPtr(new AreaLight);
-		auto light = ToPtr(new CmptLight(sobj, areaLight));
-		auto lightTransform = ToPtr(new CmptTransform(sobj));
-		auto lightPlane = ToPtr(new Plane);
-		auto lightGeo = ToPtr(new CmptGeometry(sobj, lightPlane));
+		auto areaLight = AreaLight::New();
+		auto light = CmptLight::New(sobj, areaLight);
+		auto lightTransform = CmptTransform::New(sobj);
+		auto lightPlane = Plane::New();
+		auto lightGeo = CmptGeometry::New(sobj, lightPlane);
 	});
 
 	genLightMenu->addAction("Point Light", this, []() {
 		auto sobj = Hierarchy::GetInstance()->CreateSObj("Point Light");
-		auto light = ToPtr(new CmptLight(sobj, ToPtr(new PointLight)));
-		auto transform = ToPtr(new CmptTransform(sobj));
+		auto light = CmptLight::New(sobj, PointLight::New());
+		auto transform = CmptTransform::New(sobj);
 	});
 
 	mainMenu.addMenu(genLightMenu);
 
 	mainMenu.addAction("Create Camera", this, []() {
 		auto sobj = Hierarchy::GetInstance()->CreateSObj("Camera");
-		auto transform = ToPtr(new CmptTransform(sobj));
-		auto camera = ToPtr(new CmptCamera(sobj));
+		auto transform = CmptTransform::New(sobj);
+		auto camera = CmptCamera::New(sobj);
 	});
 
 	auto spitLine1 = new QAction;

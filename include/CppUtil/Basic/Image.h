@@ -96,17 +96,17 @@ namespace CppUtil {
 			const RGBAf SampleBilinear(const Point2 & texcoord) const {
 				return SampleBilinear(texcoord.x, texcoord.y);
 			}
-			enum Mode {
+			enum class Mode {
 				NEAREST,
 				BILINEAR,
 			};
 			const RGBAf Sample(float u, float v, Mode mode) const {
 				switch (mode)
 				{
-				case CppUtil::Basic::Image::NEAREST:
+				case Mode::NEAREST:
 					return SampleNearest(u, v);
 					break;
-				case CppUtil::Basic::Image::BILINEAR:
+				case Mode::BILINEAR:
 					return SampleBilinear(u, v);
 					break;
 				default:

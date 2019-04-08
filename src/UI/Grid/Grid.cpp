@@ -272,7 +272,7 @@ void Grid::AddComboBox(const string & text, const vector<string> & items, const 
 	AddRow(btn, combobox);
 }
 
-void Grid::AddEditImage(const string & text, Image::CPtr img, const function<void(Image::Ptr)> & slot) {
+void Grid::AddEditImage(const string & text, CPtr<Image> img, const function<void(Ptr<Image>)> & slot) {
 	auto imgLabel = new QLabel;
 	imgLabel->setAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
 	
@@ -291,7 +291,7 @@ void Grid::AddEditImage(const string & text, Image::CPtr img, const function<voi
 		if (fileName.isEmpty())
 			return;
 		
-		auto img = ToPtr(new Image(fileName.toStdString().c_str()));
+		auto img = Image::New(fileName.toStdString());
 		if(SetImgLabel(imgLabel, img))
 			slot(img);
 	});
@@ -309,7 +309,7 @@ void Grid::AddEditImage(const string & text, Image::CPtr img, const function<voi
 	AddRow(clearImgBtn);
 }
 
-bool Grid::SetImgLabel(QLabel * imgLabel, Image::CPtr img) {
+bool Grid::SetImgLabel(QLabel * imgLabel, CPtr<Image> img) {
 	const QImage::Format formatMap[5] = {
 			QImage::Format::Format_Invalid,
 			QImage::Format::Format_Alpha8,

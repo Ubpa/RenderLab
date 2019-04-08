@@ -23,13 +23,13 @@ namespace CppUtil {
 		template <typename T, typename HolderT>
 		class BVHNode;
 
-		class VisibilityChecker final : public Intersector<VisibilityChecker> {
+		class VisibilityChecker final : public Intersector {
 		public:
-			struct Rst : public IntersectorBase::Rst {
+			struct Rst : public Intersector::Rst {
 				friend class VisibilityChecker;
 
 				Rst(bool isIntersect = false)
-					: IntersectorBase::Rst(isIntersect) { }
+					: Intersector::Rst(isIntersect) { }
 
 				bool IsIntersect() const { return isIntersect; }
 			};

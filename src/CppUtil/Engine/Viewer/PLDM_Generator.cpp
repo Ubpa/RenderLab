@@ -39,12 +39,12 @@ namespace CppUtil {
 PLDM_Generator::PLDM_Generator(RasterBase * raster)
 	: raster(raster), depthMapSize(1024), lightFar(25.0f)
 {
-	Reg<Scene>();
-	Reg<SObj>();
+	RegMemberFunc<Scene>(&PLDM_Generator::Visit);
+	RegMemberFunc<SObj>(&PLDM_Generator::Visit);
 
-	Reg<Sphere>();
-	Reg<Plane>();
-	Reg<TriMesh>();
+	RegMemberFunc<Sphere>(&PLDM_Generator::Visit);
+	RegMemberFunc<Plane>(&PLDM_Generator::Visit);
+	RegMemberFunc<TriMesh>(&PLDM_Generator::Visit);
 }
 
 void PLDM_Generator::Init() {
@@ -53,7 +53,7 @@ void PLDM_Generator::Init() {
 	shader_genDepth.SetFloat("lightFar", lightFar);
 }
 
-void PLDM_Generator::Visit(Scene::Ptr scene) {
+void PLDM_Generator::Visit(Ptr<Scene> scene) {
 	scene->SetWriteLock(true);
 
 	if (!raster || !scene || !scene->GetRoot()) {
@@ -74,7 +74,7 @@ void PLDM_Generator::Visit(Scene::Ptr scene) {
 		if (lightMap.find(cmptLight) != lightMap.end())
 			continue;
 
-		auto pointLight = PointLight::CPtr::Cast(cmptLight->light);
+		auto pointLight = PointLight::PtrCast(cmptLight->light);
 		if (!pointLight)
 			continue;
 
@@ -150,22 +150,22 @@ void PLDM_Generator::Visit(Ptr<SObj> sobj) {
 }
 
 
-void PLDM_Generator::Visit(Sphere::Ptr sphere) {
+void PLDM_Generator::Visit(Ptr<Sphere> sphere) {
 	shader_genDepth.SetMat4f("model", modelVec.back());
 	raster->GetSphereVAO().Draw(shader_genDepth);
 }
 
-void PLDM_Generator::Visit(Plane::Ptr plane) {
+void PLDM_Generator::Visit(Ptr<Plane> plane) {
 	shader_genDepth.SetMat4f("model", modelVec.back());
 	raster->GetPlaneVAO().Draw(shader_genDepth);
 }
 
-void PLDM_Generator::Visit(TriMesh::Ptr mesh) {
+void PLDM_Generator::Visit(Ptr<TriMesh> mesh) {
 	shader_genDepth.SetMat4f("model", modelVec.back());
 	raster->GetMeshVAO(mesh).Draw(shader_genDepth);
 }
 
-Texture PLDM_Generator::GetDepthCubeMap(CmptLight::CPtr light) const {
+const Texture PLDM_Generator::GetDepthCubeMap(CPtr<CmptLight> light) const {
 	auto target = lightMap.find(light);
 	if (target == lightMap.end())
 		return Texture::InValid;

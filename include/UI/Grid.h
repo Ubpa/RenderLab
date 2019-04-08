@@ -27,12 +27,19 @@ namespace CppUtil {
 }
 
 namespace Ui {
-	class Grid : public CppUtil::Basic::HeapObj {
-		HEAP_OBJ_SETUP(Grid)
+	class Grid : public CppUtil::Basic::HeapObj<Grid> {
 	public:
 		Grid() : isInit(false), page(nullptr), gridLayout(nullptr) { }
 		Grid(QWidget * page);
 
+	public:
+		static const CppUtil::Basic::Ptr<Grid> New() { return CppUtil::Basic::New<Grid>(); }
+		static const CppUtil::Basic::Ptr<Grid> New(QWidget * page) { return CppUtil::Basic::New<Grid>(page); }
+
+	protected:
+		virtual ~Grid() = default;
+
+	public:
 		void Init(QWidget * page);
 
 		// spinbox

@@ -25,16 +25,16 @@ namespace CppUtil {
 		class BVHNode;
 
 		// 寻找最近的交点
-		class RayIntersector final : public Intersector<RayIntersector> {
+		class RayIntersector final : public Intersector {
 		public:
 			// isIntersect 用于判断与 Primitive 是否相交
 			// closestSObj 用于记录最近的SObj
 			// n 用于记录最近的相交处的法向
-			struct Rst : public IntersectorBase::Rst {
+			struct Rst : public Intersector::Rst {
 				friend class RayIntersector;
 
 				Rst(bool isIntersect = false)
-					: IntersectorBase::Rst(isIntersect), closestSObj(nullptr), n(0) { }
+					: Intersector::Rst(isIntersect), closestSObj(nullptr), n(0) { }
 
 				Basic::Ptr<SObj> closestSObj;
 				Normalf n;

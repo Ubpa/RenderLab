@@ -43,23 +43,23 @@ using namespace std;
 
 const int RasterBase::maxPointLights = 8;
 
-RasterBase::RasterBase(Scene::Ptr scene)
-	: scene(scene), pldmGenerator(ToPtr(new PLDM_Generator(this))) {
-	Reg<SObj>();
+RasterBase::RasterBase(Ptr<Scene> scene)
+	: scene(scene), pldmGenerator(PLDM_Generator::New(this)) {
+	RegMemberFunc<SObj>(&RasterBase::Visit);
 
 	// primitive
-	Reg<Engine::Sphere>();
-	Reg<Engine::Plane>();
-	Reg<TriMesh>();
+	RegMemberFunc<Engine::Sphere>(&RasterBase::Visit);
+	RegMemberFunc<Engine::Plane>(&RasterBase::Visit);
+	RegMemberFunc<TriMesh>(&RasterBase::Visit);
 
 	// bsdf
-	Reg<BSDF_Diffuse>();
-	Reg<BSDF_Emission>();
-	Reg<BSDF_Glass>();
-	Reg<BSDF_Mirror>();
-	Reg<BSDF_CookTorrance>();
-	Reg<BSDF_MetalWorkflow>();
-	Reg<BSDF_FrostedGlass>();
+	RegMemberFunc<BSDF_Diffuse>(&RasterBase::Visit);
+	RegMemberFunc<BSDF_Emission>(&RasterBase::Visit);
+	RegMemberFunc<BSDF_Glass>(&RasterBase::Visit);
+	RegMemberFunc<BSDF_Mirror>(&RasterBase::Visit);
+	RegMemberFunc<BSDF_CookTorrance>(&RasterBase::Visit);
+	RegMemberFunc<BSDF_MetalWorkflow>(&RasterBase::Visit);
+	RegMemberFunc<BSDF_FrostedGlass>(&RasterBase::Visit);
 }
 
 void RasterBase::Draw() {
@@ -141,22 +141,22 @@ void RasterBase::Visit(Ptr<SObj> sobj) {
 		modelVec.pop_back();
 }
 
-void RasterBase::Visit(Engine::Sphere::Ptr sphere) {
+void RasterBase::Visit(Ptr<Engine::Sphere> sphere) {
 	curShader.SetMat4f("model", modelVec.back());
 	VAO_P3N3T2T3_Sphere.Draw(curShader);
 }
 
-void RasterBase::Visit(Engine::Plane::Ptr plane) {
+void RasterBase::Visit(Ptr<Engine::Plane> plane) {
 	curShader.SetMat4f("model", modelVec.back());
 	VAO_P3N3T2T3_Plane.Draw(curShader);
 }
 
-void RasterBase::Visit(TriMesh::Ptr mesh) {
+void RasterBase::Visit(Ptr<TriMesh> mesh) {
 	curShader.SetMat4f("model", modelVec.back());
 	GetMeshVAO(mesh).Draw(curShader);
 }
 
-Texture RasterBase::GetTex(Image::CPtr img) {
+const Texture RasterBase::GetTex(CPtr<Image> img) {
 	auto target = img2tex.find(img);
 	if (target != img2tex.end())
 		return target->second;
@@ -170,7 +170,7 @@ void RasterBase::UpdateLights() const {
 	int lightIdx = 0;
 	glBindBuffer(GL_UNIFORM_BUFFER, lightsUBO);
 	for (auto cmptLight : scene->GetCmptLights()) {
-		auto pointLight = PointLight::Ptr::Cast(cmptLight->light);
+		auto pointLight = PointLight::PtrCast(cmptLight->light);
 		if (!pointLight)
 			continue;
 
@@ -189,7 +189,7 @@ void RasterBase::UpdateLights() const {
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
-VAO RasterBase::GetMeshVAO(TriMesh::CPtr mesh) {
+const VAO RasterBase::GetMeshVAO(CPtr<TriMesh> mesh) {
 	auto target = meshVAOs.find(mesh);
 	if (target != meshVAOs.end())
 		return target->second;
@@ -211,7 +211,7 @@ VAO RasterBase::GetMeshVAO(TriMesh::CPtr mesh) {
 void RasterBase::SetPointLightDepthMap(const Shader & shader, int base) {
 	int lightIdx = 0;
 	for (auto cmptLight : scene->GetCmptLights()) {
-		if (!PointLight::Ptr::Cast(cmptLight->light))
+		if (!PointLight::PtrCast(cmptLight->light))
 			continue;
 
 		pldmGenerator->GetDepthCubeMap(cmptLight).Use(base + lightIdx);

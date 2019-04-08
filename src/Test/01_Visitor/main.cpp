@@ -27,7 +27,7 @@ public:
 	int n;
 };
 
-class Vc final : public Visitor<Vc> {
+class Vc final : public Visitor {
 public:
 	Vc(const std::string & name):name(name) {
 		RegMemberFunc<A>(&Vc::Visit);
@@ -45,7 +45,7 @@ public:
 	std::string name;
 };
 
-class Vd final : public Visitor<Vd> {
+class Vd final : public Visitor {
 public:
 	Vd(const std::string & name) :name(name) {
 		RegMemberFunc<A>(&Vd::Visit);
@@ -65,9 +65,9 @@ public:
 
 int main() {
 	vector<Ptr<ElementBase>> eles = { A::New(1) , A::New(2), B::New(3), B::New(4) };
-	vector<Ptr<VisitorBase>> visitors = { Vc::New("v1") , Vd::New("v2") };
+	vector<Ptr<Visitor>> visitors = { Vc::New("v1") , Vd::New("v2") };
 
-	auto visitorDynamic = VisitorDynamic::New();
+	auto visitorDynamic = Visitor::New();
 	visitorDynamic->Reg([=](Ptr<A> a) {
 		std::cout << "visitorDynamic : a's n is " << a->n << std::endl;
 	});

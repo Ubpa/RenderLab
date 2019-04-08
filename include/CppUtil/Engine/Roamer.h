@@ -13,11 +13,19 @@ namespace CppUtil {
 	}
 
 	namespace Engine {
-		class Roamer : public Basic::HeapObj {
-			HEAP_OBJ_SETUP(Roamer)
+		class Roamer final : public Basic::HeapObj<Roamer> {
 		public:
 			Roamer(QT::RawAPI_OGLW * pOGLW);
 
+		public:
+			static const Basic::Ptr<Roamer> New(QT::RawAPI_OGLW * pOGLW) {
+				return Basic::New<Roamer>(pOGLW);
+			}
+
+		protected:
+			virtual ~Roamer() = default;
+
+		public:
 			void Init();
 			void SetWH(int w, int h);
 

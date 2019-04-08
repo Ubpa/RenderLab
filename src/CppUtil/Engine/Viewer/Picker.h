@@ -9,11 +9,19 @@ namespace CppUtil {
 
 		class RayIntersector;
 
-		class Picker : public Basic::HeapObj {
-			HEAP_OBJ_SETUP(Picker)
+		class Picker final : public Basic::HeapObj<Picker> {
 		public:
 			Picker(Viewer * viewer);
 
+		public:
+			static const Basic::Ptr<Picker> New(Viewer * viewer) {
+				return Basic::New<Picker>(viewer);
+			}
+
+		protected:
+			virtual ~Picker() = default;
+
+		public:
 			void Init();
 
 			Viewer * GetViewer() const { return viewer; }

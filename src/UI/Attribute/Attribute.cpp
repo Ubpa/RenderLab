@@ -14,7 +14,7 @@
 #include <CppUtil/Engine/AreaLight.h>
 #include <CppUtil/Engine/PointLight.h>
 
-#include <CppUtil/Basic/EleVisitor.h>
+#include <CppUtil/Basic/Visitor.h>
 #include <CppUtil/Basic/Math.h>
 
 #include <QtWidgets/QVBoxLayout>
@@ -31,72 +31,79 @@ using namespace CppUtil::Basic;
 using namespace CppUtil::Basic::Math;
 using namespace std;
 
-class Attribute::ComponentVisitor : public EleVisitor {
-	ELEVISITOR_SETUP(ComponentVisitor)
+class Attribute::ComponentVisitor : public Visitor {
 public:
 	ComponentVisitor(Attribute * attr)
 		: attr(attr) {
-		Reg<CmptCamera>();
+		RegMemberFunc<CmptCamera>(&Attribute::ComponentVisitor::Visit);
 
-		Reg<CmptGeometry>();
-		Reg<Sphere>();
-		Reg<Plane>();
-		Reg<TriMesh>();
+		RegMemberFunc<CmptGeometry>(&Attribute::ComponentVisitor::Visit);
+		RegMemberFunc<Sphere>(&Attribute::ComponentVisitor::Visit);
+		RegMemberFunc<Plane>(&Attribute::ComponentVisitor::Visit);
+		RegMemberFunc<TriMesh>(&Attribute::ComponentVisitor::Visit);
 
-		Reg<CmptLight>();
-		Reg<AreaLight>();
-		Reg<PointLight>();
+		RegMemberFunc<CmptLight>(&Attribute::ComponentVisitor::Visit);
+		RegMemberFunc<AreaLight>(&Attribute::ComponentVisitor::Visit);
+		RegMemberFunc<PointLight>(&Attribute::ComponentVisitor::Visit);
 
-		Reg<CmptMaterial>();
-		Reg<BSDF_Diffuse>();
-		Reg<BSDF_Glass>();
-		Reg<BSDF_Mirror>();
-		Reg<BSDF_Emission>();
-		Reg<BSDF_CookTorrance>();
-		Reg<BSDF_MetalWorkflow>();
-		Reg<BSDF_FrostedGlass>();
+		RegMemberFunc<CmptMaterial>(&Attribute::ComponentVisitor::Visit);
+		RegMemberFunc<BSDF_Diffuse>(&Attribute::ComponentVisitor::Visit);
+		RegMemberFunc<BSDF_Glass>(&Attribute::ComponentVisitor::Visit);
+		RegMemberFunc<BSDF_Mirror>(&Attribute::ComponentVisitor::Visit);
+		RegMemberFunc<BSDF_Emission>(&Attribute::ComponentVisitor::Visit);
+		RegMemberFunc<BSDF_CookTorrance>(&Attribute::ComponentVisitor::Visit);
+		RegMemberFunc<BSDF_MetalWorkflow>(&Attribute::ComponentVisitor::Visit);
+		RegMemberFunc<BSDF_FrostedGlass>(&Attribute::ComponentVisitor::Visit);
 
-		Reg<CmptTransform>();
+		RegMemberFunc<CmptTransform>(&Attribute::ComponentVisitor::Visit);
 	}
 
+public:
+	static const Basic::Ptr<ComponentVisitor> New(Attribute * attr) {
+		return Basic::New<ComponentVisitor>(attr);
+	}
+
+protected:
+	virtual ~ComponentVisitor() = default;
+
+public:
+	void Visit(Ptr<CmptCamera> cmpt);
+
+	void Visit(Ptr<CmptGeometry> cmpt);
+	void Visit(Ptr<Sphere> sphere);
+	void Visit(Ptr<Plane> plane);
+	void Visit(Ptr<TriMesh> mesh);
+
+	void Visit(Ptr<CmptLight> cmpt);
+	void Visit(Ptr<AreaLight> light);
+	void Visit(Ptr<PointLight> light);
+
+	void Visit(Ptr<CmptMaterial> cmpt);
+	void Visit(Ptr<BSDF_Diffuse> bsdf);
+	void Visit(Ptr<BSDF_Emission> bsdf);
+	void Visit(Ptr<BSDF_Glass> bsdf);
+	void Visit(Ptr<BSDF_Mirror> bsdf);
+	void Visit(Ptr<BSDF_CookTorrance> bsdf);
+	void Visit(Ptr<BSDF_MetalWorkflow> bsdf);
+	void Visit(Ptr<BSDF_FrostedGlass> bsdf);
+
+
+	void Visit(Ptr<CmptTransform> cmpt);
+
 private:
-	void Visit(CmptCamera::Ptr cmpt);
-
-	void Visit(CmptGeometry::Ptr cmpt);
-	void Visit(Sphere::Ptr sphere);
-	void Visit(Plane::Ptr plane);
-	void Visit(TriMesh::Ptr mesh);
-
-	void Visit(CmptLight::Ptr cmpt);
-	void Visit(AreaLight::Ptr light);
-	void Visit(PointLight::Ptr light);
-
-	void Visit(CmptMaterial::Ptr cmpt);
-	void Visit(BSDF_Diffuse::Ptr bsdf);
-	void Visit(BSDF_Emission::Ptr bsdf);
-	void Visit(BSDF_Glass::Ptr bsdf);
-	void Visit(BSDF_Mirror::Ptr bsdf);
-	void Visit(BSDF_CookTorrance::Ptr bsdf);
-	void Visit(BSDF_MetalWorkflow::Ptr bsdf);
-	void Visit(BSDF_FrostedGlass::Ptr bsdf);
-
-
-	void Visit(CmptTransform::Ptr cmpt);
-
-private:
-	QWidget * GenItem(Component::Ptr component, const QString & str) {
+	QWidget * GenItem(Ptr<ComponentBase> component, const QString & str) {
 		auto item = new QWidget;
 		attr->componentType2item[typeid(*component)] = item;
 		attr->tbox->insertItem(0, item, str);
 		return item;
 	}
 
-	Grid::Ptr GetGrid(QWidget * item) {
+	Ptr<Grid> GetGrid(QWidget * item) {
 		auto target = attr->item2grid.find(item);
 		if (target != attr->item2grid.end())
 			return target->second;
 
-		auto grid = ToPtr(new Grid(item));
+		auto grid = Grid::New(item);
 		attr->item2grid[item] = grid;
 
 		return grid;
@@ -108,7 +115,7 @@ private:
 
 // -------------- Transform --------------
 
-void Attribute::ComponentVisitor::Visit(CmptTransform::Ptr transform) {
+void Attribute::ComponentVisitor::Visit(Ptr<CmptTransform> transform) {
 	auto item = GenItem(transform, "Transform");
 	auto grid = GetGrid(item);
 
@@ -131,7 +138,7 @@ void Attribute::ComponentVisitor::Visit(CmptTransform::Ptr transform) {
 
 // -------------- Camera --------------
 
-void Attribute::ComponentVisitor::Visit(CmptCamera::Ptr camera) {
+void Attribute::ComponentVisitor::Visit(Ptr<CmptCamera> camera) {
 	auto item = GenItem(camera, "Camera");
 	auto grid = GetGrid(item);
 	
@@ -142,19 +149,20 @@ void Attribute::ComponentVisitor::Visit(CmptCamera::Ptr camera) {
 
 // -------------- Geometry --------------
 
-void Attribute::ComponentVisitor::Visit(CmptGeometry::Ptr geo) {
+void Attribute::ComponentVisitor::Visit(Ptr<CmptGeometry> geo) {
 	auto item = GenItem(geo, "Geometry");
 	auto grid = GetGrid(item);
 
-	auto getTypeStr = ToPtr(new EleVisitor);
-	getTypeStr->Reg<Sphere>([=](Sphere::Ptr) {
-		getTypeStr->RegArg("typeStr", "Sphere");
+	string typeStr;
+	auto getTypeStr = Visitor::New();
+	getTypeStr->Reg([&typeStr](Ptr<Sphere>) {
+		typeStr = "Sphere";
 	});
-	getTypeStr->Reg<Plane>([=](Plane::Ptr) {
-		getTypeStr->RegArg("typeStr", "Plane");
+	getTypeStr->Reg([&typeStr](Ptr<Plane>) {
+		typeStr = "Plane";
 	});
-	getTypeStr->Reg<TriMesh>([=](TriMesh::Ptr) {
-		getTypeStr->RegArg("typeStr", "TriMesh");
+	getTypeStr->Reg([&typeStr](Ptr<TriMesh>) {
+		typeStr = "TriMesh";
 	});
 
 	Grid::pSlotMap pSlotMap(new Grid::SlotMap);
@@ -171,7 +179,7 @@ void Attribute::ComponentVisitor::Visit(CmptGeometry::Ptr geo) {
 		grid->Clear();
 		grid->AddComboBox("Type", "Sphere", wpSlotMap.lock());
 
-		auto sphere = ToPtr(new Sphere);
+		auto sphere = Sphere::New();
 		geo->primitive = sphere;
 		Visit(sphere);
 	};
@@ -179,14 +187,13 @@ void Attribute::ComponentVisitor::Visit(CmptGeometry::Ptr geo) {
 		grid->Clear();
 		grid->AddComboBox("Type", "Plane", wpSlotMap.lock());
 
-		auto plane = ToPtr(new Plane);
+		auto plane = Plane::New();
 		geo->primitive = plane;
 		Visit(plane);
 	};
 	(*pSlotMap)["TriMesh"] = [=]() {
 		if (geo->primitive) {
 			geo->primitive->Accept(getTypeStr);
-			auto typeStr = getTypeStr->GetArg<string>("typeStr");
 			combobox->setCurrentText(QString::fromStdString(typeStr));
 		}
 		else
@@ -195,7 +202,7 @@ void Attribute::ComponentVisitor::Visit(CmptGeometry::Ptr geo) {
 
 	if (geo->primitive) {
 		geo->primitive->Accept(getTypeStr);
-		grid->AddComboBox(combobox, "Type", getTypeStr->GetArg<string>("typeStr"), pSlotMap);
+		grid->AddComboBox(combobox, "Type", typeStr, pSlotMap);
 
 		geo->primitive->Accept(This());
 	}
@@ -203,17 +210,17 @@ void Attribute::ComponentVisitor::Visit(CmptGeometry::Ptr geo) {
 		grid->AddComboBox(combobox, "Type", "None", pSlotMap);
 }
 
-void Attribute::ComponentVisitor::Visit(Sphere::Ptr sphere) {
+void Attribute::ComponentVisitor::Visit(Ptr<Sphere> sphere) {
 	auto grid = GetGrid(attr->componentType2item[typeid(CmptGeometry)]);
 	grid->AddText("empty");
 }
 
-void Attribute::ComponentVisitor::Visit(Plane::Ptr plane) {
+void Attribute::ComponentVisitor::Visit(Ptr<Plane> plane) {
 	auto grid = GetGrid(attr->componentType2item[typeid(CmptGeometry)]);
 	grid->AddText("empty");
 }
 
-void Attribute::ComponentVisitor::Visit(TriMesh::Ptr mesh) {
+void Attribute::ComponentVisitor::Visit(Ptr<TriMesh> mesh) {
 	auto grid = GetGrid(attr->componentType2item[typeid(CmptGeometry)]);
 	grid->AddText("- Triangle", mesh->GetIndice().size() / 3);
 	grid->AddText("- Vertex", mesh->GetPositions().size());
@@ -221,43 +228,44 @@ void Attribute::ComponentVisitor::Visit(TriMesh::Ptr mesh) {
 
 // -------------- Material --------------
 
-void Attribute::ComponentVisitor::Visit(CmptMaterial::Ptr cmpt) {
+void Attribute::ComponentVisitor::Visit(Ptr<CmptMaterial> cmpt) {
 	auto item = GenItem(cmpt, "Material");
 	auto grid = GetGrid(item);
 
-	auto getTypeStr = ToPtr(new EleVisitor);
-	getTypeStr->Reg<BSDF_Diffuse>([=](BSDF_Diffuse::Ptr) {
-		getTypeStr->RegArg("typeStr", "BSDF_Diffuse");
+	string typeStr;
+	auto getTypeStr = Visitor::New();
+	getTypeStr->Reg([&typeStr](Ptr<BSDF_Diffuse>) {
+		typeStr = "BSDF_Diffuse";
 	});
-	getTypeStr->Reg<BSDF_Emission>([=](BSDF_Emission::Ptr) {
-		getTypeStr->RegArg("typeStr", "BSDF_Emission");
+	getTypeStr->Reg([&typeStr](Ptr<BSDF_Emission>) {
+		typeStr = "BSDF_Emission";
 	});
-	getTypeStr->Reg<BSDF_Glass>([=](BSDF_Glass::Ptr) {
-		getTypeStr->RegArg("typeStr", "BSDF_Glass");
+	getTypeStr->Reg([&typeStr](Ptr<BSDF_Glass>) {
+		typeStr = "BSDF_Glass";
 	});
-	getTypeStr->Reg<BSDF_Mirror>([=](BSDF_Mirror::Ptr) {
-		getTypeStr->RegArg("typeStr", "BSDF_Mirror");
+	getTypeStr->Reg([&typeStr](Ptr<BSDF_Mirror>) {
+		typeStr = "BSDF_Mirror";
 	});
-	getTypeStr->Reg<BSDF_CookTorrance>([=](BSDF_CookTorrance::Ptr) {
-		getTypeStr->RegArg("typeStr", "BSDF_CookTorrance");
+	getTypeStr->Reg([&typeStr](Ptr<BSDF_CookTorrance>) {
+		typeStr = "BSDF_CookTorrance";
 	});
-	getTypeStr->Reg<BSDF_MetalWorkflow>([=](BSDF_MetalWorkflow::Ptr) {
-		getTypeStr->RegArg("typeStr", "BSDF_MetalWorkflow");
+	getTypeStr->Reg([&typeStr](Ptr<BSDF_MetalWorkflow>) {
+		typeStr = "BSDF_MetalWorkflow";
 	});
-	getTypeStr->Reg<BSDF_FrostedGlass>([=](BSDF_FrostedGlass::Ptr) {
-		getTypeStr->RegArg("typeStr", "BSDF_FrostedGlass");
+	getTypeStr->Reg([&typeStr](Ptr<BSDF_FrostedGlass>) {
+		typeStr = "BSDF_FrostedGlass";
 	});
 
 	const int bsdfNum = 8;
-	tuple<string, function<BSDF::Ptr()>> bsdfArr[bsdfNum] = {
-		{"None", []()->BSDF::Ptr { return nullptr; } },
-		{"BSDF_Diffuse", []()->BSDF::Ptr { return ToPtr(new BSDF_Diffuse); } },
-		{"BSDF_Emission", []()->BSDF::Ptr { return ToPtr(new BSDF_Emission); } },
-		{"BSDF_Glass", []()->BSDF::Ptr { return ToPtr(new BSDF_Glass); } },
-		{"BSDF_Mirror", []()->BSDF::Ptr { return ToPtr(new BSDF_Mirror); } },
-		{"BSDF_CookTorrance", []()->BSDF::Ptr { return ToPtr(new BSDF_CookTorrance(1.5f,0.2f)); } },
-		{"BSDF_MetalWorkflow", []()->BSDF::Ptr { return ToPtr(new BSDF_MetalWorkflow); } },
-		{"BSDF_FrostedGlass", []()->BSDF::Ptr { return ToPtr(new BSDF_FrostedGlass); } },
+	tuple<string, function<Ptr<BSDFBase>()>> bsdfArr[bsdfNum] = {
+		{"None", []()->Ptr<BSDFBase> { return nullptr; } },
+		{"BSDF_Diffuse", []()->Ptr<BSDFBase> { return BSDF_Diffuse::New(); } },
+		{"BSDF_Emission", []()->Ptr<BSDFBase> { return BSDF_Emission::New(); } },
+		{"BSDF_Glass", []()->Ptr<BSDFBase> { return BSDF_Glass::New(); } },
+		{"BSDF_Mirror", []()->Ptr<BSDFBase> { return BSDF_Mirror::New(); } },
+		{"BSDF_CookTorrance", []()->Ptr<BSDFBase> { return BSDF_CookTorrance::New(); } },
+		{"BSDF_MetalWorkflow", []()->Ptr<BSDFBase> { return BSDF_MetalWorkflow::New(); } },
+		{"BSDF_FrostedGlass", []()->Ptr<BSDFBase> { return BSDF_FrostedGlass::New(); } },
 	};
 
 	Grid::pSlotMap pSlotMap(new Grid::SlotMap);
@@ -277,7 +285,7 @@ void Attribute::ComponentVisitor::Visit(CmptMaterial::Ptr cmpt) {
 
 	if (cmpt->material) {
 		cmpt->material->Accept(getTypeStr);
-		grid->AddComboBox("Type", getTypeStr->GetArg<string>("typeStr"), pSlotMap);
+		grid->AddComboBox("Type", typeStr, pSlotMap);
 
 		cmpt->material->Accept(This());
 	}
@@ -285,31 +293,31 @@ void Attribute::ComponentVisitor::Visit(CmptMaterial::Ptr cmpt) {
 		grid->AddComboBox("Type", "None", pSlotMap);
 }
 
-void Attribute::ComponentVisitor::Visit(BSDF_Diffuse::Ptr bsdf) {
+void Attribute::ComponentVisitor::Visit(Ptr<BSDF_Diffuse> bsdf) {
 	auto grid = GetGrid(attr->componentType2item[typeid(CmptMaterial)]);
 	grid->AddEditColor("- Albedo", bsdf->colorFactor);
 	grid->AddEditImage("- Albedo Texture", bsdf->albedoTexture);
 }
 
-void Attribute::ComponentVisitor::Visit(BSDF_Emission::Ptr bsdf) {
+void Attribute::ComponentVisitor::Visit(Ptr<BSDF_Emission> bsdf) {
 	auto grid = GetGrid(attr->componentType2item[typeid(CmptMaterial)]);
 	grid->AddEditColor("- Color", bsdf->color);
 	grid->AddEditVal("- Intensity", bsdf->intensity, 0, 10, 1000);
 }
 
-void Attribute::ComponentVisitor::Visit(BSDF_Glass::Ptr bsdf) {
+void Attribute::ComponentVisitor::Visit(Ptr<BSDF_Glass> bsdf) {
 	auto grid = GetGrid(attr->componentType2item[typeid(CmptMaterial)]);
 	grid->AddEditColor("- Transmittance", bsdf->transmittance);
 	grid->AddEditColor("- Reflectance", bsdf->reflectance);
 	grid->AddEditVal("- ior", bsdf->ior, 0.01);
 }
 
-void Attribute::ComponentVisitor::Visit(BSDF_Mirror::Ptr bsdf) {
+void Attribute::ComponentVisitor::Visit(Ptr<BSDF_Mirror> bsdf) {
 	auto grid = GetGrid(attr->componentType2item[typeid(CmptMaterial)]);
 	grid->AddEditColor("- Reflectance", bsdf->reflectance);
 }
 
-void Attribute::ComponentVisitor::Visit(BSDF_CookTorrance::Ptr bsdf) {
+void Attribute::ComponentVisitor::Visit(Ptr<BSDF_CookTorrance> bsdf) {
 	auto grid = GetGrid(attr->componentType2item[typeid(CmptMaterial)]);
 	grid->AddEditColor("- Reflectance", bsdf->refletance);
 	grid->AddEditColor("- Albedo", bsdf->albedo);
@@ -317,29 +325,29 @@ void Attribute::ComponentVisitor::Visit(BSDF_CookTorrance::Ptr bsdf) {
 	grid->AddEditVal("- Roughness", bsdf->m, 0, 1, 100);
 }
 
-void Attribute::ComponentVisitor::Visit(BSDF_MetalWorkflow::Ptr bsdf) {
+void Attribute::ComponentVisitor::Visit(Ptr<BSDF_MetalWorkflow> bsdf) {
 	auto grid = GetGrid(attr->componentType2item[typeid(CmptMaterial)]);
 
 	grid->AddEditColor("- Albedo Color", bsdf->colorFactor);
 	grid->AddEditImage("- Albedo Texture", bsdf->GetAlbedoTexture(),
-		[=](CppUtil::Basic::Ptr<Image> img) {bsdf->SetAlbedoTexture(img); });
+		[=](Ptr<Image> img) {bsdf->SetAlbedoTexture(img); });
 
 	grid->AddEditVal("- Metallic Factor", bsdf->metallicFactor, 0, 1, 100);
 	grid->AddEditImage("- Metallic Texture", bsdf->GetMetallicTexture(),
-		[=](CppUtil::Basic::Ptr<Image> img) {bsdf->SetMetallicTexture(img); });
+		[=](Ptr<Image> img) {bsdf->SetMetallicTexture(img); });
 
 	grid->AddEditVal("- Roughness Factor", bsdf->roughnessFactor, 0, 1, 100);
 	grid->AddEditImage("- Roughness Texture", bsdf->GetRoughnessTexture(),
-		[=](CppUtil::Basic::Ptr<Image> img) {bsdf->SetRoughnessTexture(img); });
+		[=](Ptr<Image> img) {bsdf->SetRoughnessTexture(img); });
 
 	grid->AddEditImage("- AO Texture", bsdf->GetAOTexture(),
-		[=](CppUtil::Basic::Ptr<Image> img) {bsdf->SetAOTexture(img); });
+		[=](Ptr<Image> img) {bsdf->SetAOTexture(img); });
 
 	grid->AddEditImage("- Normal Texture", bsdf->GetNormalTexture(),
-		[=](CppUtil::Basic::Ptr<Image> img) {bsdf->SetNormalTexture(img); });
+		[=](Ptr<Image> img) {bsdf->SetNormalTexture(img); });
 }
 
-void Attribute::ComponentVisitor::Visit(BSDF_FrostedGlass::Ptr bsdf) {
+void Attribute::ComponentVisitor::Visit(Ptr<BSDF_FrostedGlass> bsdf) {
 	auto grid = GetGrid(attr->componentType2item[typeid(CmptMaterial)]);
 
 	grid->AddEditVal("- IOR", bsdf->ior, 1., 20., 190);
@@ -356,23 +364,24 @@ void Attribute::ComponentVisitor::Visit(BSDF_FrostedGlass::Ptr bsdf) {
 
 // -------------- Light --------------
 
-void Attribute::ComponentVisitor::Visit(CmptLight::Ptr cmpt) {
+void Attribute::ComponentVisitor::Visit(Ptr<CmptLight> cmpt) {
 	auto item = GenItem(cmpt, "Light");
 	auto grid = GetGrid(item);
 
-	auto getTypeStr = ToPtr(new EleVisitor);
-	getTypeStr->Reg<AreaLight>([=](AreaLight::Ptr) {
-		getTypeStr->RegArg("typeStr", "AreaLight");
+	auto getTypeStr = Visitor::New();
+	string typeStr;
+	getTypeStr->Reg([&typeStr](Ptr<AreaLight>) {
+		typeStr = "AreaLight";
 	});
-	getTypeStr->Reg<PointLight>([=](PointLight::Ptr) {
-		getTypeStr->RegArg("typeStr", "PointLight");
+	getTypeStr->Reg([&typeStr](Ptr<PointLight>) {
+		typeStr = "PointLight";
 	});
 
 	const int lightNum = 3;
-	tuple<string, function<Light::Ptr()>> lightArr[lightNum] = {
-		{"None", []()->Light::Ptr { return nullptr; } },
-		{"AreaLight", []()->Light::Ptr { return ToPtr(new AreaLight); } },
-		{"PointLight", []()->Light::Ptr { return ToPtr(new PointLight); } },
+	tuple<string, function<Ptr<LightBase>()>> lightArr[lightNum] = {
+		{"None", []()->Ptr<LightBase> { return nullptr; } },
+		{"AreaLight", []()->Ptr<LightBase> { return AreaLight::New(); } },
+		{"PointLight", []()->Ptr<LightBase> { return PointLight::New(); } },
 	};
 
 	Grid::pSlotMap pSlotMap(new Grid::SlotMap);
@@ -392,7 +401,7 @@ void Attribute::ComponentVisitor::Visit(CmptLight::Ptr cmpt) {
 
 	if (cmpt->light) {
 		cmpt->light->Accept(getTypeStr);
-		grid->AddComboBox("Type", getTypeStr->GetArg<string>("typeStr"), pSlotMap);
+		grid->AddComboBox("Type", typeStr, pSlotMap);
 
 		cmpt->light->Accept(This());
 	}
@@ -400,7 +409,7 @@ void Attribute::ComponentVisitor::Visit(CmptLight::Ptr cmpt) {
 		grid->AddComboBox("Type", "None", pSlotMap);
 }
 
-void Attribute::ComponentVisitor::Visit(AreaLight::Ptr light) {
+void Attribute::ComponentVisitor::Visit(Ptr<AreaLight> light) {
 	auto grid = GetGrid(attr->componentType2item[typeid(CmptLight)]);
 	grid->AddEditColor("- Color", light->color);
 	grid->AddEditVal("- Intensity", light->intensity, 0.1);
@@ -408,7 +417,7 @@ void Attribute::ComponentVisitor::Visit(AreaLight::Ptr light) {
 	grid->AddEditVal("- Height", light->height, 0.1);
 }
 
-void Attribute::ComponentVisitor::Visit(PointLight::Ptr light) {
+void Attribute::ComponentVisitor::Visit(Ptr<PointLight> light) {
 	auto grid = GetGrid(attr->componentType2item[typeid(CmptLight)]);
 	grid->AddEditColor("- Color", light->color);
 	grid->AddEditVal("- Intensity", light->intensity, 0, 20, 2000);
@@ -419,7 +428,7 @@ void Attribute::ComponentVisitor::Visit(PointLight::Ptr light) {
 // -------------- Attribute --------------
 
 Attribute::Attribute()
-	: tbox(nullptr), visitor(ToPtr(new ComponentVisitor(this))){
+	: tbox(nullptr), visitor(ComponentVisitor::New(this)){
 }
 
 void Attribute::Init(QToolBox * tbox) {
@@ -427,7 +436,7 @@ void Attribute::Init(QToolBox * tbox) {
 	SetSObj(nullptr);
 }
 
-void Attribute::SetSObj(SObj::Ptr sobj) {
+void Attribute::SetSObj(Ptr<SObj> sobj) {
 	if (!tbox)
 		return;
 
@@ -456,11 +465,11 @@ void Attribute::SetSObj(SObj::Ptr sobj) {
 	AddController(sobj);
 }
 
-void Attribute::AddController(SObj::Ptr sobj) {
+void Attribute::AddController(Ptr<SObj> sobj) {
 	auto item = new QWidget;
 	tbox->insertItem(tbox->count(), item, "Controller");
 
-	auto grid = ToPtr(new Grid(item));
+	auto grid = Grid::New(item);
 	item2grid[item] = grid;
 
 	grid->AddTitle("[ Component ]");
@@ -468,44 +477,44 @@ void Attribute::AddController(SObj::Ptr sobj) {
 	const int componentNum = 5;
 	vector<string> componentNames{ "Camera" , "Geometry", "Light", "Material", "Transform" };
 
-	vector<function<Component::Ptr()>> componentGenFuncs{
-		[=]()->Component::Ptr { return ToPtr(new CmptCamera(nullptr)); },
-		[=]()->Component::Ptr { return ToPtr(new CmptGeometry(nullptr, nullptr)); },
-		[=]()->Component::Ptr { return ToPtr(new CmptLight(nullptr, nullptr)); },
-		[=]()->Component::Ptr { return ToPtr(new CmptMaterial(nullptr, nullptr)); },
-		[=]()->Component::Ptr { return ToPtr(new CmptTransform(nullptr)); },
+	vector<function<Ptr<ComponentBase>()>> componentGenFuncs{
+		[=]()->Ptr<ComponentBase> { return CmptCamera::New(nullptr); },
+		[=]()->Ptr<ComponentBase> { return CmptGeometry::New(nullptr, nullptr); },
+		[=]()->Ptr<ComponentBase> { return CmptLight::New(nullptr, nullptr); },
+		[=]()->Ptr<ComponentBase> { return CmptMaterial::New(nullptr, nullptr); },
+		[=]()->Ptr<ComponentBase> { return CmptTransform::New(nullptr); },
 	};
 
-	vector<function<Component::Ptr()>> componentDelFuncs{
-		[=]()->Component::Ptr {
+	vector<function<Ptr<ComponentBase>()>> componentDelFuncs{
+		[=]()->Ptr<ComponentBase> {
 			auto component = sobj->GetComponent<CmptCamera>();
 			sobj->DetachComponent<CmptCamera>();
 			return component;
 		},
-		[=]()->Component::Ptr {
+		[=]()->Ptr<ComponentBase> {
 			auto component = sobj->GetComponent<CmptGeometry>();
 			sobj->DetachComponent<CmptGeometry>();
 			return component;
 		},
-		[=]()->Component::Ptr {
+		[=]()->Ptr<ComponentBase> {
 			auto component = sobj->GetComponent<CmptLight>();
 			sobj->DetachComponent<CmptLight>();
 			return component;
 		},
-		[=]()->Component::Ptr {
+		[=]()->Ptr<ComponentBase> {
 			auto component = sobj->GetComponent<CmptMaterial>();
 			sobj->DetachComponent<CmptMaterial>();
 			return component;
 		},
-		[=]()->Component::Ptr {
+		[=]()->Ptr<ComponentBase> {
 			auto component = sobj->GetComponent<CmptTransform>();
 			sobj->DetachComponent<CmptTransform>();
 			return component;
 		},
 	};
 
-	map<std::string, function<Component::Ptr()> > componentGenMap;
-	map<std::string, function<Component::Ptr()> > componentDelMap;
+	map<std::string, function<Ptr<ComponentBase>()> > componentGenMap;
+	map<std::string, function<Ptr<ComponentBase>()> > componentDelMap;
 	for (int i = 0; i < componentNum; i++) {
 		componentGenMap[componentNames[i]] = componentGenFuncs[i];
 		componentDelMap[componentNames[i]] = componentDelFuncs[i];
@@ -520,7 +529,7 @@ void Attribute::AddController(SObj::Ptr sobj) {
 		if (sobj->HaveComponentSameTypeWith(component))
 			return;
 
-		component->AttachSObj(sobj);
+		sobj->AttachComponent(component);
 		component->Accept(visitor);
 	};
 

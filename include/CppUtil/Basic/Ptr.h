@@ -16,6 +16,11 @@ namespace CppUtil {
 		using WPtr = std::weak_ptr<T>;
 
 		template<typename T>
+		bool operator<(const WPtr<T> & lhs, const WPtr<T> & rhs) {
+			return lhs.lock() < rhs.lock();
+		}
+
+		template<typename T>
 		using WCPtr = WPtr<const T>;
 	}
 }

@@ -13,10 +13,16 @@ namespace CppUtil {
 	namespace Basic {
 		class ElementBase;
 
-		class VisitorBase : public HeapObjBase {
+		// 因为 Visitor 的类型不重要，所以这里就不再传递 HeapObj 的 ImplT 了
+		class Visitor : public HeapObj<Visitor> {
+		public:
+			using HeapObj<Visitor>::HeapObj;
+
+		public:
+			static const Ptr<Visitor> New() { return Basic::New<Visitor>(); }
+
 		protected:
-			VisitorBase() = default;
-			virtual ~VisitorBase() = default;
+			virtual ~Visitor() = default;
 
 		private:
 			template <typename ImplT, typename BaseT>
@@ -33,35 +39,6 @@ namespace CppUtil {
 					target->second(ele);
 			}
 
-		private:
-			template<typename ImplT, typename BaseT>
-			friend class Visitor;
-			friend class VisitorDynamic;
-
-			using Func = std::function< void(Basic::Ptr<ElementBase>) >;
-			TypeMap< std::function< void(Basic::Ptr<ElementBase>) > > visitOps;
-		};
-
-		template<typename ImplT, typename BaseT = VisitorBase>
-		class Visitor : public HeapObj<ImplT, BaseT> {
-		protected:
-			using HeapObj<ImplT, BaseT>::HeapObj;
-			virtual ~Visitor() = default;
-
-		protected:
-			template<typename EleType>
-			void RegMemberFunc(void (ImplT::*visitFunc)(Basic::Ptr<EleType>)) {
-				ImplT * obj = dynamic_cast<ImplT*>(this);
-				visitOps[typeid(EleType)] = [obj, visitFunc](Basic::Ptr<ElementBase> pEle) {
-					(obj->*visitFunc)(EleType::PtrCast(pEle));
-				};
-			}
-		};
-	
-		class VisitorDynamic final : public Visitor<VisitorDynamic> {
-		public:
-			static const Ptr<VisitorDynamic> New() { return CppUtil::Basic::New<VisitorDynamic>(); }
-
 		public:
 			template<typename LambadaExpr>
 			void Reg(LambadaExpr lambdaVisitFunc) {
@@ -73,10 +50,18 @@ namespace CppUtil {
 				visitOps[typeid(EleType)] = func;
 			}
 
-		public:
-			VisitorDynamic() = default;
 		protected:
-			virtual ~VisitorDynamic() = default;
+			template<typename EleType, typename ImplT>
+			void RegMemberFunc(void (ImplT::*visitFunc)(Basic::Ptr<EleType>)) {
+				ImplT * obj = dynamic_cast<ImplT*>(this);
+				visitOps[typeid(EleType)] = [obj, visitFunc](Basic::Ptr<ElementBase> pEle) {
+					(obj->*visitFunc)(EleType::PtrCast(pEle));
+				};
+			}
+
+		private:
+			using Func = std::function< void(Basic::Ptr<ElementBase>) >;
+			TypeMap< std::function< void(Basic::Ptr<ElementBase>) > > visitOps;
 		};
 	}
 }
