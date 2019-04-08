@@ -6,8 +6,8 @@
 namespace CppUtil {
 	namespace Basic {
 		// 由于 HeapObj 需要模板
-		// 可能需要一个公有的基类，所以提供了一个 HeapObj_Base
-		class HeapObj_Base {
+		// 可能需要一个公有的基类，所以提供了一个 HeapObjBase
+		class HeapObjBase {
 		// 将 new 和 Delete 的权限交给了 New 函数
 		template<typename ImplT, typename ...Args>
 		friend const Ptr<ImplT> New(Args && ... args);
@@ -21,16 +21,16 @@ namespace CppUtil {
 
 		protected:
 			// 这里 protected 构造函数和析构函数
-			// 使得用户不能直接在栈上创建 HeapObj_Base 对象
+			// 使得用户不能直接在栈上创建 HeapObjBase 对象
 			// 但是还是可以在栈上创建 子类
 			// 所以子类也要 protected 构造函数和析构函数
 
-			HeapObj_Base() = default;
-			virtual ~HeapObj_Base() = default;
+			HeapObjBase() = default;
+			virtual ~HeapObjBase() = default;
 
 		private:
 			// 供给 New 来删除
-			static void Delete(HeapObj_Base * obj) {
+			static void Delete(HeapObjBase * obj) {
 				delete obj;
 			}
 
@@ -54,23 +54,21 @@ namespace CppUtil {
 		// 调用 ImplT 的构造函数，然后生成 shared_ptr，然后调用 virtual 的 Init 函数
 		template<typename ImplT, typename ...Args>
 		const Ptr<ImplT> New(Args && ... args) {
-			const auto pImplT = Ptr<ImplT>(new ImplT(args...), HeapObj_Base::Delete);
-			static_cast<Ptr<HeapObj_Base>>(pImplT)->Init();
+			const auto pImplT = Ptr<ImplT>(new ImplT(args...), HeapObjBase::Delete);
+			static_cast<Ptr<HeapObjBase>>(pImplT)->Init();
 			return pImplT;
 		}
 		
 		/*
-		HeapObj 堆对象
-		[类]
-		class ImplT final : public HeapObj<ImplT> {
-		public: ImplT(int n);
-		private: virtual void Init() override;
-		protected: virtual ~ImplT();};
-		[创建]
-		Ptr<ImplT> impl = New<Impl>(0);//根据构造函数的参数个数来决定
+		堆对象
+		ImplT 是最终要实现的类
+		BaseT 要求是 HeapObjBase 的子类
 		*/
-		template<typename ImplT>
-		class HeapObj : public HeapObj_Base, public std::enable_shared_from_this<ImplT> {
+		template<typename ImplT, typename BaseT = HeapObjBase>
+		class HeapObj : public BaseT, public std::enable_shared_from_this<ImplT> {
+		public:
+			using BaseT::BaseT;
+
 		public:
 			// !!! 不可在构造函数中使用
 			const Ptr<ImplT> This() { return shared_from_this(); }
@@ -93,7 +91,6 @@ namespace CppUtil {
 			// 但是还是可以在栈上创建 子类
 			// 所以子类也要 protected 构造函数和析构函数
 
-			HeapObj() = default;
 			virtual ~HeapObj() = default;
 
 		private:

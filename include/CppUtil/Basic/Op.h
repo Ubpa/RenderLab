@@ -1,9 +1,11 @@
 #ifndef _CPPUTIL_BASIC_OPERATION_OP_H_
 #define _CPPUTIL_BASIC_OPERATION_OP_H_
 
+#include <CppUtil/Basic/HeapObj.h>
+
 namespace CppUtil {
 	namespace Basic {
-		class Op {
+		class Op : public HeapObjBase {
 		protected:
 			Op(bool isHold = true) :isHold(isHold) { }
 			virtual ~Op() = default;

@@ -6,9 +6,9 @@
 
 namespace CppUtil {
 	namespace Basic {
-		class ElementBase {
+		class ElementBase : public HeapObjBase {
 		public:
-			virtual void Accept(Basic::Ptr<VisitorBase> visitor) = 0;
+			virtual void Accept(Ptr<VisitorBase> visitor) = 0;
 
 		protected:
 			ElementBase() = default;
@@ -16,13 +16,13 @@ namespace CppUtil {
 		};
 
 		template<typename ImplT>
-		class Element : public ElementBase, public HeapObj<ImplT> {
+		class Element : public HeapObj<ImplT, ElementBase> {
 		protected:
 			Element() = default;
 			virtual ~Element() = default;
 
 		public:
-			virtual void Accept(Basic::Ptr<VisitorBase> visitor) override {
+			virtual void Accept(Ptr<VisitorBase> visitor) override {
 				visitor->Visit(This());
 			}
 		};

@@ -2,14 +2,14 @@
 #define _CPPUTIL_BASIC_OPERATION_OP_QUEUE_H_
 
 #include <CppUtil/Basic/Op.h>
-#include <CppUtil/Basic/HeapObj.h>
+
 #include <list>
 
 namespace CppUtil {
 	namespace Basic {
-		class OpQueue final : public Op, public HeapObj<OpQueue> {
+		class OpQueue final : public HeapObj<OpQueue, Op> {
 		public:
-			OpQueue(bool isHold = true) : Op(isHold) { }
+			OpQueue(bool isHold = true) : HeapObj<OpQueue, Op>(isHold) { }
 			
 		public:
 			static const Ptr<OpQueue> New(bool isHold = true) { return CppUtil::Basic::New<OpQueue>(isHold); }

@@ -2,15 +2,14 @@
 #define _CPPUTIL_BASIC_OPERATION_LAMBDA_OP_H_
 
 #include <CppUtil/Basic/Op.h>
-#include <CppUtil/Basic/HeapObj.h>
 
 namespace CppUtil {
 	namespace Basic {
 		// 要求无参数
 		template<typename LambdaExpr>
-		class LambdaOp : public Op, public HeapObj<LambdaOp<LambdaExpr>> {
+		class LambdaOp : public HeapObj<LambdaOp<LambdaExpr>, Op> {
 		public:
-			LambdaOp(const LambdaExpr & op) : op(op) { }
+			LambdaOp(const LambdaExpr & op, bool isHold = true) : op(op), HeapObj<LambdaOp<LambdaExpr>, Op>(isHold) { }
 
 		protected:
 			virtual ~LambdaOp() = default;

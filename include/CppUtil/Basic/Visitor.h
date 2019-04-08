@@ -13,20 +13,15 @@ namespace CppUtil {
 	namespace Basic {
 		class ElementBase;
 
-		class VisitorBase {
-			template<typename ImplT>
-			friend class Visitor;
-			template <typename ImplT>
-			friend class Element;
-
-			friend class VisitorDynamic;
-
-		private:
-			// 通过 private + friend 使得 VisitorBase 只能经由 Visitor 来创建
+		class VisitorBase : public HeapObjBase {
+		protected:
 			VisitorBase() = default;
 			virtual ~VisitorBase() = default;
 
 		private:
+			template <typename ImplT>
+			friend class Element;
+
 			// 静态（编译）期得到 typeid
 			// 访问的是 ele 的实际类型
 			// 不支持继承
@@ -39,12 +34,16 @@ namespace CppUtil {
 			}
 
 		private:
+			template<typename ImplT>
+			friend class Visitor;
+			friend class VisitorDynamic;
+
 			using Func = std::function< void(Basic::Ptr<ElementBase>) >;
 			TypeMap< std::function< void(Basic::Ptr<ElementBase>) > > visitOps;
 		};
 
 		template<typename ImplT>
-		class Visitor : public VisitorBase, public HeapObj<ImplT> {
+		class Visitor : public HeapObj<ImplT, VisitorBase> {
 		protected:
 			Visitor() = default;
 			virtual ~Visitor() = default;
@@ -76,8 +75,8 @@ namespace CppUtil {
 
 		public:
 			VisitorDynamic() = default;
-		private:
-			~VisitorDynamic() = default;
+		protected:
+			virtual ~VisitorDynamic() = default;
 		};
 	}
 }
