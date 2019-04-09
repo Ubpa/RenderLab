@@ -65,7 +65,7 @@ static Ptr<SObj> SObjLoader::Load(XMLElement * ele, Ptr<SObj>*) {
 	FuncMap funcMap;
 
 	Reg_Text_val(funcMap, str::SObj::name, sobj->name);
-	Reg_Load_Lambda(funcMap, str::SObj::components, [&](const vector<Ptr<ComponentBase>> & components) {
+	Reg_Load_Lambda(funcMap, str::SObj::components, [&](const vector<Ptr<Component>> & components) {
 		for (const auto cmpt : components)
 			sobj->AttachComponent(cmpt);
 	});
@@ -91,10 +91,10 @@ Ptr<SObj> SObjLoader::Load(const string & path) {
 }
 
 template<>
-static vector<Ptr<ComponentBase>> SObjLoader::Load(XMLElement * ele, vector<Ptr<ComponentBase>>*) {
+static vector<Ptr<Component>> SObjLoader::Load(XMLElement * ele, vector<Ptr<Component>>*) {
 	FuncMap funcMap;
 
-	vector<Ptr<ComponentBase>> cmpts;
+	vector<Ptr<Component>> cmpts;
 
 	Reg_Load_Lambda(funcMap, str::CmptCamera::type, [&](const Ptr<CmptCamera> & cmpt) {
 		cmpts.push_back(cmpt);
@@ -156,7 +156,7 @@ static Ptr<CmptGeometry> SObjLoader::Load(XMLElement * ele, Ptr<CmptGeometry>*){
 	auto geometry = CmptGeometry::New(nullptr, nullptr);
 
 	FuncMap funcMap;
-	Reg_Load_val<Ptr<PrimitiveBase>>(funcMap, str::CmptGeometry::primitive, geometry->primitive);
+	Reg_Load_val<Ptr<Primitive>>(funcMap, str::CmptGeometry::primitive, geometry->primitive);
 
 	LoadNode(ele, funcMap);
 
@@ -164,8 +164,8 @@ static Ptr<CmptGeometry> SObjLoader::Load(XMLElement * ele, Ptr<CmptGeometry>*){
 }
 
 template<>
-static Ptr<PrimitiveBase> SObjLoader::Load(XMLElement * ele, Ptr<PrimitiveBase>*) {
-	Ptr<PrimitiveBase> primitive = nullptr;
+static Ptr<Primitive> SObjLoader::Load(XMLElement * ele, Ptr<Primitive>*) {
+	Ptr<Primitive> primitive = nullptr;
 
 	FuncMap funcMap;
 	
@@ -225,7 +225,7 @@ static Ptr<CmptLight> SObjLoader::Load(XMLElement * ele, Ptr<CmptLight>*){
 	auto cmpt = CmptLight::New(nullptr, nullptr);
 
 	FuncMap funcMap;
-	Reg_Load_val<Ptr<LightBase>>(funcMap, str::CmptLight::light, cmpt->light);
+	Reg_Load_val<Ptr<Light>>(funcMap, str::CmptLight::light, cmpt->light);
 
 	LoadNode(ele, funcMap);
 
@@ -233,8 +233,8 @@ static Ptr<CmptLight> SObjLoader::Load(XMLElement * ele, Ptr<CmptLight>*){
 }
 
 template<>
-static Ptr<LightBase> SObjLoader::Load(XMLElement * ele, Ptr<LightBase>*) {
-	Ptr<LightBase> light = nullptr;
+static Ptr<Light> SObjLoader::Load(XMLElement * ele, Ptr<Light>*) {
+	Ptr<Light> light = nullptr;
 
 	FuncMap funcMap;
 
@@ -283,7 +283,7 @@ static Ptr<CmptMaterial> SObjLoader::Load(XMLElement * ele, Ptr<CmptMaterial>*){
 	auto cmpt = CmptMaterial::New(nullptr, nullptr);
 
 	FuncMap funcMap;
-	Reg_Load_val<Ptr<MaterialBase>>(funcMap, str::CmptMaterial::material, cmpt->material);
+	Reg_Load_val<Ptr<Material>>(funcMap, str::CmptMaterial::material, cmpt->material);
 
 	LoadNode(ele, funcMap);
 
@@ -291,8 +291,8 @@ static Ptr<CmptMaterial> SObjLoader::Load(XMLElement * ele, Ptr<CmptMaterial>*){
 }
 
 template<>
-static Ptr<MaterialBase> SObjLoader::Load(XMLElement * ele, Ptr<MaterialBase>*) {
-	Ptr<MaterialBase> material = nullptr;
+static Ptr<Material> SObjLoader::Load(XMLElement * ele, Ptr<Material>*) {
+	Ptr<Material> material = nullptr;
 
 	FuncMap funcMap;
 

@@ -74,7 +74,7 @@ void PLDM_Generator::Visit(Ptr<Scene> scene) {
 		if (lightMap.find(cmptLight) != lightMap.end())
 			continue;
 
-		auto pointLight = PointLight::PtrCast(cmptLight->light);
+		auto pointLight = CastTo<PointLight>(cmptLight->light);
 		if (!pointLight)
 			continue;
 
@@ -165,7 +165,7 @@ void PLDM_Generator::Visit(Ptr<TriMesh> mesh) {
 	raster->GetMeshVAO(mesh).Draw(shader_genDepth);
 }
 
-const Texture PLDM_Generator::GetDepthCubeMap(CPtr<CmptLight> light) const {
+const Texture PLDM_Generator::GetDepthCubeMap(PtrC<CmptLight> light) const {
 	auto target = lightMap.find(light);
 	if (target == lightMap.end())
 		return Texture::InValid;

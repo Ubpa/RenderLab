@@ -12,7 +12,7 @@
 
 namespace CppUtil {
 	namespace Engine {
-		class ComponentBase;
+		class Component;
 
 		// 组件式编程，不要再派生子类了，用 component 来表达语义
 		class SObj final : public Basic::Node<SObj> {
@@ -36,11 +36,11 @@ namespace CppUtil {
 			template<typename T>
 			const Basic::Ptr<T> GetComponent(T * useless_parameter = nullptr) const;
 
-			bool HaveComponentSameTypeWith(Basic::Ptr<ComponentBase> ptr) const;
+			bool HaveComponentSameTypeWith(Basic::Ptr<Component> ptr) const;
 
-			const std::vector<Basic::Ptr<ComponentBase>> GetAllComponents() const;
+			const std::vector<Basic::Ptr<Component>> GetAllComponents() const;
 
-			void AttachComponent(Basic::Ptr<ComponentBase> component);
+			void AttachComponent(Basic::Ptr<Component> component);
 
 			template<typename T>
 			void DetachComponent(T * useless_parameter = nullptr);
@@ -72,7 +72,7 @@ namespace CppUtil {
 			struct Wrapper;
 
 		private:
-			Basic::TypeMap<Basic::Ptr<ComponentBase>> components;
+			Basic::TypeMap<Basic::Ptr<Component>> components;
 		};
 
 #include <CppUtil/Engine/SObj.inl>

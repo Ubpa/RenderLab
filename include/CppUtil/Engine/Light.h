@@ -10,10 +10,10 @@
 
 namespace CppUtil {
 	namespace Engine {
-		class LightBase : public Basic::ElementBase {
+		class Light : public Basic::Element {
 		protected:
-			LightBase() = default;
-			virtual ~LightBase() = default;
+			Light() = default;
+			virtual ~Light() = default;
 
 		public:
 			// ²ÉÑù L º¯Êý
@@ -40,13 +40,6 @@ namespace CppUtil {
 			virtual float PDF(const Point3 & p, const Normalf & wi) const = 0;
 
 			virtual bool IsDelta() const = 0;
-		};
-
-		template<typename ImplT, typename BaseT = LightBase>
-		class Light : public Basic::Element<ImplT, BaseT> {
-		protected:
-			using Element<ImplT, BaseT>::Element;
-			virtual ~Light() = default;
 		};
 	}
 }

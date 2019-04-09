@@ -64,7 +64,7 @@ void RRF_Raster::InitShaders() {
 		if (!material || !geometry)
 			return;
 
-		auto bsdf = BSDF_FrostedGlass::PtrCast(material->material);
+		auto bsdf = CastTo<BSDF_FrostedGlass>(material->material);
 		if (bsdf == nullptr)
 			return;
 
@@ -123,7 +123,7 @@ void RRF_Raster::Visit(Ptr<BSDF_FrostedGlass> bsdf) {
 	shader.SetFloat(strBSDF + "roughnessFactor", bsdf->roughnessFactor);
 
 	const int texNum = 4;
-	CPtr<Image> imgs[texNum] = { bsdf->colorTexture, bsdf->roughnessTexture, bsdf->aoTexture, bsdf->normalTexture };
+	PtrC<Image> imgs[texNum] = { bsdf->colorTexture, bsdf->roughnessTexture, bsdf->aoTexture, bsdf->normalTexture };
 	string names[texNum] = { "Color", "Roughness", "AO", "Normal" };
 
 	for (int i = 0; i < texNum; i++) {

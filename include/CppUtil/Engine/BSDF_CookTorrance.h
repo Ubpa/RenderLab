@@ -5,7 +5,7 @@
 
 namespace CppUtil {
 	namespace Engine {
-		class BSDF_CookTorrance final : public BSDF<BSDF_CookTorrance> {
+		class BSDF_CookTorrance final : public BSDF {
 		public:
 			BSDF_CookTorrance(float ior = 1.5f, float m = 0.2f, const RGBf & refletance = RGBf(1.f), const RGBf & albedo = RGBf(1.f))
 				: ior(ior), m(m), refletance(refletance) , albedo(albedo){ }

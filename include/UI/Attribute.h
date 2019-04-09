@@ -13,7 +13,7 @@
 namespace CppUtil {
 	namespace Engine {
 		class SObj;
-		class ComponentBase;
+		class Component;
 	}
 }
 

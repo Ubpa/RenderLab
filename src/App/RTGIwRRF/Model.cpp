@@ -10,7 +10,7 @@ using namespace App;
 using namespace CppUtil::Basic;
 using namespace std;
 
-int Model::GetIDof(CPtr<Layer> layer) const {
+int Model::GetIDof(PtrC<Layer> layer) const {
 	static constexpr int ERROR = -1;
 
 	if (layer == nullptr) {
@@ -31,7 +31,7 @@ int Model::GetIDof(CPtr<Layer> layer) const {
 	return ERROR;
 }
 
-bool Model::AddLayer(CPtr<Layer> layer) const {
+bool Model::AddLayer(PtrC<Layer> layer) const {
 	static constexpr bool ERROR = false;
 
 	if (layer == nullptr) {
@@ -55,7 +55,7 @@ bool Model::AddLayer(CPtr<Layer> layer) const {
 	}
 
 	layers.push_back(layer);
-	layer->SetModel(This());
+	layer->SetModel(This<Model>());
 
 	return true;
 }

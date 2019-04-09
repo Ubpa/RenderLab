@@ -11,7 +11,7 @@ namespace CppUtil {
 	}
 
 	namespace QT {
-		class OpThread : public QThread, public Basic::HeapObj<OpThread> {
+		class OpThread : public QThread, public Basic::HeapObj {
 			Q_OBJECT
 		public:
 			OpThread(Basic::Ptr<Basic::Op> op = nullptr);

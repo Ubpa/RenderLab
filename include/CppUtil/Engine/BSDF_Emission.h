@@ -5,7 +5,7 @@
 
 namespace CppUtil {
 	namespace Engine {
-		class BSDF_Emission final : public BSDF<BSDF_Emission> {
+		class BSDF_Emission final : public BSDF {
 		public:
 			BSDF_Emission(const RGBf & color = RGBf(1.f), float intensity = 1.f)
 				: color(color), intensity(intensity) { }

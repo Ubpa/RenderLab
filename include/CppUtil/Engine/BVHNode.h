@@ -10,7 +10,7 @@ namespace CppUtil {
 	namespace Engine {
 
 		template<typename T, typename HolderT>
-		class BVHNode final : public Basic::Element<BVHNode<T,HolderT>> {
+		class BVHNode final : public Basic::Element {
 		public:
 			BVHNode(HolderT * holder, std::vector<Basic::Ptr<T>> & objs, size_t start, size_t range, size_t maxLeafSize = 4)
 				: holder(holder), objs(objs), start(start), range(range)

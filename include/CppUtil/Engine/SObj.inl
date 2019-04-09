@@ -1,35 +1,35 @@
 template<typename T>
 struct SObj::Wrapper<T, true> {
-	static void Detach(Basic::TypeMap<Basic::Ptr<ComponentBase>> & components, Basic::Ptr<T> component) {
+	static void Detach(Basic::TypeMap<Basic::Ptr<Component>> & components, Basic::Ptr<T> component) {
 		components.erase(typeid(*component));
 	}
 
-	static void Detach(Basic::TypeMap<Basic::Ptr<ComponentBase>> & components) {
+	static void Detach(Basic::TypeMap<Basic::Ptr<Component>> & components) {
 		components.erase(typeid(T));
 	}
 
-	static Basic::Ptr<T> GetComponent(const Basic::TypeMap<Basic::Ptr<ComponentBase>> & components) {
+	static Basic::Ptr<T> GetComponent(const Basic::TypeMap<Basic::Ptr<Component>> & components) {
 		auto target = components.find(typeid(T));
 		if (target == components.end())
 			return nullptr;
 
-		return T::PtrCast(target->second);
+		return CastTo<T>(target->second);
 	}
 };
 
 template<typename T>
 const CppUtil::Basic::Ptr<T> SObj::GetComponent(T *) const {
-	return Wrapper<T, std::is_base_of<ComponentBase, T>::value>::GetComponent(components);
+	return Wrapper<T, std::is_base_of<Component, T>::value>::GetComponent(components);
 }
 
 template<typename T>
 void SObj::DetachComponent(T *) {
-	Wrapper<T, std::is_base_of<ComponentBase, T>::value>::Detach(components);
+	Wrapper<T, std::is_base_of<Component, T>::value>::Detach(components);
 }
 
 template<typename T>
 void SObj::DetachComponent(Basic::Ptr<T> component) {
-	Wrapper<T, std::is_base_of<ComponentBase, T>::value>::Detach(components, component);
+	Wrapper<T, std::is_base_of<Component, T>::value>::Detach(components, component);
 }
 
 template<typename T>

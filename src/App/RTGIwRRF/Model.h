@@ -9,7 +9,7 @@
 namespace App {
 	class Layer;
 
-	class Model : public CppUtil::Basic::HeapObj<Model> {
+	class Model : public CppUtil::Basic::HeapObj {
 	public:
 		explicit Model(const std::string & name = "",
 			const int inputDim = -1, const int outputDim = -1)
@@ -26,18 +26,18 @@ namespace App {
 
 	public:
 		const std::string GetFuncName() const { return name; }
-		const std::vector<CppUtil::Basic::CPtr<Layer>> & GetLayers() const { return layers; }
+		const std::vector<CppUtil::Basic::PtrC<Layer>> & GetLayers() const { return layers; }
 		int GetInputDim() const { return inputDim; }
 		int GetOutputDim() const { return outputDim; }
-		int GetIDof(CppUtil::Basic::CPtr<Layer> layer) const;
+		int GetIDof(CppUtil::Basic::PtrC<Layer> layer) const;
 		bool IsValid() const;
 
 	public:
-		bool AddLayer(CppUtil::Basic::CPtr<Layer> layer) const;
+		bool AddLayer(CppUtil::Basic::PtrC<Layer> layer) const;
 		const std::string GenFunc(bool genLayers = true) const;
 
 	private:
-		mutable std::vector<CppUtil::Basic::CPtr<Layer>> layers;
+		mutable std::vector<CppUtil::Basic::PtrC<Layer>> layers;
 
 		int inputDim;
 		int outputDim;

@@ -16,6 +16,16 @@ namespace CppUtil {
 			static const Ptr<Visitor> New() { return Basic::New<Visitor>(); }
 
 		protected:
+			// !!! 不可在构造函数中使用，将初始化任务放到 Init() 中
+			const Ptr<Visitor> This() { return HeapObj::This<Visitor>(); }
+			// !!! 不可在构造函数中使用，将初始化任务放到 Init() 中
+			const PtrC<Visitor> This() const { return HeapObj::This<Visitor>(); }
+			// !!! 不可在构造函数中使用，将初始化任务放到 Init() 中
+			const WPtr<Visitor> WThis() noexcept { return This(); }
+			// !!! 不可在构造函数中使用，将初始化任务放到 Init() 中
+			const WPtrC<Visitor> WThis() const noexcept { return This(); }
+
+		protected:
 			virtual ~Visitor() = default;
 
 		private:// Visit 函数只能让 Element 调用

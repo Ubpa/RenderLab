@@ -6,7 +6,7 @@
 
 namespace CppUtil {
 	namespace Engine {
-		class CmptTransform final : public Component<CmptTransform> {
+		class CmptTransform final : public Component {
 		public:
 			CmptTransform(
 				Basic::Ptr<SObj> sobj,

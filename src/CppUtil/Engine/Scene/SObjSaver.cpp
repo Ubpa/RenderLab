@@ -45,13 +45,13 @@ void SObjSaver::Member(XMLElement * parent, const function<void()> & func) {
 	parentEleStack.pop_back();
 }
 
-void SObjSaver::NewEle(const char * const name, CPtr<Image> img) {
+void SObjSaver::NewEle(const char * const name, PtrC<Image> img) {
 	Member(NewEle(name), [=]() {
 		Visit(img);
 	});
 }
 
-void SObjSaver::Visit(CPtr<Image> img) {
+void SObjSaver::Visit(PtrC<Image> img) {
 	if (!img || !img->IsValid() || img->GetPath().empty())
 		return;
 
@@ -59,7 +59,7 @@ void SObjSaver::Visit(CPtr<Image> img) {
 }
 
 void SObjSaver::Visit(Ptr<Image> img) {
-	Visit(CPtr<Image>(img));
+	Visit(PtrC<Image>(img));
 }
 
 void SObjSaver::Visit(Ptr<SObj> sobj) {

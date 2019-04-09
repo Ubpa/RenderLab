@@ -74,7 +74,7 @@ TriMesh::TriMesh(uint triNum, uint vertexNum,
 }
 
 void TriMesh::Init() {
-	auto triMesh = This();
+	auto triMesh = This<TriMesh>();
 	for (auto triangle : triangles)
 		triangle->mesh = triMesh;
 }

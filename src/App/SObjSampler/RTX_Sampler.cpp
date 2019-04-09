@@ -27,7 +27,7 @@ using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
 using namespace std;
 
-RTX_Sampler::RTX_Sampler(const function<Ptr<RayTracerBase>()> & generator, int maxLoop, int sampleNum)
+RTX_Sampler::RTX_Sampler(const function<Ptr<RayTracer>()> & generator, int maxLoop, int sampleNum)
 	:
 	generator(generator),
 	threadNum(THREAD_NUM),

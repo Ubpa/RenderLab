@@ -26,7 +26,7 @@ Texture::Texture(uint ID, ENUM_TYPE type)
 Texture::Texture(ENUM_TYPE type)
 	: Texture(0, type) { }
 
-Texture::Texture(CPtr<Image> img) : ID(0), type(ENUM_TYPE_2D_DYNAMIC) {
+Texture::Texture(PtrC<Image> img) : ID(0), type(ENUM_TYPE_2D_DYNAMIC) {
 	SetImg(*img);
 }
 
@@ -103,7 +103,7 @@ bool Texture::Load(const std::vector<std::string> & skybox) {
 	return true;
 }
 
-Texture::Texture(const vector<CPtr<Image>> & skyboxImgs) {
+Texture::Texture(const vector<PtrC<Image>> & skyboxImgs) {
 	if (skyboxImgs.size() != 6) {
 		ID = 0;
 		type = ENUM_TYPE_NOT_VALID;

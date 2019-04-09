@@ -13,7 +13,7 @@ namespace CppUtil {
 	}
 
 	namespace Engine {
-		class Roamer final : public Basic::HeapObj<Roamer> {
+		class Roamer final : public Basic::HeapObj {
 		public:
 			Roamer(QT::RawAPI_OGLW * pOGLW);
 

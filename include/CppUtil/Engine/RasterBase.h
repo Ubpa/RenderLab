@@ -42,9 +42,9 @@ namespace CppUtil {
 			const OpenGL::VAO GetSphereVAO() const { return VAO_P3N3T2T3_Sphere; }
 			const OpenGL::VAO GetPlaneVAO() const { return VAO_P3N3T2T3_Plane; }
 			// get or reg
-			const OpenGL::Texture GetTex(Basic::CPtr<Basic::Image> img);
+			const OpenGL::Texture GetTex(Basic::PtrC<Basic::Image> img);
 			// get or reg
-			const OpenGL::VAO GetMeshVAO(Basic::CPtr<TriMesh> mesh);
+			const OpenGL::VAO GetMeshVAO(Basic::PtrC<TriMesh> mesh);
 
 		protected:// Use for SubClass
 			void Draw();
@@ -97,9 +97,9 @@ namespace CppUtil {
 
 			std::vector<Transform> modelVec;
 
-			std::map<Basic::WCPtr<TriMesh>, OpenGL::VAO> meshVAOs;
+			std::map<Basic::WPtrC<TriMesh>, OpenGL::VAO> meshVAOs;
 
-			std::map<Basic::WCPtr<Basic::Image>, OpenGL::Texture> img2tex;
+			std::map<Basic::WPtrC<Basic::Image>, OpenGL::Texture> img2tex;
 
 			unsigned int lightsUBO;
 

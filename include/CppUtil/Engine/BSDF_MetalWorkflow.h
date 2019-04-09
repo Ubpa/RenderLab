@@ -11,7 +11,7 @@ namespace CppUtil {
 	namespace Engine {
 
 		// Disney
-		class BSDF_MetalWorkflow : public BSDF<BSDF_MetalWorkflow> {
+		class BSDF_MetalWorkflow : public BSDF {
 		public:
 			BSDF_MetalWorkflow(const RGBf & colorFactor = RGBf(1.f), float roughnessFactor = 1.f, float metallicFactor = 1.f)
 				: colorFactor(colorFactor), roughnessFactor(roughnessFactor), metallicFactor(metallicFactor),
@@ -38,11 +38,11 @@ namespace CppUtil {
 			virtual void ChangeNormal(const Point2 & texcoord, const Normalf & tangent, Normalf & normal) const override;
 
 		public:
-			Basic::CPtr<Basic::Image> GetAlbedoTexture() const { return albedoTexture; }
-			Basic::CPtr<Basic::Image> GetMetallicTexture() const { return metallicTexture; }
-			Basic::CPtr<Basic::Image> GetRoughnessTexture() const { return roughnessTexture; }
-			Basic::CPtr<Basic::Image> GetAOTexture() const { return aoTexture ; }
-			Basic::CPtr<Basic::Image> GetNormalTexture() const { return normalTexture; }
+			Basic::PtrC<Basic::Image> GetAlbedoTexture() const { return albedoTexture; }
+			Basic::PtrC<Basic::Image> GetMetallicTexture() const { return metallicTexture; }
+			Basic::PtrC<Basic::Image> GetRoughnessTexture() const { return roughnessTexture; }
+			Basic::PtrC<Basic::Image> GetAOTexture() const { return aoTexture ; }
+			Basic::PtrC<Basic::Image> GetNormalTexture() const { return normalTexture; }
 
 			void SetAlbedoTexture(Basic::Ptr<Basic::Image> albedoTexture) {
 				this->albedoTexture = albedoTexture;

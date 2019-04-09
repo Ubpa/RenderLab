@@ -5,15 +5,15 @@
 
 namespace CppUtil {
 	namespace Engine {
-		class MaterialBase;
+		class Material;
 
-		class CmptMaterial final : public Component<CmptMaterial> {
+		class CmptMaterial final : public Component {
 		public:
-			CmptMaterial(Basic::Ptr<SObj> sobj, Basic::Ptr<MaterialBase> material)
+			CmptMaterial(Basic::Ptr<SObj> sobj, Basic::Ptr<Material> material)
 				: Component(sobj), material(material) { }
 
 		public:
-			static const Basic::Ptr<CmptMaterial> New(Basic::Ptr<SObj> sobj, Basic::Ptr<MaterialBase> material) {
+			static const Basic::Ptr<CmptMaterial> New(Basic::Ptr<SObj> sobj, Basic::Ptr<Material> material) {
 				return Basic::New<CmptMaterial>(sobj, material);
 			}
 
@@ -21,7 +21,7 @@ namespace CppUtil {
 			virtual ~CmptMaterial() = default;
 
 		public:
-			Basic::Ptr<MaterialBase> material;
+			Basic::Ptr<Material> material;
 		};
 	}
 }

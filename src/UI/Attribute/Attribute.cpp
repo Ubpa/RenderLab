@@ -91,7 +91,7 @@ public:
 	void Visit(Ptr<CmptTransform> cmpt);
 
 private:
-	QWidget * GenItem(Ptr<ComponentBase> component, const QString & str) {
+	QWidget * GenItem(Ptr<Component> component, const QString & str) {
 		auto item = new QWidget;
 		attr->componentType2item[typeid(*component)] = item;
 		attr->tbox->insertItem(0, item, str);
@@ -257,15 +257,15 @@ void Attribute::ComponentVisitor::Visit(Ptr<CmptMaterial> cmpt) {
 	});
 
 	const int bsdfNum = 8;
-	tuple<string, function<Ptr<BSDFBase>()>> bsdfArr[bsdfNum] = {
-		{"None", []()->Ptr<BSDFBase> { return nullptr; } },
-		{"BSDF_Diffuse", []()->Ptr<BSDFBase> { return BSDF_Diffuse::New(); } },
-		{"BSDF_Emission", []()->Ptr<BSDFBase> { return BSDF_Emission::New(); } },
-		{"BSDF_Glass", []()->Ptr<BSDFBase> { return BSDF_Glass::New(); } },
-		{"BSDF_Mirror", []()->Ptr<BSDFBase> { return BSDF_Mirror::New(); } },
-		{"BSDF_CookTorrance", []()->Ptr<BSDFBase> { return BSDF_CookTorrance::New(); } },
-		{"BSDF_MetalWorkflow", []()->Ptr<BSDFBase> { return BSDF_MetalWorkflow::New(); } },
-		{"BSDF_FrostedGlass", []()->Ptr<BSDFBase> { return BSDF_FrostedGlass::New(); } },
+	tuple<string, function<Ptr<BSDF>()>> bsdfArr[bsdfNum] = {
+		{"None", []()->Ptr<BSDF> { return nullptr; } },
+		{"BSDF_Diffuse", []()->Ptr<BSDF> { return BSDF_Diffuse::New(); } },
+		{"BSDF_Emission", []()->Ptr<BSDF> { return BSDF_Emission::New(); } },
+		{"BSDF_Glass", []()->Ptr<BSDF> { return BSDF_Glass::New(); } },
+		{"BSDF_Mirror", []()->Ptr<BSDF> { return BSDF_Mirror::New(); } },
+		{"BSDF_CookTorrance", []()->Ptr<BSDF> { return BSDF_CookTorrance::New(); } },
+		{"BSDF_MetalWorkflow", []()->Ptr<BSDF> { return BSDF_MetalWorkflow::New(); } },
+		{"BSDF_FrostedGlass", []()->Ptr<BSDF> { return BSDF_FrostedGlass::New(); } },
 	};
 
 	Grid::pSlotMap pSlotMap(new Grid::SlotMap);
@@ -378,10 +378,10 @@ void Attribute::ComponentVisitor::Visit(Ptr<CmptLight> cmpt) {
 	});
 
 	const int lightNum = 3;
-	tuple<string, function<Ptr<LightBase>()>> lightArr[lightNum] = {
-		{"None", []()->Ptr<LightBase> { return nullptr; } },
-		{"AreaLight", []()->Ptr<LightBase> { return AreaLight::New(); } },
-		{"PointLight", []()->Ptr<LightBase> { return PointLight::New(); } },
+	tuple<string, function<Ptr<Light>()>> lightArr[lightNum] = {
+		{"None", []()->Ptr<Light> { return nullptr; } },
+		{"AreaLight", []()->Ptr<Light> { return AreaLight::New(); } },
+		{"PointLight", []()->Ptr<Light> { return PointLight::New(); } },
 	};
 
 	Grid::pSlotMap pSlotMap(new Grid::SlotMap);
@@ -477,44 +477,44 @@ void Attribute::AddController(Ptr<SObj> sobj) {
 	const int componentNum = 5;
 	vector<string> componentNames{ "Camera" , "Geometry", "Light", "Material", "Transform" };
 
-	vector<function<Ptr<ComponentBase>()>> componentGenFuncs{
-		[=]()->Ptr<ComponentBase> { return CmptCamera::New(nullptr); },
-		[=]()->Ptr<ComponentBase> { return CmptGeometry::New(nullptr, nullptr); },
-		[=]()->Ptr<ComponentBase> { return CmptLight::New(nullptr, nullptr); },
-		[=]()->Ptr<ComponentBase> { return CmptMaterial::New(nullptr, nullptr); },
-		[=]()->Ptr<ComponentBase> { return CmptTransform::New(nullptr); },
+	vector<function<Ptr<Component>()>> componentGenFuncs{
+		[=]()->Ptr<Component> { return CmptCamera::New(nullptr); },
+		[=]()->Ptr<Component> { return CmptGeometry::New(nullptr, nullptr); },
+		[=]()->Ptr<Component> { return CmptLight::New(nullptr, nullptr); },
+		[=]()->Ptr<Component> { return CmptMaterial::New(nullptr, nullptr); },
+		[=]()->Ptr<Component> { return CmptTransform::New(nullptr); },
 	};
 
-	vector<function<Ptr<ComponentBase>()>> componentDelFuncs{
-		[=]()->Ptr<ComponentBase> {
+	vector<function<Ptr<Component>()>> componentDelFuncs{
+		[=]()->Ptr<Component> {
 			auto component = sobj->GetComponent<CmptCamera>();
 			sobj->DetachComponent<CmptCamera>();
 			return component;
 		},
-		[=]()->Ptr<ComponentBase> {
+		[=]()->Ptr<Component> {
 			auto component = sobj->GetComponent<CmptGeometry>();
 			sobj->DetachComponent<CmptGeometry>();
 			return component;
 		},
-		[=]()->Ptr<ComponentBase> {
+		[=]()->Ptr<Component> {
 			auto component = sobj->GetComponent<CmptLight>();
 			sobj->DetachComponent<CmptLight>();
 			return component;
 		},
-		[=]()->Ptr<ComponentBase> {
+		[=]()->Ptr<Component> {
 			auto component = sobj->GetComponent<CmptMaterial>();
 			sobj->DetachComponent<CmptMaterial>();
 			return component;
 		},
-		[=]()->Ptr<ComponentBase> {
+		[=]()->Ptr<Component> {
 			auto component = sobj->GetComponent<CmptTransform>();
 			sobj->DetachComponent<CmptTransform>();
 			return component;
 		},
 	};
 
-	map<std::string, function<Ptr<ComponentBase>()> > componentGenMap;
-	map<std::string, function<Ptr<ComponentBase>()> > componentDelMap;
+	map<std::string, function<Ptr<Component>()> > componentGenMap;
+	map<std::string, function<Ptr<Component>()> > componentDelMap;
 	for (int i = 0; i < componentNum; i++) {
 		componentGenMap[componentNames[i]] = componentGenFuncs[i];
 		componentDelMap[componentNames[i]] = componentDelFuncs[i];

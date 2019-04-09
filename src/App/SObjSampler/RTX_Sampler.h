@@ -16,18 +16,18 @@ namespace CppUtil {
 	namespace Engine {
 		class Scene;
 
-		class RayTracerBase;
+		class RayTracer;
 	}
 }
 
 namespace App {
-	class RTX_Sampler : public CppUtil::Basic::HeapObj<RTX_Sampler> {
+	class RTX_Sampler : public CppUtil::Basic::HeapObj {
 	public:
-		RTX_Sampler(const std::function<CppUtil::Basic::Ptr<CppUtil::Engine::RayTracerBase>()> & generator, int maxLoop, int sampleNum);
+		RTX_Sampler(const std::function<CppUtil::Basic::Ptr<CppUtil::Engine::RayTracer>()> & generator, int maxLoop, int sampleNum);
 
 	public:
 		static const CppUtil::Basic::Ptr<RTX_Sampler> New(
-			const std::function<CppUtil::Basic::Ptr<CppUtil::Engine::RayTracerBase>()> & generator,
+			const std::function<CppUtil::Basic::Ptr<CppUtil::Engine::RayTracer>()> & generator,
 			int maxLoop, int sampleNum)
 		{
 			return CppUtil::Basic::New<RTX_Sampler>(generator, maxLoop, sampleNum);
@@ -42,8 +42,8 @@ namespace App {
 		const std::vector<std::vector<CppUtil::Point2ui>> & GetJobs() const { return jobs; }
 
 	private:
-		std::function<CppUtil::Basic::Ptr<CppUtil::Engine::RayTracerBase>()> generator;
-		std::vector<CppUtil::Basic::Ptr<CppUtil::Engine::RayTracerBase>> rayTracers;
+		std::function<CppUtil::Basic::Ptr<CppUtil::Engine::RayTracer>()> generator;
+		std::vector<CppUtil::Basic::Ptr<CppUtil::Engine::RayTracer>> rayTracers;
 
 		std::vector<std::vector<CppUtil::Point2ui>> jobs;
 

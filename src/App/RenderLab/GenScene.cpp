@@ -370,7 +370,7 @@ Ptr<Scene> GenScene07() {
 
 			auto geo = CmptGeometry::New(ball, Sphere::New());
 
-			Ptr<BSDFBase> bsdf;
+			Ptr<BSDF> bsdf;
 			float choose_mat = Math::Rand_F();
 			if (choose_mat < 0.8) {  // diffuse
 				RGBf color(Math::Rand_F()*Math::Rand_F(), Math::Rand_F()*Math::Rand_F(), Math::Rand_F()*Math::Rand_F());
@@ -398,7 +398,7 @@ Ptr<Scene> GenScene07() {
 		Point3(-6, 1, 0),
 	};
 	float radius[6] = { 1000.f,1.f,1.f,-0.8f,1.f,1.f };
-	Ptr<BSDFBase> bsdf[6] = {
+	Ptr<BSDF> bsdf[6] = {
 		BSDF_Diffuse::New(RGBf(0.5f)),
 		BSDF_Mirror::New(RGBf(0.7f, 0.6f, 0.5f)),
 		BSDF_Glass::New(1.5f),

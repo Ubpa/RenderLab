@@ -9,7 +9,7 @@ namespace CppUtil {
 	}
 
 	namespace Engine {
-		class BSDF_FrostedGlass : public BSDF<BSDF_FrostedGlass> {
+		class BSDF_FrostedGlass : public BSDF {
 		public:
 			BSDF_FrostedGlass(const RGBf & colorFactor = RGBf(1.f), float roughnessFactor = 1.f, float ior = 1.5f)
 				: colorFactor(colorFactor), roughnessFactor(roughnessFactor), ior(ior),

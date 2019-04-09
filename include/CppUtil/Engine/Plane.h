@@ -6,7 +6,7 @@
 
 namespace CppUtil {
 	namespace Engine {
-		class Plane final : public Primitive<Plane> {
+		class Plane final : public Primitive {
 		public:
 			Plane() = default;
 		public:

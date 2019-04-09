@@ -11,7 +11,7 @@ namespace CppUtil {
 	}
 
 	namespace Engine {
-		class BSDF_Diffuse final : public BSDF<BSDF_Diffuse> {
+		class BSDF_Diffuse final : public BSDF {
 		public:
 			BSDF_Diffuse(const RGBf & colorFactor = RGBf(1))
 				: colorFactor(colorFactor), albedoTexture(nullptr) { }

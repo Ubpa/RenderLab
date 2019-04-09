@@ -14,17 +14,17 @@ void Unit::Init() {
 	if (layer.expired())
 		return;
 
-	layer.lock()->AddUnit(This());
+	layer.lock()->AddUnit(This<Unit>());
 }
 
-bool Unit::SetLayer(CPtr<Layer> layer) const {
+bool Unit::SetLayer(PtrC<Layer> layer) const {
 	static constexpr bool ERROR = false;
 
 	if (!this->layer.expired())
 		return ERROR;
 
 	this->layer = layer;
-	layer->AddUnit(This());
+	layer->AddUnit(This<Unit>());
 	return true;
 }
 
@@ -50,7 +50,7 @@ int Unit::GetID() const {
 		return ERROR;
 	}
 
-	return layer.lock()->GetIDof(This());
+	return layer.lock()->GetIDof(This<Unit>());
 }
 
 const string Unit::GenComputeExpr() const {

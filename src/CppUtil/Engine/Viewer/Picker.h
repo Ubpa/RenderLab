@@ -9,7 +9,7 @@ namespace CppUtil {
 
 		class RayIntersector;
 
-		class Picker final : public Basic::HeapObj<Picker> {
+		class Picker final : public Basic::HeapObj {
 		public:
 			Picker(Viewer * viewer);
 
@@ -25,9 +25,6 @@ namespace CppUtil {
 			void OGL_Init();
 
 			Viewer * GetViewer() const { return viewer; }
-
-		private:
-			using Basic::HeapObj<Picker>::Init;
 
 		private:
 			Viewer * viewer;

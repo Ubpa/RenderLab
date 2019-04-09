@@ -15,7 +15,7 @@ namespace CppUtil {
 		class Roamer;
 		class Picker;
 
-		class Viewer final : public Basic::HeapObj<Viewer> {
+		class Viewer final : public Basic::HeapObj {
 		public:
 			Viewer(QT::RawAPI_OGLW * pOGLW, Basic::Ptr<Scene> scene);
 

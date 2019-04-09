@@ -23,7 +23,7 @@ using namespace std;
 
 RayIntersector::RayIntersector() {
 	RegMemberFunc<BVHAccel>(&RayIntersector::Visit);
-	RegMemberFunc<BVHNode<ElementBase, BVHAccel>>(&RayIntersector::Visit);
+	RegMemberFunc<BVHNode<Element, BVHAccel>>(&RayIntersector::Visit);
 	RegMemberFunc<SObj>(&RayIntersector::Visit);
 	RegMemberFunc<Sphere>(&RayIntersector::Visit);
 	RegMemberFunc<Plane>(&RayIntersector::Visit);
@@ -78,7 +78,7 @@ void RayIntersector::Visit(Ptr<BVHAccel> bvhAccel) {
 	}
 }
 
-void RayIntersector::Visit(Ptr<BVHNode<ElementBase, BVHAccel>> bvhNode) {
+void RayIntersector::Visit(Ptr<BVHNode<Element, BVHAccel>> bvhNode) {
 	if (bvhNode->IsLeaf()) {
 		const auto origin = ray->o;
 		const auto dir = ray->d;

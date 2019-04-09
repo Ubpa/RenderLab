@@ -16,16 +16,16 @@ namespace CppUtil {
 	namespace Engine {
 		class Scene;
 
-		class RayTracerBase;
+		class RayTracer;
 
 		BETTER_ENUM(RendererState, int, Running, Stop)
 
-		class RTX_Renderer : public Basic::HeapObj<RTX_Renderer> {
+		class RTX_Renderer : public Basic::HeapObj {
 		public:
-			RTX_Renderer(const std::function<Basic::Ptr<RayTracerBase>()> & generator);
+			RTX_Renderer(const std::function<Basic::Ptr<RayTracer>()> & generator);
 			
 		public:
-			static const Basic::Ptr<RTX_Renderer> New(const std::function<Basic::Ptr<RayTracerBase>()> & generator) {
+			static const Basic::Ptr<RTX_Renderer> New(const std::function<Basic::Ptr<RayTracer>()> & generator) {
 				return Basic::New<RTX_Renderer>(generator);
 			}
 
@@ -39,7 +39,7 @@ namespace CppUtil {
 			volatile int maxLoop;
 
 		private:
-			std::function<Basic::Ptr<RayTracerBase>()> generator;
+			std::function<Basic::Ptr<RayTracer>()> generator;
 
 			RendererState state;
 			int curLoop;

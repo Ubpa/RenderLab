@@ -31,7 +31,7 @@ namespace CppUtil {
 				return std::dynamic_pointer_cast<ToType>(ptr);
 			}
 			static const WPtr<ToType> call(const WPtr<FromType> & ptr) {
-				return std::dynamic_pointer_cast<ToType>(ptr);
+				return std::dynamic_pointer_cast<ToType>(ptr.lock());
 			}
 		};
 		template<typename FromType, typename ToType>
@@ -40,7 +40,7 @@ namespace CppUtil {
 				return std::static_pointer_cast<ToType>(ptr);
 			}
 			static const WPtr<ToType> call(const WPtr<FromType> & ptr) {
-				return std::static_pointer_cast<ToType>(ptr);
+				return std::static_pointer_cast<ToType>(ptr.lock());
 			}
 		};
 		template<typename FromType, typename ToType>
@@ -64,6 +64,11 @@ namespace CppUtil {
 
 		template<typename ToType, typename FromType>
 		const Ptr<ToType> CastTo(const Ptr<FromType> & ptr) {
+			return CastWrapper<FromType, ToType, std::is_base_of_v<FromType, ToType>, std::is_base_of_v<ToType, FromType>>::call(ptr);
+		}
+
+		template<typename ToType, typename FromType>
+		const WPtr<ToType> CastTo(const WPtr<FromType> & ptr) {
 			return CastWrapper<FromType, ToType, std::is_base_of_v<FromType, ToType>, std::is_base_of_v<ToType, FromType>>::call(ptr);
 		}
 	}

@@ -5,16 +5,9 @@
 
 namespace CppUtil {
 	namespace Engine {
-		class MaterialBase : public Basic::ElementBase {
+		class Material : public Basic::Element {
 		protected:
-			MaterialBase() = default;
-			virtual ~MaterialBase() = default;
-		};
-
-		template<typename ImplT, typename BaseT = MaterialBase>
-		class Material : public Basic::Element<ImplT, BaseT> {
-		protected:
-			using Element<ImplT, BaseT>::Element;
+			Material() = default;
 			virtual ~Material() = default;
 		};
 	}

@@ -17,7 +17,7 @@ namespace CppUtil {
 			PaintImgOpCreator(RawAPI_OGLW * pOGLW);
 
 		public:
-			class PaintImgOp final : public Basic::HeapObj<PaintImgOp> {
+			class PaintImgOp final : public Basic::HeapObj {
 				friend class PaintImgOpCreator;
 
 			public:

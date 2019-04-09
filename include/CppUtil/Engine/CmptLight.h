@@ -7,15 +7,15 @@
 
 namespace CppUtil {
 	namespace Engine {
-		class LightBase;
+		class Light;
 
-		class CmptLight final : public Component<CmptLight> {
+		class CmptLight final : public Component {
 		public:
-			CmptLight(Basic::Ptr<SObj> sobj, Basic::Ptr<LightBase> light)
+			CmptLight(Basic::Ptr<SObj> sobj, Basic::Ptr<Light> light)
 				: Component(sobj), light(light) { }
 
 		public:
-			static const Basic::Ptr<CmptLight> New(Basic::Ptr<SObj> sobj, Basic::Ptr<LightBase> light) {
+			static const Basic::Ptr<CmptLight> New(Basic::Ptr<SObj> sobj, Basic::Ptr<Light> light) {
 				return Basic::New<CmptLight>(sobj, light);
 			}
 
@@ -26,7 +26,7 @@ namespace CppUtil {
 			Basic::Transform GetLightToWorldMatrixWithoutScale() const;
 		
 		public:
-			Basic::Ptr<LightBase> light;
+			Basic::Ptr<Light> light;
 		};
 	}
 }

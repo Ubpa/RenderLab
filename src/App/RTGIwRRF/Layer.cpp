@@ -15,21 +15,21 @@ void Layer::Init() {
 	if (model.expired())
 		return;
 
-	model.lock()->AddLayer(This());
+	model.lock()->AddLayer(This<Layer>());
 }
 
-bool Layer::SetModel(CPtr<Model> model) const {
+bool Layer::SetModel(PtrC<Model> model) const {
 	static constexpr bool ERROR = false;
 
 	if (!this->model.expired())
 		return ERROR;
 
 	this->model = model;
-	model->AddLayer(This());
+	model->AddLayer(This<Layer>());
 	return true;
 }
 
-int Layer::GetIDof(CPtr<Unit> unit) const {
+int Layer::GetIDof(PtrC<Unit> unit) const {
 	static constexpr int ERROR = -1;
 	
 	if (unit == nullptr)
@@ -49,7 +49,7 @@ int Layer::GetID() const {
 	if (model.expired())
 		return ERROR;
 
-	return model.lock()->GetIDof(This());
+	return model.lock()->GetIDof(This<Layer>());
 }
 
 const string Layer::GetFuncName() const {
@@ -64,7 +64,7 @@ const string Layer::GetFuncName() const {
 	return name.str();
 }
 
-bool Layer::AddUnit(CPtr<Unit> unit) const {
+bool Layer::AddUnit(PtrC<Unit> unit) const {
 	static auto const & ERROR = false;
 
 	if (unit == nullptr) {
@@ -85,7 +85,7 @@ bool Layer::AddUnit(CPtr<Unit> unit) const {
 			return ERROR;
 		}
 
-		unit->SetLayer(This());
+		unit->SetLayer(This<Layer>());
 		units.push_back(unit);
 
 		break;

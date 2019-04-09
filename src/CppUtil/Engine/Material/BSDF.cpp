@@ -8,7 +8,7 @@ using namespace CppUtil;
 using namespace CppUtil::Basic;
 using namespace CppUtil::Engine;
 
-bool BSDFBase::LocalRefract(const Normalf & wo, Normalf & wi, float ior) {
+bool BSDF::LocalRefract(const Normalf & wo, Normalf & wi, float ior) {
 	float inv = wo.z >= 0 ? 1.0f / ior : ior;
 
 	float discriminant = 1 - (1 - wo.z * wo.z) * inv * inv;
@@ -23,7 +23,7 @@ bool BSDFBase::LocalRefract(const Normalf & wo, Normalf & wi, float ior) {
 	return true;
 }
 
-const Normalf BSDFBase::TangentSpaceNormalToWorld(const Normalf & worldTangent, const Normalf & worldNormal, const Normalf & tangentSpaceNormal) {
+const Normalf BSDF::TangentSpaceNormalToWorld(const Normalf & worldTangent, const Normalf & worldNormal, const Normalf & tangentSpaceNormal) {
 	const Normalf bitangent = worldTangent.Cross(worldNormal);
 	Mat3f TBN(worldTangent, bitangent, worldNormal);
 	return (TBN * tangentSpaceNormal).Normalize();

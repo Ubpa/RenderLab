@@ -5,7 +5,7 @@
 
 namespace CppUtil {
 	namespace Engine {
-		class BSDF_Mirror : public BSDF<BSDF_Mirror> {
+		class BSDF_Mirror : public BSDF {
 		public:
 			BSDF_Mirror(const RGBf & reflectance = RGBf(1.f)) : reflectance(reflectance) { }
 

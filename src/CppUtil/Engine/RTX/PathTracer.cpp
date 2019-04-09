@@ -87,7 +87,7 @@ const RGBf PathTracer::Trace(ERay & ray, int depth, RGBf pathThroughput) {
 	if (cmptMaterial == nullptr)
 		return emitL;
 
-	auto bsdf = dynamic_pointer_cast<BSDFBase>(cmptMaterial->material);
+	auto bsdf = dynamic_pointer_cast<BSDF>(cmptMaterial->material);
 	if (bsdf == nullptr)
 		return emitL;
 
@@ -116,7 +116,7 @@ const RGBf PathTracer::SampleLightImpl(
 	const Point3 & posInWorldSpace,
 	const Point3 & posInLightSpace,
 	const Mat3f & worldToSurface,
-	const Basic::Ptr<BSDFBase> bsdf,
+	const Basic::Ptr<BSDF> bsdf,
 	const Normalf & w_out,
 	const Point2 & texcoord,
 	const float factorPD
@@ -175,7 +175,7 @@ const RGBf PathTracer::SampleLight(
 	const Point3 & posInWorldSpace,
 	const std::vector<Point3> & posInLightSpaceVec,
 	const Mat3f & worldToSurface,
-	const Basic::Ptr<BSDFBase> bsdf,
+	const Basic::Ptr<BSDF> bsdf,
 	const Normalf & w_out,
 	const Point2 & texcoord,
 	const SampleLightMode mode
@@ -208,7 +208,7 @@ const RGBf PathTracer::SampleLight(
 }
 
 const RGBf PathTracer::SampleBSDF(
-	const Basic::Ptr<BSDFBase> bsdf,
+	const Basic::Ptr<BSDF> bsdf,
 	const SampleLightMode mode,
 	const Normalf & w_out,
 	const Mat3f & surfaceToWorld,

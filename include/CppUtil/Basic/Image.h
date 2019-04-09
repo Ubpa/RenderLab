@@ -10,7 +10,7 @@
 
 namespace CppUtil {
 	namespace Basic {
-		class Image : public HeapObj<Image> {
+		class Image : public HeapObj {
 		public:
 			Image();
 			Image(int width, int height, int channel);

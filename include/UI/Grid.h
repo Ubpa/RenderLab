@@ -27,7 +27,7 @@ namespace CppUtil {
 }
 
 namespace Ui {
-	class Grid : public CppUtil::Basic::HeapObj<Grid> {
+	class Grid : public CppUtil::Basic::HeapObj {
 	public:
 		Grid() : isInit(false), page(nullptr), gridLayout(nullptr) { }
 		Grid(QWidget * page);
@@ -101,7 +101,7 @@ namespace Ui {
 			const std::function<void(const std::string &)> & slot);
 
 		// image
-		void AddEditImage(const std::string & text, CppUtil::Basic::CPtr<CppUtil::Basic::Image> img, const std::function<void(CppUtil::Basic::Ptr<CppUtil::Basic::Image>)> & slot);
+		void AddEditImage(const std::string & text, CppUtil::Basic::PtrC<CppUtil::Basic::Image> img, const std::function<void(CppUtil::Basic::Ptr<CppUtil::Basic::Image>)> & slot);
 
 		// image
 		void AddEditImage(const std::string & text, CppUtil::Basic::Ptr<CppUtil::Basic::Image> & img) {
@@ -118,7 +118,7 @@ namespace Ui {
 		void AddRow(const std::string & text, QWidget * widget = nullptr);
 		void AddRow(QWidget * widgetLeft, QWidget * widgetRight = nullptr);
 
-		static bool SetImgLabel(QLabel * imgLabel, CppUtil::Basic::CPtr<CppUtil::Basic::Image> img);
+		static bool SetImgLabel(QLabel * imgLabel, CppUtil::Basic::PtrC<CppUtil::Basic::Image> img);
 		static void ClearImgLabel(QLabel * imgLabel);
 
 	private:

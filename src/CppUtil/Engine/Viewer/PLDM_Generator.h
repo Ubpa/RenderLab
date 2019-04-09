@@ -38,7 +38,7 @@ namespace CppUtil {
 			
 		public:
 			void OGL_Init();
-			const OpenGL::Texture GetDepthCubeMap(Basic::CPtr<CmptLight> light) const;
+			const OpenGL::Texture GetDepthCubeMap(Basic::PtrC<CmptLight> light) const;
 			float GetLightFar() const { return lightFar; }
 
 		private:
@@ -59,7 +59,7 @@ namespace CppUtil {
 				OpenGL::FBO fbo;
 				OpenGL::Texture tex;
 			};
-			std::map<Basic::WCPtr<CmptLight>, Val> lightMap;
+			std::map<Basic::WPtrC<CmptLight>, Val> lightMap;
 			int depthMapSize;
 			float lightFar;
 

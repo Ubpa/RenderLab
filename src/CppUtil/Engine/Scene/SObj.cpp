@@ -14,17 +14,17 @@ using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
 using namespace std;
 
-void SObj::AttachComponent(Ptr<ComponentBase> component) {
+void SObj::AttachComponent(Ptr<Component> component) {
 	auto target = components.find(typeid(*component));
 	if (target != components.end())
 		target->second->SetSObj(nullptr);
 
-	component->SetSObj(This());
+	component->SetSObj(This<SObj>());
 	components[typeid(*component)] = component;
 }
 
-const std::vector<Ptr<ComponentBase>> SObj::GetAllComponents() const {
-	std::vector<Ptr<ComponentBase>> rst;
+const std::vector<Ptr<Component>> SObj::GetAllComponents() const {
+	std::vector<Ptr<Component>> rst;
 
 	for (auto & component : components)
 		rst.push_back(component.second);
@@ -46,7 +46,7 @@ const Transform SObj::GetLocalToWorldMatrix() {
 	return tsfm;
 }
 
-bool SObj::HaveComponentSameTypeWith(Ptr<ComponentBase> ptr) const {
+bool SObj::HaveComponentSameTypeWith(Ptr<Component> ptr) const {
 	if (ptr == nullptr)
 		return false;
 

@@ -12,7 +12,7 @@ namespace CppUtil {
 
 		// 因为 Triangle 依赖于 Mesh，而且 Mesh 又可以取代 Triangle
 		// 所以不把 Triangle 当作 Primitive，只让 Mesh 当作 Primitive
-		class Triangle final : public Basic::Element<Triangle> {
+		class Triangle final : public Basic::Element {
 			friend class TriMesh;
 		public:
 			Triangle(uint idx0, uint idx1, uint idx2)

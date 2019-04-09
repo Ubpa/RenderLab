@@ -156,7 +156,7 @@ void RasterBase::Visit(Ptr<TriMesh> mesh) {
 	GetMeshVAO(mesh).Draw(curShader);
 }
 
-const Texture RasterBase::GetTex(CPtr<Image> img) {
+const Texture RasterBase::GetTex(PtrC<Image> img) {
 	auto target = img2tex.find(img);
 	if (target != img2tex.end())
 		return target->second;
@@ -170,7 +170,7 @@ void RasterBase::UpdateLights() const {
 	int lightIdx = 0;
 	glBindBuffer(GL_UNIFORM_BUFFER, lightsUBO);
 	for (auto cmptLight : scene->GetCmptLights()) {
-		auto pointLight = PointLight::PtrCast(cmptLight->light);
+		auto pointLight = CastTo<PointLight>(cmptLight->light);
 		if (!pointLight)
 			continue;
 
@@ -189,7 +189,7 @@ void RasterBase::UpdateLights() const {
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
-const VAO RasterBase::GetMeshVAO(CPtr<TriMesh> mesh) {
+const VAO RasterBase::GetMeshVAO(PtrC<TriMesh> mesh) {
 	auto target = meshVAOs.find(mesh);
 	if (target != meshVAOs.end())
 		return target->second;
@@ -211,7 +211,7 @@ const VAO RasterBase::GetMeshVAO(CPtr<TriMesh> mesh) {
 void RasterBase::SetPointLightDepthMap(const Shader & shader, int base) {
 	int lightIdx = 0;
 	for (auto cmptLight : scene->GetCmptLights()) {
-		if (!PointLight::PtrCast(cmptLight->light))
+		if (!CastTo<PointLight>(cmptLight->light))
 			continue;
 
 		pldmGenerator->GetDepthCubeMap(cmptLight).Use(base + lightIdx);

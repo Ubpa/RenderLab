@@ -20,16 +20,16 @@ namespace App {
 		ReLU,
 		tanh)
 
-	class Layer : public CppUtil::Basic::HeapObj<Layer> {
+	class Layer : public CppUtil::Basic::HeapObj {
 	public:
-		explicit Layer(CppUtil::Basic::CPtr<Model> model = nullptr,
+		explicit Layer(CppUtil::Basic::PtrC<Model> model = nullptr,
 			const int inputDim = -1,
 			const Connection & connection = Connection::Dense,
 			const Activation & activation = Activation::Identity)
 			: model(model), inputDim(inputDim), connection(connection), activation(activation) { }
 
 	public:
-		static const CppUtil::Basic::Ptr<Layer> New(CppUtil::Basic::CPtr<Model> model = nullptr,
+		static const CppUtil::Basic::Ptr<Layer> New(CppUtil::Basic::PtrC<Model> model = nullptr,
 			const int inputDim = -1,
 			const Connection & connection = Connection::Dense,
 			const Activation & activation = Activation::Identity)
@@ -41,30 +41,30 @@ namespace App {
 		virtual ~Layer() = default;
 
 	public:
-		const std::vector<CppUtil::Basic::CPtr<Unit>> & GetUnits() const { return units; }
+		const std::vector<CppUtil::Basic::PtrC<Unit>> & GetUnits() const { return units; }
 		const Activation & GetActivation() const { return activation; }
 		const Connection & GetConnection() const { return connection; }
 		int GetInputDim() const { return inputDim; }
 		int GetOutputDim() const { return static_cast<int>(units.size()); }
-		const CppUtil::Basic::CPtr<Model> GetModel() const { return model.lock(); }
-		bool SetModel(CppUtil::Basic::CPtr<Model> model) const;
+		const CppUtil::Basic::PtrC<Model> GetModel() const { return model.lock(); }
+		bool SetModel(CppUtil::Basic::PtrC<Model> model) const;
 
-		int GetIDof(CppUtil::Basic::CPtr<Unit> unit) const;
+		int GetIDof(CppUtil::Basic::PtrC<Unit> unit) const;
 		int GetID() const;
 		const std::string GetFuncName() const;
 		
 		bool IsValid() const;
 
 	public:
-		bool AddUnit(CppUtil::Basic::CPtr<Unit> unit) const;
+		bool AddUnit(CppUtil::Basic::PtrC<Unit> unit) const;
 		const std::string GenFunc(bool genUnits = true) const;
 
 	private:
 		virtual void Init() override;
 
 	private:
-		mutable CppUtil::Basic::WCPtr<Model> model;
-		mutable std::vector<CppUtil::Basic::CPtr<Unit>> units;
+		mutable CppUtil::Basic::WPtrC<Model> model;
+		mutable std::vector<CppUtil::Basic::PtrC<Unit>> units;
 
 		int inputDim;
 		Connection connection;

@@ -5,7 +5,7 @@
 
 namespace CppUtil {
 	namespace Engine {
-		class BSDF_Glass : public BSDF<BSDF_Glass> {
+		class BSDF_Glass : public BSDF {
 		public:
 			BSDF_Glass(float ior = 1.f, const RGBf & transmittance = RGBf(1.f), const RGBf & reflectance = RGBf(1.f))
 				: ior(ior), transmittance(transmittance), reflectance(reflectance) { }

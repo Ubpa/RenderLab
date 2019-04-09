@@ -10,19 +10,19 @@ namespace CppUtil {
 		template<typename ImplT, typename ...Args>
 		friend const Ptr<ImplT> New(Args && ... args);
 
-		public:
+		protected:
 			// !!! 不可在构造函数中使用，将初始化任务放到 Init() 中
 			template<typename T = HeapObj>
 			const Ptr<T> This() { return CastTo<T>(shared_from_this()); }
 			// !!! 不可在构造函数中使用，将初始化任务放到 Init() 中
 			template<typename T = HeapObj>
-			const PtrC<T> This() const { return CastTo<T>(shared_from_this()); }
+			const PtrC<T> This() const { return CastTo<const T>(shared_from_this()); }
 			// !!! 不可在构造函数中使用，将初始化任务放到 Init() 中
 			template<typename T = HeapObj>
 			const WPtr<T> WThis() noexcept { return CastTo<T>(weak_from_this()); }
 			// !!! 不可在构造函数中使用，将初始化任务放到 Init() 中
 			template<typename T = HeapObj>
-			const WPtrC<T> WThis() const noexcept { return CastTo<T>(weak_from_this()); }
+			const WPtrC<T> WThis() const noexcept { return CastTo<const T>(weak_from_this()); }
 
 		protected:
 			// 由于构造函数中不可使用 This(), WPtr()

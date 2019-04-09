@@ -151,7 +151,7 @@ void DirectIllumRaster::Visit(Ptr<BSDF_MetalWorkflow> bsdf) {
 	shader_metalWorkflow.SetFloat(strBSDF + "roughnessFactor", bsdf->roughnessFactor);
 
 	const int texNum = 5;
-	CPtr<Image> imgs[texNum] = { bsdf->albedoTexture, bsdf->metallicTexture, bsdf->roughnessTexture, bsdf->aoTexture, bsdf->normalTexture };
+	PtrC<Image> imgs[texNum] = { bsdf->albedoTexture, bsdf->metallicTexture, bsdf->roughnessTexture, bsdf->aoTexture, bsdf->normalTexture };
 	string names[texNum] = { "Albedo", "Metallic", "Roughness", "AO", "Normal" };
 
 	for (int i = 0; i < texNum; i++) {
@@ -175,7 +175,7 @@ void DirectIllumRaster::Visit(Ptr<BSDF_FrostedGlass> bsdf) {
 	shader_frostedGlass.SetFloat(strBSDF + "roughnessFactor", bsdf->roughnessFactor);
 
 	const int texNum = 4;
-	CPtr<Image> imgs[texNum] = { bsdf->colorTexture, bsdf->roughnessTexture, bsdf->aoTexture, bsdf->normalTexture };
+	PtrC<Image> imgs[texNum] = { bsdf->colorTexture, bsdf->roughnessTexture, bsdf->aoTexture, bsdf->normalTexture };
 	string names[texNum] = { "Color", "Roughness", "AO", "Normal" };
 
 	for (int i = 0; i < texNum; i++) {

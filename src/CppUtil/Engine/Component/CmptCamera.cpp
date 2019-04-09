@@ -19,7 +19,7 @@ void CmptCamera::Coordinate::Init(const Transform & tsfm) {
 
 CmptCamera::CmptCamera(Basic::Ptr<SObj> sobj, float fov, float ar, float near, float far)
 	:
-	Component<CmptCamera>(sobj),
+	Component(sobj),
 	ar(ar),
 	fov(fov),
 	nearPlane(near),

@@ -9,7 +9,7 @@ namespace CppUtil {
 	namespace Engine {
 		class Ray;
 
-		class CmptCamera final : public Component<CmptCamera> {
+		class CmptCamera final : public Component {
 		public:
 			CmptCamera(Basic::Ptr<SObj> sobj, float fov = 60.f, float ar = 16.f / 9.f, float nearPlane = 0.001f, float farPlane = 1000.f);
 

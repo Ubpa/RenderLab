@@ -6,7 +6,7 @@
 
 namespace CppUtil {
 	namespace Engine {
-		class AreaLight : public Light<AreaLight> {
+		class AreaLight : public Light {
 		public:
 			AreaLight(const RGBf &color = RGBf(1), float intensity = 1, float width = 1, float height = 1)
 				: color(color), intensity(intensity), width(width), height(height) { }

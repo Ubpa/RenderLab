@@ -14,7 +14,6 @@
   - RTGIwRRF
   - SObjRenderer
   - SObjSampler
-
 - 组件 Component
   - Camera
   - Transform
@@ -41,6 +40,7 @@
 - 离线渲染
   - PathTracing
 - 其他功能
+  - 几何数学库 UGM
   - AI 降噪 OptixAIDenoiser
 
 ## 2. 资源
@@ -79,7 +79,6 @@ cmake .. -Wno-dev
 
 - [x] 自己编写数学运算库，放弃 glm
 - [x] 重构指针
-- [ ] 继续重构指针
 - [ ] 旋转拖动缩放物体
 - [ ] 方向标明
 - [ ] 统一相机

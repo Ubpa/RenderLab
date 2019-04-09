@@ -26,7 +26,7 @@ using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
 using namespace std;
 
-RTX_Renderer::RTX_Renderer(const function<Ptr<RayTracerBase>()> & generator)
+RTX_Renderer::RTX_Renderer(const function<Ptr<RayTracer>()> & generator)
 	:
 	generator(generator),
 	state(RendererState::Stop),
@@ -51,7 +51,7 @@ void RTX_Renderer::Run(Ptr<Scene> scene, Ptr<Image> img) {
 			img->SetPixel(i, j, RGBf(0.f));
 	}
 
-	vector<Ptr<RayTracerBase>> rayTracers;
+	vector<Ptr<RayTracer>> rayTracers;
 
 	for (int i = 0; i < threadNum; i++) {
 		auto rayTracer = generator();

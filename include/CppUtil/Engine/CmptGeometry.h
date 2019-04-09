@@ -5,15 +5,15 @@
 
 namespace CppUtil {
 	namespace Engine {
-		class PrimitiveBase;
+		class Primitive;
 
-		class CmptGeometry final : public Component<CmptGeometry> {
+		class CmptGeometry final : public Component {
 		public:
-			CmptGeometry(Basic::Ptr<SObj> sobj, Basic::Ptr<PrimitiveBase> primitive)
+			CmptGeometry(Basic::Ptr<SObj> sobj, Basic::Ptr<Primitive> primitive)
 				: Component(sobj), primitive(primitive) { }
 
 		public:
-			static const Basic::Ptr<CmptGeometry> New(Basic::Ptr<SObj> sobj, Basic::Ptr<PrimitiveBase> primitive) {
+			static const Basic::Ptr<CmptGeometry> New(Basic::Ptr<SObj> sobj, Basic::Ptr<Primitive> primitive) {
 				return Basic::New<CmptGeometry>(sobj, primitive);
 			}
 
@@ -21,7 +21,7 @@ namespace CppUtil {
 			virtual ~CmptGeometry() = default;
 
 		public:
-			Basic::Ptr<PrimitiveBase> primitive;
+			Basic::Ptr<Primitive> primitive;
 		};
 	}
 }

@@ -5,7 +5,7 @@
 
 namespace CppUtil {
 	namespace Engine {
-		class PointLight : public Light<PointLight> {
+		class PointLight : public Light {
 		public:
 			PointLight(const RGBf &color = RGBf(1), float intensity = 1.0f, float linear = 0.7f, float quadratic = 1.8f)
 				: color(color), intensity(intensity), linear(linear), quadratic(quadratic) { }

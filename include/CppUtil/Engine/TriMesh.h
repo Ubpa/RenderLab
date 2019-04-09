@@ -9,7 +9,7 @@
 
 namespace CppUtil {
 	namespace Engine {
-		class TriMesh final : public Primitive<TriMesh> {
+		class TriMesh final : public Primitive {
 		public:
 			enum ENUM_TYPE
 			{

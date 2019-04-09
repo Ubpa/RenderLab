@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include <mutex>
+#include <map>
 
 namespace CppUtil {
 	namespace Engine {
@@ -14,7 +15,7 @@ namespace CppUtil {
 		class CmptCamera;
 		class CmptLight;
 
-		class Scene : public Basic::Element<Scene> {
+		class Scene : public Basic::Element {
 		public:
 			Scene(Basic::Ptr<SObj> root, const std::string & name = "")
 				: root(root), name(name) { }

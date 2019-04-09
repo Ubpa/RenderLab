@@ -19,7 +19,7 @@ VisibilityChecker::VisibilityChecker()
 	: rst(false)
 {
 	RegMemberFunc<BVHAccel>(&VisibilityChecker::Visit);
-	RegMemberFunc<BVHNode<ElementBase, BVHAccel>>(&VisibilityChecker::Visit);
+	RegMemberFunc<BVHNode<Element, BVHAccel>>(&VisibilityChecker::Visit);
 	RegMemberFunc<Sphere>(&VisibilityChecker::Visit);
 	RegMemberFunc<Plane>(&VisibilityChecker::Visit);
 	RegMemberFunc<Triangle>(&VisibilityChecker::Visit);
@@ -68,7 +68,7 @@ void VisibilityChecker::Visit(Ptr<BVHAccel> bvhAccel) {
 	bvhAccel->GetBVHRoot()->Accept(This());
 }
 
-void VisibilityChecker::Visit(Ptr<BVHNode<ElementBase, BVHAccel>> bvhNode) {
+void VisibilityChecker::Visit(Ptr<BVHNode<Element, BVHAccel>> bvhNode) {
 	if (bvhNode->IsLeaf()) {
 		const auto origin = ray.o;
 		const auto dir = ray.d;

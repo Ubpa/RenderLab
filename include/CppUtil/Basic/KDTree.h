@@ -6,7 +6,7 @@
 namespace CppUtil {
 	namespace Basic {
 		template <typename NodeT, typename DataT>
-		class KDTree : public HeapObj<NodeT> {
+		class KDTree : public HeapObj {
 		public:
 			KDTree(Ptr<NodeT> parent, int axis, float spiltVal, const DataT & data)
 				: parent(parent), axis(axis), spiltVal(spiltVal), data(data) { }
@@ -50,7 +50,7 @@ namespace CppUtil {
 
 		template <typename NodeT, typename DataT>
 		bool KDTree<NodeT, DataT>::SetLeft(const Ptr<NodeT> child) {
-			if (child != nullptr && !child->SetParent(This()))
+			if (child != nullptr && !child->SetParent(This<NodeT>()))
 				return false;
 
 			left = child;
@@ -59,7 +59,7 @@ namespace CppUtil {
 
 		template <typename NodeT, typename DataT>
 		bool KDTree<NodeT, DataT>::SetRight(const Ptr<NodeT> child) {
-			if (child != nullptr && !child->SetParent(This()))
+			if (child != nullptr && !child->SetParent(This<NodeT>()))
 				return false;
 
 			right = child;

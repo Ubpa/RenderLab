@@ -45,7 +45,7 @@ namespace CppUtil {
 
 		class CmptTransform;
 
-		class SObjSaver : public Basic::Visitor{
+		class SObjSaver : public Basic::Visitor {
 		public:
 			SObjSaver();
 
@@ -57,7 +57,7 @@ namespace CppUtil {
 			void Init(const std::string & path);
 
 		private:
-			void Visit(Basic::CPtr<Basic::Image> img);
+			void Visit(Basic::PtrC<Basic::Image> img);
 			void Visit(Basic::Ptr<Basic::Image> img);
 
 			void Visit(Basic::Ptr<SObj> sobj);
@@ -163,7 +163,7 @@ namespace CppUtil {
 				Member(NewEle(name), func);
 			}
 
-			void NewEle(const char * const name, Basic::CPtr<Basic::Image> img);
+			void NewEle(const char * const name, Basic::PtrC<Basic::Image> img);
 
 		private:
 			tinyxml2::XMLDocument doc;

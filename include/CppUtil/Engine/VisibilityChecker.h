@@ -7,7 +7,7 @@
 
 namespace CppUtil {
 	namespace Basic {
-		class ElementBase;
+		class Element;
 
 		template <typename T>
 		class BBox;
@@ -51,7 +51,7 @@ namespace CppUtil {
 		private:
 			// 设置 rst，如果相交，则会修改 ray.tMax
 			void Visit(Basic::Ptr<BVHAccel> bvhAccel);
-			void Visit(Basic::Ptr<BVHNode<Basic::ElementBase, BVHAccel>> bvhNode);
+			void Visit(Basic::Ptr<BVHNode<Basic::Element, BVHAccel>> bvhNode);
 			void Visit(Basic::Ptr<Sphere> sphere);
 			void Visit(Basic::Ptr<Plane> plane);
 			void Visit(Basic::Ptr<Triangle> triangle);

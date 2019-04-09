@@ -6,7 +6,7 @@
 
 namespace CppUtil {
 	namespace Engine {
-		class Sphere final : public Primitive<Sphere> {
+		class Sphere final : public Primitive {
 		public:
 			Sphere() = default;
 		public:

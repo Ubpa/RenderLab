@@ -7,13 +7,13 @@
 
 namespace CppUtil {
 	namespace Basic {
-		template<typename ImplT, typename BaseT = ElementBase>
-		class Node : public Element<ImplT, BaseT> {
+		template<typename ImplT>
+		class Node : public Element {
 		protected:
-			using Element<ImplT, BaseT>::Element;
-
 			Node(Ptr<ImplT> parent = nullptr)
 				: parent(parent) { }
+
+			virtual ~Node() = default;
 
 		public:
 			// 解除 child 的原父子关系，然后再设置新父子关系 
@@ -21,7 +21,7 @@ namespace CppUtil {
 				if (!child->parent.expired())
 					child->parent.lock()->DelChild(child);
 
-				child->parent = This();
+				child->parent = This<ImplT>();
 				children.insert(child);
 			}
 
@@ -35,8 +35,8 @@ namespace CppUtil {
 			const Ptr<ImplT> GetParent() const { return parent.lock(); }
 			const std::set<Ptr<ImplT>> & GetChildren() const { return children; }
 
-			bool IsDescendantOf(CPtr<ImplT> node) const {
-				if (This() == node)
+			bool IsDescendantOf(PtrC<ImplT> node) const {
+				if (This<ImplT>() == node)
 					return true;
 
 				if (parent.expired())
@@ -45,19 +45,19 @@ namespace CppUtil {
 				return parent.lock()->IsDescendantOf(node);
 			}
 
-			bool IsAncestorOf(CPtr<ImplT> node) const {
-				return node->IsDescendantOf(This());
+			bool IsAncestorOf(PtrC<ImplT> node) const {
+				return node->IsDescendantOf(This<ImplT>());
 			}
 
 		public:
 			void TraverseAccept(Ptr<Visitor> visitor) {
-				Element<ImplT, BaseT>::Accept(visitor);
+				Accept(visitor);
 				for (auto child : GetChildren())
 					child->TraverseAccept(visitor);
 			}
 
 			void AscendAccept(Ptr<Visitor> visitor) {
-				Element<ImplT, BaseT>::Accept(visitor);
+				Accept(visitor);
 				const auto parent = GetParent();
 				if (parent)
 					parent->AscendAccept(visitor);
@@ -67,7 +67,7 @@ namespace CppUtil {
 			virtual void Init() override {
 				const auto parent = GetParent();
 				if (parent)
-					parent->AddChild(This());
+					parent->AddChild(This<ImplT>());
 			}
 
 		private:

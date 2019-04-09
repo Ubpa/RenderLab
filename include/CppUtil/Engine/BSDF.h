@@ -10,10 +10,10 @@
 
 namespace CppUtil {
 	namespace Engine {
-		class BSDFBase : public MaterialBase {
+		class BSDF : public Material {
 		protected:
-			BSDFBase() = default;
-			virtual ~BSDFBase() = default;
+			BSDF() = default;
+			virtual ~BSDF() = default;
 
 		public:
 			virtual const RGBf F(const Normalf & wo, const Normalf & wi, const Point2 & texcoord) = 0;
@@ -39,13 +39,6 @@ namespace CppUtil {
 
 		protected:
 			static const Normalf TangentSpaceNormalToWorld(const Normalf & worldTangent, const Normalf & worldNormal, const Normalf & tangentSpaceNormal);
-		};
-
-		template<typename ImplT, typename BaseT = BSDFBase>
-		class BSDF : public Material<ImplT, BaseT> {
-		protected:
-			using Material<ImplT, BaseT>::Material;
-			virtual ~BSDF() = default;
 		};
 	}
 }

@@ -78,13 +78,13 @@ private:
 	BVHAccel * holder;
 };
 
-const Transform & BVHAccel::GetEleW2LMat(Ptr<ElementBase> element) const {
-	Ptr<PrimitiveBase> primitive = nullptr;
-	auto triangle = Triangle::PtrCast(element);
+const Transform & BVHAccel::GetEleW2LMat(Ptr<Element> element) const {
+	Ptr<Primitive> primitive = nullptr;
+	auto triangle = CastTo<Triangle>(element);
 	if (triangle)
 		primitive = triangle->GetMesh();
 	else
-		primitive = dynamic_pointer_cast<PrimitiveBase>(element);
+		primitive = dynamic_pointer_cast<Primitive>(element);
 
 	const auto target = worldToLocalMatrixes.find(primitive);
 	assert(target != worldToLocalMatrixes.cend());
@@ -92,13 +92,13 @@ const Transform & BVHAccel::GetEleW2LMat(Ptr<ElementBase> element) const {
 	return target->second;
 }
 
-const Transform & BVHAccel::GetEleL2WMat(Ptr<ElementBase> element) const {
-	Ptr<PrimitiveBase> primitive = nullptr;
-	auto triangle = Triangle::PtrCast(element);
+const Transform & BVHAccel::GetEleL2WMat(Ptr<Element> element) const {
+	Ptr<Primitive> primitive = nullptr;
+	auto triangle = CastTo<Triangle>(element);
 	if (triangle)
 		primitive = triangle->GetMesh();
 	else
-		primitive = dynamic_pointer_cast<PrimitiveBase>(element);
+		primitive = dynamic_pointer_cast<Primitive>(element);
 
 	const auto target = localToWorldMatrixes.find(primitive);
 	assert(target != localToWorldMatrixes.cend());
@@ -113,13 +113,13 @@ const Transform & BVHAccel::GetSObjL2WMat(Ptr<SObj> sobj) const {
 	return target->second;
 }
 
-const Ptr<SObj> BVHAccel::GetSObj(Ptr<ElementBase> element) const{
-	Ptr<PrimitiveBase> primitive = nullptr;
-	auto triangle = Triangle::PtrCast(element);
+const Ptr<SObj> BVHAccel::GetSObj(Ptr<Element> element) const{
+	Ptr<Primitive> primitive = nullptr;
+	auto triangle = CastTo<Triangle>(element);
 	if (triangle)
 		primitive = triangle->GetMesh();
 	else
-		primitive = dynamic_pointer_cast<PrimitiveBase>(element);
+		primitive = dynamic_pointer_cast<Primitive>(element);
 
 	const auto target = primitive2sobj.find(primitive);
 	assert(target != primitive2sobj.cend());
@@ -127,7 +127,7 @@ const Ptr<SObj> BVHAccel::GetSObj(Ptr<ElementBase> element) const{
 	return target->second;
 }
 
-const BBoxf & BVHAccel::GetBBox(Ptr<ElementBase> element) const {
+const BBoxf & BVHAccel::GetBBox(Ptr<Element> element) const {
 	const auto target = ele2bbox.find(element);
 	assert(target != ele2bbox.cend());
 
@@ -152,5 +152,5 @@ void BVHAccel::Init(Ptr<SObj> root) {
 	auto initVisitor = BVHInitVisitor::New(this);
 	for (auto geo : geos)
 		geo->Accept(initVisitor);
-	bvhRoot = BVHNode<ElementBase, BVHAccel>::New(this, elements, 0, elements.size());
+	bvhRoot = BVHNode<Element, BVHAccel>::New(this, elements, 0, elements.size());
 }
