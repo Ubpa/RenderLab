@@ -5,7 +5,7 @@
 
 namespace CppUtil {
 	namespace Basic {
-		class Op : public HeapObjBase {
+		class Op : public HeapObj {
 		protected:
 			Op(bool isHold = true) :isHold(isHold) { }
 			virtual ~Op() = default;

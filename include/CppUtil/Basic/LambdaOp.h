@@ -7,9 +7,9 @@ namespace CppUtil {
 	namespace Basic {
 		// 要求无参数
 		template<typename LambdaExpr>
-		class LambdaOp : public HeapObj<LambdaOp<LambdaExpr>, Op> {
+		class LambdaOp : public Op {
 		public:
-			LambdaOp(const LambdaExpr & op, bool isHold = true) : op(op), HeapObj<LambdaOp<LambdaExpr>, Op>(isHold) { }
+			LambdaOp(const LambdaExpr & op, bool isHold = true) : op(op), Op(isHold) { }
 
 		protected:
 			virtual ~LambdaOp() = default;

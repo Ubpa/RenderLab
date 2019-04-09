@@ -2,30 +2,20 @@
 #define _BASIC_NODE_ELEMENT_H_
 
 #include <CppUtil/Basic/HeapObj.h>
-#include <CppUtil/Basic/Visitor.h>
 
 namespace CppUtil {
 	namespace Basic {
-		class ElementBase : public HeapObjBase {
+		class Visitor;
+
+		class Element : public HeapObj {
 		public:
-			virtual void Accept(Ptr<Visitor> visitor) = 0;
+			// 可以传入更具体的类型来加速
+			// 如 Accept<Sphere>(visitor);
+			void Accept(Ptr<Visitor> visitor);
 
 		protected:
-			ElementBase() = default;
-			virtual ~ElementBase() = default;
-		};
-
-		// ImplT 需要一直传递到最终的类，然后用 final
-		template<typename ImplT, typename BaseT = ElementBase>
-		class Element : public HeapObj<ImplT, BaseT> {
-		protected:
-			using HeapObj<ImplT, BaseT>::HeapObj;
+			Element() = default;
 			virtual ~Element() = default;
-
-		public:
-			virtual void Accept(Ptr<Visitor> visitor) override {
-				visitor->Visit(This());
-			}
 		};
 	}
 }

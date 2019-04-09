@@ -1,14 +1,17 @@
 #include <CppUtil/Basic/Element.h>
 #include <CppUtil/Basic/Visitor.h>
 
+#include <CppUtil/Basic/Timer.h>
+
 #include <iostream>
 #include <vector>
 #include <string>
+#include <sstream>
 
 using namespace CppUtil::Basic;
 using namespace std;
 
-class A final : public Element<A> {
+class A final : public Element {
 public:
 	A(int n) :n(n) { }
 public:
@@ -18,7 +21,7 @@ public:
 	int n;
 };
 
-class B final : public Element<B> {
+class B final : public Element {
 public:
 	B(int n) :n(n) { }
 public:
@@ -64,7 +67,7 @@ public:
 };
 
 int main() {
-	vector<Ptr<ElementBase>> eles = { A::New(1) , A::New(2), B::New(3), B::New(4) };
+	vector<Ptr<Element>> eles = { A::New(1) , A::New(2), B::New(3), B::New(4) };
 	vector<Ptr<Visitor>> visitors = { Vc::New("v1") , Vd::New("v2") };
 
 	auto visitorDynamic = Visitor::New();

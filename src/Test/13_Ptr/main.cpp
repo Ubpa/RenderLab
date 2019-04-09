@@ -9,9 +9,9 @@ using namespace CppUtil::Basic;
 using namespace std;
 
 // 子类用模板定义，将 ImplT 传到 HeapObj 中
-// 子类可直接用 Ptr, CPtr, WPtr, WCPtr
+// 子类可直接用 Ptr, PtrC, WPtr, WPtrC
 template<typename ImplT>
-class Node: public HeapObj<ImplT> {
+class Node: public HeapObj {
 protected:// 构造函数 protected，无需写相应的 New 函数
 	Node(Ptr<ImplT> parent = nullptr)
 		: parent(parent) { }
@@ -21,7 +21,7 @@ protected:// 定义一个默认的虚析构函数
 
 public:
 	const Ptr<ImplT> GetParent() { return parent.lock(); }
-	const CPtr<ImplT> GetParent() const { return parent.lock(); }
+	const PtrC<ImplT> GetParent() const { return parent.lock(); }
 	vector<Ptr<ImplT>> & GetChildren() { return children; }
 	const vector<Ptr<ImplT>> & GetChildren() const { return children; }
 
@@ -29,7 +29,7 @@ protected:
 	virtual void Init() override {
 		cout << "Init Node" << endl;
 		if (!parent.expired())
-			parent.lock()->children.push_back(This());
+			parent.lock()->children.push_back(This<ImplT>());
 	}
 
 private:

@@ -7,16 +7,16 @@
 
 namespace CppUtil {
 	namespace Basic {
-		class OpQueue final : public HeapObj<OpQueue, Op> {
+		class OpQueue final : public Op {
 		public:
-			OpQueue(bool isHold = true) : HeapObj<OpQueue, Op>(isHold) { }
+			OpQueue(bool isHold = true) : Op(isHold) { }
 			
 		public:
-			static const Ptr<OpQueue> New(bool isHold = true) { return CppUtil::Basic::New<OpQueue>(isHold); }
+			static const Ptr<OpQueue> New(bool isHold = true) { return Basic::New<OpQueue>(isHold); }
 
 		public:
-			void Push(Basic::Ptr<Op> op);
-			OpQueue & operator<<(Basic::Ptr<Op> op) {
+			void Push(Ptr<Op> op);
+			OpQueue & operator<<(Ptr<Op> op) {
 				Push(op);
 				return *this;
 			}
@@ -27,7 +27,7 @@ namespace CppUtil {
 			virtual ~OpQueue() = default;
 
 		private:
-			std::list<Basic::Ptr<Op>> opList;
+			std::list<Ptr<Op>> opList;
 		};
 	}
 }

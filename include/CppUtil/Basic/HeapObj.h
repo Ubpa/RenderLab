@@ -5,12 +5,24 @@
 
 namespace CppUtil {
 	namespace Basic {
-		// 由于 HeapObj 需要模板
-		// 可能需要一个公有的基类，所以提供了一个 HeapObjBase
-		class HeapObjBase {
+		class HeapObj : public std::enable_shared_from_this<HeapObj> {
 		// 将 new 和 Delete 的权限交给了 New 函数
 		template<typename ImplT, typename ...Args>
 		friend const Ptr<ImplT> New(Args && ... args);
+
+		public:
+			// !!! 不可在构造函数中使用，将初始化任务放到 Init() 中
+			template<typename T = HeapObj>
+			const Ptr<T> This() { return CastTo<T>(shared_from_this()); }
+			// !!! 不可在构造函数中使用，将初始化任务放到 Init() 中
+			template<typename T = HeapObj>
+			const PtrC<T> This() const { return CastTo<T>(shared_from_this()); }
+			// !!! 不可在构造函数中使用，将初始化任务放到 Init() 中
+			template<typename T = HeapObj>
+			const WPtr<T> WThis() noexcept { return CastTo<T>(weak_from_this()); }
+			// !!! 不可在构造函数中使用，将初始化任务放到 Init() 中
+			template<typename T = HeapObj>
+			const WPtrC<T> WThis() const noexcept { return CastTo<T>(weak_from_this()); }
 
 		protected:
 			// 由于构造函数中不可使用 This(), WPtr()
@@ -21,16 +33,16 @@ namespace CppUtil {
 
 		protected:
 			// 这里 protected 构造函数和析构函数
-			// 使得用户不能直接在栈上创建 HeapObjBase 对象
+			// 使得用户不能直接在栈上创建 HeapObj 对象
 			// 但是还是可以在栈上创建 子类
 			// 所以子类也要 protected 构造函数和析构函数
 
-			HeapObjBase() = default;
-			virtual ~HeapObjBase() = default;
+			HeapObj() = default;
+			virtual ~HeapObj() = default;
 
 		private:
 			// 供给 New 来删除
-			static void Delete(HeapObjBase * obj) {
+			static void Delete(HeapObj * obj) {
 				delete obj;
 			}
 
@@ -49,54 +61,19 @@ namespace CppUtil {
 			void operator delete(void * mem) noexcept {
 				free(mem);
 			}
+
+		private:
+			using std::enable_shared_from_this<HeapObj>::shared_from_this;
+			using std::enable_shared_from_this<HeapObj>::weak_from_this;
 		};
 
 		// 调用 ImplT 的构造函数，然后生成 shared_ptr，然后调用 virtual 的 Init 函数
 		template<typename ImplT, typename ...Args>
 		const Ptr<ImplT> New(Args && ... args) {
-			const auto pImplT = Ptr<ImplT>(new ImplT(args...), HeapObjBase::Delete);
-			static_cast<Ptr<HeapObjBase>>(pImplT)->Init();
+			const auto pImplT = Ptr<ImplT>(new ImplT(args...), HeapObj::Delete);
+			static_cast<Ptr<HeapObj>>(pImplT)->Init();
 			return pImplT;
 		}
-		
-		/*
-		堆对象
-		ImplT 是最终要实现的类
-		BaseT 要求是 HeapObjBase 的子类
-		*/
-		template<typename ImplT, typename BaseT = HeapObjBase>
-		class HeapObj : public BaseT, public std::enable_shared_from_this<ImplT> {
-		public:
-			using BaseT::BaseT;
-
-		public:
-			// !!! 不可在构造函数中使用，将初始化任务放到 Init() 中
-			const Ptr<ImplT> This() { return shared_from_this(); }
-			// !!! 不可在构造函数中使用，将初始化任务放到 Init() 中
-			const CPtr<ImplT> This() const { return shared_from_this(); }
-			// !!! 不可在构造函数中使用，将初始化任务放到 Init() 中
-			const WPtr<ImplT> WThis() noexcept { return weak_from_this(); }
-			// !!! 不可在构造函数中使用，将初始化任务放到 Init() 中
-			const WCPtr<ImplT> WThis() const noexcept { return weak_from_this(); }
-
-		public:
-			template<typename T>
-			static const Ptr<ImplT> PtrCast(const Ptr<T> & ptrT) {
-				return std::dynamic_pointer_cast<ImplT>(ptrT);
-			}
-
-		protected:
-			// 这里 protected 构造函数和析构函数
-			// 使得用户不能直接在栈上创建 HeapObj 对象
-			// 但是还是可以在栈上创建 子类
-			// 所以子类也要 protected 构造函数和析构函数
-
-			virtual ~HeapObj() = default;
-
-		private:
-			using std::enable_shared_from_this<ImplT>::shared_from_this;
-			using std::enable_shared_from_this<ImplT>::weak_from_this;
-		};
 	}
 }
 
