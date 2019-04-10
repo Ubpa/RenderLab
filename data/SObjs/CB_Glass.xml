@@ -63,35 +63,6 @@
                             <children/>
                         </SObj>
                         <SObj>
-                            <name>wall left</name>
-                            <components>
-                                <CmptMaterial>
-                                    <material>
-                                        <BSDF_FrostedGlass>
-                                            <IOR>20.000000</IOR>
-                                            <colorFactor>0.6 0.2 0.2</colorFactor>
-                                            <colorTexture/>
-                                            <roughnessFactor>1.000000</roughnessFactor>
-                                            <roughnessTexture/>
-                                            <aoTexture/>
-                                            <normalTexture/>
-                                        </BSDF_FrostedGlass>
-                                    </material>
-                                </CmptMaterial>
-                                <CmptGeometry>
-                                    <primitive>
-                                        <Plane/>
-                                    </primitive>
-                                </CmptGeometry>
-                                <CmptTransform>
-                                    <Position>-1 0.75 0</Position>
-                                    <Rotation>0 0 -0.707107 0.707107</Rotation>
-                                    <Scale>1.5 1 2</Scale>
-                                </CmptTransform>
-                            </components>
-                            <children/>
-                        </SObj>
-                        <SObj>
                             <name>wall right</name>
                             <components>
                                 <CmptMaterial>
@@ -173,7 +144,36 @@
                                 <CmptTransform>
                                     <Position>0 0 0</Position>
                                     <Rotation>0 0 0 1</Rotation>
-                                    <Scale>3 0.666667 2</Scale>
+                                    <Scale>2 1 2</Scale>
+                                </CmptTransform>
+                            </components>
+                            <children/>
+                        </SObj>
+                        <SObj>
+                            <name>wall left</name>
+                            <components>
+                                <CmptMaterial>
+                                    <material>
+                                        <BSDF_FrostedGlass>
+                                            <IOR>20.000000</IOR>
+                                            <colorFactor>0.6 0.2 0.2</colorFactor>
+                                            <colorTexture/>
+                                            <roughnessFactor>1.000000</roughnessFactor>
+                                            <roughnessTexture/>
+                                            <aoTexture/>
+                                            <normalTexture/>
+                                        </BSDF_FrostedGlass>
+                                    </material>
+                                </CmptMaterial>
+                                <CmptGeometry>
+                                    <primitive>
+                                        <Plane/>
+                                    </primitive>
+                                </CmptGeometry>
+                                <CmptTransform>
+                                    <Position>-1 0.75 0</Position>
+                                    <Rotation>0 0 -0.707107 0.707107</Rotation>
+                                    <Scale>1.5 1 2</Scale>
                                 </CmptTransform>
                             </components>
                             <children/>

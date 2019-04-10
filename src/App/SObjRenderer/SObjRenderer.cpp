@@ -51,7 +51,11 @@ int SObjRenderer::GetArgAs<int>(ENUM_ARG arg) const {
 
 template<>
 string SObjRenderer::GetArgAs<string>(ENUM_ARG arg) const {
-	return GetArg(arg).asString();
+	auto rst = GetArg(arg);
+	if (!rst.isString())
+		return "";
+
+	return rst.asString();
 }
 
 template<>

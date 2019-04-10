@@ -9,36 +9,36 @@
 ## 1. 特性
 
 - 应用 App
-  - RenderLab
-  - Denoiser
-  - RTGIwRRF
-  - SObjRenderer
-  - SObjSampler
+  - 渲染实验室 RenderLab
+  - 降噪器 Denoiser
+  - 实时全局光照 RTGIwRRF
+  - SObj 渲染器 SObjRenderer
+  - SObj 采样器 SObjSampler
 - 组件 Component
-  - Camera
-  - Transform
-  - Material
-    - Glass
-    - Mirror
-    - Diffuse
-    - Metal Workflow
-    - Frosted Glass
-  - Geometry
-    - Sphere
-    - Plane
-    - TriMesh
-  - Light
-    - AreaLight
-    - PointLight
+  - 相机 Camera
+  - 变换 Transform
+  - 材质 Material
+    - 玻璃 Glass
+    - 镜子 Mirror
+    - 漫反射 Diffuse
+    - 金属工作流 Metal Workflow
+    - 毛玻璃 Frosted Glass
+  - 几何体 Geometry
+    - 球 Sphere
+    - 平面 Plane
+    - 三角网格 TriMesh
+  - 光源 Light
+    - 面光源 AreaLight
+    - 点光源 PointLight
 - 查看器 Viewer
-  - Picker
-  - Raster
-  - Roamer
+  - 拣选器 Picker
+  - 直接光照光栅器 DirectIllumRaster
+  - 漫游器 Roamer
 - 相交器 Intersector
-  - RayIntersector
-  - VisibilityChecker
+  - 最近 RayIntersector
+  - 可见性 VisibilityChecker
 - 离线渲染
-  - PathTracing
+  - 路径追踪 PathTracing
 - 其他功能
   - 几何数学库 UGM
   - AI 降噪 OptixAIDenoiser
@@ -49,7 +49,7 @@
 
 链接：https://pan.baidu.com/s/1D2dIBmN2Ub8dKYjO6LsV3w 
 
-提取码：amiw 
+提取码：amiw
 
 ## 3. 编译
 
@@ -79,6 +79,7 @@ cmake .. -Wno-dev
 
 - [x] 自己编写数学运算库，放弃 glm
 - [x] 重构指针
+- [ ] 补充 build 方法
 - [ ] 旋转拖动缩放物体
 - [ ] 方向标明
 - [ ] 统一相机
