@@ -82,12 +82,10 @@ set(CMAKE_AUTORCC OFF)
 endmacro(QT_END)
 
 #---------------------------------------
-
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 cmake_minimum_required(VERSION 3.1.0 FATAL_ERROR)
 cmake_policy(VERSION 3.1.0)
-cmake_policy(SET CMP0020 NEW)
 
 project (${PROJECT_NAME})
 
@@ -107,10 +105,12 @@ set(CMAKE_MODULE_PATH
 set(USE_QT_OPENGL_API ON)
 find_package(Qt5 REQUIRED Widgets OpenGL)
 
-set(OptiX_ROOT CACHE PATH "optix root")
-set(CUDA_ROOT CACHE PATH "cuda root")
-#find_package(OptiX REQUIRED)
-#find_package(CUDA 5.0 REQUIRED)
+set(OptiX_INSTALL_DIR "C:/ProgramData/NVIDIA Corporation/OptiX SDK 6.0.0" CACHE PATH "Path to OptiX installed location." FORCE)
+list(APPEND CMAKE_MODULE_PATH "${Optix_INSTALL_DIR}/SDK/CMake")
+find_package(OptiX REQUIRED)
+
+set(CUDA_TOOLKIT_ROOT_DIR CACHE PATH "cuda root")
+find_package(CUDA 5.0 REQUIRED)
 
 set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR})
 
@@ -122,8 +122,8 @@ configure_file(config/ROOT_PATH.h.in config/ROOT_PATH.h)
 include_directories (
 	${PROJECT_SOURCE_DIR}/include
 	${CMAKE_BINARY_DIR}/config
-	${OptiX_ROOT}/include
-	${CUDA_ROOT}/include
+	${OptiX_INCLUDE}
+	${CUDA_TOOLKIT_ROOT_DIR}/include
 	# $ENV{XXX_INCLUDE_PATH}
 	# ...
 )
@@ -132,7 +132,7 @@ link_directories (
 	${PROJECT_SOURCE_DIR}/lib/CppUtil/Basic
 	${PROJECT_SOURCE_DIR}/lib/CppUtil/OpenGL
 	${PROJECT_SOURCE_DIR}/lib/CppUtil/RTX
-	${OptiX_ROOT}/lib64
+	${OptiX_INSTALL_DIR}/lib64
 	#${CUDA_TOOLKIT_ROOT_DIR}/lib/X64
 	# $ENV{XXX_LIB_PATH}
 	# ...

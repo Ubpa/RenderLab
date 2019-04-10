@@ -43,17 +43,7 @@
   - 几何数学库 UGM
   - AI 降噪 OptixAIDenoiser
 
-## 2. 资源
-
-项目所需的资源文件并没有上传到 github 上，放在了网盘里
-
-链接：https://pan.baidu.com/s/1D2dIBmN2Ub8dKYjO6LsV3w 
-
-提取码：amiw
-
-## 3. 编译
-
-（安装方法以后补充）
+## 2. 安装
 
 CMake: 3.1.0 以上
 
@@ -69,17 +59,13 @@ Optix: 6.0
 
 驱动：418.81 or later is required.
 
-```bash
-mkdir build
-cd build
-cmake .. -Wno-dev
-```
+安装方法见于 [setup.md](https://github.com/Ubpa/RenderLab/blob/master/setup.md) 
 
-## 4. TODO
+## 3. TODO
 
 - [x] 自己编写数学运算库，放弃 glm
 - [x] 重构指针
-- [ ] 补充 build 方法
+- [x] 补充安装方法
 - [ ] 旋转拖动缩放物体
 - [ ] 方向标明
 - [ ] 统一相机
