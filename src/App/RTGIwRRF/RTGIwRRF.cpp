@@ -90,6 +90,6 @@ void RTGIwRRF::InitTimer() {
 		ui.OGLW_Raster->update();
 	});
 
-	const size_t fps = 30;
+	const size_t fps = 60;
 	timer->start(1000 / fps);
 }

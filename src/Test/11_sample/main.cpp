@@ -61,7 +61,7 @@ int main(int argc, const char** argv)
 
 			// 靠近中心位置
 			Point3 center = Point3(1.5 * Math::Rand_F() - 0.75, Math::Rand_F()*1.125+0.1875, 1.5 * Math::Rand_F() - 0.75);
-			transform->SetTransform(Transform::LookAt(eye, center));
+			transform->LookAt(eye, center);
 
 			string sobjPath = "data/SObjs/App/RTGIwRRF/CB_Glass_tmp" + to_string(id) + ".xml";
 			root->Save(ROOT_PATH + sobjPath);

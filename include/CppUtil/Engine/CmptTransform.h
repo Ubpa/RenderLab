@@ -111,7 +111,7 @@ namespace CppUtil {
 
 			void SetTransform(const Basic::Transform & transform);
 			void LookAt(const Point3 &pos, const Point3 &target, const Vec3 &up = Vec3(0, 1, 0)) {
-				SetTransform(Transform::LookAt(pos, target, up));
+				SetTransform(Transform::LookAt(pos, target, up).Inverse());
 			}
 
 		private:

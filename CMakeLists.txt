@@ -106,10 +106,8 @@ set(USE_QT_OPENGL_API ON)
 find_package(Qt5 REQUIRED Widgets OpenGL)
 
 set(OptiX_INSTALL_DIR "C:/ProgramData/NVIDIA Corporation/OptiX SDK 6.0.0" CACHE PATH "Path to OptiX installed location." FORCE)
-list(APPEND CMAKE_MODULE_PATH "${Optix_INSTALL_DIR}/SDK/CMake")
-find_package(OptiX REQUIRED)
 
-set(CUDA_TOOLKIT_ROOT_DIR CACHE PATH "cuda root")
+#set(CUDA_TOOLKIT_ROOT_DIR CACHE PATH "cuda root")
 find_package(CUDA 5.0 REQUIRED)
 
 set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR})
@@ -122,7 +120,7 @@ configure_file(config/ROOT_PATH.h.in config/ROOT_PATH.h)
 include_directories (
 	${PROJECT_SOURCE_DIR}/include
 	${CMAKE_BINARY_DIR}/config
-	${OptiX_INCLUDE}
+	${OptiX_INSTALL_DIR}/include
 	${CUDA_TOOLKIT_ROOT_DIR}/include
 	# $ENV{XXX_INCLUDE_PATH}
 	# ...
