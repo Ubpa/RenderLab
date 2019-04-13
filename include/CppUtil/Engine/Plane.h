@@ -17,8 +17,12 @@ namespace CppUtil {
 
 		public:
 			// primitive 局部坐标系内的 bbox
-			const BBoxf GetBBox() const {
+			virtual const BBoxf GetBBox() const override {
 				return BBoxf(Point3(-0.5f, -0.000001f, -0.5f), Point3(0.5f, 0.000001f, 0.5f));
+			}
+
+			virtual const Basic::Ptr<Primitive> GetPrimitive() override {
+				return This<Primitive>();
 			}
 		};
 	}

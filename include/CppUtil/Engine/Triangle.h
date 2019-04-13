@@ -3,8 +3,7 @@
 
 typedef unsigned int uint;
 
-#include <CppUtil/Basic/Element.h>
-#include <CppUtil/Basic/UGM/BBox.h>
+#include <CppUtil/Engine/Shape.h>
 
 namespace CppUtil {
 	namespace Engine {
@@ -12,7 +11,7 @@ namespace CppUtil {
 
 		// 因为 Triangle 依赖于 Mesh，而且 Mesh 又可以取代 Triangle
 		// 所以不把 Triangle 当作 Primitive，只让 Mesh 当作 Primitive
-		class Triangle final : public Basic::Element {
+		class Triangle final : public Shape {
 			friend class TriMesh;
 		public:
 			Triangle(uint idx0, uint idx1, uint idx2)
@@ -28,7 +27,10 @@ namespace CppUtil {
 
 		public:
 			const Basic::Ptr<TriMesh> GetMesh() const { return mesh.lock(); }
-			const BBoxf GetBBox() const;
+			virtual const BBoxf GetBBox() const override;
+			virtual const Basic::Ptr<Primitive> GetPrimitive() override {
+				return Basic::CastTo<Primitive>(GetMesh());
+			}
 
 		public:
 			uint idx[3]; // index into the mesh attribute arrays

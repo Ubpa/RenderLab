@@ -2,12 +2,13 @@
 
 #include <CppUtil/Engine/SObj.h>
 
-#include <CppUtil/Basic/Visitor.h>
-
 #include <CppUtil/Engine/CmptGeometry.h>
 #include <CppUtil/Engine/Sphere.h>
 #include <CppUtil/Engine/Plane.h>
 #include <CppUtil/Engine/TriMesh.h>
+#include <CppUtil/Engine/BVHNode.h>
+
+#include <CppUtil/Basic/Visitor.h>
 
 using namespace CppUtil;
 using namespace CppUtil::Engine;
@@ -54,23 +55,23 @@ public:
 	}
 
 	void Visit(Ptr<Sphere> sphere) {
-		const auto matrix = holder->GetEleL2WMat(sphere);
-		holder->elements.push_back(sphere);
-		holder->ele2bbox[sphere] = matrix(sphere->GetBBox());
+		const auto matrix = holder->GetShapeL2WMat(sphere);
+		holder->shapes.push_back(sphere);
+		holder->shape2wbbox[sphere] = matrix(sphere->GetBBox());
 	}
 
 	void Visit(Ptr<Plane> plane) {
-		const auto matrix = holder->GetEleL2WMat(plane);
-		holder->elements.push_back(plane);
-		holder->ele2bbox[plane] = matrix(plane->GetBBox());
+		const auto matrix = holder->GetShapeL2WMat(plane);
+		holder->shapes.push_back(plane);
+		holder->shape2wbbox[plane] = matrix(plane->GetBBox());
 	}
 
 	void Visit(Ptr<TriMesh> mesh) {
-		const auto matrix = holder->GetEleL2WMat(mesh);
+		const auto matrix = holder->GetShapeL2WMat(mesh);
 		auto triangles = mesh->GetTriangles();
 		for (auto triangle : triangles) {
-			holder->elements.push_back(triangle);
-			holder->ele2bbox[triangle] = matrix(triangle->GetBBox());
+			holder->shapes.push_back(triangle);
+			holder->shape2wbbox[triangle] = matrix(triangle->GetBBox());
 		}
 	}
 
@@ -78,29 +79,15 @@ private:
 	BVHAccel * holder;
 };
 
-const Transform & BVHAccel::GetEleW2LMat(Ptr<Element> element) const {
-	Ptr<Primitive> primitive = nullptr;
-	auto triangle = CastTo<Triangle>(element);
-	if (triangle)
-		primitive = triangle->GetMesh();
-	else
-		primitive = dynamic_pointer_cast<Primitive>(element);
-
-	const auto target = worldToLocalMatrixes.find(primitive);
+const Transform & BVHAccel::GetShapeW2LMat(Ptr<Shape> shape) const {
+	const auto target = worldToLocalMatrixes.find(shape->GetPrimitive());
 	assert(target != worldToLocalMatrixes.cend());
 
 	return target->second;
 }
 
-const Transform & BVHAccel::GetEleL2WMat(Ptr<Element> element) const {
-	Ptr<Primitive> primitive = nullptr;
-	auto triangle = CastTo<Triangle>(element);
-	if (triangle)
-		primitive = triangle->GetMesh();
-	else
-		primitive = dynamic_pointer_cast<Primitive>(element);
-
-	const auto target = localToWorldMatrixes.find(primitive);
+const Transform & BVHAccel::GetShapeL2WMat(Ptr<Shape> shape) const {
+	const auto target = localToWorldMatrixes.find(shape->GetPrimitive());
 	assert(target != localToWorldMatrixes.cend());
 
 	return target->second;
@@ -113,23 +100,16 @@ const Transform & BVHAccel::GetSObjL2WMat(Ptr<SObj> sobj) const {
 	return target->second;
 }
 
-const Ptr<SObj> BVHAccel::GetSObj(Ptr<Element> element) const{
-	Ptr<Primitive> primitive = nullptr;
-	auto triangle = CastTo<Triangle>(element);
-	if (triangle)
-		primitive = triangle->GetMesh();
-	else
-		primitive = dynamic_pointer_cast<Primitive>(element);
-
-	const auto target = primitive2sobj.find(primitive);
+const Ptr<SObj> BVHAccel::GetSObj(Ptr<Shape> shape) const{
+	const auto target = primitive2sobj.find(shape->GetPrimitive());
 	assert(target != primitive2sobj.cend());
 
 	return target->second;
 }
 
-const BBoxf & BVHAccel::GetBBox(Ptr<Element> element) const {
-	const auto target = ele2bbox.find(element);
-	assert(target != ele2bbox.cend());
+const BBoxf & BVHAccel::GetWorldBBox(Ptr<Shape> shape) const {
+	const auto target = shape2wbbox.find(shape);
+	assert(target != shape2wbbox.cend());
 
 	return target->second;
 }
@@ -139,8 +119,8 @@ void BVHAccel::Clear() {
 	localToWorldMatrixes.clear();
 	sobjL2W.clear();
 	primitive2sobj.clear();
-	elements.clear();
-	ele2bbox.clear();
+	shapes.clear();
+	shape2wbbox.clear();
 
 	bvhRoot = nullptr;
 }
@@ -152,5 +132,5 @@ void BVHAccel::Init(Ptr<SObj> root) {
 	auto initVisitor = BVHInitVisitor::New(this);
 	for (auto geo : geos)
 		geo->Accept(initVisitor);
-	bvhRoot = BVHNode<Element, BVHAccel>::New(this, elements, 0, elements.size());
+	bvhRoot = BVHNode::New(this, shapes, 0, shapes.size());
 }

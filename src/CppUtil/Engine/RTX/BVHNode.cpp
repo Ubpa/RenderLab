@@ -1,10 +1,17 @@
-void CppUtil::Engine::BVHNode::Build(size_t maxLeafSize) {
+#include <CppUtil/Engine/BVHNode.h>
+
+#include <CppUtil/Engine/BVHAccel.h>
+
+using namespace CppUtil::Engine;
+using namespace CppUtil::Basic;
+
+void BVHNode::Build(size_t maxLeafSize) {
 	// Build bvh form start to start + range
 
 	constexpr int bucketNum = 8;
 
 	for (size_t i = start; i < start + range; i++)
-		bb.UnionWith(GetBBox(objs[i]));
+		bb.UnionWith(holder->GetWorldBBox(shapes[i]));
 
 	if (range < maxLeafSize) {
 		l = nullptr;
@@ -22,10 +29,10 @@ void CppUtil::Engine::BVHNode::Build(size_t maxLeafSize) {
 		std::vector<std::vector<Basic::Ptr<Shape>>> buckets(bucketNum);
 		std::vector<BBoxf> boxesOfBuckets(bucketNum);
 		for (size_t i = 0; i < range; i++) {
-			BBoxf box = GetBBox(objs[i + start]);
+			BBoxf box = holder->GetWorldBBox(shapes[i + start]);
 			double center = box.Center()[dim];
-			int bucketID = min(static_cast<int>((center - left) / bucketLen), bucketNum - 1);
-			buckets[bucketID].push_back(objs[i + start]);
+			int bucketID = std::min(static_cast<int>((center - left) / bucketLen), bucketNum - 1);
+			buckets[bucketID].push_back(shapes[i + start]);
 			boxesOfBuckets[bucketID].UnionWith(box);
 		}
 
@@ -79,16 +86,16 @@ void CppUtil::Engine::BVHNode::Build(size_t maxLeafSize) {
 	// recursion
 	if (bestPartition[0].size() == range || bestPartition[1].size() == range) {
 		size_t leftNum = range / 2;
-		l = BVHNode::New(holder, objs, start, leftNum, maxLeafSize);
-		r = BVHNode::New(holder, objs, start + leftNum, range - leftNum, maxLeafSize);
+		l = BVHNode::New(holder, shapes, start, leftNum, maxLeafSize);
+		r = BVHNode::New(holder, shapes, start + leftNum, range - leftNum, maxLeafSize);
 	}
 	else {
 		for (size_t i = 0; i < bestPartition[0].size(); i++)
-			objs[i + start] = bestPartition[0][i];
+			shapes[i + start] = bestPartition[0][i];
 		for (size_t i = 0; i < bestPartition[1].size(); i++)
-			objs[i + start + bestPartition[0].size()] = bestPartition[1][i];
+			shapes[i + start + bestPartition[0].size()] = bestPartition[1][i];
 
-		l = BVHNode::New(holder, objs, start, bestPartition[0].size(), maxLeafSize);
-		r = BVHNode::New(holder, objs, start + bestPartition[0].size(), bestPartition[1].size(), maxLeafSize);
+		l = BVHNode::New(holder, shapes, start, bestPartition[0].size(), maxLeafSize);
+		r = BVHNode::New(holder, shapes, start + bestPartition[0].size(), bestPartition[1].size(), maxLeafSize);
 	}
 }

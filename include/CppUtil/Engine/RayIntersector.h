@@ -21,7 +21,6 @@ namespace CppUtil {
 		class Plane;
 		class Triangle;
 		class BVHAccel;
-		template <typename T, typename HolderT>
 		class BVHNode;
 
 		// 寻找最近的交点
@@ -59,7 +58,7 @@ namespace CppUtil {
 		private:
 			// 设置 rst，如果相交，则会修改 ray.tMax
 			void Visit(Basic::Ptr<BVHAccel> bvhAccel);
-			void Visit(Basic::Ptr<BVHNode<Basic::Element, BVHAccel>> bvhNode);
+			void Visit(Basic::Ptr<BVHNode> bvhNode);
 			void Visit(Basic::Ptr<SObj> sobj);
 			void Visit(Basic::Ptr<Sphere> sphere);
 			void Visit(Basic::Ptr<Plane> plane);

@@ -16,8 +16,12 @@ namespace CppUtil {
 			virtual ~Sphere() = default;
 
 		public:
-			const BBoxf GetBBox() const {
+			virtual const BBoxf GetBBox() const override {
 				return BBoxf(Point3(-1.f), Point3(1.f));
+			}
+
+			virtual const Basic::Ptr<Primitive> GetPrimitive() override {
+				return This<Primitive>();
 			}
 		};
 	}

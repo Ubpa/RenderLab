@@ -23,7 +23,7 @@ using namespace std;
 
 RayIntersector::RayIntersector() {
 	RegMemberFunc<BVHAccel>(&RayIntersector::Visit);
-	RegMemberFunc<BVHNode<Element, BVHAccel>>(&RayIntersector::Visit);
+	RegMemberFunc<BVHNode>(&RayIntersector::Visit);
 	RegMemberFunc<SObj>(&RayIntersector::Visit);
 	RegMemberFunc<Sphere>(&RayIntersector::Visit);
 	RegMemberFunc<Plane>(&RayIntersector::Visit);
@@ -78,17 +78,17 @@ void RayIntersector::Visit(Ptr<BVHAccel> bvhAccel) {
 	}
 }
 
-void RayIntersector::Visit(Ptr<BVHNode<Element, BVHAccel>> bvhNode) {
+void RayIntersector::Visit(Ptr<BVHNode> bvhNode) {
 	if (bvhNode->IsLeaf()) {
 		const auto origin = ray->o;
 		const auto dir = ray->d;
 		for (size_t i = 0; i < bvhNode->GetRange(); i++) {
-			auto ele = bvhNode->GetObjs()[i + bvhNode->GetStart()];
-			const auto & mat = bvhNode->GetHolder()->GetEleW2LMat(ele);
+			auto shape = bvhNode->GetShapes()[i + bvhNode->GetStart()];
+			const auto & mat = bvhNode->GetHolder()->GetShapeW2LMat(shape);
 			mat.ApplyTo(*ray);
-			ele->Accept(This());
+			shape->Accept(This());
 			if (rst.isIntersect)
-				rst.closestSObj = bvhNode->GetHolder()->GetSObj(ele);
+				rst.closestSObj = bvhNode->GetHolder()->GetSObj(shape);
 
 			ray->o = origin;
 			ray->d = dir;

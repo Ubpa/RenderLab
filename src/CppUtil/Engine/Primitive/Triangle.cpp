@@ -1,6 +1,7 @@
 #include <CppUtil/Engine/Triangle.h>
 
 #include <CppUtil/Engine/TriMesh.h>
+#include <CppUtil/Basic/UGM/BBox.h>
 
 using namespace CppUtil;
 using namespace CppUtil::Engine;

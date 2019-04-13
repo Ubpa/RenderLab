@@ -1,7 +1,6 @@
 #include <CppUtil/Engine/TriMesh.h>
 
 #include <CppUtil/Engine/Triangle.h>
-#include <CppUtil/Engine/BVHNode.h>
 
 #include <CppUtil/Basic/Cube.h>
 #include <CppUtil/Basic/Sphere.h>
@@ -77,6 +76,9 @@ void TriMesh::Init() {
 	auto triMesh = This<TriMesh>();
 	for (auto triangle : triangles)
 		triangle->mesh = triMesh;
+
+	for (auto triangle : triangles)
+		box.UnionWith(triangle->GetBBox());
 }
 
 void TriMesh::GenTangents() {

@@ -3,9 +3,10 @@
 
 #include <CppUtil/Engine/Primitive.h>
 #include <CppUtil/Engine/Triangle.h>
-#include <CppUtil/Engine/BVHNode.h>
+
 #include <CppUtil/Basic/UGM/Normal.h>
 #include <CppUtil/Basic/UGM/Point2.h>
+#include <CppUtil/Basic/UGM/BBox.h>
 
 namespace CppUtil {
 	namespace Engine {
@@ -69,6 +70,14 @@ namespace CppUtil {
 			const std::vector<Basic::Ptr<Triangle>> & GetTriangles() const { return triangles; }
 
 		public:
+			virtual const BBoxf GetBBox() const override {
+				return box;
+			}
+			virtual const Basic::Ptr<Primitive> GetPrimitive() override {
+				return This<Primitive>();
+			}
+
+		public:
 			static Basic::Ptr<TriMesh> GenCube();
 			static Basic::Ptr<TriMesh> GenSphere();
 			static Basic::Ptr<TriMesh> GenPlane();
@@ -86,6 +95,8 @@ namespace CppUtil {
 			std::vector<Normalf> tangents;
 
 			std::vector<Basic::Ptr<Triangle>> triangles;
+
+			BBoxf box;
 		};
 	}
 }
