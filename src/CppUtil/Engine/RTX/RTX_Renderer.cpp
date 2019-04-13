@@ -11,8 +11,6 @@
 #include <CppUtil/Basic/ImgPixelSet.h>
 #include <CppUtil/Basic/Math.h>
 
-#include <thread>
-
 #include <omp.h>
 
 #ifdef NDEBUG
@@ -26,19 +24,72 @@ using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
 using namespace std;
 
+namespace CppUtil {
+	namespace Engine {
+		class TileTask{
+		public:
+			TileTask(int tileNum, int maxLoop)
+				: tileNum(tileNum), maxLoop(maxLoop), curTile(0), curLoop(0) { }
+
+		public:
+			void Init(int tileNum, int maxLoop) {
+				this->tileNum = tileNum;
+				this->maxLoop = maxLoop;
+				curTile = 0;
+				curLoop = 0;
+			}
+
+		public:
+			struct Task {
+				Task(bool hasTask, int tileID = -1, int curLoop = -1)
+					: hasTask(hasTask), tileID(tileID), curLoop(curLoop) { }
+
+				bool hasTask;
+				int tileID;
+				int curLoop;
+			};
+			static constexpr int ERROR = -1;
+			const Task GetTask() {
+				if (curLoop == maxLoop)
+					return Task(false);
+				
+				m.lock();
+				auto rst = Task(true, curTile, curLoop);
+				curTile++;
+				if (curTile == tileNum) {
+					curTile = 0;
+					curLoop += 1;
+				}
+				m.unlock();
+
+				return rst;
+			}
+
+			int GetCurLoop() const {
+				return curLoop;
+			}
+
+		private:
+			int tileNum;
+			int curTile;
+			int maxLoop;
+			int curLoop;
+			mutex m;
+		};
+	}
+}
+
 RTX_Renderer::RTX_Renderer(const function<Ptr<RayTracer>()> & generator)
 	:
 	generator(generator),
 	state(RendererState::Stop),
 	maxLoop(200),
-	curLoop(0),
 	threadNum(THREAD_NUM)
 {
 }
 
 void RTX_Renderer::Run(Ptr<Scene> scene, Ptr<Image> img) {
 	state = RendererState::Running;
-	curLoop = 0;
 
 	const float lightNum = static_cast<float>(scene->GetCmptLights().size());
 
@@ -77,6 +128,7 @@ void RTX_Renderer::Run(Ptr<Scene> scene, Ptr<Image> img) {
 	const int tileSize = 32;
 	const int rowTiles = w / tileSize;
 	const int tileNum = w * h / (tileSize*tileSize);
+	tileTask.Init(tileNum, maxLoop);
 
 	// init float image
 	int imgSize = w * h;
@@ -89,7 +141,9 @@ void RTX_Renderer::Run(Ptr<Scene> scene, Ptr<Image> img) {
 		auto & ray = rays[id];
 		auto & rayTracer = rayTracers[id];
 
-		int tileID = id;
+		auto task = tileTask.GetTask();
+
+		int tileID = task.tileID;
 		int tileRow = tileID / rowTiles;
 		int tileCol = tileID - tileRow * rowTiles;
 		int baseX = tileCol * tileSize;
@@ -98,7 +152,7 @@ void RTX_Renderer::Run(Ptr<Scene> scene, Ptr<Image> img) {
 		int xInTile = 0;
 		int yInTile = 0;
 
-		while (tileID < tileNum) {
+		while (task.hasTask) {
 			int x = baseX + xInTile;
 			int y = baseY + yInTile;
 
@@ -127,11 +181,12 @@ void RTX_Renderer::Run(Ptr<Scene> scene, Ptr<Image> img) {
 					for (int j = 0; j < tileSize; j++) {
 						for (int i = 0; i < tileSize; i++) {
 							img->SetPixel(i + baseX, j + baseY,
-								imgTiles[tileID][j*tileSize + i] / float(curLoop + 1));
+								imgTiles[tileID][j*tileSize + i] / float(task.curLoop + 1));
 						}
 					}
 
-					tileID += threadNum;
+					task = tileTask.GetTask();
+					tileID = task.tileID;
 					tileRow = tileID / rowTiles;
 					tileCol = tileID - tileRow * rowTiles;
 					baseX = tileCol * tileSize;
@@ -143,19 +198,14 @@ void RTX_Renderer::Run(Ptr<Scene> scene, Ptr<Image> img) {
 		}
 	};
 
-	for (curLoop = 0; curLoop < maxLoop; ++curLoop) {
-		// init all workers first
-		vector<thread> workers;
-		for (int i = 0; i < threadNum; i++)
-			workers.push_back(thread(renderPartImg, i));
+	// init all workers first
+	vector<thread> workers;
+	for (int i = 0; i < threadNum; i++)
+		workers.push_back(thread(renderPartImg, i));
 
-		// let workers to work
-		for (auto & worker : workers)
-			worker.join();
-
-		if (state._value == RendererState::Stop)
-			break;
-	}
+	// wait workers
+	for (auto & worker : workers)
+		worker.join();
 
 	state = RendererState::Stop;
 }
@@ -165,5 +215,5 @@ void RTX_Renderer::Stop() {
 }
 
 float RTX_Renderer::ProgressRate() {
-	return Math::Clamp((float(curLoop) + 0.5f) / float(maxLoop), 0.f, 1.f);
+	return Math::Clamp((float(tileTask.GetCurLoop()) + 0.5f) / float(maxLoop), 0.f, 1.f);
 }

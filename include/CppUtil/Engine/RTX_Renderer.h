@@ -7,6 +7,7 @@
 
 #include <functional>
 #include <vector>
+#include <mutex>
 
 namespace CppUtil {
 	namespace Basic {
@@ -39,12 +40,60 @@ namespace CppUtil {
 			volatile int maxLoop;
 
 		private:
+			class TileTask {
+			public:
+				void Init(int tileNum, int maxLoop) {
+					this->tileNum = tileNum;
+					this->maxLoop = maxLoop;
+					curTile = 0;
+					curLoop = 0;
+				}
+
+			public:
+				struct Task {
+					Task(bool hasTask, int tileID = -1, int curLoop = -1)
+						: hasTask(hasTask), tileID(tileID), curLoop(curLoop) { }
+
+					bool hasTask;
+					int tileID;
+					int curLoop;
+				};
+				const Task GetTask() {
+					if (curLoop == maxLoop)
+						return Task(false);
+
+					m.lock();
+					auto rst = Task(true, curTile, curLoop);
+					curTile++;
+					if (curTile == tileNum) {
+						curTile = 0;
+						curLoop += 1;
+					}
+					m.unlock();
+
+					return rst;
+				}
+
+				int GetCurLoop() const {
+					return curLoop;
+				}
+
+			private:
+				int tileNum;
+				int curTile;
+				int maxLoop;
+				int curLoop;
+				std::mutex m;
+			};
+
+		private:
 			std::function<Basic::Ptr<RayTracer>()> generator;
 
 			RendererState state;
-			int curLoop;
 
 			const int threadNum;
+
+			TileTask tileTask;
 		};
 	}
 }
