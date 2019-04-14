@@ -101,9 +101,7 @@ namespace CppUtil {
 				return *this;
 			}
 			const BBox Union(const Point<3, T> & p) const {
-				const auto minP = Point<3, T>::Min(minP, p);
-				const auto maxP = Point<3, T>::Max(maxP, p);
-				return BBox(minP, maxP);
+				return BBox(minP.MinWith(p), maxP.MaxWith(p));
 			}
 			BBox & UnionWith(const Point<3, T> & p) {
 				minP = Point<3, T>::Min(minP, p);

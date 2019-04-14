@@ -29,8 +29,11 @@ namespace CppUtil {
 			const Basic::Ptr<TriMesh> GetMesh() const { return mesh.lock(); }
 			virtual const BBoxf GetBBox() const override;
 			virtual const Basic::Ptr<Primitive> GetPrimitive() override {
-				return Basic::CastTo<Primitive>(GetMesh());
+				return Basic::CastTo<Primitive>(mesh.lock());
 			}
+
+		public:
+			float GetArea() const;
 
 		public:
 			uint idx[3]; // index into the mesh attribute arrays

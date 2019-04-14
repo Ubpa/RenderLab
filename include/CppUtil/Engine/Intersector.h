@@ -9,17 +9,6 @@ namespace CppUtil {
 		protected:
 			Intersector() = default;
 			virtual ~Intersector() = default;
-
-		public:
-			struct Rst {
-				Rst(bool isIntersect = false)
-					: isIntersect(false) { }
-
-				bool IsIntersect() const { return isIntersect; }
-
-			protected:
-				bool isIntersect;
-			};
 		};
 	}
 }

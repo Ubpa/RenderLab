@@ -9,8 +9,6 @@ namespace CppUtil {
 
 		class Element : public HeapObj {
 		public:
-			// 可以传入更具体的类型来加速
-			// 如 Accept<Sphere>(visitor);
 			void Accept(Ptr<Visitor> visitor);
 
 		protected:

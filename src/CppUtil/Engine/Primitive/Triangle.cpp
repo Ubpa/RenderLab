@@ -8,7 +8,7 @@ using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
 
 const BBoxf Triangle::GetBBox() const {
-	auto positions = mesh.lock()->GetPositions();
+	const auto & positions = mesh.lock()->GetPositions();
 
 	Point3 pArr[3] = {
 		positions[idx[0]],
@@ -27,4 +27,12 @@ const BBoxf Triangle::GetBBox() const {
 	}
 
 	return BBoxf(minP, maxP);
+}
+
+float Triangle::GetArea() const {
+	const auto & positions = mesh.lock()->GetPositions();
+	const auto e1 = positions[idx[1]] - positions[idx[0]];
+	const auto e2 = positions[idx[2]] - positions[idx[0]];
+
+	return 0.5f * e1.Cross(e2).Norm();
 }

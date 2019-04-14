@@ -2,12 +2,12 @@
 
 #include <CppUtil/Engine/SObj.h>
 #include <CppUtil/Engine/Ray.h>
+
 #include <CppUtil/Engine/BVHAccel.h>
 
 #include <CppUtil/Engine/CmptGeometry.h>
 #include <CppUtil/Engine/CmptTransform.h>
 
-#include <CppUtil/Engine/BVHNode.h>
 #include <CppUtil/Engine/Sphere.h>
 #include <CppUtil/Engine/Plane.h>
 #include <CppUtil/Engine/Triangle.h>
@@ -16,6 +16,8 @@
 #include <CppUtil/Basic/Math.h>
 #include <CppUtil/Basic/UGM/Transform.h>
 
+#include <stack>
+
 using namespace CppUtil;
 using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
@@ -23,7 +25,6 @@ using namespace std;
 
 RayIntersector::RayIntersector() {
 	RegMemberFunc<BVHAccel>(&RayIntersector::Visit);
-	RegMemberFunc<BVHNode>(&RayIntersector::Visit);
 	RegMemberFunc<SObj>(&RayIntersector::Visit);
 	RegMemberFunc<Sphere>(&RayIntersector::Visit);
 	RegMemberFunc<Plane>(&RayIntersector::Visit);
@@ -34,18 +35,12 @@ void RayIntersector::Init(ERay * ray) {
 	this->ray = ray;
 
 	rst.closestSObj = nullptr;
-	rst.isIntersect = false;
+	rst.isIntersect = true;
 }
 
-bool RayIntersector::Intersect(const BBoxf & bbox) {
-	float t0, t1;
-	return Intersect(bbox, t0, t1);
-}
+bool RayIntersector::Intersect(const BBoxf & bbox, const Val3f & invDir) const {
+	const auto & origin = ray->o;
 
-bool RayIntersector::Intersect(const BBoxf & bbox, float & t0, float & t1) {
-	const Point3 origin = ray->o;
-	const Vec3 dir = ray->d;
-	const Val3f invDir = ray->InvDir();
 	float tMin = ray->tMin;
 	float tMax = ray->tMax;
 
@@ -54,7 +49,7 @@ bool RayIntersector::Intersect(const BBoxf & bbox, float & t0, float & t1) {
 		float t0 = (bbox.minP[i] - origin[i]) * invD;
 		float t1 = (bbox.maxP[i] - origin[i]) * invD;
 		if (invD < 0.0f)
-			std::swap(t0, t1);
+			swap(t0, t1);
 
 		tMin = max(t0, tMin);
 		tMax = min(t1, tMax);
@@ -62,60 +57,61 @@ bool RayIntersector::Intersect(const BBoxf & bbox, float & t0, float & t1) {
 			return false;
 	}
 
-	t0 = tMin;
-	t1 = tMax;
-
 	return true;
 }
 
 void RayIntersector::Visit(Ptr<BVHAccel> bvhAccel) {
-	rst.closestSObj = nullptr;
-	bvhAccel->GetBVHRoot()->Accept(This());
-	if (rst.closestSObj) {
-		const auto & mat = bvhAccel->GetSObjL2WMat(rst.closestSObj);
-		rst.n = mat(rst.n).Normalize();
-		rst.tangent = mat(rst.tangent).Normalize();
-	}
-}
+	const auto visitor = This();
 
-void RayIntersector::Visit(Ptr<BVHNode> bvhNode) {
-	if (bvhNode->IsLeaf()) {
-		const auto origin = ray->o;
-		const auto dir = ray->d;
-		for (size_t i = 0; i < bvhNode->GetRange(); i++) {
-			auto shape = bvhNode->GetShapes()[i + bvhNode->GetStart()];
-			const auto & mat = bvhNode->GetHolder()->GetShapeW2LMat(shape);
-			mat.ApplyTo(*ray);
-			shape->Accept(This());
-			if (rst.isIntersect)
-				rst.closestSObj = bvhNode->GetHolder()->GetSObj(shape);
+	const auto origin = ray->o;
+	const auto dir = ray->d;
+	const auto invDir = ray->InvDir();
+	const bool dirIsNeg[3] = { invDir.x < 0,invDir.y < 0,invDir.z < 0 };
 
-			ray->o = origin;
-			ray->d = dir;
-		}
-	}
-	else {
-		auto l = bvhNode->GetL();
-		auto r = bvhNode->GetR();
+	stack<int> nodeIdxStack;
+	nodeIdxStack.push(0);
+	while (!nodeIdxStack.empty()) {
+		const auto nodeIdx = nodeIdxStack.top();
+		nodeIdxStack.pop();
+		const auto & node = bvhAccel->GetBVHNode(nodeIdx);
 
-		float t1, t2, t3, t4;
-		bool leftBoxHit = Intersect(l->GetBBox(), t1, t2);
-		bool rightBoxHit = Intersect(r->GetBBox(), t3, t4);
-		if (leftBoxHit) {
-			if (rightBoxHit) {
-				auto first = (t1 <= t3) ? l : r;
-				auto second = (t1 <= t3) ? r : l;
-				Visit(first);
-				if (t3 < ray->tMax)
-					Visit(second);
+		if (!Intersect(node.GetBox(), invDir))
+			continue;
+		
+		if (node.IsLeaf()) {
+			for (auto shapeIdx : node.ShapesIdx()) {
+				const auto shape = bvhAccel->GetShape(shapeIdx);
+
+				bvhAccel->GetShapeW2LMat(shape).ApplyTo(*ray);
+				shape->Accept(visitor);
+				ray->o = origin;
+				ray->d = dir;
+
+				if (rst.isIntersect) {
+					rst.closestSObj = bvhAccel->GetSObj(shape);
+					rst.isIntersect = false;
+				}
 			}
-			else
-				Visit(l);
 		}
-		else if (rightBoxHit)
-			Visit(r);
-		else
-			return;
+		else {
+			const auto firstChildIdx = BVHAccel::LinearBVHNode::FirstChildIdx(nodeIdx);
+			const auto secondChildIdx = node.GetSecondChildIdx();
+			if (dirIsNeg[node.GetAxis()]) {
+				nodeIdxStack.push(firstChildIdx);
+				nodeIdxStack.push(secondChildIdx);
+			}
+			else {
+				nodeIdxStack.push(secondChildIdx);
+				nodeIdxStack.push(firstChildIdx);
+			}
+		}
+	}
+
+	if (rst.closestSObj) {
+		const Ptr<Shape> shape = rst.closestSObj->GetComponent<CmptGeometry>()->primitive;
+		const auto l2w = bvhAccel->GetShapeW2LMat(shape).Inverse();
+		rst.n = l2w(rst.n).Normalize();
+		rst.tangent = l2w(rst.tangent).Normalize();
 	}
 }
 
@@ -181,8 +177,8 @@ void RayIntersector::Visit(Ptr<Sphere> sphere) {
 	rst.isIntersect = true;
 	ray->tMax = t;
 	rst.n = ray->At(t);
-	rst.texcoord = rst.n.ToTexcoord();
-	rst.tangent = rst.n.ToTangent();
+	rst.texcoord = Sphere::TexcoordOf(rst.n);
+	rst.tangent = Sphere::TangentOf(rst.n);
 }
 
 void RayIntersector::Visit(Ptr<Plane> plane) {
@@ -229,8 +225,10 @@ void RayIntersector::Visit(Ptr<Triangle> triangle) {
 	const auto e1_x_d = e1.Cross(dir);
 	const float denominator = e1_x_d.Dot(e2);
 
-	if (denominator == 0)
+	if (denominator == 0) {
+		rst.isIntersect = false;
 		return;
+	}
 
 	const float inv_denominator = 1.0f / denominator;
 
@@ -246,8 +244,13 @@ void RayIntersector::Visit(Ptr<Triangle> triangle) {
 
 	const float r2 = e1_x_d.Dot(s);
 	const float v = r2 * inv_denominator;
+	if (v < 0 || v > 1) {
+		rst.isIntersect = false;
+		return;
+	}
+
 	const float u_plus_v = u + v;
-	if (v < 0 || v > 1 || u_plus_v > 1) {
+	if (u_plus_v > 1) {
 		rst.isIntersect = false;
 		return;
 	}

@@ -21,7 +21,6 @@ namespace CppUtil {
 		class Plane;
 		class Triangle;
 		class BVHAccel;
-		class BVHNode;
 
 		// 寻找最近的交点
 		class RayIntersector final : public Intersector {
@@ -29,16 +28,18 @@ namespace CppUtil {
 			// isIntersect 用于判断与 Primitive 是否相交
 			// closestSObj 用于记录最近的SObj
 			// n 用于记录最近的相交处的法向
-			struct Rst : public Intersector::Rst {
-				friend class RayIntersector;
-
-				Rst(bool isIntersect = false)
-					: Intersector::Rst(isIntersect), closestSObj(nullptr), n(0) { }
+			struct Rst {
+				bool IsIntersect() const {
+					return closestSObj != nullptr;
+				}
 
 				Basic::Ptr<SObj> closestSObj;
 				Normalf n;
 				Point2 texcoord;
 				Normalf tangent;
+			private:
+				friend class RayIntersector;
+				bool isIntersect;
 			};
 
 		public:
@@ -53,20 +54,18 @@ namespace CppUtil {
 			static const Basic::Ptr<RayIntersector> New() { return Basic::New<RayIntersector>(); }
 
 		public:
-			Rst & GetRst() { return rst; }
+			const Rst & GetRst() { return rst; }
 
 		private:
 			// 设置 rst，如果相交，则会修改 ray.tMax
 			void Visit(Basic::Ptr<BVHAccel> bvhAccel);
-			void Visit(Basic::Ptr<BVHNode> bvhNode);
 			void Visit(Basic::Ptr<SObj> sobj);
 			void Visit(Basic::Ptr<Sphere> sphere);
 			void Visit(Basic::Ptr<Plane> plane);
 			void Visit(Basic::Ptr<Triangle> triangle);
 
 		private:
-			bool Intersect(const BBoxf & bbox);
-			bool Intersect(const BBoxf & bbox, float & t0, float & t1);
+			bool Intersect(const BBoxf & bbox, const Val3f & invDir) const;
 
 		private:
 			Ray * ray;

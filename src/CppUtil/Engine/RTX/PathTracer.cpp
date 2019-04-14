@@ -57,7 +57,7 @@ void PathTracer::Init(Ptr<Scene> scene) {
 const RGBf PathTracer::Trace(ERay & ray, int depth, RGBf pathThroughput) {
 	rayIntersector->Init(&ray);
 	bvhAccel->Accept(rayIntersector);
-	auto & closestRst = rayIntersector->GetRst();
+	auto closestRst = rayIntersector->GetRst();
 	if (!closestRst.closestSObj) {
 		return RGBf(0);
 		/*

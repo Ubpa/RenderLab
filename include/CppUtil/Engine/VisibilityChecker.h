@@ -2,17 +2,11 @@
 #define _ENGINE_INTERSECTOR_VISIBILITY_CHECKER_H_
 
 #include <CppUtil/Engine/Intersector.h>
+#include <CppUtil/Basic/UGM/BBox.h>
 
 #include <CppUtil/Engine/Ray.h>
 
 namespace CppUtil {
-	namespace Basic {
-		class Element;
-
-		template <typename T>
-		class BBox;
-	}
-
 	namespace Engine {
 		class SObj;
 		class Ray;
@@ -20,17 +14,16 @@ namespace CppUtil {
 		class Plane;
 		class Triangle;
 		class BVHAccel;
-		class BVHNode;
 
 		class VisibilityChecker final : public Intersector {
 		public:
-			struct Rst : public Intersector::Rst {
+			struct Rst {
 				friend class VisibilityChecker;
 
-				Rst(bool isIntersect = false)
-					: Intersector::Rst(isIntersect) { }
-
 				bool IsIntersect() const { return isIntersect; }
+
+			private:
+				bool isIntersect;
 			};
 
 		public:
@@ -50,14 +43,12 @@ namespace CppUtil {
 		private:
 			// 设置 rst，如果相交，则会修改 ray.tMax
 			void Visit(Basic::Ptr<BVHAccel> bvhAccel);
-			void Visit(Basic::Ptr<BVHNode> bvhNode);
 			void Visit(Basic::Ptr<Sphere> sphere);
 			void Visit(Basic::Ptr<Plane> plane);
 			void Visit(Basic::Ptr<Triangle> triangle);
 
 		private:
-			bool Intersect(const Basic::BBox<float> & bbox);
-			bool Intersect(const Basic::BBox<float> & bbox, float & t0, float & t1);
+			bool Intersect(const BBoxf & bbox, const Val3f & invDir) const;
 
 		private:
 			Ray ray;

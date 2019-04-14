@@ -17,21 +17,6 @@ namespace CppUtil {
 			using EXT::NI_C_IE_L_B_3<T, Normal<T>>::NI_C_IE_L_B_3;
 
 		public:
-			const Point<2, T> ToTexcoord() const {
-				const float phi = std::atan2(-x, -z) + Math::PI;
-				const float theta = acos(y);
-
-				const T u = static_cast<T>(phi / (2.f * Math::PI));
-				const T v = static_cast<T>(theta / Math::PI);
-				return Point<2, T>(u, v);
-			}
-
-			const Normal ToTangent() const {
-				const float phi = std::atan2(-x, -z) + Math::PI;
-
-				return Normal(cos(phi), 0, -sin(phi));
-			}
-
 			const Mat3x3<T> GenCoordSpace() const {
 				const auto z = Normalize();
 				auto h = z;

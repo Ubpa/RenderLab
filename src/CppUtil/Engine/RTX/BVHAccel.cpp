@@ -1,12 +1,14 @@
 #include <CppUtil/Engine/BVHAccel.h>
 
-#include <CppUtil/Engine/SObj.h>
+#include "BVHNode.h"
 
-#include <CppUtil/Engine/CmptGeometry.h>
 #include <CppUtil/Engine/Sphere.h>
 #include <CppUtil/Engine/Plane.h>
 #include <CppUtil/Engine/TriMesh.h>
-#include <CppUtil/Engine/BVHNode.h>
+
+#include <CppUtil/Engine/CmptGeometry.h>
+
+#include <CppUtil/Engine/SObj.h>
 
 #include <CppUtil/Basic/Visitor.h>
 
@@ -14,9 +16,6 @@ using namespace CppUtil;
 using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
 using namespace std;
-
-BVHAccel::BVHAccel()
-	: bvhRoot(nullptr) { }
 
 // ------------ BVHInitVisitor ------------
 
@@ -29,6 +28,9 @@ public:
 		RegMemberFunc<Plane>(&BVHAccel::BVHInitVisitor::Visit);
 		RegMemberFunc<TriMesh>(&BVHAccel::BVHInitVisitor::Visit);
 	}
+
+public:
+	unordered_map<Ptr<Shape>, BBoxf> shape2wbbox;
 
 public:
 	static const Ptr<BVHInitVisitor> New(BVHAccel * holder) {
@@ -45,33 +47,29 @@ public:
 			return;
 
 		const auto w2l = geo->GetSObj()->GetWorldToLocalMatrix();
-		const auto l2w = w2l.Inverse();
 		holder->worldToLocalMatrixes[primitive] = w2l;
-		holder->localToWorldMatrixes[primitive] = l2w;
-		holder->sobjL2W[geo->GetSObj()] = l2w;
 
 		holder->primitive2sobj[geo->primitive] = geo->GetSObj();
 		geo->primitive->Accept(This());
 	}
 
 	void Visit(Ptr<Sphere> sphere) {
-		const auto matrix = holder->GetShapeL2WMat(sphere);
+		const auto l2w = holder->GetShapeW2LMat(sphere).Inverse();
 		holder->shapes.push_back(sphere);
-		holder->shape2wbbox[sphere] = matrix(sphere->GetBBox());
+		shape2wbbox[sphere] = l2w(sphere->GetBBox());
 	}
 
 	void Visit(Ptr<Plane> plane) {
-		const auto matrix = holder->GetShapeL2WMat(plane);
+		const auto l2w = holder->GetShapeW2LMat(plane).Inverse();
 		holder->shapes.push_back(plane);
-		holder->shape2wbbox[plane] = matrix(plane->GetBBox());
+		shape2wbbox[plane] = l2w(plane->GetBBox());
 	}
 
 	void Visit(Ptr<TriMesh> mesh) {
-		const auto matrix = holder->GetShapeL2WMat(mesh);
-		auto triangles = mesh->GetTriangles();
-		for (auto triangle : triangles) {
+		const auto l2w = holder->GetShapeW2LMat(mesh).Inverse();
+		for (auto triangle : mesh->GetTriangles()) {
 			holder->shapes.push_back(triangle);
-			holder->shape2wbbox[triangle] = matrix(triangle->GetBBox());
+			shape2wbbox[triangle] = l2w(triangle->GetBBox());
 		}
 	}
 
@@ -86,20 +84,6 @@ const Transform & BVHAccel::GetShapeW2LMat(Ptr<Shape> shape) const {
 	return target->second;
 }
 
-const Transform & BVHAccel::GetShapeL2WMat(Ptr<Shape> shape) const {
-	const auto target = localToWorldMatrixes.find(shape->GetPrimitive());
-	assert(target != localToWorldMatrixes.cend());
-
-	return target->second;
-}
-
-const Transform & BVHAccel::GetSObjL2WMat(Ptr<SObj> sobj) const {
-	const auto target = sobjL2W.find(sobj);
-	assert(target != sobjL2W.cend());
-
-	return target->second;
-}
-
 const Ptr<SObj> BVHAccel::GetSObj(Ptr<Shape> shape) const{
 	const auto target = primitive2sobj.find(shape->GetPrimitive());
 	assert(target != primitive2sobj.cend());
@@ -107,22 +91,11 @@ const Ptr<SObj> BVHAccel::GetSObj(Ptr<Shape> shape) const{
 	return target->second;
 }
 
-const BBoxf & BVHAccel::GetWorldBBox(Ptr<Shape> shape) const {
-	const auto target = shape2wbbox.find(shape);
-	assert(target != shape2wbbox.cend());
-
-	return target->second;
-}
-
 void BVHAccel::Clear() {
 	worldToLocalMatrixes.clear();
-	localToWorldMatrixes.clear();
-	sobjL2W.clear();
 	primitive2sobj.clear();
 	shapes.clear();
-	shape2wbbox.clear();
-
-	bvhRoot = nullptr;
+	linearBVHNodes.clear();
 }
 
 void BVHAccel::Init(Ptr<SObj> root) {
@@ -132,5 +105,20 @@ void BVHAccel::Init(Ptr<SObj> root) {
 	auto initVisitor = BVHInitVisitor::New(this);
 	for (auto geo : geos)
 		geo->Accept(initVisitor);
-	bvhRoot = BVHNode::New(this, shapes, 0, shapes.size());
+
+	const auto bvhRoot = BVHNode::New(initVisitor->shape2wbbox, shapes, 0, shapes.size());
+	LinearizeBVH(bvhRoot);
+}
+
+void BVHAccel::LinearizeBVH(Ptr<BVHNode> bvhNode) {
+	linearBVHNodes.push_back(LinearBVHNode());
+	const auto curNodeIdx = linearBVHNodes.size() - 1;
+
+	if (!bvhNode->IsLeaf()) {
+		LinearizeBVH(bvhNode->GetL());
+		linearBVHNodes[curNodeIdx].InitBranch(bvhNode->GetBBox(), static_cast<int>(linearBVHNodes.size()), bvhNode->GetAxis());
+		LinearizeBVH(bvhNode->GetR());
+	}
+	else
+		linearBVHNodes[curNodeIdx].InitLeaf(bvhNode->GetBBox(), static_cast<int>(bvhNode->GetShapeOffset()), static_cast<int>(bvhNode->GetShapesNum()));
 }
