@@ -38,7 +38,7 @@ void Picker::OGL_Init() {
 		Point3 posInNorm = Vec3(posOnScreen) * 2.0f - Vec3(1.0f);
 		Point3 posInWorld = (camera->GetProjectionMatrix() * camera->GetViewMatrix()).Inverse()(posInNorm);
 
-		Vec3 dir = posInWorld - camera->GetPos();
+		Vec3 dir = (posInWorld - camera->GetPos()).Normalize();
 		Ray ray(camera->GetPos(), dir);
 		rayIntersector->Init(&ray);
 		viewer->GetScene()->GetRoot()->Accept(rayIntersector);

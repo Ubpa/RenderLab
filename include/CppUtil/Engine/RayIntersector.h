@@ -20,6 +20,7 @@ namespace CppUtil {
 		class Sphere;
 		class Plane;
 		class Triangle;
+		class TriMesh;
 		class BVHAccel;
 
 		// 寻找最近的交点
@@ -63,6 +64,7 @@ namespace CppUtil {
 			void Visit(Basic::Ptr<Sphere> sphere);
 			void Visit(Basic::Ptr<Plane> plane);
 			void Visit(Basic::Ptr<Triangle> triangle);
+			void Visit(Basic::Ptr<TriMesh> mesh);
 
 		private:
 			bool Intersect(const BBoxf & bbox, const Val3f & invDir) const;

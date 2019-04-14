@@ -29,13 +29,14 @@ RayIntersector::RayIntersector() {
 	RegMemberFunc<Sphere>(&RayIntersector::Visit);
 	RegMemberFunc<Plane>(&RayIntersector::Visit);
 	RegMemberFunc<Triangle>(&RayIntersector::Visit);
+	RegMemberFunc<TriMesh>(&RayIntersector::Visit);
 }
 
 void RayIntersector::Init(ERay * ray) {
 	this->ray = ray;
 
 	rst.closestSObj = nullptr;
-	rst.isIntersect = true;
+	rst.isIntersect = false;
 }
 
 bool RayIntersector::Intersect(const BBoxf & bbox, const Val3f & invDir) const {
@@ -293,4 +294,14 @@ void RayIntersector::Visit(Ptr<Triangle> triangle) {
 	const auto & tg3 = tangents[idx3];
 
 	rst.tangent = (w * tg1 + u * tg2 + v * tg3).Normalize();
+}
+
+void RayIntersector::Visit(Basic::Ptr<TriMesh> mesh) {
+	const auto visitor = This();
+	for (auto triangle : mesh->GetTriangles()) {
+		triangle->Accept(visitor);
+		if (rst.isIntersect) {
+			return;
+		}
+	}
 }
