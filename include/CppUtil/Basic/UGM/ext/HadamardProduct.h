@@ -17,7 +17,7 @@ namespace CppUtil {
 				}
 
 				const ImplT Inverse_HadamardProduct() const {
-					return Indentity_HadamardProduct() / *static_cast<const ImplT*>(this);
+					return Indentity_HadamardProduct() / ToImplT();
 				}
 			};
 		}

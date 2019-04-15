@@ -53,6 +53,19 @@ namespace CppUtil {
 			static const Normal<T> Reflect(const Normal<T> & I, const Normal<T> & N) {
 				return I - N * N.Dot(I) * static_cast<T>(2);
 			}
+
+#ifndef NDEBUG
+			// 仅用于 Debug 时方便在 IDE 中显示结果
+		public:
+			Normal & operator =(const Normal & v) {
+				*static_cast<EXT::NI_C_IE_L_B_3<T, Normal<T>>*>(this) = v;
+				return *this;
+			}
+		private:
+			const T & _x{ *(((T*)this) + 0) };
+			const T & _y{ *(((T*)this) + 1) };
+			const T & _z{ *(((T*)this) + 2) };
+#endif // !NDEBUG
 		};
 	}
 	template<typename T>

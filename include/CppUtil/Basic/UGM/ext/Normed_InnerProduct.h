@@ -14,7 +14,7 @@ namespace CppUtil {
 
 			public:
 				T Norm2() const {
-					return Dot(*static_cast<const ImplT*>(this));
+					return Dot(ToImplT());
 				}
 
 				T Norm() const {

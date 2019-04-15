@@ -15,6 +15,17 @@ namespace CppUtil {
 		class Vector<1, T> : public EXT::NI_IE_L_B<1, T, Vector<1,T>> {
 		public:
 			using EXT::NI_IE_L_B<1, T, Vector<1, T>>::NI_IE_L_B;
+
+#ifndef NDEBUG
+			// 仅用于 Debug 时方便在 IDE 中显示结果
+		public:
+			Vector & operator =(const Vector & v) {
+				*static_cast<EXT::NI_IE_L_B<1, T, Vector<1, T>>*>(this) = v;
+				return *this;
+			}
+		private:
+			const T & _x{ *(((T*)this) + 0) };
+#endif // !NDEBUG
 		};
 	}
 }

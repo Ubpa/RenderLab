@@ -13,7 +13,7 @@ namespace CppUtil {
 
 			public:
 				const ImplT LerpWith(const ImplT & s1, T t) const {
-					return Lerp(*this, s1, t);
+					return Lerp(ToImplT(), s1, t);
 				}
 
 				static const ImplT Mid(const ImplT & lhs, const ImplT & rhs) {
@@ -21,15 +21,15 @@ namespace CppUtil {
 				}
 
 				const ImplT MidWith(const ImplT & v) const {
-					return Mid(*this, v);
+					return Mid(ToImplT(), v);
 				}
 
-				const ImplT MinWith(const ImplT & v) {
-					return Min(*this, v);
+				const ImplT MinWith(const ImplT & v) const {
+					return Min(ToImplT(), v);
 				}
 
-				const ImplT MaxWith(const ImplT & v) {
-					return Max(*this, v);
+				const ImplT MaxWith(const ImplT & v) const {
+					return Max(ToImplT(), v);
 				}
 
 			protected:

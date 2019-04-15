@@ -13,7 +13,7 @@ namespace CppUtil {
 
 			public:
 				T Distance2With(const ImplT & v) const {
-					return Distance2(*static_cast<const ImplT*>(this), v);
+					return Distance2(ToImplT(), v);
 				}
 
 				static T Distance(const ImplT & lhs, const ImplT & rhs) {
@@ -21,7 +21,7 @@ namespace CppUtil {
 				}
 
 				T DistanceWith(const ImplT & v) const {
-					return Distance(*static_cast<const ImplT*>(this), v);
+					return Distance(ToImplT(), v);
 				}
 			};
 		}

@@ -16,6 +16,19 @@ namespace CppUtil {
 			const Quat<T> ToQuat() const {
 				return Quat<T>::Rotate(*this);
 			}
+
+#ifndef NDEBUG
+			// 仅用于 Debug 时方便在 IDE 中显示结果
+		public:
+			EulerYXZ & operator =(const EulerYXZ & v) {
+				*static_cast<EXT::Basic_Val<3, T, EulerYXZ<T>>*>(this) = v;
+				return *this;
+			}
+		private:
+			const T & _x{ *(((T*)this) + 0) };
+			const T & _y{ *(((T*)this) + 1) };
+			const T & _z{ *(((T*)this) + 2) };
+#endif // !NDEBUG
 		};
 	}
 

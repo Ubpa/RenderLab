@@ -16,10 +16,6 @@ namespace CppUtil {
 			using EXT::ME_B<1, T, Point<1, T>>::ME_B;
 
 		public:
-			const Vector<1, T> operator-(const Point &p) const {
-				return Vector<1, T>(x - p.x);
-			}
-
 			const Point operator+(const Vector<1, T> &v) const {
 				return Point(x + v.x);
 			}
@@ -27,6 +23,10 @@ namespace CppUtil {
 			Point & operator+=(const Vector<1, T> &v) {
 				x += v.x;
 				return *this;
+			}
+
+			const Vector<1, T> operator-(const Point &p) const {
+				return Vector<1, T>(x - p.x);
 			}
 
 			const Point operator-(const Vector<1, T> &v) const {
@@ -37,6 +37,17 @@ namespace CppUtil {
 				x -= v.x;
 				return *this;
 			}
+
+#ifndef NDEBUG
+			// 仅用于 Debug 时方便在 IDE 中显示结果
+		public:
+			Point & operator =(const Point & p) {
+				*static_cast<EXT::ME_B<1, T, Point<1, T>>*>(this) = p;
+				return *this;
+			}
+		private:
+			const T & _x{ *(((T*)this) + 0) };
+#endif // !NDEBUG
 		};
 	}
 }

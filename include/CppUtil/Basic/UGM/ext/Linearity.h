@@ -12,11 +12,11 @@ namespace CppUtil {
 				using Linearity_Base<N, T, BaseT, ImplT>::Linearity_Base;
 
 			public:
-				static const ImplT Zero() {
+				static const ImplT Zero_Linearity() {
 					return ImplT(static_cast<T>(0));
 				}
 
-				static constexpr T Identiry() {
+				static constexpr T Identiry_Linearity() {
 					return static_cast<T>(1);
 				}
 

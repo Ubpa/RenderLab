@@ -40,7 +40,7 @@
 - 离线渲染
   - 路径追踪 PathTracing
 - 其他功能
-  - 几何数学库 UGM
+  - [几何数学库 UGM](https://github.com/Ubpa/RenderLab/tree/master/include/CppUtil/Basic/UGM) 
   - AI 降噪 OptixAIDenoiser
 
 ## 2. 安装

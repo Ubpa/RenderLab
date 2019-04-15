@@ -173,11 +173,19 @@ namespace CppUtil {
 				return !(*this == rhs);
 			}
 
-			Quat & operator=(const Quat & rhs) {
-				imag = rhs.imag;
-				real = rhs.real;
+#ifndef NDEBUG
+			// 仅用于 Debug 时方便在 IDE 中显示结果
+		public:
+			Quat & operator =(const Quat & p) {
+				*static_cast<EXT::Basic_Val<4, T, Quat<T>>*>(this) = p;
 				return *this;
 			}
+		private:
+			const T & _x{ *(((T*)this) + 0) };
+			const T & _y{ *(((T*)this) + 1) };
+			const T & _z{ *(((T*)this) + 2) };
+			const T & _w{ *(((T*)this) + 3) };
+#endif // !NDEBUG
 		};
 
 		template<typename T, typename U>
