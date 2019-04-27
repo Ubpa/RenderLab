@@ -8,7 +8,6 @@ namespace CppUtil {
 		class Sphere : public Shape {
 		public:
 			Sphere(uint n);
-			virtual ~Sphere();
 			float * GetNormalArr();
 			float * GetTexCoordsArr();
 			uint * GetIndexArr();
@@ -18,10 +17,10 @@ namespace CppUtil {
 			uint GetIndexArrSize();
 			uint GetTangentArrSize();
 		protected:
-			Array2D<float> * normalArr;
-			Array2D<float> * texCoordsArr;
-			Array2D<uint> * indexArr;
-			Array2D<float> * tangentArr;
+			std::vector<Normalf> normalArr;
+			std::vector<Point2> texCoordsArr;
+			std::vector<Val<3, uint>> indexArr;
+			std::vector<Normalf> tangentArr;
 		};
 	}
 }

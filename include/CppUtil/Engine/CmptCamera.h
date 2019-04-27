@@ -31,12 +31,10 @@ namespace CppUtil {
 
 			// right, up, front are normalized vector
 			// !!! need call InitCoordinate() first !!!
-			void SetRay(Ray & ray, float u, float v);
+			const Ray GenRay(float u, float v) const;
 
 			float GetFOV() const { return fov; }
 			void SetFOV(float fov);
-
-		public:
 
 		public:
 			float nearPlane;

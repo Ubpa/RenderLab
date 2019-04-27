@@ -46,7 +46,6 @@ namespace CppUtil {
 			};
 
 			const RGBf SampleLight(
-				Ray & ray,
 				const Point3 & posInWorldSpace,
 				const std::vector<Point3> & posInLightSpaceVec,
 				const Mat3f & worldToSurface,
@@ -57,7 +56,6 @@ namespace CppUtil {
 			) const;
 
 			const RGBf SampleLightImpl(
-				Ray & ray,
 				int lightID,
 				const Point3 & posInWorldSpace,
 				const Point3 & posInLightSpace,
@@ -75,7 +73,6 @@ namespace CppUtil {
 				const Mat3f & surfaceToWorld,
 				const Point2 & texcoord,
 				const std::vector<Point3> & posInLightSpaceVec,
-				Ray & ray,
 				const Point3 & hitPos,
 				int depth,
 				RGBf pathThroughput

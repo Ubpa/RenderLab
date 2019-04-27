@@ -8,7 +8,6 @@ namespace CppUtil {
 		class Cube : public Shape {
 		public:
 			Cube();
-			virtual ~Cube();
 			float * GetNormalArr();
 			float * GetTexCoordsArr();
 			uint * GetIndexArr();
@@ -16,9 +15,9 @@ namespace CppUtil {
 			uint GetTexCoordsArrSize();
 			uint GetIndexArrSize();
 		protected:
-			Array2D<float> * normalArr;
-			Array2D<float> * texCoordsArr;
-			Array2D<uint> * indexArr;
+			std::vector<Normalf> normalArr;
+			std::vector<Point2> texCoordsArr;
+			std::vector<Val<3, uint>> indexArr;
 			static const float cubeData[192];
 		};
 	}

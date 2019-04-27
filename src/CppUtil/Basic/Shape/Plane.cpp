@@ -1,6 +1,7 @@
 #include <CppUtil/Basic/Plane.h>
 
 using namespace CppUtil::Basic;
+using namespace std;
 
 Plane::Plane()
 	: Shape(4, 2) {
@@ -12,14 +13,14 @@ Plane::Plane()
 		 0.5f,  0.0f, -0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 0.0f, //right back
 	};
 
-	normalArr = new Array2D<float>(vertexNum, 3);
-	texCoordsArr = new Array2D<float>(vertexNum, 2);
-	indexArr = new Array2D<uint>(triNum, 3);
+	normalArr = vector<Normalf>(vertexNum);
+	texCoordsArr = vector<Point2>(vertexNum);
+	indexArr = vector<Val<3,uint>>(triNum);
 	
 	for (uint i = 0; i < vertexNum; i++) {
-		posArr->Copy(i, 0, 3, &(vertexData[8 * i]));
-		normalArr->Copy(i, 0, 3, &(vertexData[8 * i + 3]));
-		texCoordsArr->Copy(i, 0, 2, &(vertexData[8 * i + 6]));
+		posArr[i] = { vertexData[8 * i], vertexData[8 * i + 1],vertexData[8 * i + 2] };
+		normalArr[i] = { vertexData[8 * i + 3], vertexData[8 * i + 4],vertexData[8 * i + 5] };
+		texCoordsArr[i] = { vertexData[8 * i + 6], vertexData[8 * i + 7] };
 	}
 
 	const uint indice[6] = {
@@ -27,48 +28,39 @@ Plane::Plane()
 		3, 2, 1
 	};
 
-	indexArr->Copy(0, 0, 6, indice);
-}
-
-
-Plane::~Plane() {
-	delete normalArr;
-	normalArr = nullptr;
-	delete texCoordsArr;
-	texCoordsArr = nullptr;
-	delete indexArr;
-	indexArr = nullptr;
+	indexArr[0] = { indice[0],indice[1],indice[2] };
+	indexArr[1] = { indice[3],indice[4],indice[5] };
 }
 
 float * Plane::GetNormalArr() {
-	if (normalArr == nullptr)
+	if (normalArr.empty())
 		return nullptr;
 
-	return normalArr->GetData();
+	return normalArr.front().Data();
 }
 
 float * Plane::GetTexCoordsArr() {
-	if (texCoordsArr == nullptr)
+	if (texCoordsArr.empty())
 		return nullptr;
 
-	return texCoordsArr->GetData();
+	return texCoordsArr.front().Data();
 }
 
 uint * Plane::GetIndexArr() {
-	if (indexArr == nullptr)
+	if (indexArr.empty())
 		return nullptr;
 
-	return indexArr->GetData();
+	return indexArr.front().Data();
 }
 
 uint Plane::GetNormalArrSize() {
-	return normalArr->GetMemSize();
+	return static_cast<uint>(normalArr.size() * sizeof(Normalf));
 }
 
 uint Plane::GetTexCoordsArrSize() {
-	return texCoordsArr->GetMemSize();
+	return static_cast<uint>(texCoordsArr.size() * sizeof(Point2));
 }
 
 uint Plane::GetIndexArrSize() {
-	return indexArr->GetMemSize();
+	return static_cast<uint>(indexArr.size() * 3 * sizeof(uint));
 }

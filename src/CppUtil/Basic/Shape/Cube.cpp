@@ -3,6 +3,7 @@
 #include <cmath>
 
 using namespace CppUtil::Basic;
+using namespace std;
 
 const float Cube::cubeData[192] = {
 	// positions          // normals           // texture coords
@@ -39,14 +40,14 @@ const float Cube::cubeData[192] = {
 
 Cube::Cube()
 	: Shape(24, 12) {
-	normalArr = new Array2D<float>(vertexNum, 3);
-	texCoordsArr = new Array2D<float>(vertexNum, 2);
-	indexArr = new Array2D<uint>(triNum, 3);
+	normalArr = vector<Normalf>(vertexNum);
+	texCoordsArr = vector<Point2>(vertexNum);
+	indexArr = vector<Val<3, uint>>(triNum);
 	//----------
 	for (uint i = 0; i < vertexNum; i++) {
-		posArr->Copy(i, 0, 3, &(cubeData[8 * i]));
-		normalArr->Copy(i, 0, 3, &(cubeData[8 * i + 3]));
-		texCoordsArr->Copy(i, 0, 2, &(cubeData[8 * i + 6]));
+		posArr[i] = { cubeData[8 * i], cubeData[8 * i + 1], cubeData[8 * i + 2] };
+		normalArr[i] = { cubeData[8 * i + 3], cubeData[8 * i + 4], cubeData[8 * i + 5] };
+		texCoordsArr[i] = { cubeData[8 * i + 6], cubeData[8 * i + 7] };
 	}
 
 	const uint squareIdx[6] = {
@@ -56,48 +57,39 @@ Cube::Cube()
 
 	for (uint i = 0; i < 6; i++) {
 		for (uint j = 0; j < 6; j++)
-			indexArr->At(2 * i + j / 3, j % 3) = 4 * i + squareIdx[j];
+			indexArr[2 * i + j / 3][j % 3] = 4 * i + squareIdx[j];
 	}
 }
 
-Cube::~Cube() {
-	delete normalArr;
-	normalArr = nullptr;
-	delete texCoordsArr;
-	texCoordsArr = nullptr;
-	delete indexArr;
-	indexArr = nullptr;
-}
-
 float * Cube::GetNormalArr() {
-	if (normalArr == nullptr)
+	if (normalArr.empty())
 		return nullptr;
 
-	return normalArr->GetData();
+	return normalArr.front().Data();
 }
 
 float * Cube::GetTexCoordsArr() {
-	if (texCoordsArr == nullptr)
+	if (texCoordsArr.empty())
 		return nullptr;
 
-	return texCoordsArr->GetData();
+	return texCoordsArr.front().Data();
 }
 
 uint * Cube::GetIndexArr() {
-	if (indexArr == nullptr)
+	if (indexArr.empty())
 		return nullptr;
 
-	return indexArr->GetData();
+	return indexArr.front().Data();
 }
 
 uint Cube::GetNormalArrSize() {
-	return normalArr->GetMemSize();
+	return static_cast<uint>(normalArr.size() * sizeof(Normalf));
 }
 
 uint Cube::GetTexCoordsArrSize() {
-	return texCoordsArr->GetMemSize();
+	return static_cast<uint>(texCoordsArr.size() * sizeof(Point2));
 }
 
 uint Cube::GetIndexArrSize() {
-	return indexArr->GetMemSize();
+	return static_cast<uint>(indexArr.size() * 3 * sizeof(uint));
 }

@@ -11,13 +11,6 @@ namespace CppUtil {
 				: Basic::Ray(origin, dir), tMin(tMin), tMax(tMax) { }
 
 		public:
-			void Init(const Point3 & origin, const Vec3 & dir) {
-				o = origin;
-				d = dir;
-				tMin = 0.001f;
-				tMax = FLT_MAX;
-			}
-
 			const Point3 StartPos() const { return (*this)(tMin); }
 			const Point3 EndPos() const { return (*this)(tMax); }
 

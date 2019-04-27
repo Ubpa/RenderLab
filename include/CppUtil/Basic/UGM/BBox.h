@@ -26,13 +26,20 @@ namespace CppUtil {
 			BBox(const BBox & bbox) : minP(bbox.minP), maxP(bbox.maxP) { }
 
 		public:
-			const Point<3, T> & operator[](int zeroOrOne) const { return data[zeroOrOne]; }
-			Point<3, T> & operator[](int zeroOrOne) { return data[zeroOrOne]; }
+			const Point<3, T> & operator[](int idx) const {
+				assert(idx == 0 || idx == 1);
+				return data[idx];
+			}
+			Point<3, T> & operator[](int idx) {
+				assert(idx == 0 || idx == 1);
+				return data[idx];
+			}
 
 		public:
 			bool IsValid() const { return maxP.x >= minP.x && maxP.y >= minP.y && maxP.z >= minP.z; }
 			bool HasNaN() const { return minP.HasNaN() || maxP.HasNaN(); }
 			const Point<3, T> Corner(int i) const {
+				assert(i >= 0 && i < 8);
 				return Point<3, T>(
 					_data[(i & 1)].x,
 					_data[(i & 2) ? 1 : 0].y,

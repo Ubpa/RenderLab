@@ -103,15 +103,14 @@ const RGBf PathTracer::Trace(ERay & ray, int depth, RGBf pathThroughput) {
 
 	// SampleLightMode mode = depth > 0 ? SampleLightMode::RandomOne : SampleLightMode::ALL;
 	SampleLightMode mode = SampleLightMode::RandomOne;
-	const RGBf lightL = SampleLight(ray, hitPos, posInLightSpaceVec, worldToSurface, bsdf, w_out, closestRst.texcoord, SampleLightMode::RandomOne);
+	const RGBf lightL = SampleLight(hitPos, posInLightSpaceVec, worldToSurface, bsdf, w_out, closestRst.texcoord, SampleLightMode::RandomOne);
 
-	const RGBf matL = SampleBSDF(bsdf, mode, w_out, surfaceToWorld, closestRst.texcoord, posInLightSpaceVec, ray, hitPos, depth, pathThroughput);
+	const RGBf matL = SampleBSDF(bsdf, mode, w_out, surfaceToWorld, closestRst.texcoord, posInLightSpaceVec, hitPos, depth, pathThroughput);
 
 	return emitL + lightL + matL;
 }
 
 const RGBf PathTracer::SampleLightImpl(
-	ERay & ray,
 	const int lightID,
 	const Point3 & posInWorldSpace,
 	const Point3 & posInLightSpace,
@@ -139,8 +138,8 @@ const RGBf PathTracer::SampleLightImpl(
 	const Normalf dirInWorld = lightToWorld(dir_ToLight).Normalize();
 
 	// shadow ray 处于世界坐标
-	ray.Init(posInWorldSpace, dirInWorld);
-	visibilityChecker->Init(ray, dist_ToLight - 0.001f);
+	ERay shadowRay(posInWorldSpace, dirInWorld);
+	visibilityChecker->Init(shadowRay, dist_ToLight - 0.001f);
 	bvhAccel->Accept(visibilityChecker);
 	auto shadowRst = visibilityChecker->GetRst();
 	if (shadowRst.IsIntersect())
@@ -171,7 +170,6 @@ const RGBf PathTracer::SampleLightImpl(
 }
 
 const RGBf PathTracer::SampleLight(
-	ERay & ray,
 	const Point3 & posInWorldSpace,
 	const std::vector<Point3> & posInLightSpaceVec,
 	const Mat3f & worldToSurface,
@@ -191,7 +189,7 @@ const RGBf PathTracer::SampleLight(
 	{
 	case SampleLightMode::ALL: {
 		for (int i = 0; i < lightNum; i++)
-			rst += SampleLightImpl(ray, i, posInWorldSpace, posInLightSpaceVec[i], worldToSurface, bsdf, w_out, texcoord, 1.f);
+			rst += SampleLightImpl(i, posInWorldSpace, posInLightSpaceVec[i], worldToSurface, bsdf, w_out, texcoord, 1.f);
 
 		break;
 	}
@@ -199,7 +197,7 @@ const RGBf PathTracer::SampleLight(
 		int lightID = Math::Rand_I() % lightNum;
 		auto const & posInLightSpace = posInLightSpaceVec[lightID];
 
-		rst = SampleLightImpl(ray, lightID, posInWorldSpace, posInLightSpace, worldToSurface, bsdf, w_out, texcoord, 1.f / lightNum);
+		rst = SampleLightImpl(lightID, posInWorldSpace, posInLightSpace, worldToSurface, bsdf, w_out, texcoord, 1.f / lightNum);
 		break;
 	}
 	}
@@ -214,7 +212,6 @@ const RGBf PathTracer::SampleBSDF(
 	const Mat3f & surfaceToWorld,
 	const Point2 & texcoord,
 	const std::vector<Point3> & posInLightSpaceVec,
-	ERay & ray,
 	const Point3 & hitPos,
 	const int depth,
 	RGBf pathThroughput
@@ -257,7 +254,7 @@ const RGBf PathTracer::SampleBSDF(
 	}
 
 	// material ray
-	ray.Init(hitPos, matRayDirInWorld);
+	ERay matRay(hitPos, matRayDirInWorld);
 
 	// Russian Roulette
 	const RGBf matWeight = abs_cosTheta / sumPD * matF;
@@ -266,7 +263,7 @@ const RGBf PathTracer::SampleBSDF(
 	if (Math::Rand_F() > continueP)
 		return RGBf(0.f);
 
-	const RGBf matRayColor = Trace(ray, depth + 1, pathThroughput / continueP);
+	const RGBf matRayColor = Trace(matRay, depth + 1, pathThroughput / continueP);
 
 	return matWeight / continueP * matRayColor;
 }

@@ -99,6 +99,13 @@ namespace CppUtil {
 				return num;
 			}
 
+			template<typename T>
+			T Sinc(T x) {
+				x = std::abs(x);
+				if (x < static_cast<T>(1e-5)) return static_cast<T>(1);
+				return std::sin(PI * x) / (PI * x);
+			}
+
 #include <CppUtil/Basic/Math.inl>
 		}
 	}

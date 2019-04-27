@@ -50,8 +50,8 @@ bool CmptCamera::InitCoordinate() {
 	return true;
 }
 
-void CmptCamera::SetRay(ERay & ray, float u, float v) {
+const ERay CmptCamera::GenRay(float u, float v) const {
 	const auto R = w * (u - 0.5f) * coordinate.right;
 	const auto U = h * (v - 0.5f) * coordinate.up;
-	ray.Init(coordinate.pos, coordinate.front + R + U);
+	return ERay(coordinate.pos, coordinate.front + R + U);
 }

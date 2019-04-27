@@ -41,7 +41,7 @@ namespace CppUtil {
 			}
 
 #ifndef NDEBUG
-			// 仅用于 Debug 时方便在 IDE 中显示结果
+		// 仅用于 Debug 时方便在 IDE 中显示结果
 		public:
 			Point & operator =(const Point & p) {
 				*static_cast<EXT::ME_B<2, T, Point<2, T>>*>(this) = p;

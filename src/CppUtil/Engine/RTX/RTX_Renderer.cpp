@@ -13,6 +13,10 @@
 
 #include <omp.h>
 
+#include "Film.h"
+#include "FilmTile.h"
+#include <CppUtil/Engine/FilterMitchell.h>
+
 #ifdef NDEBUG
 #define THREAD_NUM omp_get_num_procs() - 1
 #else
@@ -94,6 +98,8 @@ void RTX_Renderer::Run(Ptr<Scene> scene, Ptr<Image> img) {
 	const float lightNum = static_cast<float>(scene->GetCmptLights().size());
 
 	// init rst image
+
+	auto film = Film::New(img, FilterMitchell::New({ 2,2 }, 0.333f, 0.333f));
 	int w = img->GetWidth();
 	int h = img->GetHeight();
 
@@ -134,67 +140,35 @@ void RTX_Renderer::Run(Ptr<Scene> scene, Ptr<Image> img) {
 	int imgSize = w * h;
 	vector<vector<RGBf>> imgTiles(tileNum, vector<RGBf>(tileSize*tileSize, RGBf(0.f)));
 
-	// rays
-	vector<ERay> rays(threadNum);
-
 	auto renderPartImg = [&](int id) {
-		auto & ray = rays[id];
 		auto & rayTracer = rayTracers[id];
 
-		auto task = tileTask.GetTask();
+		for (auto task = tileTask.GetTask(); task.hasTask; task = tileTask.GetTask()) {
+			int tileID = task.tileID;
+			int tileRow = tileID / rowTiles;
+			int tileCol = tileID - tileRow * rowTiles;
+			int baseX = tileCol * tileSize;
+			int baseY = tileRow * tileSize;
 
-		int tileID = task.tileID;
-		int tileRow = tileID / rowTiles;
-		int tileCol = tileID - tileRow * rowTiles;
-		int baseX = tileCol * tileSize;
-		int baseY = tileRow * tileSize;
-		int idxInTile = 0;
-		int xInTile = 0;
-		int yInTile = 0;
+			auto filmTile = film->GenFilmTile(Framei({ baseX, baseY }, { baseX + tileSize, baseY + tileSize }));
 
-		while (task.hasTask) {
-			int x = baseX + xInTile;
-			int y = baseY + yInTile;
+			for (const auto pos : filmTile->AllPos()) {
 
-			float u = (x + Math::Rand_F()) / (float)w;
-			float v = (y + Math::Rand_F()) / (float)h;
+				const float u = (pos.x + Math::Rand_F()) / (float)w;
+				const float v = (pos.y + Math::Rand_F()) / (float)h;
 
-			camera->SetRay(ray, u, v);
-			RGBf rst = rayTracer->Trace(ray);
+				auto ray = camera->GenRay(u, v);
+				RGBf radiance = rayTracer->Trace(ray);
 
-			// 这一步可以极大的减少白噪点（特别是由点光源产生）
-			float illum = rst.Illumination();
-			if (illum > lightNum)
-				rst *= lightNum / illum;
+				// 这一步可以极大的减少白噪点（特别是由点光源产生）
+				float illum = radiance.Illumination();
+				if (illum > lightNum)
+					radiance *= lightNum / illum;
 
-			imgTiles[tileID][idxInTile] += rst;
-
-			if (state._value == RendererState::Stop)
-				return;
-
-			xInTile++;
-			idxInTile++;
-			if (xInTile == tileSize) {
-				xInTile = 0;
-				yInTile++;
-				if (yInTile == tileSize) {
-					for (int j = 0; j < tileSize; j++) {
-						for (int i = 0; i < tileSize; i++) {
-							img->SetPixel(i + baseX, j + baseY,
-								imgTiles[tileID][j*tileSize + i] / float(task.curLoop + 1));
-						}
-					}
-
-					task = tileTask.GetTask();
-					tileID = task.tileID;
-					tileRow = tileID / rowTiles;
-					tileCol = tileID - tileRow * rowTiles;
-					baseX = tileCol * tileSize;
-					baseY = tileRow * tileSize;
-					yInTile = 0;
-					idxInTile = 0;
-				}
+				filmTile->AddSample(pos, radiance);
 			}
+
+			film->MergeFilmTile(filmTile);
 		}
 	};
 

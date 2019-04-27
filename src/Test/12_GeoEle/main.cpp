@@ -6,6 +6,7 @@
 
 #include <CppUtil/Basic/Timer.h>
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include <sstream>
 
@@ -25,19 +26,19 @@ int main() {
 	Vec2 v2(1, 1);
 
 	cout << sizeof(Vec2) << endl;
-	cout << Vec2::Zero() << endl;
-	constexpr auto identity = Vec2::Identiry();
+	cout << Vec2::Zero_Linearity() << endl;
+	constexpr auto identity = Vec2::Identiry_Linearity();
 	cout << identity << endl;
 
 	cout << "v0+v1 == v1+v0 : " << ((v0 + v1) == (v1 + v0)) << endl;
 
 	cout << "v0+(v1+v2) = (v0+v1)+v2 : " << ((v0 + (v1 + v2))== (v0 + v1) + v2) << endl;
 
-	cout << "v0 + Vec2::Zero() == v0 : " << (v0 + Vec2::Zero()==v0) << endl;
+	cout << "v0 + Vec2::Zero() == v0 : " << (v0 + Vec2::Zero_Linearity()==v0) << endl;
 
-	cout << "v0 + (-v0) == Vec2::Zero() : " << ((v0 + (-v0)) == Vec2::Zero()) << endl;
+	cout << "v0 + (-v0) == Vec2::Zero() : " << ((v0 + (-v0)) == Vec2::Zero_Linearity()) << endl;
 
-	cout << "Vec2::Identity() * v0 == v0 : " << (Vec2::Identiry() * v0 == v0) << endl;
+	cout << "Vec2::Identity() * v0 == v0 : " << (Vec2::Identiry_Linearity() * v0 == v0) << endl;
 
 	float k = 0.1f;
 	float l = 0.314f;
@@ -72,6 +73,10 @@ int main() {
 		Normalf n1(1, 1, 0);
 		Normalf n2(-1, 1, 0);
 		cout << n1.Cross(n2) << endl;
+	}
+
+	{
+		
 	}
 
 	{// ÐÔÄÜ²âÊÔ
@@ -161,6 +166,5 @@ int main() {
 			cout << ss.str() << endl;
 		}
 	}
-
 	return 0;
 }

@@ -3,20 +3,22 @@
 
 typedef unsigned int uint;
 
-#include <CppUtil/Basic/Array2D.h>
+#include <CppUtil/Basic/UGM/Point3.h>
+#include <CppUtil/Basic/UGM/Normal.h>
+#include <CppUtil/Basic/UGM/Point2.h>
+#include <vector>
 
 namespace CppUtil {
 	namespace Basic {
 		class Shape {
 		public:
 			Shape(uint vertexNum, uint triNum = 0);
-			virtual ~Shape();
 			float * GetPosArr();
 			uint GetVertexNum() { return vertexNum; }
 			uint GetTriNum() { return triNum; }
 			uint GetPosArrSize();
 		protected:
-			Array2D<float> * posArr;
+			std::vector<Point3> posArr;
 			uint vertexNum;
 			uint triNum;
 		};
