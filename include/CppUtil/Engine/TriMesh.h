@@ -19,7 +19,6 @@ namespace CppUtil {
 				CUBE,
 				SPHERE,
 				PLANE,
-				FILE,
 			};
 		public:
 			TriMesh(const std::vector<uint> & indice,

@@ -69,16 +69,24 @@ Optix: 6.0
 
 ## 3. TODO
 
+### Impotance
+
 - [x] 自己编写数学运算库，放弃 glm
 - [x] 重构指针
 - [x] 补充安装方法
 - [x] 线性化 BVH
 - [x] Imaging Pipline
+- [x] 简单模型载入
 - [ ] 旋转拖动缩放物体
 - [ ] 方向标明
 - [ ] 统一相机
 - [ ] 重新架构 Raster
 - [ ] 实时渲染——面光源
-- [ ] obj 格式的模型载入
+- [ ] ...
+
+### Unimportant
+
+- [ ] 添加注释
+- [ ] 保存 Code 模式的 Trimesh 
 - [ ] ...
 

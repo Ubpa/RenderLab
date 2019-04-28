@@ -1,9 +1,9 @@
 #ifndef _OPENGL_MODEL_MODEL_H_
 #define _OPENGL_MODEL_MODEL_H_
 
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
+#include <3rdParty/assimp/Importer.hpp>
+#include <3rdParty/assimp/scene.h>
+#include <3rdParty/assimp/postprocess.h>
 
 #include <CppUtil/OpenGL/Mesh.h>
 

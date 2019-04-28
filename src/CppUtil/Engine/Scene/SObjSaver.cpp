@@ -140,9 +140,6 @@ void SObjSaver::Visit(Ptr<TriMesh> mesh) {
 		type2func[TriMesh::ENUM_TYPE::PLANE] = [=]() {
 			NewEle(str::TriMesh::ENUM_TYPE::PLANE);
 		};
-		type2func[TriMesh::ENUM_TYPE::FILE] = [=]() {
-			// not support
-		};
 
 		auto target = type2func.find(mesh->GetType());
 		if (target == type2func.end())

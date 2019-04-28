@@ -253,7 +253,7 @@ void Tree::contextMenuEvent(QContextMenuEvent *event) {
 		QString fileName = QFileDialog::getOpenFileName(this,
 			tr("Load SObj"),
 			"./",
-			tr("SObj XML Files (*.xml)"));
+			tr("SObj Files (*.xml *.obj)"));
 
 		if (fileName.isEmpty())
 			return;
@@ -270,7 +270,7 @@ void Tree::contextMenuEvent(QContextMenuEvent *event) {
 			QString fileName = QFileDialog::getSaveFileName(this,
 				tr("Save SObj"),
 				"./",
-				tr("SObj XML Files (*.xml)"));
+				tr("SObj XML Files (*.xml *.obj)"));
 
 			if (fileName.isEmpty())
 				return;

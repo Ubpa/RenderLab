@@ -13,9 +13,6 @@ namespace CppUtil {
 			static constexpr int size = W * H;
 
 		public:
-			Array2D();
-
-		public:
 			T & At(int x, int y) { return this->operator()(x, y); }
 			T & operator()(int x, int y){
 				assert(x >= 0 && x < W - 1);

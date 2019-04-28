@@ -2,11 +2,14 @@
 
 #include "SObjSaver.h"
 #include "SObjLoader.h"
+#include "AssimpLoader.h"
 
 #include <CppUtil/Engine/Component.h>
 #include <CppUtil/Engine/CmptTransform.h>
 
 #include <CppUtil/Basic/Visitor.h>
+
+#include <CppUtil/Basic/StrAPI.h>
 
 #include <iostream>
 
@@ -61,5 +64,8 @@ bool SObj::Save(const string & path) {
 }
 
 const Ptr<SObj> SObj::Load(const string & path) {
-	return SObjLoader::Load(path);
+	if (StrAPI::IsEndWith(path, ".xml"))
+		return SObjLoader::Load(path);
+
+	return AssimpLoader::Load(path);
 }
