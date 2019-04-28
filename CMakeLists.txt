@@ -33,6 +33,51 @@ macro(SETUP_PROJECT MODE TARGET_NAME STR_TARGET_SOURCES STR_TARGET_LIBS)
 		endif()
 	endif()
 endmacro(SETUP_PROJECT TARGET_NAME STR_TARGET_SOURCES STR_TARGET_LIBS)
+
+macro(SETUP_PROJECT_DR MODE TARGET_NAME STR_TARGET_SOURCES STR_TARGET_LIBS_COMMON STR_TARGET_LIBS_DEBUG STR_TARGET_LIBS_RELEASE)
+	string(REPLACE " " ";" LIST_TARGET_SOURCES ${STR_TARGET_SOURCES})
+
+	string(REPLACE " " ";" STR_TARGET_LIBS_COMMON ${STR_TARGET_LIBS_COMMON})
+	string(REPLACE " " ";" LIST_TARGET_LIBS_COMMON ${STR_TARGET_LIBS_COMMON})
+
+	string(REPLACE " " ";" STR_TARGET_LIBS_DEBUG ${STR_TARGET_LIBS_DEBUG})
+	string(REPLACE " " ";" LIST_TARGET_LIBS_DEBUG ${STR_TARGET_LIBS_DEBUG})
+
+	string(REPLACE " " ";" STR_TARGET_LIBS_RELEASE ${STR_TARGET_LIBS_RELEASE})
+	string(REPLACE " " ";" LIST_TARGET_LIBS_RELEASE ${STR_TARGET_LIBS_RELEASE})
+	
+	if(${STR_TARGET_SOURCES} STREQUAL " ")
+		message(WARNING "Target [${TARGET_NAME}] has no source, so it won't be generated.")
+	else()
+		if(${MODE} STREQUAL "EXE")
+			add_executable( ${TARGET_NAME} ${LIST_TARGET_SOURCES})
+			set(INSTALL_DIR "bin")
+		elseif(${MODE} STREQUAL "LIB")
+			add_library(${TARGET_NAME} ${LIST_TARGET_SOURCES})
+			set(INSTALL_DIR "lib/${FOLDER_NAME}")
+		else()
+			message(FATAL_ERROR "Mode [${MODE}] is not supported, so target [TARGET_NAME] is not generated!")
+			set(MODE_NOTSUPPORT " ")
+		endif()
+		if(NOT DEFINED MODE_NOTSUPPORT)
+			if( NOT ${FOLDER_NAME} STREQUAL " ")
+				SET_TARGET_PROPERTIES(${TARGET_NAME} PROPERTIES FOLDER ${FOLDER_NAME})
+			endif()
+			if(NOT ${STR_TARGET_LIBS_COMMON} STREQUAL " ")
+				target_link_libraries( ${TARGET_NAME} ${LIST_TARGET_LIBS_COMMON} )
+			endif()
+			if(NOT ${STR_TARGET_LIBS_DEBUG} STREQUAL " ")
+				target_link_libraries( ${TARGET_NAME} debug ${LIST_TARGET_LIBS_DEBUG} )
+			endif()
+			if(NOT ${STR_TARGET_LIBS_RELEASE} STREQUAL " ")
+				target_link_libraries( ${TARGET_NAME} optimized ${LIST_TARGET_LIBS_RELEASE} )
+			endif()
+			install (TARGETS ${TARGET_NAME} DESTINATION ${INSTALL_DIR})
+			message(STATUS "Setup Project ${Mode} ${FOLDER_NAME}/[${TARGET_NAME}]")
+		endif()
+	endif()
+endmacro(SETUP_PROJECT_DR MODE TARGET_NAME STR_TARGET_SOURCES STR_TARGET_LIBS_COMMON STR_TARGET_LIBS_DEBUG STR_TARGET_LIBS_RELEASE)
+
 #---------------------------------------
 macro(ADD_ALL_SUBDIR)
 	file(GLOB _children RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/*)
@@ -119,6 +164,7 @@ configure_file(config/ROOT_PATH.h.in config/ROOT_PATH.h)
 
 include_directories (
 	${PROJECT_SOURCE_DIR}/include
+	${PROJECT_SOURCE_DIR}/include/3rdParty
 	${CMAKE_BINARY_DIR}/config
 	${OptiX_INSTALL_DIR}/include
 	${CUDA_TOOLKIT_ROOT_DIR}/include
