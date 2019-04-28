@@ -37,6 +37,12 @@
 - 相交器 Intersector
   - 最近 RayIntersector
   - 可见性 VisibilityChecker
+- 过滤器
+  - Box
+  - Gaussian
+  - Mitchell
+  - Sinc
+  - Triangle
 - 离线渲染
   - 路径追踪 PathTracing
 - 其他功能
@@ -67,7 +73,7 @@ Optix: 6.0
 - [x] 重构指针
 - [x] 补充安装方法
 - [x] 线性化 BVH
-- [ ] Imaging Pipline
+- [x] Imaging Pipline
 - [ ] 旋转拖动缩放物体
 - [ ] 方向标明
 - [ ] 统一相机

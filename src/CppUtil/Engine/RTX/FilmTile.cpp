@@ -24,10 +24,13 @@ void FilmTile::AddSample(const Point2f & pos, const RGBf & radiance) {
 
 	const int width = frame.maxP.x - frame.minP.x;
 	for (int x = x0; x < x1; x++) {
+		int idxX = x - frame.minP.x;
 		for (int y = y0; y < y1; y++) {
+			int idxY = y - frame.minP.y;
+
 			const auto weight = filter->Evaluate(pos - Point2f(x, y));
-			pixels[x][y].filterWeightSum += weight;
-			pixels[x][y].weightRadianceSum += weight * radiance;
+			pixels[idxX][idxY].filterWeightSum += weight;
+			pixels[idxX][idxY].weightRadianceSum += weight * radiance;
 		}
 	}
 }

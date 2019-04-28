@@ -59,10 +59,10 @@ namespace CppUtil {
 			};
 
 		private:
-			std::vector<std::vector<Pixel>> pixels;
 			Basic::Ptr<Basic::Image> img;
-
 			const Point2i resolution;
+			std::vector<std::vector<Pixel>> pixels;
+
 			const Framei frame; // 不包括右上的边界
 			Basic::Ptr<Filter> filter;
 		};

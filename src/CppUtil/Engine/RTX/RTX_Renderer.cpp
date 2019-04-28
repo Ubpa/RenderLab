@@ -169,6 +169,9 @@ void RTX_Renderer::Run(Ptr<Scene> scene, Ptr<Image> img) {
 			}
 
 			film->MergeFilmTile(filmTile);
+
+			if (state._value == RendererState::Stop)
+				return;
 		}
 	};
 

@@ -11,9 +11,10 @@ using namespace CppUtil::Engine;
 
 Film::Film(Basic::Ptr<Basic::Image> img, Basic::Ptr<Filter> filter)
 	: resolution(img->GetWidth(), img->GetHeight()),
-	pixels(resolution.x, std::vector<Pixel>(resolution.y)),
-	frame({ 0,0 }, resolution),
-	filter(filter)
+	pixels(img->GetWidth(), std::vector<Pixel>(img->GetHeight())),
+	frame({ 0,0 }, { img->GetWidth(),img->GetHeight() }),
+	filter(filter),
+	img(img)
 {
 	assert(img != nullptr && img->IsValid());
 	assert(img->GetChannel() == 3);
