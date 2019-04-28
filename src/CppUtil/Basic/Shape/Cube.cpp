@@ -40,9 +40,9 @@ const float Cube::cubeData[192] = {
 
 Cube::Cube()
 	: Shape(24, 12) {
-	normalArr = vector<Normalf>(vertexNum);
-	texCoordsArr = vector<Point2>(vertexNum);
-	indexArr = vector<Val<3, uint>>(triNum);
+	normalArr = vector<array<float, 3>>(vertexNum);
+	texCoordsArr = vector<array<float, 2>>(vertexNum);
+	indexArr = vector<array<uint, 3>>(triNum);
 	//----------
 	for (uint i = 0; i < vertexNum; i++) {
 		posArr[i] = { cubeData[8 * i], cubeData[8 * i + 1], cubeData[8 * i + 2] };
@@ -62,32 +62,23 @@ Cube::Cube()
 }
 
 float * Cube::GetNormalArr() {
-	if (normalArr.empty())
-		return nullptr;
-
-	return normalArr.front().Data();
+	return normalArr.front().data();
 }
 
 float * Cube::GetTexCoordsArr() {
-	if (texCoordsArr.empty())
-		return nullptr;
-
-	return texCoordsArr.front().Data();
+	return texCoordsArr.front().data();
 }
 
 uint * Cube::GetIndexArr() {
-	if (indexArr.empty())
-		return nullptr;
-
-	return indexArr.front().Data();
+	return indexArr.front().data();
 }
 
 uint Cube::GetNormalArrSize() {
-	return static_cast<uint>(normalArr.size() * sizeof(Normalf));
+	return static_cast<uint>(normalArr.size() * 3 * sizeof(float));
 }
 
 uint Cube::GetTexCoordsArrSize() {
-	return static_cast<uint>(texCoordsArr.size() * sizeof(Point2));
+	return static_cast<uint>(texCoordsArr.size() * 2 * sizeof(float));
 }
 
 uint Cube::GetIndexArrSize() {

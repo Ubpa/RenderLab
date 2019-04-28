@@ -19,20 +19,6 @@ namespace CppUtil {
 		public:
 			T Illumination() const { return static_cast<T>(0.2126) * r + static_cast<T>(0.7152) * g + static_cast<T>(0.0722) * b; }
 			T Gray() const { return r * static_cast<T>(0.299) + g * static_cast<T>(0.587) + b * static_cast<T>(0.114); }
-
-
-#ifndef NDEBUG
-			// 仅用于 Debug 时方便在 IDE 中显示结果
-		public:
-			RGB & operator =(const RGB & rgb) {
-				*static_cast<EXT::H_L_B<3, T, RGB<T>>*>(this) = rgb;
-				return *this;
-			}
-		private:
-			const T & _r{ *(((T*)this) + 0) };
-			const T & _g{ *(((T*)this) + 1) };
-			const T & _b{ *(((T*)this) + 2) };
-#endif // !NDEBUG
 		};
 	}
 

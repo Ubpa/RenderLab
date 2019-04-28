@@ -74,9 +74,11 @@
 
 - The Curiously Recurring Template Pattern (CRTP) 
 
-- Debug 友好
+- ~~Debug 友好~~
 
-  > 可在 IDE 中直接看到 x、y、z、w
+  > ~~可在 IDE 中直接看到 x、y、z、w~~
+  >
+  > 引入了内存问题，取消这个功能
 
 - 量：[值](https://github.com/Ubpa/RenderLab/blob/master/include/CppUtil/Basic/UGM/Val.h)、[点](https://github.com/Ubpa/RenderLab/blob/master/include/CppUtil/Basic/UGM/Point.h)、[向量](https://github.com/Ubpa/RenderLab/blob/master/include/CppUtil/Basic/UGM/Vector.h)、[法向](https://github.com/Ubpa/RenderLab/blob/master/include/CppUtil/Basic/UGM/Normal.h)、[欧拉角](https://github.com/Ubpa/RenderLab/blob/master/include/CppUtil/Basic/UGM/EulerYXZ.h)、[四元数](https://github.com/Ubpa/RenderLab/blob/master/include/CppUtil/Basic/UGM/Quat.h)、[RGB](https://github.com/Ubpa/RenderLab/blob/master/include/CppUtil/Basic/UGM/RGB.h)、[RGBA](https://github.com/Ubpa/RenderLab/blob/master/include/CppUtil/Basic/UGM/RGBA.h)、[缩放](https://github.com/Ubpa/RenderLab/blob/master/include/CppUtil/Basic/UGM/Scale.h)、[3x3 矩阵](https://github.com/Ubpa/RenderLab/blob/master/include/CppUtil/Basic/UGM/Mat3x3.h)、[4x4 矩阵](https://github.com/Ubpa/RenderLab/blob/master/include/CppUtil/Basic/UGM/Mat4x4.h)、[包围盒](https://github.com/Ubpa/RenderLab/blob/master/include/CppUtil/Basic/UGM/BBox.h)、[射线](https://github.com/Ubpa/RenderLab/blob/master/include/CppUtil/Basic/UGM/Ray.h)、[变换](https://github.com/Ubpa/RenderLab/blob/master/include/CppUtil/Basic/UGM/Transform.h) 
 

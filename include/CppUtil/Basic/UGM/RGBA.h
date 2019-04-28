@@ -51,20 +51,6 @@ namespace CppUtil {
 				const auto rstRGB = (ToRGB() + rgba.ToRGB()*a) / rstA;
 				return RGBA(rstRGB, rstA);
 			}
-
-#ifndef NDEBUG
-			// 仅用于 Debug 时方便在 IDE 中显示结果
-		public:
-			RGBA & operator =(const RGBA & rgba) {
-				*static_cast<EXT::Basic_Val<4, T, RGBA<T>>*>(this) = rgba;
-				return *this;
-			}
-		private:
-			const T & _r{ *(((T*)this) + 0) };
-			const T & _g{ *(((T*)this) + 1) };
-			const T & _b{ *(((T*)this) + 2) };
-			const T & _a{ *(((T*)this) + 3) };
-#endif // !NDEBUG
 		};
 
 	}

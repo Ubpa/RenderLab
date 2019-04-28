@@ -40,15 +40,16 @@ namespace CppUtil {
 				T t10, T t11, T t12,
 				T t20, T t21, T t22
 			) : m{
-			{t00, t10, t20},
-			{t01, t11, t21},
-			{t02, t12, t22} } { }
+				{t00, t10, t20}, // col 0
+				{t01, t11, t21}, // col 1
+				{t02, t12, t22}  // col 2
+			} { }
 
-			Mat3x3(const Mat4x4<T> & mat) :
-				m{
-			{mat(0,0),mat(1,0),mat(2,0)},
-			{mat(0,1),mat(1,1),mat(2,1)},
-			{mat(0,2),mat(1,2),mat(2,2)}
+			Mat3x3(const Mat4x4<T> & mat)
+			: m{
+				{mat(0,0),mat(1,0),mat(2,0)}, // col 0
+				{mat(0,1),mat(1,1),mat(2,1)}, // col 1
+				{mat(0,2),mat(1,2),mat(2,2)}  // col 2
 			} { }
 			
 		public:

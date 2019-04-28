@@ -5,16 +5,13 @@ using namespace std;
 
 Shape::Shape(uint vertexNum, uint triNum)
 	: vertexNum(vertexNum), triNum(triNum){
-	posArr = vector<Point3>(vertexNum);
+	posArr = vector<array<float, 3>>(vertexNum);
 }
 
 float * Shape::GetPosArr() {
-	if (posArr.empty())
-		return nullptr;
-	
-	return posArr.front().Data();
+	return posArr.front().data();
 }
 
 uint Shape::GetPosArrSize() {
-	return static_cast<uint>(posArr.size() * sizeof(Point3));
+	return static_cast<uint>(posArr.size() * 3 * sizeof(float));
 }

@@ -3,10 +3,8 @@
 
 typedef unsigned int uint;
 
-#include <CppUtil/Basic/UGM/Point3.h>
-#include <CppUtil/Basic/UGM/Normal.h>
-#include <CppUtil/Basic/UGM/Point2.h>
 #include <vector>
+#include <array>
 
 namespace CppUtil {
 	namespace Basic {
@@ -18,7 +16,7 @@ namespace CppUtil {
 			uint GetTriNum() { return triNum; }
 			uint GetPosArrSize();
 		protected:
-			std::vector<Point3> posArr;
+			std::vector<std::array<float,3>> posArr;
 			uint vertexNum;
 			uint triNum;
 		};

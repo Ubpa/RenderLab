@@ -17,10 +17,10 @@ namespace CppUtil {
 			uint GetIndexArrSize();
 			uint GetTangentArrSize();
 		protected:
-			std::vector<Normalf> normalArr;
-			std::vector<Point2> texCoordsArr;
-			std::vector<Val<3, uint>> indexArr;
-			std::vector<Normalf> tangentArr;
+			std::vector<std::array<float, 3>> normalArr;
+			std::vector<std::array<float, 2>> texCoordsArr;
+			std::vector<std::array<uint, 3>> indexArr;
+			std::vector<std::array<float, 3>> tangentArr;
 		};
 	}
 }

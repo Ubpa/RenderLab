@@ -9,14 +9,10 @@ using namespace std;
 
 Sphere::Sphere(uint n)
 	: Shape((n + 1)*(n + 1), 2 * n*n) {
-	// normal 和 pos 的值相同
-	for (auto & pos : posArr)
-		normalArr.push_back(pos);
-	texCoordsArr = vector<Point2>(vertexNum);
-	indexArr = vector<Val<3,uint>>(triNum);
-	tangentArr = vector<Normalf>(vertexNum);
+	texCoordsArr = vector<array<float,2>>(vertexNum);
+	indexArr = vector<array<uint, 3>>(triNum);
+	tangentArr = vector<array<float, 3>>(vertexNum);
 
-	//----------
 	float inc = 1.0f / n;
 	for (uint i = 0; i <= n; i++) {
 		float u = inc * i;
@@ -30,66 +26,58 @@ Sphere::Sphere(uint n)
 			float z = sinf(theta) * cosf(phi);
 
 			// 右手系: 上y, 右x, 垂直屏幕外为 z
-			posArr[i*(n + 1) + j].x = x;
-			posArr[i*(n + 1) + j].y = y;
-			posArr[i*(n + 1) + j].z = z;
+			posArr[i*(n + 1) + j][0] = x;
+			posArr[i*(n + 1) + j][1] = y;
+			posArr[i*(n + 1) + j][2] = z;
 			
-			texCoordsArr[i*(n + 1) + j].x = u;
-			texCoordsArr[i*(n + 1) + j].y = v;
+			texCoordsArr[i*(n + 1) + j][0] = u;
+			texCoordsArr[i*(n + 1) + j][1] = v;
 
-			tangentArr[i*(n + 1) + j].x = cos(phi);
-			tangentArr[i*(n + 1) + j].y = 0;
-			tangentArr[i*(n + 1) + j].z = -sin(phi);
+			tangentArr[i*(n + 1) + j][0] = cos(phi);
+			tangentArr[i*(n + 1) + j][1] = 0;
+			tangentArr[i*(n + 1) + j][2] = -sin(phi);
 		}
 	}
-	//------------
+	
 	for (uint i = 0; i < n; i++) {
 		for (uint j = 0; j < n; j++) {
-			indexArr[2 * (i*n + j)].x = (i + 1) * (n + 1) + j;
-			indexArr[2 * (i*n + j)].y = i * (n + 1) + j;
-			indexArr[2 * (i*n + j)].z = i * (n + 1) + j + 1;
+			indexArr[2 * (i*n + j)][0] = (i + 1) * (n + 1) + j;
+			indexArr[2 * (i*n + j)][1] = i * (n + 1) + j;
+			indexArr[2 * (i*n + j)][2] = i * (n + 1) + j + 1;
 
-			indexArr[2 * (i*n + j) + 1].x = i * (n + 1) + j + 1;
-			indexArr[2 * (i*n + j) + 1].y = (i + 1) * (n + 1) + j + 1;
-			indexArr[2 * (i*n + j) + 1].z = (i + 1) * (n + 1) + j;
+			indexArr[2 * (i*n + j) + 1][0] = i * (n + 1) + j + 1;
+			indexArr[2 * (i*n + j) + 1][1] = (i + 1) * (n + 1) + j + 1;
+			indexArr[2 * (i*n + j) + 1][2] = (i + 1) * (n + 1) + j;
 		}
 	}
+
+	// normal 和 pos 的值相同
+	for (auto & pos : posArr)
+		normalArr.push_back(pos);
 }
 
 float * Sphere::GetNormalArr() {
-	if (normalArr.empty())
-		return nullptr;
-
-	return normalArr.front().Data();
+	return normalArr.front().data();
 }
 
 float * Sphere::GetTexCoordsArr() {
-	if (texCoordsArr.empty())
-		return nullptr;
-
-	return texCoordsArr.front().Data();
+	return texCoordsArr.front().data();
 }
 
 uint * Sphere::GetIndexArr() {
-	if (indexArr.empty())
-		return nullptr;
-
-	return indexArr.front().Data();
+	return indexArr.front().data();
 }
 
 float * Sphere::GetTangentArr() {
-	if (tangentArr.empty())
-		return nullptr;
-
-	return tangentArr.front().Data();
+	return tangentArr.front().data();
 }
 
 uint Sphere::GetNormalArrSize() {
-	return static_cast<uint>(normalArr.size() * sizeof(Normalf));
+	return static_cast<uint>(normalArr.size() * 3 * sizeof(float));
 }
 
 uint Sphere::GetTexCoordsArrSize() {
-	return static_cast<uint>(texCoordsArr.size() * sizeof(Point2));
+	return static_cast<uint>(texCoordsArr.size() * 2 * sizeof(float));
 }
 
 uint Sphere::GetIndexArrSize() {
@@ -97,5 +85,5 @@ uint Sphere::GetIndexArrSize() {
 }
 
 uint Sphere::GetTangentArrSize() {
-	return static_cast<uint>(tangentArr.size() * sizeof(Normalf));
+	return static_cast<uint>(tangentArr.size() * 3 * sizeof(float));
 }

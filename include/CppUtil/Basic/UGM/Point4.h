@@ -43,20 +43,6 @@ namespace CppUtil {
 				w -= v.w;
 				return *this;
 			}
-
-#ifndef NDEBUG
-			// 仅用于 Debug 时方便在 IDE 中显示结果
-		public:
-			Point & operator =(const Point & p) {
-				*static_cast<EXT::ME_B<4, T, Point<4, T>>*>(this) = p;
-				return *this;
-			}
-		private:
-			const T & _x{ *(((T*)this) + 0) };
-			const T & _y{ *(((T*)this) + 1) };
-			const T & _z{ *(((T*)this) + 2) };
-			const T & _w{ *(((T*)this) + 3) };
-#endif // !NDEBUG
 		};
 	}
 }
