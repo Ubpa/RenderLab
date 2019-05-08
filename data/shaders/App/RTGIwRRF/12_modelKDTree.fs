@@ -89,6 +89,8 @@ uniform float lightFar;
 
 uniform int mode;
 
+uniform float interpolateRatio; // (0, 1]
+
 // ----------------- declaration
 
 vec3 CalcBumpedNormal(vec3 normal, vec3 tangent, sampler2D normalTexture, vec2 texcoord);
@@ -106,6 +108,10 @@ float tanh(float x) {
 	float expZ = exp(x);
     float invExpZ = 1 / expZ;
     return (expZ - invExpZ) / (expZ + invExpZ);
+}
+
+float smootherstep(float x){
+	return ((6*x - 15)*x + 10) * x*x*x;
 }
 
 // template declaration

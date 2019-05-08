@@ -123,19 +123,22 @@ const string ModelKDTree::GenFuncRecursion() const {
 	// kdTree
 	if (HasTwoChild()) {
 		const float axisExtent = GetSpiltAxisExtent();
-		const float delta = axisExtent / 2 * interpolateRatio;
-		const float lowBound = GetSpiltVal() - delta;
-		const float highBound = GetSpiltVal() + delta;
+		const float spiltVal = GetSpiltVal();
+
+		rst << indent << "float interpolateExtent = " << axisExtent << "* interpolateRatio;" << endl;
+		rst << indent << "float delta = interpolateExtent / 2;" << endl;
+		rst << indent << "float lowBound = " << spiltVal << " - delta;" << endl;
+		rst << indent << "float highBound = " << spiltVal << " + delta;" << endl;
 
 		// left
-		rst << indent << "if ( x" << GetAxis() << " < " << lowBound << " ) {" << endl;
+		rst << indent << "if ( x" << GetAxis() << " < lowBound ) {" << endl;
 		rst << indent2 << GetLeft()->GetFuncName() << GenCallArgList("x", "h") << endl;
 		rst << indent << "}" << endl;
 
 		// interpolate
 		const string leftPrefix = "left_h";
 		const string rightPrefix = "right_h";
-		rst << indent << "else if ( x" << GetAxis() << " < " << highBound << " ) {" << endl;
+		rst << indent << "else if ( x" << GetAxis() << " < highBound ) {" << endl;
 		// declare output
 		for (int i = 0; i < outputDim; i++)
 			rst << indent2 << "float " << leftPrefix << i << ";" << endl;
@@ -147,11 +150,12 @@ const string ModelKDTree::GenFuncRecursion() const {
 		rst << indent2 << GetRight()->GetFuncName() << GenCallArgList("x", rightPrefix) << endl;
 		// smootherstep
 		rst << indent2 << endl;
-		rst << indent2 << "float t = 0.5 + ( x" << GetAxis() << " - " << GetSpiltVal() << " ) / " << (axisExtent*interpolateRatio) << ";" << endl;
-		rst << indent2 << "t = ((6*t - 15)*t + 10) * t*t*t;" << endl;
+		rst << indent2 << "float t = 0.5 + ( x" << GetAxis() << " - " << GetSpiltVal() << " ) / interpolateExtent;" << endl;
+		rst << indent2 << "t = smootherstep(t);" << endl;
 		for (int i = 0; i < outputDim; i++) {
 			rst << indent2 << "h" << i <<
-				" = ( 1 - t ) * " << leftPrefix << i << " + t * " << rightPrefix << i << ";" << endl;
+				//" = ( 1 - t ) * " << leftPrefix << i << " + t * " << rightPrefix << i << ";" << endl;
+				"= mix(" << leftPrefix << i << "," << rightPrefix << i << ", t);" << endl;
 		}
 		rst << indent << "}" << endl;
 

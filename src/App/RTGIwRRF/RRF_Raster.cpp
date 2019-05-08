@@ -14,6 +14,8 @@
 
 #include <CppUtil/OpenGL/CommonDefine.h>
 
+#include <CppUtil/Basic/Math.h>
+
 #include <ROOT_PATH.h>
 
 using namespace App;
@@ -51,6 +53,26 @@ void RRF_Raster::InitListeners() {
 		LambdaOp_New([=]() {
 		for (auto & pair : id2shader) {
 			pair.second.SetInt("mode", MODE::GLOBAL);
+		}
+	}));
+
+	EventMngr::GetInstance().Reg(static_cast<size_t>(Qt::Key_Up), EventMngr::ENUM_EVENT_TYPE::KB_PRESS,
+		LambdaOp_New([&]() {
+		interpolateRatio = std::min(1.0f, interpolateRatio + 0.1f);
+		float val = Math::Lerp(0.02f, 1.0f, interpolateRatio);
+		printf("interpolateRatio: %f\n", val);
+		for (auto & pair : id2shader) {
+			pair.second.SetFloat("interpolateRatio", val);
+		}
+	}));
+
+	EventMngr::GetInstance().Reg(static_cast<size_t>(Qt::Key_Down), EventMngr::ENUM_EVENT_TYPE::KB_PRESS,
+		LambdaOp_New([&]() {
+		interpolateRatio = std::max(0.f, interpolateRatio - 0.1f);
+		float val = Math::Lerp(0.02f, 1.0f, interpolateRatio);
+		printf("interpolateRatio: %f\n", val);
+		for (auto & pair : id2shader) {
+			pair.second.SetFloat("interpolateRatio", val);
 		}
 	}));
 }
@@ -93,6 +115,8 @@ void RRF_Raster::InitShader(int ID) {
 	shader.SetInt("bsdf.normalTexture", 3);
 
 	shader.SetInt("mode", MODE::GLOBAL);
+
+	shader.SetFloat("interpolateRatio", 0.2f);
 
 	SetShaderForShadow(shader, 4);
 	printf("init shader of ID %d success\n", ID);

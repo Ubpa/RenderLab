@@ -17,7 +17,7 @@ namespace App {
 	class RRF_Raster : public CppUtil::Engine::RasterBase {
 	public:
 		RRF_Raster(CppUtil::Basic::Ptr<CppUtil::Engine::Scene> scene)
-			: RasterBase(scene) { }
+			: RasterBase(scene), interpolateRatio(0.2f) { }
 		
 	public:
 		static const CppUtil::Basic::Ptr<RRF_Raster> New(CppUtil::Basic::Ptr<CppUtil::Engine::Scene> scene) {
@@ -44,6 +44,7 @@ namespace App {
 	private:
 		std::map<int, CppUtil::OpenGL::Shader> id2shader;
 		int curID;
+		float interpolateRatio;
 	};
 }
 

@@ -89,6 +89,8 @@ uniform float lightFar;
 
 uniform int mode;
 
+uniform float interpolateRatio; // (0, 1]
+
 // ----------------- declaration
 
 vec3 CalcBumpedNormal(vec3 normal, vec3 tangent, sampler2D normalTexture, vec2 texcoord);
@@ -106,6 +108,10 @@ float tanh(float x) {
 	float expZ = exp(x);
     float invExpZ = 1 / expZ;
     return (expZ - invExpZ) / (expZ + invExpZ);
+}
+
+float smootherstep(float x){
+	return ((6*x - 15)*x + 10) * x*x*x;
 }
 
 // template declaration
@@ -499,10 +505,14 @@ void ModelKDTree_2(float x0,float x1,float x2,float x3,float x4,float x5,float x
 void ModelKDTree_0(float x0,float x1,float x2,float x3,float x4,float x5,float x6,float x7,float x8,float x9,float x10,float x11,float x12,float x13,float x14,float x15,float x16,
     out float h0,out float h1,out float h2)
 {
-    if ( x8 < 0.4 ) {
+    float interpolateExtent = 1* interpolateRatio;
+    float delta = interpolateExtent / 2;
+    float lowBound = 0.5 - delta;
+    float highBound = 0.5 + delta;
+    if ( x8 < lowBound ) {
         ModelKDTree_1(x0,x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15,x16,h0,h1,h2);
     }
-    else if ( x8 < 0.6 ) {
+    else if ( x8 < highBound ) {
         float left_h0;
         float left_h1;
         float left_h2;
@@ -513,11 +523,11 @@ void ModelKDTree_0(float x0,float x1,float x2,float x3,float x4,float x5,float x
         ModelKDTree_1(x0,x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15,x16,left_h0,left_h1,left_h2);
         ModelKDTree_2(x0,x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15,x16,right_h0,right_h1,right_h2);
         
-        float t = 0.5 + ( x8 - 0.5 ) / 0.2;
-        t = ((6*t - 15)*t + 10) * t*t*t;
-        h0 = ( 1 - t ) * left_h0 + t * right_h0;
-        h1 = ( 1 - t ) * left_h1 + t * right_h1;
-        h2 = ( 1 - t ) * left_h2 + t * right_h2;
+        float t = 0.5 + ( x8 - 0.5 ) / interpolateExtent;
+        t = smootherstep(t);
+        h0= mix(left_h0,right_h0, t);
+        h1= mix(left_h1,right_h1, t);
+        h2= mix(left_h2,right_h2, t);
     }
     else {
         ModelKDTree_2(x0,x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15,x16,h0,h1,h2);
