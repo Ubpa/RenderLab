@@ -4,6 +4,7 @@
 #include <vector>
 #include <sstream>
 #include <string>
+#include <cassert>
 
 namespace CppUtil {
 	namespace Basic {
@@ -81,12 +82,15 @@ namespace CppUtil {
 			template<typename T>
 			T max(const std::vector<T> & val);
 
-			template<typename T>
-			T Clamp(T v, T minV, T maxV) {
-				if (v < minV)
-					return minV;
-				else if (v > maxV)
-					return maxV;
+			template<typename T, typename U, typename V>
+			T Clamp(T v, U minV, V maxV) {
+				const auto minV_T = static_cast<T>(minV);
+				const auto maxV_T = static_cast<T>(maxV);
+				assert(minV_T <= maxV_T);
+				if (v < minV_T)
+					return minV_T;
+				else if (v > maxV_T)
+					return maxV_T;
 				else
 					return v;
 			}

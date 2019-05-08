@@ -33,7 +33,7 @@ namespace CppUtil {
 		public:
 			virtual const RGBf Trace(Ray & ray) { return Trace(ray, 0, RGBf(1.f)); }
 
-			virtual void Init(Basic::Ptr<Scene> scene);
+			virtual void Init(Basic::Ptr<Scene> scene, Basic::Ptr<BVHAccel> bvhAccel) override;
 
 		protected:
 			// ray 处于世界坐标系
@@ -86,8 +86,6 @@ namespace CppUtil {
 			std::map<Basic::Ptr<Light>, int> lightToIdx;
 			std::vector<Transform> worldToLightVec;
 			std::vector<Transform> lightToWorldVec;
-
-			Basic::Ptr<BVHAccel> bvhAccel;
 
 			Basic::Ptr<RayIntersector> rayIntersector;
 			Basic::Ptr<VisibilityChecker> visibilityChecker;

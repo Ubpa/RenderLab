@@ -18,6 +18,7 @@ namespace CppUtil {
 		class Scene;
 
 		class RayTracer;
+		class BVHAccel;
 
 		BETTER_ENUM(RendererState, int, Running, Stop)
 
@@ -94,6 +95,8 @@ namespace CppUtil {
 			const int threadNum;
 
 			TileTask tileTask;
+
+			Basic::Ptr<BVHAccel> bvhAccel;
 		};
 	}
 }

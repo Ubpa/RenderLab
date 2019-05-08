@@ -24,12 +24,13 @@ using namespace std;
 PathTracer::PathTracer()
 	:
 	maxDepth(20),
-	bvhAccel(BVHAccel::New()),
 	rayIntersector(RayIntersector::New()),
 	visibilityChecker(VisibilityChecker::New())
 { }
 
-void PathTracer::Init(Ptr<Scene> scene) {
+void PathTracer::Init(Ptr<Scene> scene, Ptr<BVHAccel> bvhAccel) {
+	RayTracer::Init(scene, bvhAccel);
+
 	lights.clear();
 	worldToLightVec.clear();
 	lightToWorldVec.clear();
@@ -50,8 +51,6 @@ void PathTracer::Init(Ptr<Scene> scene) {
 		worldToLightVec.push_back(worldToLight);
 		lightToWorldVec.push_back(lightToWorld);
 	}
-
-	bvhAccel->Init(scene->GetRoot());
 }
 
 const RGBf PathTracer::Trace(ERay & ray, int depth, RGBf pathThroughput) {

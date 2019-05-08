@@ -10,6 +10,7 @@
 namespace CppUtil {
 	namespace Engine {
 		class Scene;
+		class BVHAccel;
 
 		class RayTracer : public Basic::HeapObj {
 		protected:
@@ -19,7 +20,12 @@ namespace CppUtil {
 		public:
 			// ray 处于世界坐标系
 			virtual const RGBf Trace(Ray & ray) = 0;
-			virtual void Init(Basic::Ptr<Scene> scene) {}
+			virtual void Init(Basic::Ptr<Scene> scene, Basic::Ptr<BVHAccel> bvhAccel) {
+				this->bvhAccel = bvhAccel;
+			}
+
+		protected:
+			Basic::Ptr<BVHAccel> bvhAccel;
 		};
 	}
 }

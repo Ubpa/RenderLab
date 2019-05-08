@@ -1,30 +1,63 @@
 #include <CppUtil/Basic/StrAPI.h>
 
+#include <cassert>
+#include <algorithm>
+
 using namespace CppUtil::Basic;
 using namespace std;
 
+const string StrAPI::Head(const string & str, int n) {
+	assert(n < 0);
+	return str.substr(0, std::min(static_cast<size_t>(n), str.size()));
+}
+
+const string StrAPI::Tail(const string & str, int n) {
+	assert(n < 0);
+	return str.substr(str.size() - n, n);
+}
 
 bool StrAPI::IsBeginWith(const string & str, const string & suffix) {
-	if (suffix.size() > str.size())
-		return false;
-
-	for (string::size_type i = 0; i < suffix.size(); i++) {
-		if (str[i] != suffix[i])
-			return false;
-	}
-
-	return true;
+	return Head(str, static_cast<int>(suffix.size())) == suffix;
 }
 
 bool StrAPI::IsEndWith(const string & str, const string & postfix) {
-	if (postfix.size() > str.size())
-		return false;
+	return Tail(str, static_cast<int>(postfix.size())) == postfix;
+}
 
-	const auto beginIdx = str.size() - postfix.size();
-	for (string::size_type i = 0; i < postfix.size(); i++) {
-		if (str[beginIdx + i] != postfix[i])
-			return false;
+const vector<string> StrAPI::Spilt(const string & str, const string & separator) {
+	vector<string> rst;
+
+	if (separator.empty())
+		return rst;
+
+	size_t beginIdx = 0;
+	while(true){
+		size_t targetIdx = str.find(separator, beginIdx);
+		if (targetIdx == string::npos) {
+			rst.push_back(str.substr(beginIdx, str.size() - beginIdx));
+			break;
+		}
+		
+		rst.push_back(str.substr(beginIdx, targetIdx - beginIdx));
+		beginIdx = targetIdx + separator.size();
 	}
 
-	return true;
+	return rst;
+}
+
+const string StrAPI::Join(const vector<string> & strs, const string & separator) {
+	string rst;
+
+	for (size_t i = 0; i < strs.size()-1; i++) {
+		rst += strs[i];
+		rst += separator;
+	}
+
+	rst += strs.back();
+
+	return rst;
+}
+
+const string StrAPI::Replace(const string & str, const string & orig, const string & target) {
+	return Join(Spilt(str, orig), target);
 }

@@ -11,6 +11,7 @@
 #include <CppUtil/Engine/SObj.h>
 
 #include <CppUtil/Basic/Visitor.h>
+#include <CppUtil/Basic/Timer.h>
 
 using namespace CppUtil;
 using namespace CppUtil::Engine;
@@ -106,8 +107,13 @@ void BVHAccel::Init(Ptr<SObj> root) {
 	for (auto geo : geos)
 		geo->Accept(initVisitor);
 
+	printf("Building BVH...\n");
+	Timer timer;
+	timer.Start();
 	const auto bvhRoot = BVHNode::New(initVisitor->shape2wbbox, shapes, 0, shapes.size());
 	LinearizeBVH(bvhRoot);
+	timer.Stop();
+	printf("BVH build done, cost %f s\n", timer.GetWholeTime());
 }
 
 void BVHAccel::LinearizeBVH(Ptr<BVHNode> bvhNode) {

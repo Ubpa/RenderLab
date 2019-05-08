@@ -198,12 +198,12 @@ void RenderLab::InitSetting() {
 	setting->Init(ui.frame_Setting);
 
 	setting->AddTitle("[ RTX_Renderer ]");
-	setting->AddEditVal("- Sample Num", maxLoop, 1, 400, [&](int val) {
+	setting->AddEditVal("- Sample Num", maxLoop, 1, 1024, [&](int val) {
 		rtxRenderer->maxLoop = val;
 	});
 	
 	setting->AddTitle("[ PathTracer ]");
-	setting->AddEditVal("- Max Depth", maxDepth, 1, 20, [&](int val) {
+	setting->AddEditVal("- Max Depth", maxDepth, 1, 100, [&](int val) {
 		maxDepth = val;
 	});
 }

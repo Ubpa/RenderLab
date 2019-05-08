@@ -15,6 +15,7 @@
 
 #include "Film.h"
 #include "FilmTile.h"
+#include <CppUtil/Engine/BVHAccel.h>
 #include <CppUtil/Engine/FilterMitchell.h>
 
 #ifdef NDEBUG
@@ -86,6 +87,7 @@ namespace CppUtil {
 RTX_Renderer::RTX_Renderer(const function<Ptr<RayTracer>()> & generator)
 	:
 	generator(generator),
+	bvhAccel(BVHAccel::New()),
 	state(RendererState::Stop),
 	maxLoop(200),
 	threadNum(THREAD_NUM)
@@ -115,9 +117,10 @@ void RTX_Renderer::Run(Ptr<Scene> scene, Ptr<Image> img) {
 		rayTracers.push_back(rayTracer);
 	}
 	
+	bvhAccel->Init(scene->GetRoot());
 	// init ray tracer
 	for (auto rayTracer : rayTracers)
-		rayTracer->Init(scene);
+		rayTracer->Init(scene, bvhAccel);
 
 	// init camera
 	auto camera = scene->GetCmptCamera();
@@ -144,6 +147,9 @@ void RTX_Renderer::Run(Ptr<Scene> scene, Ptr<Image> img) {
 		auto & rayTracer = rayTracers[id];
 
 		for (auto task = tileTask.GetTask(); task.hasTask; task = tileTask.GetTask()) {
+			if (state._value == RendererState::Stop)
+				return;
+
 			int tileID = task.tileID;
 			int tileRow = tileID / rowTiles;
 			int tileCol = tileID - tileRow * rowTiles;
@@ -169,9 +175,6 @@ void RTX_Renderer::Run(Ptr<Scene> scene, Ptr<Image> img) {
 			}
 
 			film->MergeFilmTile(filmTile);
-
-			if (state._value == RendererState::Stop)
-				return;
 		}
 	};
 

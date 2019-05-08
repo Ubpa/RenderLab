@@ -19,7 +19,7 @@ using namespace std;
 const Ptr<SObj> AssimpLoader::Load(const std::string & path) {
 	Assimp::Importer importer;
 
-	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace | aiProcess_GenNormals);
 	// check for errors
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) // if is Not Zero
 	{
@@ -33,6 +33,7 @@ const Ptr<SObj> AssimpLoader::Load(const std::string & path) {
 
 const Ptr<SObj> AssimpLoader::LoadNode(aiNode *node, const aiScene *scene) {
 	auto sobj = SObj::New(nullptr, node->mName.C_Str());
+	CmptTransform::New(sobj);
 
 	// process each mesh located at the current node
 	for (unsigned int i = 0; i < node->mNumMeshes; i++)
