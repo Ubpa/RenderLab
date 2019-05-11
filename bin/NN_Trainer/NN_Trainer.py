@@ -39,7 +39,7 @@ outputDim = 3
 trainRate = 0.8
 hiddenUnit0 = 20
 hiddenUnit1 = 10
-expandRate = 0.5
+expandRate = 0.1
 epoch = 99999999
 initBatchSize = 128
 initPatience = 6
@@ -150,6 +150,10 @@ for ID in IDs:
 # 4. 训练
 
 def DivideData(data):
+    """
+    划分数据
+    """
+
     sampleNum = data.shape[0]
     dataDim = data.shape[1]
 
@@ -177,7 +181,44 @@ def DivideData(data):
 
     return trainX, trainY, testX, testY
 
+def EvaluateRRMSE(model, testX, testY, minVal_Y, extent_Y):
+    """
+    计算 RRMSE：RGB 三个维度的 RRMSE 的平均值
+
+    @param
+        model: 模型，用于计算 testX 对应的结果
+        testX: 测试数据的输入，n x 3
+        testY: 测试数据的输出，n x 3
+        minVal_Y: 映射到单位盒时的输出值下限，3维
+        extent_Y: 映射到单位盒时的输出值范围，3维
+    """
+
+    rst = model.predict(testX)
+
+    realTestY = extent_Y * testY + minVal_Y
+    realRstY = extent_Y * rst + minVal_Y
+
+    error = realTestY - realRstY
+    # 3 维，分别是 RGB 的 rmse
+    rmse = np.sqrt(np.mean(np.square(error), axis=0))
+    rrmse = rmse / np.mean(realTestY, axis=0)
+
+    return np.mean(rrmse)
+
 def TrainModel(trainX, trainY, batchSize, patience):
+    """
+    用提供的数据，训练模型
+
+    @param
+        trainX: 输入数据
+        trainY: 输出数据
+        batchSize: 批大小
+        patience: 用于 EarlyStopping
+
+    @return
+        model: 模型
+    """
+
     print("training model ...")
 
     model = keras.Sequential([
@@ -202,19 +243,11 @@ def TrainModel(trainX, trainY, batchSize, patience):
 
     return model
 
-def EvaluateRRMSE(model, testX, testY, minVal_Y, extent_Y):
-    rst = model.predict(testX)
-
-    realTestY = extent_Y * testY + minVal_Y
-    realRstY = extent_Y * rst + minVal_Y
-
-    error = realTestY - realRstY
-    rmse = np.sqrt(np.mean(np.square(error)))
-    rrmse = rmse / np.mean(realTestY)
-
-    return rrmse
-
 def TrainKDTreeNode(objID, data, minVal_Y, extent_Y, hyperbox, batchSize, patience):
+    """
+    仅用数据训练当前结点
+    """
+
     expendedHyperbox = hyperbox.GenExpandedHyperbox(expandRate)
     dataInBox = expendedHyperbox.SelectData(data)
 
@@ -239,23 +272,32 @@ def TrainKDTreeNode(objID, data, minVal_Y, extent_Y, hyperbox, batchSize, patien
     return treeNode, rrmse, sampleNum, testX, testY
 
 def TrainKDTreeForNode(objID, data, minVal_Y, extent_Y, treeNode, sampleNum, hyperbox, batchSize, patience):
-    # spilt
+    """
+    为 treeNode 训练子树
+    """
+
+    # 初始化划分结果
     leftNode = None
     rightNode = None
     spiltAxis = -1
     spiltVal = -1
 
+    # 每个结点的样本个数应该足够大
     if sampleNum > 2 * minSampleNum:
         print("spilting ...")
+
+        # 获取可划分的轴，并打乱
         spiltableAxis = hyperbox.GetSpiltableAxis()
         random.shuffle(spiltableAxis)
 
+        # 遍历每一个轴
         for axis in spiltableAxis:
+            # 划分盒子
             leftBox, rightBox, spiltVal = hyperbox.GenSpiltHyperbox(axis)
             print("[ Try ]")
             print("axis: {0}, spilt value: {1}".format(axis, spiltVal))
-            print("left box:\n{0}".format(leftBox))
-            print("right box:\n{0}".format(rightBox))
+            #print("left box:\n{0}".format(leftBox))
+            #print("right box:\n{0}".format(rightBox))
             
             exLeftBox = leftBox.GenExpandedHyperbox(expandRate)
             leftNum = exLeftBox.SelectData(data).shape[0]
@@ -359,6 +401,10 @@ def TrainKDTreeForNode(objID, data, minVal_Y, extent_Y, treeNode, sampleNum, hyp
     return
 
 def TrainKDTree(objID, data, minVal_Y, extent_Y, hyperbox, batchSize, patience):
+    """
+    训练一个 KD-Tree
+    """
+
     treeNode, rrmse, sampleNum, testX, testY = TrainKDTreeNode(objID, data, minVal_Y, extent_Y, hyperbox, batchSize, patience)
     if treeNode == None:
         print("train fail, treeNode == None")
@@ -371,17 +417,40 @@ def TrainKDTree(objID, data, minVal_Y, extent_Y, hyperbox, batchSize, patience):
 # ------------------------------------------------------------------
 # 5. 保存
 
-# IDs
-#
+# [ IDs ]
+# 
 #  3 : Cube
 # 12 : wall back
 # 13 : wall ceil
 # 14 : wall down
 # 15 : wall left
 # 16 : wall right
+# 
+# [ Dims ]
+# 
+# DirectIllum_R       0
+# DirectIllum_G       1
+# DirectIllum_B       2
+# Position_x          3
+# Position_y          4
+# Position_z          5
+# ViewDir_x           6
+# ViewDir_y           7
+# ViewDir_z           8
+# Normal_x            9
+# Normal_y           10
+# Normal_z           11
+# MatColor_R         12
+# MatColor_G         13
+# MatColor_B         14
+# IOR                15
+# Roughness          16
+# IndirectIllum_R    17
+# IndirectIllum_G    18
+# IndirectIllum_B    19
 
 
-ID = 14
+ID = 3
 hyperbox = util.Hyperbox(inputDim, id2data[ID]['spiltableAxis'])
 data = id2data[ID]['data']
 minVal_Y = id2data[ID]['minVal'][inputDim:inputDim+outputDim]

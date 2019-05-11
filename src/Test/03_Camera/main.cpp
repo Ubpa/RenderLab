@@ -13,10 +13,9 @@ using namespace CppUtil::Basic;
 using namespace std;
 
 int main() {
-	ERay ray;
 	auto camera = CmptCamera::New(nullptr);
 	camera->InitCoordinate();
-	camera->SetRay(ray, 0.5f, 0.5f);
+	auto ray = camera->GenRay(0.5f, 0.5f);
 
 	const auto tsfm = Transform::Rotate(Vec3(0, 1, 0), 90) * Transform::Translate(Vec3(1,0,0));
 	tsfm.ApplyTo(ray);

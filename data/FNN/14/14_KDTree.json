@@ -1,19 +1,47 @@
 {
     "nodeID": 0,
-    "rrmse": 0.22592266063849634,
-    "spiltAxis": 6,
+    "rrmse": 0.2301163208760221,
+    "spiltAxis": 8,
     "spiltVal": 0.5,
     "left": {
         "nodeID": 1,
-        "rrmse": 0.22559239454507132,
-        "spiltAxis": -1,
-        "spiltVal": -1,
-        "left": null,
-        "right": null
+        "rrmse": 0.22192623814248472,
+        "spiltAxis": 5,
+        "spiltVal": 0.5,
+        "left": {
+            "nodeID": 2,
+            "rrmse": 0.2516716736061159,
+            "spiltAxis": -1,
+            "spiltVal": 0.5,
+            "left": null,
+            "right": null
+        },
+        "right": {
+            "nodeID": 3,
+            "rrmse": 0.2000175009070979,
+            "spiltAxis": 3,
+            "spiltVal": 0.5,
+            "left": {
+                "nodeID": 4,
+                "rrmse": 0.19479904109633459,
+                "spiltAxis": -1,
+                "spiltVal": 0.25,
+                "left": null,
+                "right": null
+            },
+            "right": {
+                "nodeID": 5,
+                "rrmse": 0.20132239466670457,
+                "spiltAxis": -1,
+                "spiltVal": 0.25,
+                "left": null,
+                "right": null
+            }
+        }
     },
     "right": {
-        "nodeID": 2,
-        "rrmse": 0.22599609121163497,
+        "nodeID": 6,
+        "rrmse": 0.2339721164642471,
         "spiltAxis": -1,
         "spiltVal": -1,
         "left": null,
