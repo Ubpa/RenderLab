@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
 	auto result = docopt::docopt(USAGE, args);
 	ShowArgRst(result);
 
-	if (result.find("-g") != result.end()) {
+	if (result.find("-g") != result.end() && result.find("-g")->second.asBool() == true) {
 		cout << "Gen shaders ..." << endl;
 		if (!InitShaders({ 3, 12, 13, 14, 15, 16 })) {
 			cout << "Gen shaders failed." << endl;

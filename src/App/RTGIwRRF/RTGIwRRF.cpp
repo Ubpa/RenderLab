@@ -86,10 +86,25 @@ void RTGIwRRF::InitTimer() {
 	delete timer;
 
 	timer = new QTimer;
+
+	timer4fps.Reset();
+	timer4fps.Start();
+	totalFrame = 0;
+	fps = -1;
 	timer->callOnTimeout([this]() {
 		ui.OGLW_Raster->update();
+		totalFrame++;
+		if (timer4fps.GetWholeTime() > 2) {
+			int curFPS = totalFrame / timer4fps.GetWholeTime();
+			totalFrame = 0;
+			timer4fps.Reset();
+			if (curFPS != fps) {
+				fps = curFPS;
+				printf("fps : %d\n", fps);
+			}
+			timer4fps.Start();
+		}
 	});
-
-	const size_t fps = 60;
-	timer->start(1000 / fps);
+	
+	timer->start(1);
 }

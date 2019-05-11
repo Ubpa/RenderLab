@@ -200,26 +200,26 @@ void SObjSampler::InitTimer() {
 void SObjSampler::SaveData() {
 	static const vector<string> keys = {
 		"ID",
-		"DirectIllum_R",
-		"DirectIllum_G",
-		"DirectIllum_B",
-		"Position_x",
-		"Position_y",
-		"Position_z",
-		"ViewDir_x",
-		"ViewDir_y",
-		"ViewDir_z",
-		"Normal_x",
-		"Normal_y",
-		"Normal_z",
-		"MatColor_R",
-		"MatColor_G",
-		"MatColor_B",
-		"IOR",
-		"Roughness",
-		"IndirectIllum_R",
-		"IndirectIllum_G",
-		"IndirectIllum_B",
+		"DirectIllum_R",     //  0
+		"DirectIllum_G",     //  1
+		"DirectIllum_B",     //  2
+		"Position_x",        //  3
+		"Position_y",        //  4
+		"Position_z",        //  5
+		"ViewDir_x",         //  6
+		"ViewDir_y",         //  7
+		"ViewDir_z",         //  8
+		"Normal_x",          //  9
+		"Normal_y",          // 10
+		"Normal_z",          // 11
+		"MatColor_R",        // 12
+		"MatColor_G",        // 13
+		"MatColor_B",        // 14
+		"IOR",               // 15
+		"Roughness",         // 16
+		"IndirectIllum_R",   // 17
+		"IndirectIllum_G",   // 18
+		"IndirectIllum_B",   // 19
 	};
 
 	bool isNotFromRootPath = GetArgAs<bool>(ENUM_ARG::notrootpath);

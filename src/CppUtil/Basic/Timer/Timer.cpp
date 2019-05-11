@@ -5,9 +5,11 @@ using namespace CppUtil::Basic;
 using namespace std;
 
 
-Timer::Timer(size_t maxLogNum)
+Timer::Timer(bool start, size_t maxLogNum)
 	: maxLogNum(maxLogNum){
 	Reset();
+	if (start)
+		Start();
 }
 
 bool Timer::Start() {

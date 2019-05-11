@@ -16,7 +16,7 @@ namespace CppUtil {
 				ENUM_STATE_STOP,
 			};
 
-			Timer(size_t maxLogNum = 32);
+			Timer(bool start = false, size_t maxLogNum = 32);
 
 			bool Start();
 			bool Stop();

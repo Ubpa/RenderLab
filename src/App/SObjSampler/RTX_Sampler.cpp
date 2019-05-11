@@ -6,6 +6,7 @@
 #include <CppUtil/Engine/CmptCamera.h>
 #include <CppUtil/Engine/SObj.h>
 #include <CppUtil/Engine/Ray.h>
+#include <CppUtil/Engine/BVHAccel.h>
 
 #include <CppUtil/Basic/Image.h>
 #include <CppUtil/Basic/ImgPixelSet.h>
@@ -54,9 +55,11 @@ void RTX_Sampler::Run(Ptr<Scene> scene, Ptr<Image> img) {
 			img->SetPixel(i, j, RGBf(0));
 	}
 
-	// init ray tracer
+	// init ray 
+	auto bvhAccel = BVHAccel::New();
+	bvhAccel->Init(scene->GetRoot());
 	for (auto rayTracer : rayTracers)
-		rayTracer->Init(scene);
+		rayTracer->Init(scene, bvhAccel);
 
 	// init camera
 	auto camera = scene->GetCmptCamera();
@@ -74,11 +77,7 @@ void RTX_Sampler::Run(Ptr<Scene> scene, Ptr<Image> img) {
 	for (int i = 0; i < threadNum; i++)
 		jobs.push_back(pixelsSet.RandPick(sampleNum / threadNum));
 
-	// rays
-	vector<ERay> rays(threadNum);
-
 	auto renderPartImg = [&](int id) {
-		auto & ray = rays[id];
 		auto & rayTracer = rayTracers[id];
 		auto & job = jobs[id];
 
@@ -90,7 +89,7 @@ void RTX_Sampler::Run(Ptr<Scene> scene, Ptr<Image> img) {
 				float u = (x + Math::Rand_F()) / (float)w;
 				float v = (y + Math::Rand_F()) / (float)h;
 
-				camera->SetRay(ray, u, v);
+				auto ray = camera->GenRay(u, v);
 				RGBf rst = rayTracer->Trace(ray);
 
 				// 这一步可以极大的减少白噪点（特别是由点光源产生）

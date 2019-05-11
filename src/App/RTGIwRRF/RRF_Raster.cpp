@@ -58,7 +58,7 @@ void RRF_Raster::InitListeners() {
 
 	EventMngr::GetInstance().Reg(static_cast<size_t>(Qt::Key_Up), EventMngr::ENUM_EVENT_TYPE::KB_PRESS,
 		LambdaOp_New([&]() {
-		interpolateRatio = std::min(1.0f, interpolateRatio + 0.1f);
+		interpolateRatio = std::min(1.0f, interpolateRatio + 0.01f);
 		float val = Math::Lerp(0.02f, 1.0f, interpolateRatio);
 		printf("interpolateRatio: %f\n", val);
 		for (auto & pair : id2shader) {
@@ -68,7 +68,7 @@ void RRF_Raster::InitListeners() {
 
 	EventMngr::GetInstance().Reg(static_cast<size_t>(Qt::Key_Down), EventMngr::ENUM_EVENT_TYPE::KB_PRESS,
 		LambdaOp_New([&]() {
-		interpolateRatio = std::max(0.f, interpolateRatio - 0.1f);
+		interpolateRatio = std::max(0.f, interpolateRatio - 0.01f);
 		float val = Math::Lerp(0.02f, 1.0f, interpolateRatio);
 		printf("interpolateRatio: %f\n", val);
 		for (auto & pair : id2shader) {

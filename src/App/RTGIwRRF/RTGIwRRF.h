@@ -4,7 +4,9 @@
 #include "ui_RTGIwRRF.h"
 
 #include <CppUtil/Qt/PaintImgOpCreator.h>
+
 #include <CppUtil/Basic/Ptr.h>
+#include <CppUtil/Basic/Timer.h>
 
 #include <3rdParty/docopt/docopt.h>
 #include <3rdParty/enum.h>
@@ -58,5 +60,8 @@ namespace App{
 		CppUtil::Basic::Ptr<App::RRF_Raster> rrfRaster;
 		CppUtil::Basic::Ptr<CppUtil::Engine::Roamer> roamer;
 		QTimer * timer;
+		CppUtil::Basic::Timer timer4fps;
+		int totalFrame;
+		int fps;
 	};
 }
