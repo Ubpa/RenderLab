@@ -154,7 +154,7 @@ void main() {
 	}
 	
 	// rst
-    gDirectIllum = clamp(result,0,1);
+    gDirectIllum = max(result, 0);
 	gPosition = fs_in.FragPos;
 	gViewDir = wo;
 	gNormal = norm;

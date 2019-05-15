@@ -50,10 +50,7 @@ void RTX_Sampler::Run(Ptr<Scene> scene, Ptr<Image> img) {
 	int w = img->GetWidth();
 	int h = img->GetHeight();
 
-	for (int i = 0; i < w; i++) {
-		for (int j = 0; j < h; j++)
-			img->SetPixel(i, j, RGBf(0));
-	}
+	img->Clear(RGBf{ 0.f });
 
 	// init ray 
 	auto bvhAccel = BVHAccel::New();
@@ -91,6 +88,12 @@ void RTX_Sampler::Run(Ptr<Scene> scene, Ptr<Image> img) {
 
 				auto ray = camera->GenRay(u, v);
 				RGBf rst = rayTracer->Trace(ray);
+
+				// 丢弃不合法的结果
+				if (rst.HasNaN()) {
+					k--;
+					continue;
+				}
 
 				// 这一步可以极大的减少白噪点（特别是由点光源产生）
 				float illum = rst.Illumination();

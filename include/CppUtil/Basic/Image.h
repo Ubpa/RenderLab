@@ -31,6 +31,7 @@ namespace CppUtil {
 			void Free() noexcept;
 			bool SaveAsPNG(const std::string & fileName, bool flip = false) const;
 			Ptr<Image> GenFlip() const;
+			void Clear(const RGBAf & clearColor = RGBAf{0.f});
 
 			Image & operator =(const Image & img) noexcept;
 			Image & operator =(Image && img) noexcept;

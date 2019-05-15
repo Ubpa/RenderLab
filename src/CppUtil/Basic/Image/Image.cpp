@@ -166,7 +166,7 @@ Ptr<Image> Image::GenFlip() const {
 }
 
 bool Image::IsValid() const{
-	return data != NULL;
+	return data != NULL && channel > 0 && channel <= 4;
 }
 
 const RGBAf Image::GetPixel(int x, int y) const {
@@ -233,4 +233,27 @@ const RGBAf Image::SampleBilinear(float u, float v) const {
 	RGBAf mixColor = RGBAf::Lerp(RGBAf::Lerp(colors[0], colors[1], tx), RGBAf::Lerp(colors[2], colors[3], tx), ty);
 
 	return mixColor;
+}
+
+void Image::Clear(const RGBAf & clearColor) {
+	if (!IsValid()) {
+		printf("ERROR::Image::Clear: img is invalid\n");
+		return;
+	}
+
+	if (channel <= 3) {
+		const auto rgb = clearColor.ToRGB();
+		for (int x = 0; x < width; x++) {
+			for (int y = 0; y < height; y++) {
+				for (int c = 0; c < channel; c++)
+					At(x, y, c) = rgb[c];
+			}
+		}
+	}
+	else{
+		for (int x = 0; x < width; x++) {
+			for (int y = 0; y < height; y++)
+				SetPixel(x, y, clearColor);
+		}
+	}
 }

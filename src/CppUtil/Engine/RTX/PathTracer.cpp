@@ -129,12 +129,19 @@ const RGBf PathTracer::SampleLightImpl(
 	Normalf dir_ToLight;
 	// dir_ToLight 是单位向量
 	const RGBf lightL = light->Sample_L(posInLightSpace, dir_ToLight, dist_ToLight, PD);
+	PD *= factorPD;
 	if (PD == 0)
 		return RGBf(0.f);
 
-	PD *= factorPD;
-
 	const Normalf dirInWorld = lightToWorld(dir_ToLight).Normalize();
+
+	// w_in 处于表面坐标系，应该是单位向量
+	const Normalf w_in = (worldToSurface * dirInWorld).Normalize();
+
+	// evaluate surface bsdf
+	const RGBf f = bsdf->F(w_out, w_in, texcoord);
+	if (f.IsZero())
+		return RGBf(0.f);
 
 	// shadow ray 处于世界坐标
 	ERay shadowRay(posInWorldSpace, dirInWorld);
@@ -143,9 +150,6 @@ const RGBf PathTracer::SampleLightImpl(
 	auto shadowRst = visibilityChecker->GetRst();
 	if (shadowRst.IsIntersect())
 		return RGBf(0);
-
-	// w_in 处于表面坐标系，应该是单位向量
-	const Normalf w_in = (worldToSurface * dirInWorld).Normalize();
 
 	// 多重重要性采样 Multiple Importance Sampling (MIS)
 	if (!light->IsDelta()) {
@@ -158,13 +162,7 @@ const RGBf PathTracer::SampleLightImpl(
 		PD += bsdf->PDF(w_out, w_in, texcoord);
 	}
 
-	// 在碰撞表面的坐标系计算 dot(n, w_in) 很简单，因为 n = (0, 0, 1)
-	const float cos_theta = max(w_in.z, 0.f);
-
-	// evaluate surface bsdf
-	const RGBf f = bsdf->F(w_out, w_in, texcoord);
-
-	auto weight = (cos_theta / PD) * f;
+	auto weight = (abs(w_in.z) / PD) * f;
 	return weight * lightL;
 }
 
@@ -226,7 +224,6 @@ const RGBf PathTracer::SampleBSDF(
 		return RGBf(0);
 
 	const Normalf matRayDirInWorld = (surfaceToWorld * mat_w_in).Normalize();
-	const float abs_cosTheta = abs(mat_w_in.z);
 	const int lightNum = static_cast<int>(lights.size());
 
 	// MSI
@@ -256,7 +253,7 @@ const RGBf PathTracer::SampleBSDF(
 	ERay matRay(hitPos, matRayDirInWorld);
 
 	// Russian Roulette
-	const RGBf matWeight = abs_cosTheta / sumPD * matF;
+	const RGBf matWeight = abs(mat_w_in.z) / sumPD * matF;
 	pathThroughput *= matWeight;
 	float continueP = bsdf->IsDelta() ? 1.f : min(1.f, pathThroughput.Illumination());
 	if (Math::Rand_F() > continueP)

@@ -101,14 +101,11 @@ void RTX_Renderer::Run(Ptr<Scene> scene, Ptr<Image> img) {
 
 	// init rst image
 
-	auto film = Film::New(img, FilterMitchell::New({ 2,2 }, 0.333f, 0.333f));
+	auto film = Film::New(img, FilterMitchell::New({ 1.5, 1.5 }, 0.333f, 0.333f));
 	int w = img->GetWidth();
 	int h = img->GetHeight();
 
-	for (int i = 0; i < w; i++) {
-		for (int j = 0; j < h; j++)
-			img->SetPixel(i, j, RGBf(0.f));
-	}
+	img->Clear(RGBf{ 0.f });
 
 	vector<Ptr<RayTracer>> rayTracers;
 
@@ -134,7 +131,7 @@ void RTX_Renderer::Run(Ptr<Scene> scene, Ptr<Image> img) {
 	camera->InitCoordinate();
 
 	// jobs
-	const int tileSize = 32;
+	const int tileSize = 64;
 	const int rowTiles = w / tileSize;
 	const int tileNum = w * h / (tileSize*tileSize);
 	tileTask.Init(tileNum, maxLoop);

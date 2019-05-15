@@ -13,6 +13,9 @@ const Framei FilmTile::SampleFrame() const {
 }
 
 void FilmTile::AddSample(const Point2f & pos, const RGBf & radiance) {
+	if (radiance.HasNaN())
+		return;
+
 	const auto minP = pos - filter->radius;
 	const auto maxP = pos + filter->radius;
 

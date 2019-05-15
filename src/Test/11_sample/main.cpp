@@ -29,8 +29,8 @@ R"(Test_11_sample
     Options:
       --base <base>            base [default: 0]
       --samplenum <samplenum>  sample num [default: 100]
-      --loop <loop>            pixel sample loop [default: 64]
-      --threadNum <threadNum>  thread num [default: 2]
+      --loop <loop>            pixel sample loop [default: 4096]
+      --threadNum <threadNum>  thread num [default: 1]
 )";
 
 string GenCmd(int maxLoop, int csvID, const string & sobjPath);
@@ -60,7 +60,7 @@ int main(int argc, const char** argv)
 			Point3 eye = Point3(2 * Math::Rand_F() - 1, Math::Rand_F()*1.5, 2 * Math::Rand_F() - 1);
 
 			// 靠近中心位置
-			Point3 center = Point3(1.5 * Math::Rand_F() - 0.75, Math::Rand_F()*1.125+0.1875, 1.5 * Math::Rand_F() - 0.75);
+			Point3 center = Point3(Math::Rand_F() - 0.5, Math::Rand_F()*1 + 0.25, Math::Rand_F() - 0.5);
 			transform->LookAt(eye, center);
 
 			string sobjPath = "data/SObjs/App/RTGIwRRF/CB_Glass_tmp" + to_string(id) + ".xml";

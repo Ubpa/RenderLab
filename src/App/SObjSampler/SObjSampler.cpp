@@ -285,10 +285,7 @@ void SObjSampler::SaveData() {
 
 			RGBf globalIllum = paintImgOp->GetImg()->GetPixel(col, row);
 
-			RGBf indirectIllum = globalIllum - directIllum;
-			indirectIllum.r = max(indirectIllum.r, 0.f);
-			indirectIllum.g = max(indirectIllum.g, 0.f);
-			indirectIllum.b = max(indirectIllum.b, 0.f);
+			RGBf indirectIllum = (globalIllum - directIllum).MaxWith(RGBf{ 0.f });
 
 			lineVals.push_back(ior);
 			lineVals.push_back(roughness);
