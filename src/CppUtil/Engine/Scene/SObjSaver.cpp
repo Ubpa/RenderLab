@@ -20,6 +20,7 @@ SObjSaver::SObjSaver() {
 	RegMemberFunc<CmptLight>(&SObjSaver::Visit);
 	RegMemberFunc<AreaLight>(&SObjSaver::Visit);
 	RegMemberFunc<PointLight>(&SObjSaver::Visit);
+	RegMemberFunc<DirectionalLight>(&SObjSaver::Visit);
 
 	RegMemberFunc<CmptMaterial>(&SObjSaver::Visit);
 	RegMemberFunc<BSDF_CookTorrance>(&SObjSaver::Visit);
@@ -173,6 +174,13 @@ void SObjSaver::Visit(Ptr<PointLight> pointLight) {
 		NewEle(str::PointLight::intensity, pointLight->intensity);
 		NewEle(str::PointLight::linear, pointLight->linear);
 		NewEle(str::PointLight::quadratic, pointLight->quadratic);
+	});
+}
+
+void SObjSaver::Visit(Ptr<DirectionalLight> directionalLight) {
+	NewEle(str::DirectionalLight::type, [=]() {
+		NewEle(str::PointLight::color, directionalLight->color);
+		NewEle(str::PointLight::intensity, directionalLight->intensity);
 	});
 }
 

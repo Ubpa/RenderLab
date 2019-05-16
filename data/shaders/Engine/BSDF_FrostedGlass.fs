@@ -14,6 +14,7 @@ in VS_OUT {
 // ----------------- 常量
 
 #define MAX_POINT_LIGHTS 8
+#define MAX_DIRECTIONAL_LIGHTS 8
 const float PI = 3.14159265359;
 const float INV_PI = 0.31830988618;
 
@@ -57,6 +58,12 @@ struct PointLight {
     float quadratic;// 4	32
 };
 
+// 32
+struct DirectionalLight{
+	vec3 L;         // 12   0
+	vec3 dir;       // 12   16
+};
+
 // 160
 layout (std140) uniform Camera{
 	mat4 view;			// 64	0	64
@@ -74,6 +81,12 @@ layout (std140) uniform PointLights{
 	PointLight pointLights[MAX_POINT_LIGHTS];// 48 * MAX_POINT_LIGHTS = 48 * 8
 };
 
+// 272
+layout (std140) uniform DirectionalLights{
+	int numDirectionalLight;// 16
+	DirectionalLight directionaLights[MAX_DIRECTIONAL_LIGHTS];// 32 * MAX_DIRECTIONAL_LIGHTS = 32 * 8 = 256
+};
+
 uniform BSDF_FrostedGlass bsdf;
 
 uniform samplerCube pointLightDepthMap0;
@@ -84,6 +97,15 @@ uniform samplerCube pointLightDepthMap4;
 uniform samplerCube pointLightDepthMap5;
 uniform samplerCube pointLightDepthMap6;
 uniform samplerCube pointLightDepthMap7;
+
+uniform sampler2D directionaLightDepthMap0; // 9
+uniform sampler2D directionaLightDepthMap1;
+uniform sampler2D directionaLightDepthMap2;
+uniform sampler2D directionaLightDepthMap3;
+uniform sampler2D directionaLightDepthMap4;
+uniform sampler2D directionaLightDepthMap5;
+uniform sampler2D directionaLightDepthMap6;
+uniform sampler2D directionaLightDepthMap7;
 
 uniform float lightFar;
 
@@ -145,6 +167,16 @@ void main() {
 		float attenuation = 1.0f + pointLights[i].linear * dist + pointLights[i].quadratic * dist2;
 		
 		result += visibility * cosTheta / attenuation * pointLights[i].L * f;
+	}
+	
+	for(int i=0; i < numDirectionalLight; i++){
+		vec3 wi = -normalize(directionaLights[i].dir);
+
+		vec3 f = BSDF(norm, wo, wi, color, roughness, ao, bsdf.ior);
+
+		float cosTheta = max(dot(wi, normalize(fs_in.Normal)), 0);
+		
+		result += cosTheta * f * directionaLights[i].L;
 	}
 	
 	// gamma 校正

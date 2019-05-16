@@ -15,6 +15,7 @@ in VS_OUT {
 #define MAX_POINT_LIGHTS 8
 #define MAX_DIRECTIONAL_LIGHTS 8
 const float PI = 3.14159265359;
+const float INV_PI = 0.31830988618;
 
 // array of offset direction for sampling
 const vec3 gridSamplingDisk[20] = vec3[]
@@ -108,7 +109,7 @@ void main() {
 		albedo *= texture(bsdf.albedoTexture, fs_in.TexCoords).xyz;
 	}
 	
-	vec3 diffuse = albedo / PI;
+	vec3 diffuse = albedo * INV_PI;
 	
 	vec3 norm = normalize(fs_in.Normal);
 	
