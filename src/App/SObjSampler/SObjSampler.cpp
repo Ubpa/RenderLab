@@ -37,10 +37,6 @@
 #include <synchapi.h>
 
 using namespace App;
-using namespace CppUtil::QT;
-using namespace CppUtil::Engine;
-using namespace CppUtil::Basic;
-using namespace CppUtil;
 using namespace std;
 using namespace Ui;
 
@@ -108,7 +104,7 @@ void SObjSampler::InitScene() {
 void SObjSampler::InitRaster() {
 	initDataMap = false;
 
-	sampleRaster = SampleRaster::New(scene);
+	sampleRaster = SampleRaster::New(ui.OGLW_Raster, scene);
 	roamer = Roamer::New(ui.OGLW_Raster);
 	roamer->SetLock(true);
 	auto camera = scene->GetCmptCamera();

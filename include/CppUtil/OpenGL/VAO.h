@@ -36,6 +36,9 @@ namespace CppUtil {
 			uint pointNum;
 			bool hasIndex;
 			bool isValid;
+
+		public:
+			static const VAO inValid;
 		};
 	}
 }

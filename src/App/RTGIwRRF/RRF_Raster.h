@@ -9,32 +9,34 @@
 #include <map>
 
 namespace App {
-	BETTER_ENUM(MODE, int,
-		DIRECT,
-		INDIRECT,
-		GLOBAL)
+	using namespace CppUtil;
+	using namespace CppUtil::Basic;
+	using namespace CppUtil::Engine;
+	using namespace CppUtil::QT;
 
-	class RRF_Raster : public CppUtil::Engine::RasterBase {
+	BETTER_ENUM(MODE, int, DIRECT, INDIRECT, GLOBAL);
+
+	class RRF_Raster : public RasterBase {
 	public:
-		RRF_Raster(CppUtil::Basic::Ptr<CppUtil::Engine::Scene> scene)
-			: RasterBase(scene), interpolateRatio(0.2f) { }
+		RRF_Raster(RawAPI_OGLW * pOGLW, Ptr<Scene> scene)
+			: RasterBase(pOGLW, scene), interpolateRatio(0.2f) { }
 		
 	public:
-		static const CppUtil::Basic::Ptr<RRF_Raster> New(CppUtil::Basic::Ptr<CppUtil::Engine::Scene> scene) {
-			return CppUtil::Basic::New<RRF_Raster>(scene);
+		static const Ptr<RRF_Raster> New(RawAPI_OGLW * pOGLW, Ptr<Scene> scene) {
+			return Basic::New<RRF_Raster>(pOGLW, scene);
 		}
 
 	protected:
 		virtual ~RRF_Raster() = default;
 
 	public:
-		void Draw();
-		void OGL_Init();
+		virtual void Draw() override;
+		virtual void OGL_Init() override;
 
 	protected:
-		virtual void Visit(CppUtil::Basic::Ptr<CppUtil::Engine::SObj> sobj);
+		virtual void Visit(Ptr<SObj> sobj);
 
-		virtual void Visit(CppUtil::Basic::Ptr<CppUtil::Engine::BSDF_FrostedGlass> bsdf);
+		virtual void Visit(Ptr<BSDF_FrostedGlass> bsdf);
 
 	private:
 		void InitListeners();

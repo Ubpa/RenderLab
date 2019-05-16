@@ -5,14 +5,19 @@
 #include <CppUtil/OpenGL/FBO.h>
 
 namespace App {
-	class SampleRaster : public CppUtil::Engine::RasterBase {
+	using namespace CppUtil;
+	using namespace CppUtil::Basic;
+	using namespace CppUtil::Engine;
+	using namespace CppUtil::QT;
+
+	class SampleRaster : public RasterBase {
 	public:
-		SampleRaster(CppUtil::Basic::Ptr<CppUtil::Engine::Scene> scene)
-			: RasterBase(scene), haveSampled(false) { }
+		SampleRaster(RawAPI_OGLW * pOGLW, Ptr<Scene> scene)
+			: RasterBase(pOGLW, scene), haveSampled(false) { }
 
 	public:
-		static const CppUtil::Basic::Ptr<SampleRaster> New(CppUtil::Basic::Ptr<CppUtil::Engine::Scene> scene) {
-			return CppUtil::Basic::New<SampleRaster>(scene);
+		static const Ptr<SampleRaster> New(RawAPI_OGLW * pOGLW, Ptr<Scene> scene) {
+			return Basic::New<SampleRaster>(pOGLW, scene);
 		}
 
 	protected:
@@ -22,7 +27,7 @@ namespace App {
 		void Draw();
 		void OGL_Init();
 
-		enum ENUM_TYPE {
+		enum class ENUM_TYPE {
 			DirectIllum,
 			POSITION,
 			VIEW_DIR,
@@ -33,9 +38,9 @@ namespace App {
 		std::vector<float> GetData(ENUM_TYPE type);
 
 	protected:
-		virtual void Visit(CppUtil::Basic::Ptr<CppUtil::Engine::SObj> sobj);
+		virtual void Visit(Ptr<SObj> sobj);
 
-		virtual void Visit(CppUtil::Basic::Ptr<CppUtil::Engine::BSDF_FrostedGlass> bsdf);
+		virtual void Visit(Ptr<BSDF_FrostedGlass> bsdf);
 
 	private:
 		void InitShaders();

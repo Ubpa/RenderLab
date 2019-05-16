@@ -12,16 +12,27 @@ using namespace CppUtil::Engine;
 using namespace CppUtil::QT;
 using namespace CppUtil::Basic;
 
-Viewer::Viewer(RawAPI_OGLW * pOGLW, Ptr<Scene> scene)
-	: pOGLW(pOGLW), scene(scene), raster(DirectIllumRaster::New(scene)), roamer(Roamer::New(pOGLW)), picker(Picker::New(this)) {
+Viewer::Viewer(RawAPI_OGLW * pOGLW, Ptr<Scene> scene, RasterType rasterType)
+	: pOGLW(pOGLW), scene(scene), roamer(Roamer::New(pOGLW)), picker(Picker::New(this)) {
+	switch (rasterType)
+	{
+	case RasterType::DirectIllum:
+		raster = DirectIllumRaster::New(pOGLW, scene);
+		break;
+	default:
+		printf("ERROR::Viewer::Viewer:\n"
+			"\t""not support RasterType(%s)\n", rasterType._to_string());
+		break;
+	}
+
 	pOGLW->SetInitOp(LambdaOp_New([this]() {
-		this->GetRoamer()->OGL_Init();
-		this->GetRaster()->OGL_Init();
-		this->GetPicker()->OGL_Init();
+		roamer->OGL_Init();
+		raster->OGL_Init();
+		picker->OGL_Init();
 	}));
 
 	pOGLW->SetPaintOp(LambdaOp_New([this]() {
-		this->GetRaster()->Draw();
+		raster->Draw();
 	}));
 
 	pOGLW->SetResizeOp(LambdaOp_New([this]() {
@@ -30,7 +41,7 @@ Viewer::Viewer(RawAPI_OGLW * pOGLW, Ptr<Scene> scene)
 		int w = pOGLW->w;
 		int h = pOGLW->h;
 
-		this->GetRoamer()->SetWH(w, h);
+		roamer->SetWH(w, h);
 	}));
 }
 

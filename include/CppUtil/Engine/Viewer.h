@@ -2,6 +2,7 @@
 #define _ENGINE_VIEWER_VIEWER_H_
 
 #include <CppUtil/Basic/HeapObj.h>
+#include <enum.h>
 
 namespace CppUtil {
 	namespace QT {
@@ -11,17 +12,19 @@ namespace CppUtil {
 	namespace Engine {
 		class Scene;
 
-		class DirectIllumRaster;
+		class RasterBase;
 		class Roamer;
 		class Picker;
 
+		BETTER_ENUM(RasterType, int, DirectIllum);
+
 		class Viewer final : public Basic::HeapObj {
 		public:
-			Viewer(QT::RawAPI_OGLW * pOGLW, Basic::Ptr<Scene> scene);
+			Viewer(QT::RawAPI_OGLW * pOGLW, Basic::Ptr<Scene> scene, RasterType rasterType);
 
 		public:
-			static const Basic::Ptr<Viewer> New(QT::RawAPI_OGLW * pOGLW, Basic::Ptr<Scene> scene) {
-				return Basic::New<Viewer>(pOGLW, scene);
+			static const Basic::Ptr<Viewer> New(QT::RawAPI_OGLW * pOGLW, Basic::Ptr<Scene> scene, RasterType rasterType) {
+				return Basic::New<Viewer>(pOGLW, scene, rasterType);
 			}
 
 		protected:
@@ -30,7 +33,7 @@ namespace CppUtil {
 		public:
 			QT::RawAPI_OGLW * GetOGLW() const { return pOGLW; }
 			Basic::Ptr<Scene> GetScene() const { return scene; }
-			Basic::Ptr<DirectIllumRaster> GetRaster() const { return raster; }
+			Basic::Ptr<RasterBase> GetRaster() const { return raster; }
 			Basic::Ptr<Roamer> GetRoamer() const { return roamer; }
 			Basic::Ptr<Picker> GetPicker() const { return picker; }
 
@@ -39,10 +42,10 @@ namespace CppUtil {
 
 		private:
 			QT::RawAPI_OGLW * pOGLW;
-			Basic::Ptr<Picker> picker;
 			Basic::Ptr<Scene> scene;
-			Basic::Ptr<DirectIllumRaster> raster;
+			Basic::Ptr<RasterBase> raster;
 			Basic::Ptr<Roamer> roamer;
+			Basic::Ptr<Picker> picker;
 		};
 	}
 }

@@ -31,7 +31,7 @@ struct BSDF_Diffuse {
 	vec3 colorFactor;
 	
 	bool haveAlbedoTexture;
-    sampler2D albedoTexture;
+    sampler2D albedoTexture;// 0
 };
 
 // 48
@@ -61,7 +61,7 @@ layout (std140) uniform PointLights{
 
 uniform BSDF_Diffuse bsdf;
 
-uniform samplerCube pointLightDepthMap0;
+uniform samplerCube pointLightDepthMap0; // 1
 uniform samplerCube pointLightDepthMap1;
 uniform samplerCube pointLightDepthMap2;
 uniform samplerCube pointLightDepthMap3;

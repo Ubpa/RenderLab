@@ -37,7 +37,7 @@ Shader::Shader(const string & vertexPath, const string & fragmentPath, const str
 	uint glvs = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(glvs, 1, &vsCStr, NULL);
 	glCompileShader(glvs);
-	if (!CheckCompileErrors(glvs, "VERTEX")) {
+	if (!CheckCompileErrors(glvs, CompileType::VERTEX)) {
 		cout << vertexPath << " compiles error\n";
 		valid = false;
 		return;
@@ -47,7 +47,7 @@ Shader::Shader(const string & vertexPath, const string & fragmentPath, const str
 	uint glfs = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(glfs, 1, &fsCStr, NULL);
 	glCompileShader(glfs);
-	if(!CheckCompileErrors(glfs, "FRAGMENT")) {
+	if(!CheckCompileErrors(glfs, CompileType::FRAGMENT)) {
 		cout << fragmentPath << " compiles error\n";
 		valid = false;
 		return;
@@ -68,7 +68,7 @@ Shader::Shader(const string & vertexPath, const string & fragmentPath, const str
 		glgs = glCreateShader(GL_GEOMETRY_SHADER);
 		glShaderSource(glgs, 1, &gsCStr, NULL);
 		glCompileShader(glgs);
-		if (!CheckCompileErrors(glgs, "GEOMETRY")) {
+		if (!CheckCompileErrors(glgs, CompileType::GEOMETRY)) {
 			cout << geometryPath << " compiles error\n";
 			valid = false;
 			return;
@@ -82,7 +82,7 @@ Shader::Shader(const string & vertexPath, const string & fragmentPath, const str
 	if(hasGS)
 		glAttachShader(ID, glgs);
 	glLinkProgram(ID);
-	if (!CheckCompileErrors(ID, "PROGRAM")) {
+	if (!CheckCompileErrors(ID, CompileType::PROGRAM)) {
 		if(hasGS)
 			cout << vertexPath << ", " << fragmentPath << " and " << geometryPath << " link failed.\n";
 		else
@@ -100,10 +100,11 @@ uint Shader::GetID() const { return ID; }
 bool Shader::IsValid() const { return valid; }
 
 bool Shader::Use() const{
-	if (valid) {
-		glUseProgram(ID);
-	}
-	return valid;
+	if (!valid)
+		return false;
+	
+	glUseProgram(ID);
+	return true;
 }
 
 void Shader::SetBool(const string &name, bool value) const{
@@ -156,22 +157,42 @@ void Shader::UniformBlockBind(const string &name, uint bindPoint) const {
 	glUniformBlockBinding(ID, glGetUniformBlockIndex(ID, name.c_str()), bindPoint);
 }
 
-int Shader::CheckCompileErrors(uint shader, string type){
+int Shader::CheckCompileErrors(uint shader, CompileType type){
 	int success;
+	glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+
 	char infoLog[1024];
-	if (type != "PROGRAM"){
-		glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-		if (!success){
+
+	switch (type)
+	{
+	case CompileType::VERTEX:
+	case CompileType::GEOMETRY:
+	case CompileType::FRAGMENT: {
+		if (!success) {
 			glGetShaderInfoLog(shader, 1024, NULL, infoLog);
-			cout << "ERROR::SHADER_COMPILATION_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << endl;
+			cout << "ERROR::SHADER_COMPILATION_ERROR of type: " << type._to_string() << endl
+				<< infoLog
+				<< "\n -- --------------------------------------------------- -- " << endl;
 		}
-	}else{
+		break;
+	}
+	case CompileType::PROGRAM: {
 		glGetProgramiv(shader, GL_LINK_STATUS, &success);
 		if (!success)
 		{
 			glGetProgramInfoLog(shader, 1024, NULL, infoLog);
-			cout << "ERROR::PROGRAM_LINKING_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << endl;
+			cout << "ERROR::PROGRAM_LINKING_ERROR of type: " << type << endl
+				<< infoLog
+				<< "\n -- --------------------------------------------------- -- " << endl;
 		}
+		break;
 	}
+	default: {
+		printf("ERROR::Shader::CheckCompileErrors:\n"
+			"\t""not support CompileType\n");
+		break;
+	}
+	}
+
 	return success;
 }

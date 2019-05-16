@@ -69,7 +69,7 @@ Optix: 6.0
 
 ## 3. TODO
 
-### Impotance
+### Impotant
 
 - [x] 自己编写数学运算库，放弃 glm
 - [x] 重构指针

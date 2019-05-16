@@ -10,6 +10,10 @@
 #include <CppUtil/Basic/UGM/Transform.h>
 
 namespace CppUtil {
+	namespace QT {
+		class RawAPI_OGLW;
+	}
+
 	namespace Engine {
 		class Scene;
 		class SObj;
@@ -20,17 +24,15 @@ namespace CppUtil {
 
 		class CmptLight;
 
-		class RasterBase;
-
 
 		// Point Light Depth Map Generator
 		class PLDM_Generator: public Basic::Visitor {
 		public:
-			PLDM_Generator(RasterBase * raster);
+			PLDM_Generator(QT::RawAPI_OGLW * pOGLW);
 
 		public:
-			static const Basic::Ptr<PLDM_Generator> New(RasterBase * raster) {
-				return Basic::New<PLDM_Generator>(raster);
+			static const Basic::Ptr<PLDM_Generator> New(QT::RawAPI_OGLW * pOGLW) {
+				return Basic::New<PLDM_Generator>(pOGLW);
 			}
 
 		protected:
@@ -50,16 +52,16 @@ namespace CppUtil {
 			void Visit(Basic::Ptr<TriMesh> mesh);
 
 		private:
-			RasterBase * raster;
+			QT::RawAPI_OGLW * pOGLW;
 
-			struct Val {
-				Val(const OpenGL::FBO & fbo = OpenGL::FBO(), const OpenGL::Texture & tex = OpenGL::Texture())
+			struct FBO_Tex {
+				FBO_Tex(const OpenGL::FBO & fbo = OpenGL::FBO(), const OpenGL::Texture & tex = OpenGL::Texture())
 					: fbo(fbo), tex(tex) { }
 
 				OpenGL::FBO fbo;
 				OpenGL::Texture tex;
 			};
-			std::map<Basic::WPtrC<CmptLight>, Val> lightMap;
+			std::map<Basic::WPtrC<CmptLight>, FBO_Tex> lightMap;
 			int depthMapSize;
 			float lightFar;
 

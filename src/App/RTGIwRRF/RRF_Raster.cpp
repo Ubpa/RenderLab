@@ -1,6 +1,7 @@
 #include "RRF_Raster.h"
 
 #include <CppUtil/Qt/RawAPI_Define.h>
+#include <CppUtil/Qt/RawAPI_OGLW.h>
 
 #include <CppUtil/Engine/Scene.h>
 #include <CppUtil/Engine/SObj.h>
@@ -8,20 +9,17 @@
 #include <CppUtil/Engine/CmptGeometry.h>
 #include <CppUtil/Engine/BSDF_FrostedGlass.h>
 
+#include <CppUtil/OpenGL/CommonDefine.h>
+
 #include <CppUtil/Basic/Image.h>
 #include <CppUtil/Basic/EventManager.h>
 #include <CppUtil/Basic/LambdaOp.h>
-
-#include <CppUtil/OpenGL/CommonDefine.h>
-
 #include <CppUtil/Basic/Math.h>
 
 #include <ROOT_PATH.h>
 
 using namespace App;
-using namespace CppUtil::Engine;
 using namespace CppUtil::OpenGL;
-using namespace CppUtil::Basic;
 using namespace Define;
 using namespace std;
 
@@ -107,7 +105,6 @@ void RRF_Raster::InitShader(int ID) {
 		return;
 
 	id2shader[ID] = shader;
-	BindBlock(shader);
 
 	shader.SetInt("bsdf.colorTexture", 0);
 	shader.SetInt("bsdf.roughnessTexture", 1);
@@ -118,7 +115,7 @@ void RRF_Raster::InitShader(int ID) {
 
 	shader.SetFloat("interpolateRatio", 0.2f);
 
-	SetShaderForShadow(shader, 4);
+	RegShader(shader, 4);
 	printf("init shader of ID %d success\n", ID);
 }
 
@@ -154,7 +151,7 @@ void RRF_Raster::Visit(Ptr<BSDF_FrostedGlass> bsdf) {
 		string wholeName = strBSDF + "have" + names[i] + "Texture";
 		if (imgs[i] && imgs[i]->IsValid()) {
 			shader.SetBool(wholeName, true);
-			GetTex(imgs[i]).Use(i);
+			pOGLW->GetTex(imgs[i]).Use(i);
 		}
 		else
 			shader.SetBool(wholeName, false);
@@ -162,5 +159,5 @@ void RRF_Raster::Visit(Ptr<BSDF_FrostedGlass> bsdf) {
 
 	shader.SetFloat(strBSDF + "ior", bsdf->ior);
 
-	SetPointLightDepthMap(shader, texNum);
+	UsePointLightDepthMap(shader);
 }

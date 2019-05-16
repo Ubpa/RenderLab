@@ -59,7 +59,7 @@ const std::string ModelKDTree::GenFunc(
 	rst << indent << "// map back" << endl;
 	for (int i = 0; i < outputDim; i++) {
 		rst << indent << "h" << i << " = ";
-		rst << "h" << i << " * (" << extent[i] << ") + (" << minVal[i] << ")";
+		rst << "h" << i << " * (" << extent[inputDim + i] << ") + (" << minVal[inputDim + i] << ")";
 		rst << ";" << endl;
 	}
 

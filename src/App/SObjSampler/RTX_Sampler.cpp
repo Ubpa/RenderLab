@@ -50,7 +50,7 @@ void RTX_Sampler::Run(Ptr<Scene> scene, Ptr<Image> img) {
 	int w = img->GetWidth();
 	int h = img->GetHeight();
 
-	img->Clear(RGBf{ 0.f });
+	img->Clear();
 
 	// init ray 
 	auto bvhAccel = BVHAccel::New();

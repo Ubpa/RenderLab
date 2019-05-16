@@ -13,6 +13,8 @@ using namespace std;
 
 VAO::VAO() :isValid(false) { }
 
+const VAO VAO::inValid = VAO();
+
 VAO::VAO(float const * data, uint dataSize, const std::vector<uint> & attrLen){
 	if (data == NULL || dataSize == 0 || attrLen.size() == 0) {
 		isValid = false;

@@ -33,6 +33,8 @@
 #include <CppUtil/Basic/Plane.h>
 #include <CppUtil/Basic/Image.h>
 
+#include <ROOT_PATH.h>
+
 using namespace CppUtil::Engine;
 using namespace CppUtil::QT;
 using namespace CppUtil::OpenGL;
@@ -42,9 +44,20 @@ using namespace Define;
 using namespace std;
 
 const int RasterBase::maxPointLights = 8;
+const string rootPath = ROOT_PATH;
 
-RasterBase::RasterBase(Ptr<Scene> scene)
-	: scene(scene), pldmGenerator(PLDM_Generator::New(this)) {
+bool RasterBase::ShaderCompare::operator()(const OpenGL::Shader & lhs, const OpenGL::Shader & rhs) const{
+	if (!lhs.IsValid())
+		return true;
+
+	if (!rhs.IsValid())
+		return false;
+
+	return lhs.GetID() < rhs.GetID();
+}
+
+RasterBase::RasterBase(RawAPI_OGLW * pOGLW, Ptr<Scene> scene)
+	: pOGLW(pOGLW), scene(scene), pldmGenerator(PLDM_Generator::New(pOGLW)) {
 	RegMemberFunc<SObj>(&RasterBase::Visit);
 
 	// primitive
@@ -67,9 +80,9 @@ void RasterBase::Draw() {
 	glClearColor(0, 0, 0, 1);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	scene->Accept(pldmGenerator);
-
 	UpdateLights();
+
+	scene->Accept(pldmGenerator);
 
 	modelVec.clear();
 	modelVec.push_back(Transform(1.f));
@@ -83,36 +96,17 @@ void RasterBase::OGL_Init() {
 	glBindBufferBase(GL_UNIFORM_BUFFER, 1, lightsUBO);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-	InitVAOs();
-
 	pldmGenerator->OGL_Init();
 }
 
-void RasterBase::InitVAOs() {
-	InitVAO_Sphere();
-	InitVAO_Plane();
+void RasterBase::InitShaders() {
+	InitShader_Basic();
 }
 
-void RasterBase::InitVAO_Sphere() {
-	Basic::Sphere sphere(50);
-	vector<VAO::VBO_DataPatch> P3_Sphere_Vec_VBO_Data_Patch = {
-		{sphere.GetPosArr(), sphere.GetPosArrSize(), 3},
-		{sphere.GetNormalArr(), sphere.GetNormalArrSize(), 3},
-		{sphere.GetTexCoordsArr(), sphere.GetTexCoordsArrSize(), 2},
-		{sphere.GetTangentArr(), sphere.GetTangentArrSize(), 3},
-	};
-	VAO_P3N3T2T3_Sphere = VAO(P3_Sphere_Vec_VBO_Data_Patch, sphere.GetIndexArr(), sphere.GetIndexArrSize());
-}
+void RasterBase::InitShader_Basic() {
+	shader_basic = Shader(rootPath + str_Basic_P3_vs, rootPath + str_Basic_fs);
 
-void RasterBase::InitVAO_Plane() {
-	auto plane = TriMesh::GenPlane();
-	vector<VAO::VBO_DataPatch> P3_Plane_Vec_VBO_Data_Patch = {
-		{&(plane->GetPositions()[0][0]), static_cast<uint>(plane->GetPositions().size() * 3 * sizeof(float)), 3},
-		{&(plane->GetNormals()[0][0]), static_cast<uint>(plane->GetNormals().size() * 3 * sizeof(float)), 3},
-		{&(plane->GetTexcoords()[0][0]), static_cast<uint>(plane->GetTexcoords().size() * 2 * sizeof(float)), 2},
-		{&(plane->GetTangents()[0][0]), static_cast<uint>(plane->GetTangents().size() * 3 * sizeof(float)), 3},
-	};
-	VAO_P3N3T2T3_Plane = VAO(P3_Plane_Vec_VBO_Data_Patch, plane->GetIndice().data(), static_cast<uint>(plane->GetIndice().size() * sizeof(uint)));
+	RegShader(shader_basic);
 }
 
 void RasterBase::Visit(Ptr<SObj> sobj) {
@@ -143,36 +137,30 @@ void RasterBase::Visit(Ptr<SObj> sobj) {
 
 void RasterBase::Visit(Ptr<Engine::Sphere> sphere) {
 	curShader.SetMat4f("model", modelVec.back());
-	VAO_P3N3T2T3_Sphere.Draw(curShader);
+	pOGLW->GetVAO(ShapeType::Sphere).Draw(curShader);
 }
 
 void RasterBase::Visit(Ptr<Engine::Plane> plane) {
 	curShader.SetMat4f("model", modelVec.back());
-	VAO_P3N3T2T3_Plane.Draw(curShader);
+	pOGLW->GetVAO(ShapeType::Plane).Draw(curShader);
 }
 
 void RasterBase::Visit(Ptr<TriMesh> mesh) {
 	curShader.SetMat4f("model", modelVec.back());
-	GetMeshVAO(mesh).Draw(curShader);
+	pOGLW->GetVAO(mesh).Draw(curShader);
 }
 
-const Texture RasterBase::GetTex(PtrC<Image> img) {
-	auto target = img2tex.find(img);
-	if (target != img2tex.end())
-		return target->second;
+void RasterBase::UpdateLights() {
+	light2idx.clear();
 
-	auto tex = Texture(img);
-	img2tex[img] = tex;
-	return tex;
-}
-
-void RasterBase::UpdateLights() const {
 	int lightIdx = 0;
 	glBindBuffer(GL_UNIFORM_BUFFER, lightsUBO);
 	for (auto cmptLight : scene->GetCmptLights()) {
 		auto pointLight = CastTo<PointLight>(cmptLight->light);
 		if (!pointLight)
 			continue;
+
+		light2idx[pointLight] = lightIdx;
 
 		Point3 position = cmptLight->GetSObj()->GetWorldPos();
 
@@ -189,45 +177,37 @@ void RasterBase::UpdateLights() const {
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
-const VAO RasterBase::GetMeshVAO(PtrC<TriMesh> mesh) {
-	auto target = meshVAOs.find(mesh);
-	if (target != meshVAOs.end())
-		return target->second;
+void RasterBase::UsePointLightDepthMap(const Shader & shader) const {
+	auto target = shader2depthmapBase.find(shader);
+	if (target == shader2depthmapBase.cend()) {
+		printf("ERROR::RasterBase::UsePointLightDepthMap:\n"
+			"\t""shader not regist\n");
+		return;
+	}
+	const auto depthmapBase = target->second;
 
-	vector<VAO::VBO_DataPatch> P3_Mesh_Vec_VBO_Data_Patch = {
-		{&(mesh->GetPositions()[0][0]), static_cast<uint>(mesh->GetPositions().size() * 3 * sizeof(float)), 3},
-		{&(mesh->GetNormals()[0][0]), static_cast<uint>(mesh->GetNormals().size() * 3 * sizeof(float)), 3},
-		{&(mesh->GetTexcoords()[0][0]), static_cast<uint>(mesh->GetTexcoords().size() * 2 * sizeof(float)), 2},
-		{&(mesh->GetTangents()[0][0]), static_cast<uint>(mesh->GetTangents().size() * 3 * sizeof(float)), 3},
-	};
-
-	VAO VAO_P3N3T2T3_Mesh(P3_Mesh_Vec_VBO_Data_Patch, mesh->GetIndice().data(), static_cast<uint>(mesh->GetIndice().size() * sizeof(uint)));
-	// 用 TriMesh::Ptr 做 ID
-	meshVAOs[mesh] = VAO_P3N3T2T3_Mesh;
-
-	return VAO_P3N3T2T3_Mesh;
-}
-
-void RasterBase::SetPointLightDepthMap(const Shader & shader, int base) {
-	int lightIdx = 0;
 	for (auto cmptLight : scene->GetCmptLights()) {
-		if (!CastTo<PointLight>(cmptLight->light))
-			continue;
+		auto target = light2idx.find(cmptLight->light);
+		if (target == light2idx.cend())
+			return;
+		const auto lightIdx = target->second;
 
-		pldmGenerator->GetDepthCubeMap(cmptLight).Use(base + lightIdx);
-
-		lightIdx++;
+		pldmGenerator->GetDepthCubeMap(cmptLight).Use(depthmapBase + lightIdx);
 	}
 }
 
-void RasterBase::SetShaderForShadow(const OpenGL::Shader & shader, int base) const {
+void RasterBase::RegShader(const OpenGL::Shader & shader, int depthmapBase) {
+	shader.UniformBlockBind("Camera", 0);
+
+	if (depthmapBase < 0) // 无需计算光
+		return;
+
+	shader.UniformBlockBind("PointLights", 1);
+
 	for (int i = 0; i < maxPointLights; i++)
-		shader.SetInt("pointLightDepthMap" + to_string(i), base + i);
+		shader.SetInt("pointLightDepthMap" + to_string(i), depthmapBase + i);
 
 	shader.SetFloat("lightFar", pldmGenerator->GetLightFar());
-}
 
-void RasterBase::BindBlock(const OpenGL::Shader & shader) const {
-	shader.UniformBlockBind("Camera", 0);
-	shader.UniformBlockBind("PointLights", 1);
+	shader2depthmapBase[shader] = depthmapBase;
 }

@@ -1,6 +1,7 @@
 #include "SampleRaster.h"
 
 #include <CppUtil/Qt/RawAPI_Define.h>
+#include <CppUtil/Qt/RawAPI_OGLW.h>
 
 #include <CppUtil/Engine/Scene.h>
 #include <CppUtil/Engine/SObj.h>
@@ -49,14 +50,12 @@ void SampleRaster::InitShaderSampleFrostedGlass() {
 	string fsName = "data/shaders/App/Sample_BSDF_FrostedGlass.fs";
 	shader_sampleFrostedGlass = Shader(ROOT_PATH + str_Basic_P3N3T2T3_vs, ROOT_PATH + fsName);
 
-	BindBlock(shader_sampleFrostedGlass);
-
 	shader_sampleFrostedGlass.SetInt("bsdf.colorTexture", 0);
 	shader_sampleFrostedGlass.SetInt("bsdf.roughnessTexture", 1);
 	shader_sampleFrostedGlass.SetInt("bsdf.aoTexture", 2);
 	shader_sampleFrostedGlass.SetInt("bsdf.normalTexture", 3);
 
-	SetShaderForShadow(shader_sampleFrostedGlass, 4);
+	RegShader(shader_sampleFrostedGlass, 4);
 }
 
 void SampleRaster::Draw() {
@@ -97,7 +96,7 @@ void SampleRaster::Visit(Ptr<BSDF_FrostedGlass> bsdf) {
 		string wholeName = strBSDF + "have" + names[i] + "Texture";
 		if (imgs[i] && imgs[i]->IsValid()) {
 			shader_sampleFrostedGlass.SetBool(wholeName, true);
-			GetTex(imgs[i]).Use(i);
+			pOGLW->GetTex(imgs[i]).Use(i);
 		}
 		else
 			shader_sampleFrostedGlass.SetBool(wholeName, false);
@@ -105,7 +104,7 @@ void SampleRaster::Visit(Ptr<BSDF_FrostedGlass> bsdf) {
 
 	shader_sampleFrostedGlass.SetFloat(strBSDF + "ior", bsdf->ior);
 
-	SetPointLightDepthMap(shader_sampleFrostedGlass, texNum);
+	UsePointLightDepthMap(shader_sampleFrostedGlass);
 }
 
 vector<float> SampleRaster::GetData(ENUM_TYPE type) {

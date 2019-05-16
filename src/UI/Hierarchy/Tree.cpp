@@ -187,7 +187,8 @@ void Tree::contextMenuEvent(QContextMenuEvent *event) {
 	mainMenu.addAction(spitLine0);
 
 	mainMenu.addAction("Create Empty", this, []() {
-		Hierarchy::GetInstance()->CreateSObj("SObj");
+		auto sobj = Hierarchy::GetInstance()->CreateSObj("SObj");
+		CmptTransform::New(sobj);
 	});
 
 	// gen obj
@@ -196,23 +197,23 @@ void Tree::contextMenuEvent(QContextMenuEvent *event) {
 
 	genObjMenu->addAction("Cube", this, []() {
 		auto sobj = Hierarchy::GetInstance()->CreateSObj("Cube");
-		auto transform = CmptTransform::New(sobj);
-		auto geometry = CmptGeometry::New(sobj, TriMesh::GenCube());
-		auto material = CmptMaterial::New(sobj, BSDF_Diffuse::New());
+		CmptTransform::New(sobj);
+		CmptGeometry::New(sobj, TriMesh::GenCube());
+		CmptMaterial::New(sobj, BSDF_Diffuse::New());
 	});
 
 	genObjMenu->addAction("Sphere", this, []() {
 		auto sobj = Hierarchy::GetInstance()->CreateSObj("Sphere");
-		auto transform = CmptTransform::New(sobj);
-		auto geometry = CmptGeometry::New(sobj, Sphere::New());
-		auto material = CmptMaterial::New(sobj, BSDF_Diffuse::New());
+		CmptTransform::New(sobj);
+		CmptGeometry::New(sobj, Sphere::New());
+		CmptMaterial::New(sobj, BSDF_Diffuse::New());
 	});
 
 	genObjMenu->addAction("Plane", this, []() {
 		auto sobj = Hierarchy::GetInstance()->CreateSObj("Plane");
-		auto transform = CmptTransform::New(sobj);
-		auto geometry = CmptGeometry::New(sobj, Plane::New());
-		auto material = CmptMaterial::New(sobj, BSDF_Diffuse::New());
+		CmptTransform::New(sobj);
+		CmptGeometry::New(sobj, Plane::New());
+		CmptMaterial::New(sobj, BSDF_Diffuse::New());
 	});
 
 	mainMenu.addMenu(genObjMenu);
@@ -225,9 +226,8 @@ void Tree::contextMenuEvent(QContextMenuEvent *event) {
 		auto sobj = Hierarchy::GetInstance()->CreateSObj("Area Light");
 		auto areaLight = AreaLight::New();
 		auto light = CmptLight::New(sobj, areaLight);
-		auto lightTransform = CmptTransform::New(sobj);
-		auto lightPlane = Plane::New();
-		auto lightGeo = CmptGeometry::New(sobj, lightPlane);
+		CmptTransform::New(sobj);
+		auto lightGeo = CmptGeometry::New(sobj, Plane::New());
 	});
 
 	genLightMenu->addAction("Point Light", this, []() {
@@ -270,7 +270,7 @@ void Tree::contextMenuEvent(QContextMenuEvent *event) {
 			QString fileName = QFileDialog::getSaveFileName(this,
 				tr("Save SObj"),
 				"./",
-				tr("SObj XML Files (*.xml *.obj)"));
+				tr("SObj XML Files (*.xml)"));
 
 			if (fileName.isEmpty())
 				return;

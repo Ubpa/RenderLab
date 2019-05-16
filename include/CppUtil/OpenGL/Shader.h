@@ -9,9 +9,12 @@ typedef unsigned int uint;
 #include <CppUtil/Basic/UGM/Transform.h>
 
 #include <string>
+#include <enum.h>
 
 namespace CppUtil {
 	namespace OpenGL {
+		BETTER_ENUM(CompileType, int, VERTEX, GEOMETRY, FRAGMENT, PROGRAM);
+
 		class Shader {
 		public:
 			// constructor generates the shader on the fly
@@ -27,6 +30,9 @@ namespace CppUtil {
 			// utility uniform functions
 			void SetBool(const std::string &name, bool value) const;
 			void SetInt(const std::string &name, int value) const;
+			void SetTex(const std::string &name, int value) const {
+				SetInt(name, value);
+			}
 			void SetFloat(const std::string &name, float value) const;
 			void SetFloats(const std::string &name, uint n, const float * values) const;
 			void SetVec2f(const std::string &name, float value0, float value1) const;
@@ -54,7 +60,7 @@ namespace CppUtil {
 			void UniformBlockBind(const std::string &name, uint bindPoint) const;
 		private:
 			// utility function for checking shader compilation/linking errors.
-			int CheckCompileErrors(uint shader, std::string type);
+			int CheckCompileErrors(uint shader, CompileType type);
 			//------------
 			uint ID;
 			bool valid;

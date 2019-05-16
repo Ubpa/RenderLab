@@ -61,7 +61,7 @@ RenderLab::RenderLab(QWidget *parent)
 	scene = Scene::New(root);
 
 	// viewer
-	viewer = Viewer::New(ui.OGLW_Raster, scene);
+	viewer = Viewer::New(ui.OGLW_Raster, scene, RasterType::DirectIllum);
 
 	// raytracer
 	PaintImgOpCreator pioc(ui.OGLW_RayTracer);

@@ -31,6 +31,11 @@ namespace App{
 	class SampleRaster;
 	class RTX_Sampler;
 
+	using namespace CppUtil;
+	using namespace CppUtil::Basic;
+	using namespace CppUtil::Engine;
+	using namespace CppUtil::QT;
+
 	BETTER_ENUM(ENUM_ARG, int,
 		notrootpath,
 		sobj,
@@ -68,9 +73,9 @@ namespace App{
 		virtual ~SObjSampler();
 
 	public:
-		CppUtil::Basic::Ptr<CppUtil::Engine::Scene> GetScene()const { return scene; }
+		Ptr<Scene> GetScene()const { return scene; }
 
-		void UI_Op(CppUtil::Basic::Ptr<CppUtil::Basic::Op> op);
+		void UI_Op(Ptr<Op> op);
 
 	private:
 		void Init();
@@ -83,12 +88,12 @@ namespace App{
 
 	private:
 		Ui::SObjSamplerClass ui;
-		CppUtil::Basic::Ptr<CppUtil::QT::PaintImgOpCreator::PaintImgOp> paintImgOp;
-		CppUtil::Basic::Ptr<CppUtil::Engine::Scene> scene;
-		CppUtil::Basic::Ptr<RTX_Sampler> rtxSampler;
-		CppUtil::Basic::Ptr<CppUtil::QT::OpThread> drawImgThread;
-		CppUtil::Basic::Ptr<SampleRaster> sampleRaster;
-		CppUtil::Basic::Ptr<CppUtil::Engine::Roamer> roamer;
+		Ptr<CppUtil::QT::PaintImgOpCreator::PaintImgOp> paintImgOp;
+		Ptr<Scene> scene;
+		Ptr<RTX_Sampler> rtxSampler;
+		Ptr<CppUtil::QT::OpThread> drawImgThread;
+		Ptr<SampleRaster> sampleRaster;
+		Ptr<Roamer> roamer;
 		QTimer * timer;
 
 		volatile bool initDataMap;

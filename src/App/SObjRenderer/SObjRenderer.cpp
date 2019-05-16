@@ -97,7 +97,7 @@ void SObjRenderer::InitScene() {
 }
 
 void SObjRenderer::InitRaster() {
-	viewer = Viewer::New(ui.OGLW_Raster, scene);
+	viewer = Viewer::New(ui.OGLW_Raster, scene, RasterType::DirectIllum);
 	viewer->SetLock(true);
 }
 

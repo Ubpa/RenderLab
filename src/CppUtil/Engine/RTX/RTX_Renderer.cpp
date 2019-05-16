@@ -105,7 +105,7 @@ void RTX_Renderer::Run(Ptr<Scene> scene, Ptr<Image> img) {
 	int w = img->GetWidth();
 	int h = img->GetHeight();
 
-	img->Clear(RGBf{ 0.f });
+	img->Clear();
 
 	vector<Ptr<RayTracer>> rayTracers;
 

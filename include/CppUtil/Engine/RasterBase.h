@@ -15,6 +15,10 @@ namespace CppUtil {
 		class Image;
 	}
 
+	namespace QT {
+		class RawAPI_OGLW;
+	}
+
 	namespace Engine {
 		class PLDM_Generator;
 
@@ -33,46 +37,35 @@ namespace CppUtil {
 		class BSDF_MetalWorkflow;
 		class BSDF_FrostedGlass;
 
+		class Light;
+
 		class RasterBase : public Basic::Visitor {
 		protected:
-			RasterBase(Basic::Ptr<Scene> scene);
+			RasterBase(QT::RawAPI_OGLW * pOGLW, Basic::Ptr<Scene> scene);
 			virtual ~RasterBase() = default;
 
-		public:// Get Resources
-			const OpenGL::VAO GetSphereVAO() const { return VAO_P3N3T2T3_Sphere; }
-			const OpenGL::VAO GetPlaneVAO() const { return VAO_P3N3T2T3_Plane; }
-			// get or reg
-			const OpenGL::Texture GetTex(Basic::PtrC<Basic::Image> img);
-			// get or reg
-			const OpenGL::VAO GetMeshVAO(Basic::PtrC<TriMesh> mesh);
+		public:
+			virtual void Draw();
+
+			virtual void OGL_Init();
 
 		protected:// Use for SubClass
-			void Draw();
+			void RegShader(const OpenGL::Shader & shader, int depthmapBase = -1);
+			void UsePointLightDepthMap(const OpenGL::Shader & shader) const;
 
-			void OGL_Init();
-
-			void SetPointLightDepthMap(const OpenGL::Shader & shader, int base);
 			void SetCurShader(const OpenGL::Shader & shader) { curShader = shader; }
-
-			// uniform samplerCube pointLightDepthMap0 -- pointLightDepthMap7
-			// uniform float lightFar
-			void SetShaderForShadow(const OpenGL::Shader & shader, int base) const;
-
-			// Camera 0
-			// PointLights 1
-			void BindBlock(const OpenGL::Shader & shader) const;
 
 		protected:
 			virtual void Visit(Basic::Ptr<SObj> sobj);
 
 			// SetCurShader for Primitive
-			virtual void Visit(Basic::Ptr<BSDF_Diffuse> bsdf) {};
-			virtual void Visit(Basic::Ptr<BSDF_Glass> bsdf) {};
-			virtual void Visit(Basic::Ptr<BSDF_Mirror> bsdf) {};
-			virtual void Visit(Basic::Ptr<BSDF_Emission> bsdf) {};
-			virtual void Visit(Basic::Ptr<BSDF_CookTorrance> bsdf) {};
-			virtual void Visit(Basic::Ptr<BSDF_MetalWorkflow> bsdf) {};
-			virtual void Visit(Basic::Ptr<BSDF_FrostedGlass> bsdf) {};
+			virtual void Visit(Basic::Ptr<BSDF_Diffuse> bsdf) { curShader = shader_basic; }
+			virtual void Visit(Basic::Ptr<BSDF_Glass> bsdf) { curShader = shader_basic; }
+			virtual void Visit(Basic::Ptr<BSDF_Mirror> bsdf) { curShader = shader_basic; }
+			virtual void Visit(Basic::Ptr<BSDF_Emission> bsdf) { curShader = shader_basic; }
+			virtual void Visit(Basic::Ptr<BSDF_CookTorrance> bsdf) { curShader = shader_basic; }
+			virtual void Visit(Basic::Ptr<BSDF_MetalWorkflow> bsdf) { curShader = shader_basic; }
+			virtual void Visit(Basic::Ptr<BSDF_FrostedGlass> bsdf) { curShader = shader_basic; }
 
 		private: // no need to change
 			/*virtual */void Visit(Basic::Ptr<Sphere> sphere);
@@ -80,24 +73,22 @@ namespace CppUtil {
 			/*virtual */void Visit(Basic::Ptr<TriMesh> mesh);
 
 		private:
-			void InitVAOs();
-			void InitVAO_Sphere();
-			void InitVAO_Plane();
+			void InitShaders();
+			void InitShader_Basic();
 
-			void UpdateLights() const;
+			// 更新光源的 UniformBlock
+			void UpdateLights();
 
 		protected:
 			Basic::Ptr<Scene> scene;
+			QT::RawAPI_OGLW * pOGLW;
 
 		private:
-			OpenGL::VAO VAO_P3N3T2T3_Sphere;
-			OpenGL::VAO VAO_P3N3T2T3_Plane;
-
 			OpenGL::Shader curShader;
+			OpenGL::Shader shader_basic;
 
 			std::vector<Transform> modelVec;
 
-			std::map<Basic::WPtrC<TriMesh>, OpenGL::VAO> meshVAOs;
 
 			std::map<Basic::WPtrC<Basic::Image>, OpenGL::Texture> img2tex;
 
@@ -105,6 +96,10 @@ namespace CppUtil {
 
 			static const int maxPointLights;// 8
 			Basic::Ptr<PLDM_Generator> pldmGenerator;
+
+			struct ShaderCompare { bool operator()(const OpenGL::Shader & lhs, const OpenGL::Shader & rhs) const; };
+			std::map<OpenGL::Shader, int, ShaderCompare> shader2depthmapBase;
+			std::map<Basic::WPtrC<Light>, int> light2idx;
 		};
 	}
 }

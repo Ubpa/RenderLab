@@ -1,9 +1,7 @@
 #include "PLDM_Generator.h"
 
-#include <CppUtil/Engine/RasterBase.h>
-
 #include <CppUtil/Qt/RawAPI_Define.h>
-
+#include <CppUtil/Qt/RawAPI_OGLW.h>
 
 #include <CppUtil/Engine/Scene.h>
 #include <CppUtil/Engine/SObj.h>
@@ -21,10 +19,13 @@
 #include <ROOT_PATH.h>
 
 using namespace CppUtil;
+using namespace CppUtil::QT;
 using namespace CppUtil::Engine;
 using namespace CppUtil::OpenGL;
 using namespace CppUtil::Basic;
 using namespace std;
+
+const string rootPath = ROOT_PATH;
 
 namespace CppUtil {
 	namespace Engine {
@@ -36,8 +37,8 @@ namespace CppUtil {
 	}
 }
 
-PLDM_Generator::PLDM_Generator(RasterBase * raster)
-	: raster(raster), depthMapSize(1024), lightFar(25.0f)
+PLDM_Generator::PLDM_Generator(QT::RawAPI_OGLW * pOGLW)
+	: pOGLW(pOGLW), depthMapSize(1024), lightFar(25.0f)
 {
 	RegMemberFunc<Scene>(&PLDM_Generator::Visit);
 	RegMemberFunc<SObj>(&PLDM_Generator::Visit);
@@ -54,17 +55,18 @@ void PLDM_Generator::OGL_Init() {
 }
 
 void PLDM_Generator::Visit(Ptr<Scene> scene) {
-	scene->SetWriteLock(true);
-
-	if (!raster || !scene || !scene->GetRoot()) {
-		printf("WARN: PLDM_Generator raster or scene or root is nullptr\n");
+	if (!scene || !scene->GetRoot()) {
+		printf("ERROR::PLDM_Generator::Visit(Ptr<Scene> scene):\n"
+			"\t""scene or scene's root is nullptr\n");
 		return;
 	}
 
-	GLint lastFBO;
-	glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &lastFBO);
-	GLint viewport[4];
-	glGetIntegerv(GL_VIEWPORT, viewport);
+	scene->SetWriteLock(true);
+
+	GLint origFBO;
+	glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &origFBO);
+	GLint origViewport[4];
+	glGetIntegerv(GL_VIEWPORT, origViewport);
 
 	modelVec.clear();
 	modelVec.push_back(Transform(1.f));
@@ -80,7 +82,7 @@ void PLDM_Generator::Visit(Ptr<Scene> scene) {
 
 		FBO FBO_DepthMap(depthMapSize, depthMapSize, FBO::ENUM_TYPE_CUBE_DEPTH);
 		Texture depthMap(FBO_DepthMap.GetDepthTexture().GetID(), Texture::ENUM_TYPE_CUBE_MAP);
-		lightMap[cmptLight] = Val(FBO_DepthMap, depthMap);
+		lightMap[cmptLight] = FBO_Tex(FBO_DepthMap, depthMap);
 	}
 
 	auto shadowProj = Transform::Perspcetive(90.f, 1.f, 0.01f, lightFar);
@@ -122,8 +124,8 @@ void PLDM_Generator::Visit(Ptr<Scene> scene) {
 		scene->GetRoot()->Accept(This());
 	}
 
-	glBindFramebuffer(GL_FRAMEBUFFER, lastFBO);
-	glViewport(viewport[0], viewport[1], viewport[2], viewport[3]);
+	glBindFramebuffer(GL_FRAMEBUFFER, origFBO);
+	glViewport(origViewport[0], origViewport[1], origViewport[2], origViewport[3]);
 
 	scene->SetWriteLock(false);
 }
@@ -152,17 +154,17 @@ void PLDM_Generator::Visit(Ptr<SObj> sobj) {
 
 void PLDM_Generator::Visit(Ptr<Sphere> sphere) {
 	shader_genDepth.SetMat4f("model", modelVec.back());
-	raster->GetSphereVAO().Draw(shader_genDepth);
+	pOGLW->GetVAO(ShapeType::Sphere).Draw(shader_genDepth);
 }
 
 void PLDM_Generator::Visit(Ptr<Plane> plane) {
 	shader_genDepth.SetMat4f("model", modelVec.back());
-	raster->GetPlaneVAO().Draw(shader_genDepth);
+	pOGLW->GetVAO(ShapeType::Plane).Draw(shader_genDepth);
 }
 
 void PLDM_Generator::Visit(Ptr<TriMesh> mesh) {
 	shader_genDepth.SetMat4f("model", modelVec.back());
-	raster->GetMeshVAO(mesh).Draw(shader_genDepth);
+	pOGLW->GetVAO(mesh).Draw(shader_genDepth);
 }
 
 const Texture PLDM_Generator::GetDepthCubeMap(PtrC<CmptLight> light) const {
