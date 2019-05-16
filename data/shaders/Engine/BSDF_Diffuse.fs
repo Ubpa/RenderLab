@@ -13,6 +13,7 @@ in VS_OUT {
 // ----------------- 常量
 
 #define MAX_POINT_LIGHTS 8
+#define MAX_DIRECTIONAL_LIGHTS 8
 const float PI = 3.14159265359;
 
 // array of offset direction for sampling
@@ -42,6 +43,12 @@ struct PointLight {
     float quadratic;// 4	32
 };
 
+// 32
+struct DirectionalLight{
+	vec3 L;         // 12   0
+	vec3 dir;       // 12   16
+};
+
 // 160
 layout (std140) uniform Camera{
 	mat4 view;			// 64	0	64
@@ -55,8 +62,14 @@ layout (std140) uniform Camera{
 
 // 400
 layout (std140) uniform PointLights{
-	int numLight;// 16
+	int numPointsLight;// 16
 	PointLight pointLights[MAX_POINT_LIGHTS];// 48 * MAX_POINT_LIGHTS = 48 * 8 = 384
+};
+
+// 272
+layout (std140) uniform DirectionalLights{
+	int numDirectionalLight;// 16
+	DirectionalLight directionaLights[MAX_DIRECTIONAL_LIGHTS];// 32 * MAX_DIRECTIONAL_LIGHTS = 32 * 8 = 256
 };
 
 uniform BSDF_Diffuse bsdf;
@@ -69,6 +82,15 @@ uniform samplerCube pointLightDepthMap4;
 uniform samplerCube pointLightDepthMap5;
 uniform samplerCube pointLightDepthMap6;
 uniform samplerCube pointLightDepthMap7;
+
+uniform sampler2D directionaLightDepthMap0; // 9
+uniform sampler2D directionaLightDepthMap1;
+uniform sampler2D directionaLightDepthMap2;
+uniform sampler2D directionaLightDepthMap3;
+uniform sampler2D directionaLightDepthMap4;
+uniform sampler2D directionaLightDepthMap5;
+uniform sampler2D directionaLightDepthMap6;
+uniform sampler2D directionaLightDepthMap7;
 
 uniform float lightFar;
 
@@ -92,7 +114,7 @@ void main() {
 	
 	// 采样光源
 	vec3 result = vec3(0);
-    for(int i = 0; i < numLight; i++) {
+    for(int i = 0; i < numPointsLight; i++) {
 		vec3 fragToLight = pointLights[i].position - fs_in.FragPos;
 		float dist2 = dot(fragToLight, fragToLight);
 		float dist = sqrt(dist2);
@@ -107,8 +129,16 @@ void main() {
 		result += visibility * cosTheta / attenuation * diffuse * pointLights[i].L ;
 	}
 	
+	for(int i=0; i < numDirectionalLight; i++){
+		vec3 wi = -normalize(directionaLights[i].dir);
+
+		float cosTheta = max(dot(wi, normalize(fs_in.Normal)), 0);
+		
+		result += cosTheta * diffuse * directionaLights[i].L;
+	}
+	
 	// gamma 校正
-    FragColor = vec4(sqrt(result),1.0);
+    FragColor = vec4(sqrt(result), 1.0);
 }
 
 // ----------------- 函数定义

@@ -13,6 +13,7 @@
 
 #include <CppUtil/Engine/AreaLight.h>
 #include <CppUtil/Engine/PointLight.h>
+#include <CppUtil/Engine/DirectionalLight.h>
 
 #include <CppUtil/Basic/Visitor.h>
 #include <CppUtil/Basic/Math.h>
@@ -45,6 +46,7 @@ public:
 		RegMemberFunc<CmptLight>(&Attribute::ComponentVisitor::Visit);
 		RegMemberFunc<AreaLight>(&Attribute::ComponentVisitor::Visit);
 		RegMemberFunc<PointLight>(&Attribute::ComponentVisitor::Visit);
+		RegMemberFunc<DirectionalLight>(&Attribute::ComponentVisitor::Visit);
 
 		RegMemberFunc<CmptMaterial>(&Attribute::ComponentVisitor::Visit);
 		RegMemberFunc<BSDF_Diffuse>(&Attribute::ComponentVisitor::Visit);
@@ -77,6 +79,7 @@ public:
 	void Visit(Ptr<CmptLight> cmpt);
 	void Visit(Ptr<AreaLight> light);
 	void Visit(Ptr<PointLight> light);
+	void Visit(Ptr<DirectionalLight> light);
 
 	void Visit(Ptr<CmptMaterial> cmpt);
 	void Visit(Ptr<BSDF_Diffuse> bsdf);
@@ -376,12 +379,16 @@ void Attribute::ComponentVisitor::Visit(Ptr<CmptLight> cmpt) {
 	getTypeStr->Reg([&typeStr](Ptr<PointLight>) {
 		typeStr = "PointLight";
 	});
+	getTypeStr->Reg([&typeStr](Ptr<DirectionalLight>) {
+		typeStr = "DirectionalLight";
+	});
 
-	const int lightNum = 3;
+	const int lightNum = 4;
 	tuple<string, function<Ptr<Light>()>> lightArr[lightNum] = {
 		{"None", []()->Ptr<Light> { return nullptr; } },
 		{"AreaLight", []()->Ptr<Light> { return AreaLight::New(); } },
 		{"PointLight", []()->Ptr<Light> { return PointLight::New(); } },
+		{"DirectionalLight", []()->Ptr<Light> { return DirectionalLight::New(); } },
 	};
 
 	Grid::pSlotMap pSlotMap(new Grid::SlotMap);
@@ -423,6 +430,12 @@ void Attribute::ComponentVisitor::Visit(Ptr<PointLight> light) {
 	grid->AddEditVal("- Intensity", light->intensity, 0, 20, 2000);
 	grid->AddEditVal("- Linear", light->linear, 0, 1.0, 100);
 	grid->AddEditVal("- Quadratic", light->quadratic, 0, 2.0, 200);
+}
+
+void Attribute::ComponentVisitor::Visit(Ptr<DirectionalLight> light) {
+	auto grid = GetGrid(attr->componentType2item[typeid(CmptLight)]);
+	grid->AddEditColor("- Color", light->color);
+	grid->AddEditVal("- Intensity", light->intensity, 0, 20, 2000);
 }
 
 // -------------- Attribute --------------

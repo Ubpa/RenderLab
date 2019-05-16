@@ -6,6 +6,7 @@
 
 namespace CppUtil {
 	namespace Engine {
+		// 局部坐标系中，朝下 -y
 		class AreaLight : public Light {
 		public:
 			AreaLight(const RGBf &color = RGBf(1), float intensity = 1, float width = 1, float height = 1)

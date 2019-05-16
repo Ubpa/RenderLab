@@ -17,6 +17,7 @@
 
 #include <CppUtil/Engine/CmptLight.h>
 #include <CppUtil/Engine/PointLight.h>
+#include <CppUtil/Engine/DirectionalLight.h>
 
 #include <CppUtil/Qt/RawAPI_OGLW.h>
 #include <CppUtil/Qt/RawAPI_Define.h>
@@ -90,10 +91,16 @@ void RasterBase::Draw() {
 }
 
 void RasterBase::OGL_Init() {
-	glGenBuffers(1, &lightsUBO);
-	glBindBuffer(GL_UNIFORM_BUFFER, lightsUBO);
+	glGenBuffers(1, &pointLightsUBO);
+	glBindBuffer(GL_UNIFORM_BUFFER, pointLightsUBO);
 	glBufferData(GL_UNIFORM_BUFFER, 400, NULL, GL_DYNAMIC_DRAW);
-	glBindBufferBase(GL_UNIFORM_BUFFER, 1, lightsUBO);
+	glBindBufferBase(GL_UNIFORM_BUFFER, 1, pointLightsUBO);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+	glGenBuffers(1, &directionalLightsUBO);
+	glBindBuffer(GL_UNIFORM_BUFFER, directionalLightsUBO);
+	glBufferData(GL_UNIFORM_BUFFER, 272, NULL, GL_DYNAMIC_DRAW);
+	glBindBufferBase(GL_UNIFORM_BUFFER, 2, directionalLightsUBO);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 	pldmGenerator->OGL_Init();
@@ -151,29 +158,59 @@ void RasterBase::Visit(Ptr<TriMesh> mesh) {
 }
 
 void RasterBase::UpdateLights() {
-	light2idx.clear();
+	UpdatePointLights();
+	UpdateDirectionalLights();
+}
 
-	int lightIdx = 0;
-	glBindBuffer(GL_UNIFORM_BUFFER, lightsUBO);
+void RasterBase::UpdatePointLights() {
+	pointLight2idx.clear();
+
+	int pointLightIdx = 0;
+	glBindBuffer(GL_UNIFORM_BUFFER, pointLightsUBO);
 	for (auto cmptLight : scene->GetCmptLights()) {
 		auto pointLight = CastTo<PointLight>(cmptLight->light);
 		if (!pointLight)
 			continue;
 
-		light2idx[pointLight] = lightIdx;
+		pointLight2idx[pointLight] = pointLightIdx;
 
 		Point3 position = cmptLight->GetSObj()->GetWorldPos();
 
-		int base = 16 + 48 * lightIdx;
+		int base = 16 + 48 * pointLightIdx;
 		glBufferSubData(GL_UNIFORM_BUFFER, base, 12, position.Data());
 		auto lightL = pointLight->intensity * pointLight->color;
 		glBufferSubData(GL_UNIFORM_BUFFER, base + 16, 12, lightL.Data());
 		glBufferSubData(GL_UNIFORM_BUFFER, base + 28, 4, &pointLight->linear);
 		glBufferSubData(GL_UNIFORM_BUFFER, base + 32, 4, &pointLight->quadratic);
 
-		lightIdx++;
+		pointLightIdx++;
 	}
-	glBufferSubData(GL_UNIFORM_BUFFER, 0, 4, &lightIdx);
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, 4, &pointLightIdx); // 点光源个数即为 pointLightIdx
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+}
+
+void RasterBase::UpdateDirectionalLights() {
+	directionalLight2idx.clear();
+
+	int directionalLightIdx = 0;
+	glBindBuffer(GL_UNIFORM_BUFFER, directionalLightsUBO);
+	for (auto cmptLight : scene->GetCmptLights()) {
+		auto directionalLight = CastTo<DirectionalLight>(cmptLight->light);
+		if (!directionalLight)
+			continue;
+
+		directionalLight2idx[directionalLight] = directionalLightIdx;
+
+		Vec3f dir = cmptLight->GetSObj()->GetLocalToWorldMatrix()(Normalf(0, -1, 0));
+
+		int base = 16 + 32 * directionalLightIdx;
+		auto lightL = directionalLight->intensity * directionalLight->color;
+		glBufferSubData(GL_UNIFORM_BUFFER, base, 12, lightL.Data());
+		glBufferSubData(GL_UNIFORM_BUFFER, base + 16, 12, dir.Data());
+
+		directionalLightIdx++;
+	}
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, 4, &directionalLightIdx); // 方向光个数即为 directionalLightIdx
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
@@ -187,12 +224,13 @@ void RasterBase::UsePointLightDepthMap(const Shader & shader) const {
 	const auto depthmapBase = target->second;
 
 	for (auto cmptLight : scene->GetCmptLights()) {
-		auto target = light2idx.find(cmptLight->light);
-		if (target == light2idx.cend())
+		auto pointLight = CastTo<PointLight>(cmptLight->light);
+		auto target = pointLight2idx.find(pointLight);
+		if (target == pointLight2idx.cend())
 			return;
-		const auto lightIdx = target->second;
+		const auto pointLightIdx = target->second;
 
-		pldmGenerator->GetDepthCubeMap(cmptLight).Use(depthmapBase + lightIdx);
+		pldmGenerator->GetDepthCubeMap(cmptLight).Use(depthmapBase + pointLightIdx);
 	}
 }
 
@@ -203,6 +241,7 @@ void RasterBase::RegShader(const OpenGL::Shader & shader, int depthmapBase) {
 		return;
 
 	shader.UniformBlockBind("PointLights", 1);
+	shader.UniformBlockBind("DirectionalLights", 2);
 
 	for (int i = 0; i < maxPointLights; i++)
 		shader.SetInt("pointLightDepthMap" + to_string(i), depthmapBase + i);

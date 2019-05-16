@@ -12,6 +12,7 @@
 #include <CppUtil/Engine/Plane.h>
 #include <CppUtil/Engine/AreaLight.h>
 #include <CppUtil/Engine/PointLight.h>
+#include <CppUtil/Engine/DirectionalLight.h>
 
 #include <qmenu.h>
 #include <qdrag.h>
@@ -233,6 +234,12 @@ void Tree::contextMenuEvent(QContextMenuEvent *event) {
 	genLightMenu->addAction("Point Light", this, []() {
 		auto sobj = Hierarchy::GetInstance()->CreateSObj("Point Light");
 		auto light = CmptLight::New(sobj, PointLight::New());
+		auto transform = CmptTransform::New(sobj);
+	});
+
+	genLightMenu->addAction("Directional Light", this, []() {
+		auto sobj = Hierarchy::GetInstance()->CreateSObj("Directional Light");
+		auto light = CmptLight::New(sobj, DirectionalLight::New());
 		auto transform = CmptTransform::New(sobj);
 	});
 

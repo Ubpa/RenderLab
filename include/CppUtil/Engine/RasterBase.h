@@ -37,7 +37,8 @@ namespace CppUtil {
 		class BSDF_MetalWorkflow;
 		class BSDF_FrostedGlass;
 
-		class Light;
+		class PointLight;
+		class DirectionalLight;
 
 		class RasterBase : public Basic::Visitor {
 		protected:
@@ -78,6 +79,8 @@ namespace CppUtil {
 
 			// 更新光源的 UniformBlock
 			void UpdateLights();
+			void UpdatePointLights();
+			void UpdateDirectionalLights();
 
 		protected:
 			Basic::Ptr<Scene> scene;
@@ -92,14 +95,16 @@ namespace CppUtil {
 
 			std::map<Basic::WPtrC<Basic::Image>, OpenGL::Texture> img2tex;
 
-			unsigned int lightsUBO;
+			unsigned int pointLightsUBO;
+			unsigned int directionalLightsUBO;
 
 			static const int maxPointLights;// 8
 			Basic::Ptr<PLDM_Generator> pldmGenerator;
 
 			struct ShaderCompare { bool operator()(const OpenGL::Shader & lhs, const OpenGL::Shader & rhs) const; };
 			std::map<OpenGL::Shader, int, ShaderCompare> shader2depthmapBase;
-			std::map<Basic::WPtrC<Light>, int> light2idx;
+			std::map<Basic::WPtrC<PointLight>, int> pointLight2idx;
+			std::map<Basic::WPtrC<DirectionalLight>, int> directionalLight2idx;
 		};
 	}
 }

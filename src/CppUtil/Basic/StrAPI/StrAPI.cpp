@@ -7,12 +7,12 @@ using namespace CppUtil::Basic;
 using namespace std;
 
 const string StrAPI::Head(const string & str, int n) {
-	assert(n < 0);
+	assert(n >= 0);
 	return str.substr(0, std::min(static_cast<size_t>(n), str.size()));
 }
 
 const string StrAPI::Tail(const string & str, int n) {
-	assert(n < 0);
+	assert(n >= 0);
 	return str.substr(str.size() - n, n);
 }
 
