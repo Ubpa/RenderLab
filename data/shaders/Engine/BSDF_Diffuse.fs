@@ -44,10 +44,11 @@ struct PointLight {
     float quadratic;// 4	32
 };
 
-// 32
+// 96
 struct DirectionalLight{
 	vec3 L;         // 12   0
 	vec3 dir;       // 12   16
+	mat4 ProjView;  // 64   32
 };
 
 // 160
@@ -67,10 +68,10 @@ layout (std140) uniform PointLights{
 	PointLight pointLights[MAX_POINT_LIGHTS];// 48 * MAX_POINT_LIGHTS = 48 * 8 = 384
 };
 
-// 272
+// 784
 layout (std140) uniform DirectionalLights{
 	int numDirectionalLight;// 16
-	DirectionalLight directionaLights[MAX_DIRECTIONAL_LIGHTS];// 32 * MAX_DIRECTIONAL_LIGHTS = 32 * 8 = 256
+	DirectionalLight directionaLights[MAX_DIRECTIONAL_LIGHTS];// 96 * MAX_DIRECTIONAL_LIGHTS = 96 * 8 = 768
 };
 
 uniform BSDF_Diffuse bsdf;
@@ -84,21 +85,24 @@ uniform samplerCube pointLightDepthMap5;
 uniform samplerCube pointLightDepthMap6;
 uniform samplerCube pointLightDepthMap7;
 
-uniform sampler2D directionaLightDepthMap0; // 9
-uniform sampler2D directionaLightDepthMap1;
-uniform sampler2D directionaLightDepthMap2;
-uniform sampler2D directionaLightDepthMap3;
-uniform sampler2D directionaLightDepthMap4;
-uniform sampler2D directionaLightDepthMap5;
-uniform sampler2D directionaLightDepthMap6;
-uniform sampler2D directionaLightDepthMap7;
+uniform sampler2D directionalLightDepthMap0; // 9
+uniform sampler2D directionalLightDepthMap1;
+uniform sampler2D directionalLightDepthMap2;
+uniform sampler2D directionalLightDepthMap3;
+uniform sampler2D directionalLightDepthMap4;
+uniform sampler2D directionalLightDepthMap5;
+uniform sampler2D directionalLightDepthMap6;
+uniform sampler2D directionalLightDepthMap7;
 
 uniform float lightFar;
 
 // ----------------- 函数声明
 
-float Visibility(vec3 lightToFrag, int id);
-float Visibility(vec3 lightToFrag, samplerCube depthMap);
+float PointLightVisibility(vec3 lightToFrag, int id);
+float PointLightVisibility(vec3 lightToFrag, samplerCube depthMap);
+
+float DirectionalLightVisibility(vec3 normPos, float cosTheta, int id);
+float DirectionalLightVisibility(vec3 normPos, float cosTheta, sampler2D depthMap);
 
 // ----------------- 主函数
 
@@ -121,7 +125,7 @@ void main() {
 		float dist = sqrt(dist2);
 		vec3 wi = fragToLight/dist;
 		
-		float visibility = Visibility(-fragToLight, i);
+		float visibility = PointLightVisibility(-fragToLight, i);
 
 		float cosTheta = max(dot(wi, normalize(fs_in.Normal)), 0);
 		
@@ -130,42 +134,47 @@ void main() {
 		result += visibility * cosTheta / attenuation * diffuse * pointLights[i].L ;
 	}
 	
+	float depth;
 	for(int i=0; i < numDirectionalLight; i++){
 		vec3 wi = -normalize(directionaLights[i].dir);
 
 		float cosTheta = max(dot(wi, normalize(fs_in.Normal)), 0);
 		
-		result += cosTheta * diffuse * directionaLights[i].L;
+		vec4 pos4 = directionaLights[i].ProjView * vec4(fs_in.FragPos, 1);
+		vec3 normPos = ((pos4.xyz / pos4.w) + 1) / 2;
+		float visibility = DirectionalLightVisibility(normPos, cosTheta, i);
+		
+		result += visibility * cosTheta * diffuse * directionaLights[i].L;
 	}
 	
 	// gamma 校正
-    FragColor = vec4(sqrt(result), 1.0);
+	FragColor = vec4(sqrt(result), 1.0);
 }
 
 // ----------------- 函数定义
 
-float Visibility(vec3 lightToFrag, int id){
+float PointLightVisibility(vec3 lightToFrag, int id){
 	if(id == 0) {
-		return Visibility(lightToFrag, pointLightDepthMap0);
+		return PointLightVisibility(lightToFrag, pointLightDepthMap0);
 	} else if(id == 1) {
-		return Visibility(lightToFrag, pointLightDepthMap1);
+		return PointLightVisibility(lightToFrag, pointLightDepthMap1);
 	} else if(id == 2) {
-		return Visibility(lightToFrag, pointLightDepthMap2);
+		return PointLightVisibility(lightToFrag, pointLightDepthMap2);
 	} else if(id == 3) {
-		return Visibility(lightToFrag, pointLightDepthMap3);
+		return PointLightVisibility(lightToFrag, pointLightDepthMap3);
 	} else if(id == 4) {
-		return Visibility(lightToFrag, pointLightDepthMap4);
+		return PointLightVisibility(lightToFrag, pointLightDepthMap4);
 	} else if(id == 5) {
-		return Visibility(lightToFrag, pointLightDepthMap5);
+		return PointLightVisibility(lightToFrag, pointLightDepthMap5);
 	} else if(id == 6) {
-		return Visibility(lightToFrag, pointLightDepthMap6);
+		return PointLightVisibility(lightToFrag, pointLightDepthMap6);
 	} else if(id == 7) {
-		return Visibility(lightToFrag, pointLightDepthMap7);
+		return PointLightVisibility(lightToFrag, pointLightDepthMap7);
 	}else 
 		return 1;// not support id
 }
 
-float Visibility(vec3 lightToFrag, samplerCube depthMap) {
+float PointLightVisibility(vec3 lightToFrag, samplerCube depthMap) {
 	float currentDepth = length(lightToFrag);
 	float bias = 0.08;
 	int samples = 20;
@@ -178,4 +187,42 @@ float Visibility(vec3 lightToFrag, samplerCube depthMap) {
 	}
 	shadow /= float(samples);
 	return 1 - shadow;
+}
+
+
+float DirectionalLightVisibility(vec3 normPos, float cosTheta, int id){
+	if(id == 0) {
+		return DirectionalLightVisibility(normPos, cosTheta, directionalLightDepthMap0);
+	} else if(id == 1) {
+		return DirectionalLightVisibility(normPos, cosTheta, directionalLightDepthMap1);
+	} else if(id == 2) {
+		return DirectionalLightVisibility(normPos, cosTheta, directionalLightDepthMap2);
+	} else if(id == 3) {
+		return DirectionalLightVisibility(normPos, cosTheta, directionalLightDepthMap3);
+	} else if(id == 4) {
+		return DirectionalLightVisibility(normPos, cosTheta, directionalLightDepthMap4);
+	} else if(id == 5) {
+		return DirectionalLightVisibility(normPos, cosTheta, directionalLightDepthMap5);
+	} else if(id == 6) {
+		return DirectionalLightVisibility(normPos, cosTheta, directionalLightDepthMap6);
+	} else if(id == 7) {
+		return DirectionalLightVisibility(normPos, cosTheta, directionalLightDepthMap7);
+	}else
+		return 1;// not support id
+}
+
+float DirectionalLightVisibility(vec3 normPos, float cosTheta, sampler2D depthMap){
+	float visibility = 0.0;
+	vec2 texelSize = 1.0 / textureSize(depthMap, 0);
+	float bias = max(0.05 * (1.0 - cosTheta), 0.005);
+	for(int x = -1; x <= 1; ++x)
+	{
+		for(int y = -1; y <= 1; ++y)
+		{
+			float pcfDepth = texture(depthMap, normPos.xy + vec2(x, y) * texelSize).r; 
+			visibility += smoothstep(normPos.z - bias, normPos.z - 0.5 * bias, pcfDepth);      
+		}
+	}
+	visibility /= 9.0;
+	return visibility;
 }

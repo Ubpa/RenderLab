@@ -1,5 +1,6 @@
 #include <CppUtil/Engine/RasterBase.h>
 
+#include "DLDM_Generator.h"
 #include "PLDM_Generator.h"
 
 #include <CppUtil/Engine/Scene.h>
@@ -45,6 +46,7 @@ using namespace Define;
 using namespace std;
 
 const int RasterBase::maxPointLights = 8;
+const int RasterBase::maxDirectionalLights = 8;
 const string rootPath = ROOT_PATH;
 
 bool RasterBase::ShaderCompare::operator()(const OpenGL::Shader & lhs, const OpenGL::Shader & rhs) const{
@@ -57,8 +59,10 @@ bool RasterBase::ShaderCompare::operator()(const OpenGL::Shader & lhs, const Ope
 	return lhs.GetID() < rhs.GetID();
 }
 
-RasterBase::RasterBase(RawAPI_OGLW * pOGLW, Ptr<Scene> scene)
-	: pOGLW(pOGLW), scene(scene), pldmGenerator(PLDM_Generator::New(pOGLW)) {
+RasterBase::RasterBase(RawAPI_OGLW * pOGLW, Ptr<Scene> scene, Ptr<Camera> camera)
+	: pOGLW(pOGLW), scene(scene),
+	pldmGenerator(PLDM_Generator::New(pOGLW)),
+	dldmGenerator(DLDM_Generator::New(pOGLW, camera)) {
 	RegMemberFunc<SObj>(&RasterBase::Visit);
 
 	// primitive
@@ -81,9 +85,11 @@ void RasterBase::Draw() {
 	glClearColor(0, 0, 0, 1);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	UpdateLights();
-
 	scene->Accept(pldmGenerator);
+	scene->Accept(dldmGenerator);
+
+	// 要放在深度图生成之后
+	UpdateLights();
 
 	modelVec.clear();
 	modelVec.push_back(Transform(1.f));
@@ -99,11 +105,12 @@ void RasterBase::OGL_Init() {
 
 	glGenBuffers(1, &directionalLightsUBO);
 	glBindBuffer(GL_UNIFORM_BUFFER, directionalLightsUBO);
-	glBufferData(GL_UNIFORM_BUFFER, 272, NULL, GL_DYNAMIC_DRAW);
+	glBufferData(GL_UNIFORM_BUFFER, 784, NULL, GL_DYNAMIC_DRAW);
 	glBindBufferBase(GL_UNIFORM_BUFFER, 2, directionalLightsUBO);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 	pldmGenerator->OGL_Init();
+	dldmGenerator->OGL_Init();
 }
 
 void RasterBase::InitShaders() {
@@ -203,10 +210,11 @@ void RasterBase::UpdateDirectionalLights() {
 
 		Vec3f dir = cmptLight->GetSObj()->GetLocalToWorldMatrix()(Normalf(0, -1, 0));
 
-		int base = 16 + 32 * directionalLightIdx;
+		int base = 16 + 96 * directionalLightIdx;
 		auto lightL = directionalLight->intensity * directionalLight->color;
 		glBufferSubData(GL_UNIFORM_BUFFER, base, 12, lightL.Data());
 		glBufferSubData(GL_UNIFORM_BUFFER, base + 16, 12, dir.Data());
+		glBufferSubData(GL_UNIFORM_BUFFER, base + 32, 64, dldmGenerator->GetProjView(cmptLight).GetMatrix().Data());
 
 		directionalLightIdx++;
 	}
@@ -214,10 +222,10 @@ void RasterBase::UpdateDirectionalLights() {
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
-void RasterBase::UsePointLightDepthMap(const Shader & shader) const {
+void RasterBase::UseLightDepthMap(const Shader & shader) const {
 	auto target = shader2depthmapBase.find(shader);
 	if (target == shader2depthmapBase.cend()) {
-		printf("ERROR::RasterBase::UsePointLightDepthMap:\n"
+		printf("ERROR::RasterBase::UseLightDepthMap:\n"
 			"\t""shader not regist\n");
 		return;
 	}
@@ -227,10 +235,20 @@ void RasterBase::UsePointLightDepthMap(const Shader & shader) const {
 		auto pointLight = CastTo<PointLight>(cmptLight->light);
 		auto target = pointLight2idx.find(pointLight);
 		if (target == pointLight2idx.cend())
-			return;
+			continue;
 		const auto pointLightIdx = target->second;
 
 		pldmGenerator->GetDepthCubeMap(cmptLight).Use(depthmapBase + pointLightIdx);
+	}
+
+	for (auto cmptLight : scene->GetCmptLights()) {
+		auto directionalLight = CastTo<DirectionalLight>(cmptLight->light);
+		auto target = directionalLight2idx.find(directionalLight);
+		if (target == directionalLight2idx.cend())
+			continue;
+		const auto directionalLightIdx = target->second;
+
+		dldmGenerator->GetDepthMap(cmptLight).Use(depthmapBase + maxPointLights + directionalLightIdx);
 	}
 }
 
@@ -240,13 +258,19 @@ void RasterBase::RegShader(const OpenGL::Shader & shader, int depthmapBase) {
 	if (depthmapBase < 0) // 无需计算光
 		return;
 
+	shader2depthmapBase[shader] = depthmapBase;
+
+	// point light
 	shader.UniformBlockBind("PointLights", 1);
-	shader.UniformBlockBind("DirectionalLights", 2);
 
 	for (int i = 0; i < maxPointLights; i++)
 		shader.SetInt("pointLightDepthMap" + to_string(i), depthmapBase + i);
 
 	shader.SetFloat("lightFar", pldmGenerator->GetLightFar());
 
-	shader2depthmapBase[shader] = depthmapBase;
+	// directional light
+	shader.UniformBlockBind("DirectionalLights", 2);
+
+	for (int i = 0; i < maxDirectionalLights; i++)
+		shader.SetInt("directionalLightDepthMap" + to_string(i), depthmapBase + maxPointLights + i);
 }

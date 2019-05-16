@@ -100,8 +100,11 @@ uint Shader::GetID() const { return ID; }
 bool Shader::IsValid() const { return valid; }
 
 bool Shader::Use() const{
-	if (!valid)
+	if (!valid) {
+		printf("ERROR::Shader::Use:\n"
+			"\t""use a invalid shader\n");
 		return false;
+	}
 	
 	glUseProgram(ID);
 	return true;

@@ -58,6 +58,15 @@ namespace CppUtil {
 						std::max(lhs.x, rhs.x)
 					);
 				}
+
+				static const ImplT Mean(const std::vector<ImplT> & vals) {
+					auto x = static_cast<T>(0);
+					for (size_t i = 0; i < vals.size(); i++) {
+						x += vals[i].x;
+					}
+					const float invN = 1.f / static_cast<float>(vals.size());
+					return ImplT(x*invN);
+				}
 			};
 		}
 	}

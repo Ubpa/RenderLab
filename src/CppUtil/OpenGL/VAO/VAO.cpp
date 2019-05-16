@@ -110,8 +110,11 @@ bool VAO::IsValid() const {
 }
 
 bool VAO::Use() const {
-	if (!IsValid())
+	if (!IsValid()) {
+		printf("ERROR::VAO::Use:\n"
+			"\t""use a invalid VAO\n");
 		return false;
+	}
 
 	glBindVertexArray(ID);
 	return true;

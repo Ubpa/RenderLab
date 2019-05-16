@@ -30,6 +30,7 @@
   - 光源 Light
     - 面光源 AreaLight
     - 点光源 PointLight
+    - 方向光 DirectionalLight
 - 查看器 Viewer
   - 拣选器 Picker
   - 直接光照光栅器 DirectIllumRaster
@@ -77,13 +78,13 @@ Optix: 6.0
 - [x] 线性化 BVH
 - [x] Imaging Pipline
 - [x] 简单模型载入
-- [ ] 方向光
+- [x] 方向光
   - [x] 离线
-  - [ ] 实时
+  - [x] 实时
     - [x] 光照计算
-    - [ ] 阴影
+    - [x] 阴影
   - [x] UI
-  - [ ] （反）序列化
+  - [x] （反）序列化
 - [ ] 旋转拖动缩放物体
 - [ ] 方向标明
 - [ ] 统一相机

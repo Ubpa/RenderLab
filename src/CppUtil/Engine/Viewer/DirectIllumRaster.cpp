@@ -98,7 +98,7 @@ void DirectIllumRaster::Visit(Ptr<BSDF_Diffuse> bsdf) {
 	else
 		shader_diffuse.SetBool(strBSDF + "haveAlbedoTexture", false);
 
-	UsePointLightDepthMap(shader_diffuse);
+	UseLightDepthMap(shader_diffuse);
 }
 
 void DirectIllumRaster::Visit(Ptr<BSDF_MetalWorkflow> bsdf) {
@@ -123,7 +123,7 @@ void DirectIllumRaster::Visit(Ptr<BSDF_MetalWorkflow> bsdf) {
 			shader_metalWorkflow.SetBool(wholeName, false);
 	}
 
-	UsePointLightDepthMap(shader_metalWorkflow);
+	UseLightDepthMap(shader_metalWorkflow);
 }
 
 void DirectIllumRaster::Visit(Ptr<BSDF_FrostedGlass> bsdf) {
@@ -149,5 +149,5 @@ void DirectIllumRaster::Visit(Ptr<BSDF_FrostedGlass> bsdf) {
 
 	shader_frostedGlass.SetFloat(strBSDF + "ior", bsdf->ior);
 
-	UsePointLightDepthMap(shader_frostedGlass);
+	UseLightDepthMap(shader_frostedGlass);
 }

@@ -15,12 +15,17 @@ namespace CppUtil {
 		class Image;
 	}
 
+	namespace OpenGL {
+		class Camera;
+	}
+
 	namespace QT {
 		class RawAPI_OGLW;
 	}
 
 	namespace Engine {
 		class PLDM_Generator;
+		class DLDM_Generator;
 
 		class Scene;
 		class SObj;
@@ -42,7 +47,7 @@ namespace CppUtil {
 
 		class RasterBase : public Basic::Visitor {
 		protected:
-			RasterBase(QT::RawAPI_OGLW * pOGLW, Basic::Ptr<Scene> scene);
+			RasterBase(QT::RawAPI_OGLW * pOGLW, Basic::Ptr<Scene> scene, Basic::Ptr<OpenGL::Camera> camera);
 			virtual ~RasterBase() = default;
 
 		public:
@@ -52,7 +57,7 @@ namespace CppUtil {
 
 		protected:// Use for SubClass
 			void RegShader(const OpenGL::Shader & shader, int depthmapBase = -1);
-			void UsePointLightDepthMap(const OpenGL::Shader & shader) const;
+			void UseLightDepthMap(const OpenGL::Shader & shader) const;
 
 			void SetCurShader(const OpenGL::Shader & shader) { curShader = shader; }
 
@@ -100,6 +105,8 @@ namespace CppUtil {
 
 			static const int maxPointLights;// 8
 			Basic::Ptr<PLDM_Generator> pldmGenerator;
+			static const int maxDirectionalLights;// 8
+			Basic::Ptr<DLDM_Generator> dldmGenerator;
 
 			struct ShaderCompare { bool operator()(const OpenGL::Shader & lhs, const OpenGL::Shader & rhs) const; };
 			std::map<OpenGL::Shader, int, ShaderCompare> shader2depthmapBase;

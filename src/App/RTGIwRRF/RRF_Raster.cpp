@@ -159,5 +159,5 @@ void RRF_Raster::Visit(Ptr<BSDF_FrostedGlass> bsdf) {
 
 	shader.SetFloat(strBSDF + "ior", bsdf->ior);
 
-	UsePointLightDepthMap(shader);
+	UseLightDepthMap(shader);
 }

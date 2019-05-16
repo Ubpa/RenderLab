@@ -567,8 +567,11 @@ const Texture & FBO::GetDepthTexture() const {
 }
 
 bool FBO::Use() const{
-	if (!isValid)
+	if (!isValid) {
+		printf("ERROR::FBO::Use:\n"
+			"\t""use a invalid FBO\n");
 		return false;
+	}
 	
 	glBindFramebuffer(GL_FRAMEBUFFER, ID);
 	return true;

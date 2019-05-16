@@ -58,10 +58,11 @@ struct PointLight {
     float quadratic;// 4	32
 };
 
-// 32
+// 96
 struct DirectionalLight{
 	vec3 L;         // 12   0
 	vec3 dir;       // 12   16
+	mat4 ProjView;  // 64   32
 };
 
 // 160
@@ -98,14 +99,14 @@ uniform samplerCube pointLightDepthMap5;
 uniform samplerCube pointLightDepthMap6;
 uniform samplerCube pointLightDepthMap7;
 
-uniform sampler2D directionaLightDepthMap0; // 9
-uniform sampler2D directionaLightDepthMap1;
-uniform sampler2D directionaLightDepthMap2;
-uniform sampler2D directionaLightDepthMap3;
-uniform sampler2D directionaLightDepthMap4;
-uniform sampler2D directionaLightDepthMap5;
-uniform sampler2D directionaLightDepthMap6;
-uniform sampler2D directionaLightDepthMap7;
+uniform sampler2D directionalLightDepthMap0; // 9
+uniform sampler2D directionalLightDepthMap1;
+uniform sampler2D directionalLightDepthMap2;
+uniform sampler2D directionalLightDepthMap3;
+uniform sampler2D directionalLightDepthMap4;
+uniform sampler2D directionalLightDepthMap5;
+uniform sampler2D directionalLightDepthMap6;
+uniform sampler2D directionalLightDepthMap7;
 
 uniform float lightFar;
 
@@ -119,8 +120,11 @@ float GGX_G1(vec3 norm, vec3 v, vec3 h, float alpha);
 float GGX_G(vec3 norm, vec3 wo, vec3 wi, vec3 h, float alpha);
 vec3 BSDF(vec3 norm, vec3 wo, vec3 wi, vec3 color, float roughness, float ao, float ior);
 
-float Visibility(vec3 lightToFrag, int id);
-float Visibility(vec3 lightToFrag, samplerCube depthMap);
+float PointLightVisibility(vec3 lightToFrag, int id);
+float PointLightVisibility(vec3 lightToFrag, samplerCube depthMap);
+
+float DirectionalLightVisibility(vec3 normPos, float cosTheta, int id);
+float DirectionalLightVisibility(vec3 normPos, float cosTheta, sampler2D depthMap);
 
 // ----------------- 主函数
 
@@ -156,7 +160,7 @@ void main() {
 		float dist = sqrt(dist2);
 		vec3 wi = fragToLight / dist;
 		
-		float visibility = Visibility(-fragToLight, i);
+		float visibility = PointLightVisibility(-fragToLight, i);
 		if(visibility==0)
 			continue;
 
@@ -176,7 +180,11 @@ void main() {
 
 		float cosTheta = max(dot(wi, normalize(fs_in.Normal)), 0);
 		
-		result += cosTheta * f * directionaLights[i].L;
+		vec4 pos4 = directionaLights[i].ProjView * vec4(fs_in.FragPos, 1);
+		vec3 normPos = ((pos4.xyz / pos4.w) + 1) / 2;
+		float visibility = DirectionalLightVisibility(normPos, cosTheta, i);
+		
+		result += visibility * cosTheta * f * directionaLights[i].L;
 	}
 	
 	// gamma 校正
@@ -285,28 +293,28 @@ vec3 CalcBumpedNormal(vec3 normal, vec3 tangent, sampler2D normalTexture, vec2 t
     return newNormal;
 }
 
-float Visibility(vec3 lightToFrag, int id){
+float PointLightVisibility(vec3 lightToFrag, int id){
 	if(id == 0) {
-		return Visibility(lightToFrag, pointLightDepthMap0);
+		return PointLightVisibility(lightToFrag, pointLightDepthMap0);
 	} else if(id == 1) {
-		return Visibility(lightToFrag, pointLightDepthMap1);
+		return PointLightVisibility(lightToFrag, pointLightDepthMap1);
 	} else if(id == 2) {
-		return Visibility(lightToFrag, pointLightDepthMap2);
+		return PointLightVisibility(lightToFrag, pointLightDepthMap2);
 	} else if(id == 3) {
-		return Visibility(lightToFrag, pointLightDepthMap3);
+		return PointLightVisibility(lightToFrag, pointLightDepthMap3);
 	} else if(id == 4) {
-		return Visibility(lightToFrag, pointLightDepthMap4);
+		return PointLightVisibility(lightToFrag, pointLightDepthMap4);
 	} else if(id == 5) {
-		return Visibility(lightToFrag, pointLightDepthMap5);
+		return PointLightVisibility(lightToFrag, pointLightDepthMap5);
 	} else if(id == 6) {
-		return Visibility(lightToFrag, pointLightDepthMap6);
+		return PointLightVisibility(lightToFrag, pointLightDepthMap6);
 	} else if(id == 7) {
-		return Visibility(lightToFrag, pointLightDepthMap7);
+		return PointLightVisibility(lightToFrag, pointLightDepthMap7);
 	}else 
 		return 1;// not support id
 }
 
-float Visibility(vec3 lightToFrag, samplerCube depthMap) {
+float PointLightVisibility(vec3 lightToFrag, samplerCube depthMap) {
 	float currentDepth = length(lightToFrag);
 	float bias = 0.08;
 	int samples = 20;
@@ -321,4 +329,41 @@ float Visibility(vec3 lightToFrag, samplerCube depthMap) {
 	}
 	shadow /= float(samples);
 	return 1 - shadow;
+}
+
+float DirectionalLightVisibility(vec3 normPos, float cosTheta, int id){
+	if(id == 0) {
+		return DirectionalLightVisibility(normPos, cosTheta, directionalLightDepthMap0);
+	} else if(id == 1) {
+		return DirectionalLightVisibility(normPos, cosTheta, directionalLightDepthMap1);
+	} else if(id == 2) {
+		return DirectionalLightVisibility(normPos, cosTheta, directionalLightDepthMap2);
+	} else if(id == 3) {
+		return DirectionalLightVisibility(normPos, cosTheta, directionalLightDepthMap3);
+	} else if(id == 4) {
+		return DirectionalLightVisibility(normPos, cosTheta, directionalLightDepthMap4);
+	} else if(id == 5) {
+		return DirectionalLightVisibility(normPos, cosTheta, directionalLightDepthMap5);
+	} else if(id == 6) {
+		return DirectionalLightVisibility(normPos, cosTheta, directionalLightDepthMap6);
+	} else if(id == 7) {
+		return DirectionalLightVisibility(normPos, cosTheta, directionalLightDepthMap7);
+	}else
+		return 1;// not support id
+}
+
+float DirectionalLightVisibility(vec3 normPos, float cosTheta, sampler2D depthMap){
+	float visibility = 0.0;
+	vec2 texelSize = 1.0 / textureSize(depthMap, 0);
+	float bias = max(0.05 * (1.0 - cosTheta), 0.005);
+	for(int x = -1; x <= 1; ++x)
+	{
+		for(int y = -1; y <= 1; ++y)
+		{
+			float pcfDepth = texture(depthMap, normPos.xy + vec2(x, y) * texelSize).r; 
+			visibility += smoothstep(normPos.z - bias, normPos.z - 0.5 * bias, pcfDepth);      
+		}
+	}
+	visibility /= 9.0;
+	return visibility;
 }

@@ -3,6 +3,8 @@
 
 #include <CppUtil/Basic/UGM/Transform.h>
 
+#include <vector>
+
 namespace CppUtil {
 	namespace OpenGL {
 		class Camera
@@ -35,8 +37,12 @@ namespace CppUtil {
 			);
 
 		public:
-			Transform GetViewMatrix();
-			Transform GetProjectionMatrix();
+			Transform GetViewMatrix() const;
+			Transform GetProjectionMatrix() const;
+
+			// 返回世界坐标系下视锥体的的八个顶点
+			const std::vector<Point3> Corners() const;
+			
 			Point3 & GetPos();
 			Vec3 GetFront() const { return front; }
 

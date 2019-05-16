@@ -7,11 +7,12 @@ namespace CppUtil {
 	namespace Engine {
 		class DirectIllumRaster final : public RasterBase {
 		public:
-			DirectIllumRaster(QT::RawAPI_OGLW * pOGLW, Basic::Ptr<Scene> scene) : RasterBase(pOGLW, scene) { }
+			DirectIllumRaster(QT::RawAPI_OGLW * pOGLW, Basic::Ptr<Scene> scene, Basic::Ptr<OpenGL::Camera> camera)
+				: RasterBase(pOGLW, scene, camera) { }
 
 		public:
-			static const Basic::Ptr<DirectIllumRaster> New(QT::RawAPI_OGLW * pOGLW, Basic::Ptr<Scene> scene) {
-				return Basic::New<DirectIllumRaster>(pOGLW, scene);
+			static const Basic::Ptr<DirectIllumRaster> New(QT::RawAPI_OGLW * pOGLW, Basic::Ptr<Scene> scene, Basic::Ptr<OpenGL::Camera> camera) {
+				return Basic::New<DirectIllumRaster>(pOGLW, scene, camera);
 			}
 
 		protected:

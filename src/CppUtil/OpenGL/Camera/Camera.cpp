@@ -4,10 +4,11 @@
 
 using namespace CppUtil;
 using namespace CppUtil::OpenGL;
+using namespace std;
 
 const float Camera::RATIO_WH = 1.0f;
 const float Camera::NEAR_PLANE = 0.01f;
-const float Camera::FAR_PLANE = 100.0f;
+const float Camera::FAR_PLANE = 15.0f;
 const float Camera::YAW = -90.0f;
 const float Camera::PITCH = 0.0f;
 const float Camera::FOV = 50.0f;
@@ -51,8 +52,45 @@ Point3 & Camera::GetPos() {
 }
 
 // Returns the view matrix calculated using Euler Angles and the LookAt Matrix
-Transform Camera::GetViewMatrix() {
+Transform Camera::GetViewMatrix() const {
 	return Transform::LookAt(position, position + front, up);
+}
+
+// Returns the projection matrix calculated using zoom, ratioWH, nearPlane, farPlane
+Transform Camera::GetProjectionMatrix() const {
+	switch (projectionMode)
+	{
+	case OpenGL::Camera::PROJECTION_PERSEPCTIVE:
+		return Transform::Perspcetive(fov, ratioWH, nearPlane, farPlane);
+	case OpenGL::Camera::PROJECTION_ORTHO:
+		return Transform::Orthographic(fov / 2.0f, fov / 2.0f / ratioWH, nearPlane, farPlane);
+	default:
+		return Transform(1);
+	}
+}
+
+const vector<Point3> Camera::Corners() const {
+	auto w2n = GetProjectionMatrix() * GetViewMatrix();
+	auto n2w = w2n.Inverse();
+
+	const Point3 nCorners[8] = {
+		{-1,-1,-1},
+		{-1,-1, 1},
+		{-1, 1,-1},
+		{-1, 1, 1},
+		{ 1,-1,-1},
+		{ 1,-1, 1},
+		{ 1, 1,-1},
+		{ 1, 1, 1},
+	};
+
+	vector<Point3> wCorners;
+	for (int i = 0; i < 8; i++) {
+		const auto wCorner = n2w(nCorners[i]);
+		wCorners.push_back(wCorner);
+	}
+
+	return wCorners;
 }
 
 // Calculates the front vector from the Camera's (updated) Euler Angles
@@ -65,19 +103,6 @@ void Camera::updateCameraVectors() {
 	// Also re-calculate the Right and Up vector
 	right = front.Cross(worldUp).Normalize();  // Normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
 	up = right.Cross(front).Normalize();
-}
-
-// Returns the projection matrix calculated using zoom, ratioWH, nearPlane, farPlane
-Transform Camera::GetProjectionMatrix() {
-	switch (projectionMode)
-	{
-	case OpenGL::Camera::PROJECTION_PERSEPCTIVE:
-		return Transform::Perspcetive(fov, ratioWH, nearPlane, farPlane);
-	case OpenGL::Camera::PROJECTION_ORTHO:
-		return Transform::Orthographic(fov / 2.0f, fov / 2.0f / ratioWH, nearPlane, farPlane);
-	default:
-		return Transform(1);
-	}
 }
 
 // Processes input received from a mouse input system. Expects the offset value in both the x and y direction.

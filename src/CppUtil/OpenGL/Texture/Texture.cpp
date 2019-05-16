@@ -230,8 +230,11 @@ bool Texture::SetImg(const Image & img) {
 }
 
 bool Texture::Use(uint id) const{
-	if (!IsValid())
+	if (!IsValid()) {
+		printf("ERROR::Texture::Use:\n"
+			"\t""use a invalid texture\n");
 		return false;
+	}
 
 	glActiveTexture(GL_TEXTURE0 + id);
 	glBindTexture(Type2GL(type), ID);

@@ -17,7 +17,7 @@ Viewer::Viewer(RawAPI_OGLW * pOGLW, Ptr<Scene> scene, RasterType rasterType)
 	switch (rasterType)
 	{
 	case RasterType::DirectIllum:
-		raster = DirectIllumRaster::New(pOGLW, scene);
+		raster = DirectIllumRaster::New(pOGLW, scene, roamer->GetCamera());
 		break;
 	default:
 		printf("ERROR::Viewer::Viewer:\n"

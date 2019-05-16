@@ -214,7 +214,12 @@ const Transform Transform::LookAt(const Point3 &pos, const Point3 &target, const
 
 
 	const Vec3 front = (target - pos).Normalize();
-	const Vec3 right = front.Cross(up).Normalize();
+	Vec3 right = front.Cross(up);
+	if (right.IsZero()) {
+		Vec3 newUp = up.Normalize();
+		newUp.MinComponent() = 1;
+		right = front.Cross(newUp).Normalize();
+	}
 	const Vec3 camUp = right.Cross(front);
 
 	Mat4f worldToCamera;

@@ -104,7 +104,7 @@ void SampleRaster::Visit(Ptr<BSDF_FrostedGlass> bsdf) {
 
 	shader_sampleFrostedGlass.SetFloat(strBSDF + "ior", bsdf->ior);
 
-	UsePointLightDepthMap(shader_sampleFrostedGlass);
+	UseLightDepthMap(shader_sampleFrostedGlass);
 }
 
 vector<float> SampleRaster::GetData(ENUM_TYPE type) {

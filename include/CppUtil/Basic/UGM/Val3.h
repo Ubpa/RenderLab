@@ -52,10 +52,16 @@ namespace CppUtil {
 			const T * Data() const { return _data; }
 			T * Data() { return _data; }
 
-			constexpr const T & MinComponent() const {
+			T & MinComponent() {
+				return _data[MinDim()];
+			}
+			const T & MinComponent() const {
 				return std::min(x, std::min(y, z));
 			}
-			constexpr const T & MaxComponent() const {
+			T & MaxComponent() {
+				return _data[MaxDim()];
+			}
+			const T & MaxComponent() const {
 				return std::max(x, std::max(y, z));
 			}
 			int MinDim() const {
