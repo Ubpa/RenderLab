@@ -26,6 +26,7 @@ namespace CppUtil {
 	namespace Engine {
 		class PLDM_Generator;
 		class DLDM_Generator;
+		class SLDM_Generator;
 
 		class Scene;
 		class SObj;
@@ -111,7 +112,10 @@ namespace CppUtil {
 			static const int maxDirectionalLights;// 8
 			Basic::Ptr<DLDM_Generator> dldmGenerator;
 			static const int maxSpotLights;// 8
-			//Basic::Ptr<SLDM_Generator> sldmGenerator;
+			Basic::Ptr<SLDM_Generator> sldmGenerator;
+
+			static const float lightNear;// 0.01
+			static const float lightFar;// 25
 
 			struct ShaderCompare { bool operator()(const OpenGL::Shader & lhs, const OpenGL::Shader & rhs) const; };
 			std::map<OpenGL::Shader, int, ShaderCompare> shader2depthmapBase;

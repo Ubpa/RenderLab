@@ -1,4 +1,4 @@
-#include "PLDM_Generator.h"
+#include "SLDM_Generator.h"
 
 #include <CppUtil/Qt/RawAPI_Define.h>
 #include <CppUtil/Qt/RawAPI_OGLW.h>
@@ -9,12 +9,15 @@
 #include <CppUtil/Engine/CmptTransform.h>
 
 #include <CppUtil/Engine/CmptLight.h>
-#include <CppUtil/Engine/PointLight.h>
+#include <CppUtil/Engine/SpotLight.h>
 
 #include <CppUtil/Engine/CmptGeometry.h>
 #include <CppUtil/Engine/Sphere.h>
 #include <CppUtil/Engine/Plane.h>
 #include <CppUtil/Engine/TriMesh.h>
+
+#include <CppUtil/OpenGL/CommonDefine.h>
+#include <CppUtil/OpenGL/Camera.h>
 
 #include <ROOT_PATH.h>
 
@@ -23,6 +26,7 @@ using namespace CppUtil::QT;
 using namespace CppUtil::Engine;
 using namespace CppUtil::OpenGL;
 using namespace CppUtil::Basic;
+using namespace Define;
 using namespace std;
 
 const string rootPath = ROOT_PATH;
@@ -37,27 +41,25 @@ namespace CppUtil {
 	}
 }
 
-PLDM_Generator::PLDM_Generator(QT::RawAPI_OGLW * pOGLW, float lightNear, float lightFar)
-	: pOGLW(pOGLW), depthMapSize(1024), lightNear(lightNear), lightFar(lightFar)
+SLDM_Generator::SLDM_Generator(QT::RawAPI_OGLW * pOGLW, Ptr<Camera> camera, float lightNear, float lightFar)
+	: pOGLW(pOGLW), camera(camera), depthMapSize(1024), lightNear(lightNear), lightFar(lightFar)
 {
-	RegMemberFunc<Scene>(&PLDM_Generator::Visit);
-	RegMemberFunc<SObj>(&PLDM_Generator::Visit);
+	RegMemberFunc<Scene>(&SLDM_Generator::Visit);
+	RegMemberFunc<SObj>(&SLDM_Generator::Visit);
 
-	RegMemberFunc<Sphere>(&PLDM_Generator::Visit);
-	RegMemberFunc<Plane>(&PLDM_Generator::Visit);
-	RegMemberFunc<TriMesh>(&PLDM_Generator::Visit);
+	RegMemberFunc<Sphere>(&SLDM_Generator::Visit);
+	RegMemberFunc<Plane>(&SLDM_Generator::Visit);
+	RegMemberFunc<TriMesh>(&SLDM_Generator::Visit);
 }
 
-void PLDM_Generator::OGL_Init() {
-	shader_genDepth = Shader(ROOT_PATH + str_genDepth_vs, ROOT_PATH + str_genDepth_fs, ROOT_PATH + str_genDepth_gs);
-	shader_genDepth.UniformBlockBind("Camera", 0);
-	shader_genDepth.SetFloat("lightFar", lightFar);
+void SLDM_Generator::OGL_Init() {
+	shader_genDepth = Shader(ROOT_PATH + str_MVP_P3_vs, ROOT_PATH + str_empty_fs);
 }
 
-void PLDM_Generator::Visit(Ptr<Scene> scene) {
-	if (!scene || !scene->GetRoot()) {
-		printf("ERROR::PLDM_Generator::Visit(Ptr<Scene> scene):\n"
-			"\t""scene or scene's root is nullptr\n");
+void SLDM_Generator::Visit(Ptr<Scene> scene) {
+	if (!scene || !scene->GetRoot() || !camera) {
+		printf("ERROR::SLDM_Generator::Visit(Ptr<Scene> scene):\n"
+			"\t""scene or scene's root or camera is nullptr\n");
 		return;
 	}
 
@@ -76,16 +78,16 @@ void PLDM_Generator::Visit(Ptr<Scene> scene) {
 		if (lightMap.find(cmptLight) != lightMap.end())
 			continue;
 
-		auto pointLight = CastTo<PointLight>(cmptLight->light);
-		if (!pointLight)
+		auto spotLight = CastTo<SpotLight>(cmptLight->light);
+		if (!spotLight)
 			continue;
 
-		FBO FBO_DepthMap(depthMapSize, depthMapSize, FBO::ENUM_TYPE_CUBE_DEPTH);
-		Texture depthMap(FBO_DepthMap.GetDepthTexture().GetID(), Texture::ENUM_TYPE_CUBE_MAP);
+		FBO FBO_DepthMap(depthMapSize, depthMapSize, FBO::ENUM_TYPE_DEPTH);
+		Texture depthMap(FBO_DepthMap.GetDepthTexture().GetID(), Texture::ENUM_TYPE_2D);
 		lightMap[cmptLight] = FBO_Tex(FBO_DepthMap, depthMap);
 	}
 
-	auto shadowProj = Transform::Perspcetive(90.f, 1.f, lightNear, lightFar);
+	light2pv.clear();
 	auto nextIt = lightMap.begin();
 	while (nextIt != lightMap.end()) {
 		auto curIt = nextIt;
@@ -96,30 +98,25 @@ void PLDM_Generator::Visit(Ptr<Scene> scene) {
 			continue;
 		}
 		auto lightComponent = curIt->first.lock();
+		auto spotLight = CastTo<SpotLight>(lightComponent->light);
 
 		curIt->second.fbo.Use();
 		glEnable(GL_DEPTH_TEST);
 		glViewport(0, 0, depthMapSize, depthMapSize);
 		glClear(GL_DEPTH_BUFFER_BIT);
 
-		auto lightPos = lightComponent->GetSObj()->GetWorldPos();
-		shader_genDepth.SetVec3f("lightPos", lightPos);
+		auto l2w = lightComponent->GetSObj()->GetLocalToWorldMatrix();
+		auto pos = l2w(Point3(0.f));
+		auto dir = l2w(Normalf(0, -1, 0));
 
-		std::vector<Transform> shadowTransforms;
-		shadowTransforms.push_back(shadowProj *
-			Transform::LookAt(lightPos, lightPos + Vec3(1.0, 0.0, 0.0), Vec3(0.0, -1.0, 0.0)));
-		shadowTransforms.push_back(shadowProj *
-			Transform::LookAt(lightPos, lightPos + Vec3(-1.0, 0.0, 0.0), Vec3(0.0, -1.0, 0.0)));
-		shadowTransforms.push_back(shadowProj *
-			Transform::LookAt(lightPos, lightPos + Vec3(0.0, 1.0, 0.0), Vec3(0.0, 0.0, 1.0)));
-		shadowTransforms.push_back(shadowProj *
-			Transform::LookAt(lightPos, lightPos + Vec3(0.0, -1.0, 0.0), Vec3(0.0, 0.0, -1.0)));
-		shadowTransforms.push_back(shadowProj *
-			Transform::LookAt(lightPos, lightPos + Vec3(0.0, 0.0, 1.0), Vec3(0.0, -1.0, 0.0)));
-		shadowTransforms.push_back(shadowProj *
-			Transform::LookAt(lightPos, lightPos + Vec3(0.0, 0.0, -1.0), Vec3(0.0, -1.0, 0.0)));
-		for (size_t i = 0; i < 6; ++i)
-			shader_genDepth.SetMat4f("shadowMatrices[" + to_string(i) + "]", shadowTransforms[i].GetMatrix());
+		auto view = Transform::LookAt(pos, pos + dir);
+
+		auto proj = Transform::Perspcetive(spotLight->angle, 1.f, lightNear, lightFar);
+
+		shader_genDepth.SetMat4f("view", view.GetMatrix().Data());
+		shader_genDepth.SetMat4f("proj", proj.GetMatrix().Data());
+
+		light2pv[lightComponent] = proj * view;
 
 		scene->GetRoot()->Accept(This());
 	}
@@ -130,7 +127,7 @@ void PLDM_Generator::Visit(Ptr<Scene> scene) {
 	scene->SetWriteLock(false);
 }
 
-void PLDM_Generator::Visit(Ptr<SObj> sobj) {
+void SLDM_Generator::Visit(Ptr<SObj> sobj) {
 	auto geometry = sobj->GetComponent<CmptGeometry>();
 	auto children = sobj->GetChildren();
 	// 这种情况下不需要 transform
@@ -152,25 +149,33 @@ void PLDM_Generator::Visit(Ptr<SObj> sobj) {
 }
 
 
-void PLDM_Generator::Visit(Ptr<Sphere> sphere) {
+void SLDM_Generator::Visit(Ptr<Sphere> sphere) {
 	shader_genDepth.SetMat4f("model", modelVec.back());
 	pOGLW->GetVAO(ShapeType::Sphere).Draw(shader_genDepth);
 }
 
-void PLDM_Generator::Visit(Ptr<Plane> plane) {
+void SLDM_Generator::Visit(Ptr<Plane> plane) {
 	shader_genDepth.SetMat4f("model", modelVec.back());
 	pOGLW->GetVAO(ShapeType::Plane).Draw(shader_genDepth);
 }
 
-void PLDM_Generator::Visit(Ptr<TriMesh> mesh) {
+void SLDM_Generator::Visit(Ptr<TriMesh> mesh) {
 	shader_genDepth.SetMat4f("model", modelVec.back());
 	pOGLW->GetVAO(mesh).Draw(shader_genDepth);
 }
 
-const Texture PLDM_Generator::GetDepthCubeMap(PtrC<CmptLight> light) const {
+const Texture SLDM_Generator::GetDepthMap(PtrC<CmptLight> light) const {
 	auto target = lightMap.find(light);
 	if (target == lightMap.end())
 		return Texture::InValid;
 
 	return target->second.tex;
+}
+
+const Transform SLDM_Generator::GetProjView(PtrC<CmptLight> light) const {
+	auto target = light2pv.find(light);
+	if (target == light2pv.cend())
+		return Transform();
+
+	return target->second;
 }

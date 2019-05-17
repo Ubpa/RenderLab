@@ -28,11 +28,11 @@ namespace CppUtil {
 		// Point Light Depth Map Generator
 		class PLDM_Generator: public Basic::Visitor {
 		public:
-			PLDM_Generator(QT::RawAPI_OGLW * pOGLW);
+			PLDM_Generator(QT::RawAPI_OGLW * pOGLW, float lightNear, float lightFar);
 
 		public:
-			static const Basic::Ptr<PLDM_Generator> New(QT::RawAPI_OGLW * pOGLW) {
-				return Basic::New<PLDM_Generator>(pOGLW);
+			static const Basic::Ptr<PLDM_Generator> New(QT::RawAPI_OGLW * pOGLW, float lightNear, float lightFar) {
+				return Basic::New<PLDM_Generator>(pOGLW, lightNear, lightFar);
 			}
 
 		protected:
@@ -41,7 +41,6 @@ namespace CppUtil {
 		public:
 			void OGL_Init();
 			const OpenGL::Texture GetDepthCubeMap(Basic::PtrC<CmptLight> light) const;
-			float GetLightFar() const { return lightFar; }
 
 		private:
 			void Visit(Basic::Ptr<Scene> scene);
@@ -63,6 +62,7 @@ namespace CppUtil {
 			};
 			std::map<Basic::WPtrC<CmptLight>, FBO_Tex> lightMap;
 			int depthMapSize;
+			float lightNear;
 			float lightFar;
 
 			OpenGL::Shader shader_genDepth;

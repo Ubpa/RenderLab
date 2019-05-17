@@ -1,5 +1,5 @@
-#ifndef _CPPUTIL_ENGINE_VIEWER_DLDM_GENERATOR_H_
-#define _CPPUTIL_ENGINE_VIEWER_DLDM_GENERATOR_H_
+#ifndef _CPPUTIL_ENGINE_VIEWER_SLDM_GENERATOR_H_
+#define _CPPUTIL_ENGINE_VIEWER_SLDM_GENERATOR_H_
 
 #include <CppUtil/Basic/Visitor.h>
 #include <CppUtil/OpenGL/FBO.h>
@@ -28,18 +28,18 @@ namespace CppUtil {
 
 		class CmptLight;
 
-		// Directional Light Depth Map Generator
-		class DLDM_Generator : public Basic::Visitor {
+		// Spot Light Depth Map Generator
+		class SLDM_Generator : public Basic::Visitor {
 		public:
-			DLDM_Generator(QT::RawAPI_OGLW * pOGLW, Basic::Ptr<OpenGL::Camera> camera);
+			SLDM_Generator(QT::RawAPI_OGLW * pOGLW, Basic::Ptr<OpenGL::Camera> camera, float lightNear, float lightFar);
 
 		public:
-			static const Basic::Ptr<DLDM_Generator> New(QT::RawAPI_OGLW * pOGLW, Basic::Ptr<OpenGL::Camera> camera) {
-				return Basic::New<DLDM_Generator>(pOGLW, camera);
+			static const Basic::Ptr<SLDM_Generator> New(QT::RawAPI_OGLW * pOGLW, Basic::Ptr<OpenGL::Camera> camera, float lightNear, float lightFar) {
+				return Basic::New<SLDM_Generator>(pOGLW, camera, lightNear, lightFar);
 			}
 
 		protected:
-			virtual ~DLDM_Generator() = default;
+			virtual ~SLDM_Generator() = default;
 
 		public:
 			void OGL_Init();
@@ -68,6 +68,8 @@ namespace CppUtil {
 			std::map<Basic::WPtrC<CmptLight>, FBO_Tex> lightMap;
 			std::map<Basic::WPtrC<CmptLight>, Transform> light2pv;
 			int depthMapSize;
+			float lightNear;
+			float lightFar;
 
 			OpenGL::Shader shader_genDepth;
 			std::vector<Transform> modelVec;
@@ -75,4 +77,4 @@ namespace CppUtil {
 	}
 }
 
-#endif//!_CPPUTIL_ENGINE_VIEWER_DLDM_GENERATOR_H_
+#endif//!_CPPUTIL_ENGINE_VIEWER_SLDM_GENERATOR_H_

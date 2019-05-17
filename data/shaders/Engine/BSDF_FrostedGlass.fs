@@ -66,15 +66,16 @@ struct DirectionalLight{
 	mat4 ProjView;  // 64   32
 };
 
-// 64
+// 128
 struct SpotLight{
     vec3 position;         // 12     0
 	vec3 dir;              // 12    16
     vec3 L;                // 12    32
-    float linear;	       // 4     44
-    float quadratic;       // 4     48
-	float cosHalfAngle;    // 4     52
-	float cosFalloffAngle; // 4     56
+	mat4 ProjView;         // 64    48
+    float linear;	       // 4     112
+    float quadratic;       // 4     116
+	float cosHalfAngle;    // 4     120
+	float cosFalloffAngle; // 4     124
 };
 
 // 160
@@ -94,16 +95,16 @@ layout (std140) uniform PointLights{
 	PointLight pointLights[MAX_POINT_LIGHTS];// 48 * MAX_POINT_LIGHTS = 48 * 8
 };
 
-// 272
+// 784
 layout (std140) uniform DirectionalLights{
 	int numDirectionalLight;// 16
-	DirectionalLight directionaLights[MAX_DIRECTIONAL_LIGHTS];// 32 * MAX_DIRECTIONAL_LIGHTS = 32 * 8 = 256
+	DirectionalLight directionaLights[MAX_DIRECTIONAL_LIGHTS];// 96 * MAX_DIRECTIONAL_LIGHTS = 96 * 8 = 768
 };
 
-// 528
+// 1040
 layout (std140) uniform SpotLights{
 	int numSpotLight;// 16
-	SpotLight spotLights[MAX_SPOT_LIGHTS];// 64 * MAX_SPOT_LIGHTS = 48 * 8 = 512
+	SpotLight spotLights[MAX_SPOT_LIGHTS];// 128 * MAX_SPOT_LIGHTS = 128 * 8 = 1024
 };
 
 uniform BSDF_FrostedGlass bsdf;
@@ -135,6 +136,7 @@ uniform sampler2D spotLightDepthMap5;
 uniform sampler2D spotLightDepthMap6;
 uniform sampler2D spotLightDepthMap7;
 
+uniform float lightNear;
 uniform float lightFar;
 
 // ----------------- 函数声明
@@ -156,6 +158,14 @@ float DirectionalLightVisibility(vec3 normPos, float cosTheta, sampler2D depthMa
 float SpotLightVisibility(vec3 normPos, float cosTheta, int id);
 float SpotLightVisibility(vec3 normPos, float cosTheta, sampler2D depthMap);
 float SpotLightFalloff(vec3 wi, int id);
+float LinearizeDepth(float depth, float near, float far) {
+    float z = depth * 2.0 - 1.0; // Back to NDC 
+    return (2.0 * near * far) / (far + near - z * (far - near));
+}
+float PerpDepth(float linearDepth, float near, float far) {
+	float z = (near + far - 2.0 * near * far / linearDepth) / (far-near);
+	return (z + 1.0) / 2.0;
+}
 
 // ----------------- 主函数
 
@@ -234,7 +244,11 @@ void main() {
 		
 		float attenuation = 1.0f + spotLights[i].linear * dist + spotLights[i].quadratic * dist2;
 		
-		result += SpotLightFalloff(wi, i) * cosTheta / attenuation * f * spotLights[i].L;
+		vec4 pos4 = spotLights[i].ProjView * vec4(fs_in.FragPos, 1);
+		vec3 normPos = ((pos4.xyz / pos4.w) + 1) / 2;
+		float visibility = SpotLightVisibility(normPos, cosTheta, i);
+		
+		result += visibility * SpotLightFalloff(wi, i) * cosTheta / attenuation * f * spotLights[i].L;
 	}
 	
 	// gamma 校正
@@ -418,16 +432,39 @@ float DirectionalLightVisibility(vec3 normPos, float cosTheta, sampler2D depthMa
 	return visibility;
 }
 
+float SpotLightVisibility(vec3 normPos, float cosTheta, int id){
+	if(id == 0) {
+		return SpotLightVisibility(normPos, cosTheta, spotLightDepthMap0);
+	} else if(id == 1) {
+		return SpotLightVisibility(normPos, cosTheta, spotLightDepthMap1);
+	} else if(id == 2) {
+		return SpotLightVisibility(normPos, cosTheta, spotLightDepthMap2);
+	} else if(id == 3) {
+		return SpotLightVisibility(normPos, cosTheta, spotLightDepthMap3);
+	} else if(id == 4) {
+		return SpotLightVisibility(normPos, cosTheta, spotLightDepthMap4);
+	} else if(id == 5) {
+		return SpotLightVisibility(normPos, cosTheta, spotLightDepthMap5);
+	} else if(id == 6) {
+		return SpotLightVisibility(normPos, cosTheta, spotLightDepthMap6);
+	} else if(id == 7) {
+		return SpotLightVisibility(normPos, cosTheta, spotLightDepthMap7);
+	}else
+		return 1;// not support id
+}
+
 float SpotLightVisibility(vec3 normPos, float cosTheta, sampler2D depthMap){
 	float visibility = 0.0;
 	vec2 texelSize = 1.0 / textureSize(depthMap, 0);
 	float bias = max(0.05 * (1.0 - cosTheta), 0.005);
+	float linearDepth = LinearizeDepth(normPos.z, lightNear, lightFar);
+	float moveZ = PerpDepth(linearDepth - bias * (lightFar - lightNear), lightNear, lightFar);
 	for(int x = -1; x <= 1; ++x)
 	{
 		for(int y = -1; y <= 1; ++y)
 		{
-			float pcfDepth = texture(depthMap, normPos.xy + vec2(x, y) * texelSize).r; 
-			visibility += smoothstep(normPos.z - bias, normPos.z - 0.5 * bias, pcfDepth);      
+			float pcfDepth = texture(depthMap, normPos.xy + vec2(x, y) * texelSize).r;
+			visibility += smoothstep(moveZ, normPos.z, pcfDepth);
 		}
 	}
 	visibility /= 9.0;
