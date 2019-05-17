@@ -44,6 +44,7 @@ namespace CppUtil {
 
 		class PointLight;
 		class DirectionalLight;
+		class SpotLight;
 
 		class RasterBase : public Basic::Visitor {
 		protected:
@@ -86,6 +87,7 @@ namespace CppUtil {
 			void UpdateLights();
 			void UpdatePointLights();
 			void UpdateDirectionalLights();
+			void UpdateSpotLights();
 
 		protected:
 			Basic::Ptr<Scene> scene;
@@ -102,16 +104,20 @@ namespace CppUtil {
 
 			unsigned int pointLightsUBO;
 			unsigned int directionalLightsUBO;
+			unsigned int spotLightsUBO;
 
 			static const int maxPointLights;// 8
 			Basic::Ptr<PLDM_Generator> pldmGenerator;
 			static const int maxDirectionalLights;// 8
 			Basic::Ptr<DLDM_Generator> dldmGenerator;
+			static const int maxSpotLights;// 8
+			//Basic::Ptr<SLDM_Generator> sldmGenerator;
 
 			struct ShaderCompare { bool operator()(const OpenGL::Shader & lhs, const OpenGL::Shader & rhs) const; };
 			std::map<OpenGL::Shader, int, ShaderCompare> shader2depthmapBase;
 			std::map<Basic::WPtrC<PointLight>, int> pointLight2idx;
 			std::map<Basic::WPtrC<DirectionalLight>, int> directionalLight2idx;
+			std::map<Basic::WPtrC<SpotLight>, int> spotLight2idx;
 		};
 	}
 }

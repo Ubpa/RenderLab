@@ -15,6 +15,7 @@ in VS_OUT {
 
 #define MAX_POINT_LIGHTS 8
 #define MAX_DIRECTIONAL_LIGHTS 8
+#define MAX_SPOT_LIGHTS 8
 const float PI = 3.14159265359;
 const float INV_PI = 0.31830988618;
 
@@ -65,6 +66,17 @@ struct DirectionalLight{
 	mat4 ProjView;  // 64   32
 };
 
+// 64
+struct SpotLight{
+    vec3 position;         // 12     0
+	vec3 dir;              // 12    16
+    vec3 L;                // 12    32
+    float linear;	       // 4     44
+    float quadratic;       // 4     48
+	float cosHalfAngle;    // 4     52
+	float cosFalloffAngle; // 4     56
+};
+
 // 160
 layout (std140) uniform Camera{
 	mat4 view;			// 64	0	64
@@ -88,6 +100,12 @@ layout (std140) uniform DirectionalLights{
 	DirectionalLight directionaLights[MAX_DIRECTIONAL_LIGHTS];// 32 * MAX_DIRECTIONAL_LIGHTS = 32 * 8 = 256
 };
 
+// 528
+layout (std140) uniform SpotLights{
+	int numSpotLight;// 16
+	SpotLight spotLights[MAX_SPOT_LIGHTS];// 64 * MAX_SPOT_LIGHTS = 48 * 8 = 512
+};
+
 uniform BSDF_FrostedGlass bsdf;
 
 uniform samplerCube pointLightDepthMap0;
@@ -108,6 +126,15 @@ uniform sampler2D directionalLightDepthMap5;
 uniform sampler2D directionalLightDepthMap6;
 uniform sampler2D directionalLightDepthMap7;
 
+uniform sampler2D spotLightDepthMap0; // 17
+uniform sampler2D spotLightDepthMap1;
+uniform sampler2D spotLightDepthMap2;
+uniform sampler2D spotLightDepthMap3;
+uniform sampler2D spotLightDepthMap4;
+uniform sampler2D spotLightDepthMap5;
+uniform sampler2D spotLightDepthMap6;
+uniform sampler2D spotLightDepthMap7;
+
 uniform float lightFar;
 
 // ----------------- 函数声明
@@ -125,6 +152,10 @@ float PointLightVisibility(vec3 lightToFrag, samplerCube depthMap);
 
 float DirectionalLightVisibility(vec3 normPos, float cosTheta, int id);
 float DirectionalLightVisibility(vec3 normPos, float cosTheta, sampler2D depthMap);
+
+float SpotLightVisibility(vec3 normPos, float cosTheta, int id);
+float SpotLightVisibility(vec3 normPos, float cosTheta, sampler2D depthMap);
+float SpotLightFalloff(vec3 wi, int id);
 
 // ----------------- 主函数
 
@@ -154,6 +185,8 @@ void main() {
 	
 	// 采样光源
 	vec3 result = vec3(0);
+	
+	// point light
     for(int i = 0; i < numLight; i++) {
 		vec3 fragToLight = pointLights[i].position - fs_in.FragPos;
 		float dist2 = dot(fragToLight, fragToLight);
@@ -173,6 +206,7 @@ void main() {
 		result += visibility * cosTheta / attenuation * pointLights[i].L * f;
 	}
 	
+	// directional light
 	for(int i=0; i < numDirectionalLight; i++){
 		vec3 wi = -normalize(directionaLights[i].dir);
 
@@ -185,6 +219,22 @@ void main() {
 		float visibility = DirectionalLightVisibility(normPos, cosTheta, i);
 		
 		result += visibility * cosTheta * f * directionaLights[i].L;
+	}
+	
+	// spot light
+	for(int i=0; i < numSpotLight; i++){
+		vec3 fragToLight = spotLights[i].position - fs_in.FragPos;
+		float dist2 = dot(fragToLight, fragToLight);
+		float dist = sqrt(dist2);
+		vec3 wi = fragToLight/dist;
+
+		vec3 f = BSDF(norm, wo, wi, color, roughness, ao, bsdf.ior);
+
+		float cosTheta = max(dot(wi, normalize(fs_in.Normal)), 0);
+		
+		float attenuation = 1.0f + spotLights[i].linear * dist + spotLights[i].quadratic * dist2;
+		
+		result += SpotLightFalloff(wi, i) * cosTheta / attenuation * f * spotLights[i].L;
 	}
 	
 	// gamma 校正
@@ -366,4 +416,31 @@ float DirectionalLightVisibility(vec3 normPos, float cosTheta, sampler2D depthMa
 	}
 	visibility /= 9.0;
 	return visibility;
+}
+
+float SpotLightVisibility(vec3 normPos, float cosTheta, sampler2D depthMap){
+	float visibility = 0.0;
+	vec2 texelSize = 1.0 / textureSize(depthMap, 0);
+	float bias = max(0.05 * (1.0 - cosTheta), 0.005);
+	for(int x = -1; x <= 1; ++x)
+	{
+		for(int y = -1; y <= 1; ++y)
+		{
+			float pcfDepth = texture(depthMap, normPos.xy + vec2(x, y) * texelSize).r; 
+			visibility += smoothstep(normPos.z - bias, normPos.z - 0.5 * bias, pcfDepth);      
+		}
+	}
+	visibility /= 9.0;
+	return visibility;
+}
+
+float SpotLightFalloff(vec3 wi, int id){
+	float cosTheta = -dot(wi, spotLights[id].dir);
+	if (cosTheta < spotLights[id].cosHalfAngle) return 0;
+	if (cosTheta > spotLights[id].cosFalloffAngle) return 1;
+
+	float delta = (cosTheta - spotLights[id].cosHalfAngle) /
+		(spotLights[id].cosHalfAngle - spotLights[id].cosFalloffAngle);
+
+	return (delta * delta) * (delta * delta);
 }

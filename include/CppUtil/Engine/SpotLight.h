@@ -48,6 +48,14 @@ namespace CppUtil {
 
 			virtual bool IsDelta() const override { return true; }
 
+		public:
+			float CosHalfAngle() const{
+				return cos(Basic::Math::Radians(angle) / 2);
+			}
+			float CosFalloffAngle() const {
+				return cos(Basic::Math::Radians(angle) / 2 * fullRatio);
+			}
+
 		private:
 			float Falloff(const Normalf & wi) const;
 

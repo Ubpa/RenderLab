@@ -19,6 +19,7 @@
 #include <CppUtil/Engine/CmptLight.h>
 #include <CppUtil/Engine/PointLight.h>
 #include <CppUtil/Engine/DirectionalLight.h>
+#include <CppUtil/Engine/SpotLight.h>
 
 #include <CppUtil/Qt/RawAPI_OGLW.h>
 #include <CppUtil/Qt/RawAPI_Define.h>
@@ -47,6 +48,8 @@ using namespace std;
 
 const int RasterBase::maxPointLights = 8;
 const int RasterBase::maxDirectionalLights = 8;
+const int RasterBase::maxSpotLights = 8;
+
 const string rootPath = ROOT_PATH;
 
 bool RasterBase::ShaderCompare::operator()(const OpenGL::Shader & lhs, const OpenGL::Shader & rhs) const{
@@ -109,6 +112,12 @@ void RasterBase::OGL_Init() {
 	glBindBufferBase(GL_UNIFORM_BUFFER, 2, directionalLightsUBO);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
+	glGenBuffers(1, &spotLightsUBO);
+	glBindBuffer(GL_UNIFORM_BUFFER, spotLightsUBO);
+	glBufferData(GL_UNIFORM_BUFFER, 528, NULL, GL_DYNAMIC_DRAW);
+	glBindBufferBase(GL_UNIFORM_BUFFER, 3, spotLightsUBO);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
 	pldmGenerator->OGL_Init();
 	dldmGenerator->OGL_Init();
 }
@@ -167,6 +176,7 @@ void RasterBase::Visit(Ptr<TriMesh> mesh) {
 void RasterBase::UpdateLights() {
 	UpdatePointLights();
 	UpdateDirectionalLights();
+	UpdateSpotLights();
 }
 
 void RasterBase::UpdatePointLights() {
@@ -222,6 +232,40 @@ void RasterBase::UpdateDirectionalLights() {
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
+void RasterBase::UpdateSpotLights() {
+	spotLight2idx.clear();
+
+	int spotLightIdx = 0;
+	glBindBuffer(GL_UNIFORM_BUFFER, spotLightsUBO);
+	for (auto cmptLight : scene->GetCmptLights()) {
+		auto spotLight = CastTo<SpotLight>(cmptLight->light);
+		if (!spotLight)
+			continue;
+
+		spotLight2idx[spotLight] = spotLightIdx;
+
+		const auto l2w = cmptLight->GetSObj()->GetLocalToWorldMatrix();
+		Point3 pos = l2w(Point3(0.f));
+		Vec3f dir = l2w(Normalf(0, -1, 0));
+
+		int base = 16 + 64 * spotLightIdx;
+		auto lightL = spotLight->intensity * spotLight->color;
+		glBufferSubData(GL_UNIFORM_BUFFER, base, 12, pos.Data());
+		glBufferSubData(GL_UNIFORM_BUFFER, base + 16, 12, dir.Data());
+		glBufferSubData(GL_UNIFORM_BUFFER, base + 32, 12, spotLight->GetMaxL().Data());
+		glBufferSubData(GL_UNIFORM_BUFFER, base + 44, 4, &spotLight->linear);
+		glBufferSubData(GL_UNIFORM_BUFFER, base + 48, 4, &spotLight->quadratic);
+		auto cosHalfAngle = spotLight->CosHalfAngle();
+		auto cosFalloffAngle = spotLight->CosFalloffAngle();
+		glBufferSubData(GL_UNIFORM_BUFFER, base + 52, 4, &cosHalfAngle);
+		glBufferSubData(GL_UNIFORM_BUFFER, base + 56, 4, &cosFalloffAngle);
+
+		spotLightIdx++;
+	}
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, 4, &spotLightIdx); // 方向光个数即为 spotLightIdx
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+}
+
 void RasterBase::UseLightDepthMap(const Shader & shader) const {
 	auto target = shader2depthmapBase.find(shader);
 	if (target == shader2depthmapBase.cend()) {
@@ -231,6 +275,8 @@ void RasterBase::UseLightDepthMap(const Shader & shader) const {
 	}
 	const auto depthmapBase = target->second;
 
+
+	// point light
 	for (auto cmptLight : scene->GetCmptLights()) {
 		auto pointLight = CastTo<PointLight>(cmptLight->light);
 		auto target = pointLight2idx.find(pointLight);
@@ -241,6 +287,7 @@ void RasterBase::UseLightDepthMap(const Shader & shader) const {
 		pldmGenerator->GetDepthCubeMap(cmptLight).Use(depthmapBase + pointLightIdx);
 	}
 
+	// directional light
 	for (auto cmptLight : scene->GetCmptLights()) {
 		auto directionalLight = CastTo<DirectionalLight>(cmptLight->light);
 		auto target = directionalLight2idx.find(directionalLight);
@@ -249,6 +296,17 @@ void RasterBase::UseLightDepthMap(const Shader & shader) const {
 		const auto directionalLightIdx = target->second;
 
 		dldmGenerator->GetDepthMap(cmptLight).Use(depthmapBase + maxPointLights + directionalLightIdx);
+	}
+
+	// spot light
+	for (auto cmptLight : scene->GetCmptLights()) {
+		auto spotLight = CastTo<SpotLight>(cmptLight->light);
+		auto target = spotLight2idx.find(spotLight);
+		if (target == spotLight2idx.cend())
+			continue;
+		const auto spotLightIdx = target->second;
+
+		//sldmGenerator->GetDepthMap(cmptLight).Use(depthmapBase + maxPointLights + maxDirectionalLights + spotLightIdx);
 	}
 }
 
@@ -273,4 +331,10 @@ void RasterBase::RegShader(const OpenGL::Shader & shader, int depthmapBase) {
 
 	for (int i = 0; i < maxDirectionalLights; i++)
 		shader.SetInt("directionalLightDepthMap" + to_string(i), depthmapBase + maxPointLights + i);
+
+	// spot light
+	shader.UniformBlockBind("SpotLights", 3);
+
+	for (int i = 0; i < maxSpotLights; i++)
+		shader.SetInt("spotLightDepthMap" + to_string(i), depthmapBase + maxPointLights + maxDirectionalLights + i);
 }
