@@ -18,12 +18,12 @@ namespace App {
 
 	class RRF_Raster : public RasterBase {
 	public:
-		RRF_Raster(RawAPI_OGLW * pOGLW, Ptr<Scene> scene)
-			: RasterBase(pOGLW, scene), interpolateRatio(0.2f) { }
+		RRF_Raster(RawAPI_OGLW * pOGLW, Ptr<Scene> scene, Basic::Ptr<OpenGL::Camera> camera)
+			: RasterBase(pOGLW, scene, camera), interpolateRatio(0.2f) { }
 		
 	public:
-		static const Ptr<RRF_Raster> New(RawAPI_OGLW * pOGLW, Ptr<Scene> scene) {
-			return Basic::New<RRF_Raster>(pOGLW, scene);
+		static const Ptr<RRF_Raster> New(RawAPI_OGLW * pOGLW, Ptr<Scene> scene, Basic::Ptr<OpenGL::Camera> camera) {
+			return Basic::New<RRF_Raster>(pOGLW, scene, camera);
 		}
 
 	protected:

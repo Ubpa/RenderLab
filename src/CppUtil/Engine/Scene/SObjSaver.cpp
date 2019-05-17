@@ -21,6 +21,7 @@ SObjSaver::SObjSaver() {
 	RegMemberFunc<AreaLight>(&SObjSaver::Visit);
 	RegMemberFunc<PointLight>(&SObjSaver::Visit);
 	RegMemberFunc<DirectionalLight>(&SObjSaver::Visit);
+	RegMemberFunc<SpotLight>(&SObjSaver::Visit);
 
 	RegMemberFunc<CmptMaterial>(&SObjSaver::Visit);
 	RegMemberFunc<BSDF_CookTorrance>(&SObjSaver::Visit);
@@ -93,6 +94,8 @@ void SObjSaver::Visit(Ptr<SObj> sobj) {
 		doc.SaveFile(path.c_str());
 }
 
+// ----------------- Camera -----------------
+
 void SObjSaver::Visit(Ptr<CmptCamera> cmpt) {
 	NewEle(str::CmptCamera::type, [=]() {
 		NewEle(str::CmptCamera::fov, cmpt->GetFOV());
@@ -101,6 +104,18 @@ void SObjSaver::Visit(Ptr<CmptCamera> cmpt) {
 		NewEle(str::CmptCamera::farPlane, cmpt->farPlane);
 	});
 }
+
+// ----------------- Transform -----------------
+
+void SObjSaver::Visit(Ptr<CmptTransform> cmpt) {
+	NewEle(str::CmptTransform::type, [=]() {
+		NewEle(str::CmptTransform::Position, cmpt->GetPosition());
+		NewEle(str::CmptTransform::Rotation, cmpt->GetRotation());
+		NewEle(str::CmptTransform::Scale, cmpt->GetScale());
+	});
+}
+
+// ----------------- Geometry -----------------
 
 void SObjSaver::Visit(Ptr<CmptGeometry> cmpt) {
 	NewEle(str::CmptGeometry::type, [=]() {
@@ -150,6 +165,8 @@ void SObjSaver::Visit(Ptr<TriMesh> mesh) {
 	});
 }
 
+// ----------------- Light -----------------
+
 void SObjSaver::Visit(Ptr<CmptLight> cmpt) {
 	NewEle(str::CmptLight::type, [=]() {
 		NewEle(str::CmptLight::light, [=]() {
@@ -183,6 +200,19 @@ void SObjSaver::Visit(Ptr<DirectionalLight> directionalLight) {
 		NewEle(str::PointLight::intensity, directionalLight->intensity);
 	});
 }
+
+void SObjSaver::Visit(Ptr<SpotLight> spotLight) {
+	NewEle(str::SpotLight::type, [=]() {
+		NewEle(str::SpotLight::color, spotLight->color);
+		NewEle(str::SpotLight::intensity, spotLight->intensity);
+		NewEle(str::SpotLight::linear, spotLight->linear);
+		NewEle(str::SpotLight::quadratic, spotLight->quadratic);
+		NewEle(str::SpotLight::angle, spotLight->angle);
+		NewEle(str::SpotLight::fullRatio, spotLight->fullRatio);
+	});
+}
+
+// ----------------- Material -----------------
 
 void SObjSaver::Visit(Ptr<CmptMaterial> cmpt) {
 	NewEle(str::CmptMaterial::type, [=]() {
@@ -272,13 +302,5 @@ void SObjSaver::Visit(Ptr<BSDF_FrostedGlass> bsdf) {
 void SObjSaver::Visit(Ptr<BSDF_Mirror> bsdf){
 	NewEle(str::BSDF_Mirror::type, [=]() {
 		NewEle(str::BSDF_Mirror::reflectance, bsdf->reflectance);
-	});
-}
-
-void SObjSaver::Visit(Ptr<CmptTransform> cmpt) {
-	NewEle(str::CmptTransform::type, [=]() {
-		NewEle(str::CmptTransform::Position, cmpt->GetPosition());
-		NewEle(str::CmptTransform::Rotation, cmpt->GetRotation());
-		NewEle(str::CmptTransform::Scale, cmpt->GetScale());
 	});
 }

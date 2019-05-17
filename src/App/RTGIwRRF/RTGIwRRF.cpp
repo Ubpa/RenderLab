@@ -68,8 +68,8 @@ void RTGIwRRF::InitScene() {
 }
 
 void RTGIwRRF::InitRaster() {
-	rrfRaster = RRF_Raster::New(ui.OGLW_Raster, scene);
 	roamer = Roamer::New(ui.OGLW_Raster);
+	rrfRaster = RRF_Raster::New(ui.OGLW_Raster, scene, roamer->GetCamera());
 	roamer->SetLock(false);
 
 	ui.OGLW_Raster->SetInitOp(LambdaOp_New(([=]() {

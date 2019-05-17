@@ -12,6 +12,7 @@
 #include <CppUtil/Engine/Plane.h>
 #include <CppUtil/Engine/AreaLight.h>
 #include <CppUtil/Engine/PointLight.h>
+#include <CppUtil/Engine/SpotLight.h>
 #include <CppUtil/Engine/DirectionalLight.h>
 
 #include <qmenu.h>
@@ -225,30 +226,35 @@ void Tree::contextMenuEvent(QContextMenuEvent *event) {
 
 	genLightMenu->addAction("Area Light", this, []() {
 		auto sobj = Hierarchy::GetInstance()->CreateSObj("Area Light");
-		auto areaLight = AreaLight::New();
-		auto light = CmptLight::New(sobj, areaLight);
+		CmptLight::New(sobj, AreaLight::New());
 		CmptTransform::New(sobj);
-		auto lightGeo = CmptGeometry::New(sobj, Plane::New());
+		CmptGeometry::New(sobj, Plane::New());
 	});
 
 	genLightMenu->addAction("Point Light", this, []() {
 		auto sobj = Hierarchy::GetInstance()->CreateSObj("Point Light");
-		auto light = CmptLight::New(sobj, PointLight::New());
-		auto transform = CmptTransform::New(sobj);
+		CmptLight::New(sobj, PointLight::New());
+		CmptTransform::New(sobj);
 	});
 
 	genLightMenu->addAction("Directional Light", this, []() {
 		auto sobj = Hierarchy::GetInstance()->CreateSObj("Directional Light");
-		auto light = CmptLight::New(sobj, DirectionalLight::New());
-		auto transform = CmptTransform::New(sobj);
+		CmptLight::New(sobj, DirectionalLight::New());
+		CmptTransform::New(sobj);
+	});
+
+	genLightMenu->addAction("Spot Light", this, []() {
+		auto sobj = Hierarchy::GetInstance()->CreateSObj("Spot Light");
+		CmptLight::New(sobj, SpotLight::New());
+		CmptTransform::New(sobj);
 	});
 
 	mainMenu.addMenu(genLightMenu);
 
 	mainMenu.addAction("Create Camera", this, []() {
 		auto sobj = Hierarchy::GetInstance()->CreateSObj("Camera");
-		auto transform = CmptTransform::New(sobj);
-		auto camera = CmptCamera::New(sobj);
+		CmptTransform::New(sobj);
+		CmptCamera::New(sobj);
 	});
 
 	auto spitLine1 = new QAction;

@@ -104,9 +104,9 @@ void SObjSampler::InitScene() {
 void SObjSampler::InitRaster() {
 	initDataMap = false;
 
-	sampleRaster = SampleRaster::New(ui.OGLW_Raster, scene);
 	roamer = Roamer::New(ui.OGLW_Raster);
 	roamer->SetLock(true);
+	sampleRaster = SampleRaster::New(ui.OGLW_Raster, scene, roamer->GetCamera());
 	auto camera = scene->GetCmptCamera();
 	auto transform = camera->GetSObj()->GetComponent<CmptTransform>();
 	auto eulerAngle = transform->GetRotationEuler();

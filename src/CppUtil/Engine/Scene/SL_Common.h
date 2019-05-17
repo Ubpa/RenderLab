@@ -12,6 +12,7 @@
 #include <CppUtil/Engine/AreaLight.h>
 #include <CppUtil/Engine/PointLight.h>
 #include <CppUtil/Engine/DirectionalLight.h>
+#include <CppUtil/Engine/SpotLight.h>
 
 #include <CppUtil/Engine/AllBSDFs.h>
 
@@ -102,6 +103,17 @@ namespace str {
 
 		const char * const color = "color";
 		const char * const intensity = "intensity";
+	}
+
+	namespace SpotLight {
+		const char * const type = "Spot_Light";
+
+		const char * const color = "color";
+		const char * const intensity = "intensity";
+		const char * const linear = "linear";
+		const char * const quadratic = "quadratic";
+		const char * const angle = "angle";
+		const char * const fullRatio = "fullRatio";
 	}
 
 	// ------------- Material

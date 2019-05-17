@@ -9,7 +9,8 @@ const RGBf PointLight::Sample_L(const Point3 & p, Normalf & wi, float & distToLi
 	const auto d = Vec3(p);
 	float dist2 = d.Norm2();
 	distToLight = sqrt(dist2);
+
 	wi = - d / distToLight;
-	PD = 1.0f + linear * distToLight + quadratic * dist2;
-	return intensity * color;
+	PD = 1.0f;
+	return intensity * color / (1.0f + linear * distToLight + quadratic * dist2);
 }

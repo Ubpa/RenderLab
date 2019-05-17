@@ -8,16 +8,17 @@ namespace App {
 	using namespace CppUtil;
 	using namespace CppUtil::Basic;
 	using namespace CppUtil::Engine;
+	using namespace CppUtil::OpenGL;
 	using namespace CppUtil::QT;
 
 	class SampleRaster : public RasterBase {
 	public:
-		SampleRaster(RawAPI_OGLW * pOGLW, Ptr<Scene> scene)
-			: RasterBase(pOGLW, scene), haveSampled(false) { }
+		SampleRaster(RawAPI_OGLW * pOGLW, Ptr<Scene> scene, Ptr<Camera> camera)
+			: RasterBase(pOGLW, scene, camera), haveSampled(false) { }
 
 	public:
-		static const Ptr<SampleRaster> New(RawAPI_OGLW * pOGLW, Ptr<Scene> scene) {
-			return Basic::New<SampleRaster>(pOGLW, scene);
+		static const Ptr<SampleRaster> New(RawAPI_OGLW * pOGLW, Ptr<Scene> scene, Ptr<Camera> camera) {
+			return Basic::New<SampleRaster>(pOGLW, scene, camera);
 		}
 
 	protected:

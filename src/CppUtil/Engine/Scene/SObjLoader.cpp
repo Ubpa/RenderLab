@@ -241,6 +241,7 @@ static Ptr<Light> SObjLoader::Load(XMLElement * ele, Ptr<Light>*) {
 	Reg_Load_val<Ptr<AreaLight>>(funcMap, str::AreaLight::type, light);
 	Reg_Load_val<Ptr<PointLight>>(funcMap, str::PointLight::type, light);
 	Reg_Load_val<Ptr<DirectionalLight>>(funcMap, str::DirectionalLight::type, light);
+	Reg_Load_val<Ptr<SpotLight>>(funcMap, str::SpotLight::type, light);
 
 	LoadNode(ele, funcMap);
 
@@ -288,6 +289,23 @@ static Ptr<DirectionalLight> SObjLoader::Load(XMLElement * ele, Ptr<DirectionalL
 	LoadNode(ele, funcMap);
 
 	return directionalLight;
+}
+
+template<>
+static Ptr<SpotLight> SObjLoader::Load(XMLElement * ele, Ptr<SpotLight>*) {
+	auto spotLight = SpotLight::New();
+
+	FuncMap funcMap;
+	Reg_Text_val(funcMap, str::SpotLight::color, spotLight->color);
+	Reg_Text_val(funcMap, str::SpotLight::intensity, spotLight->intensity);
+	Reg_Text_val(funcMap, str::SpotLight::linear, spotLight->linear);
+	Reg_Text_val(funcMap, str::SpotLight::quadratic, spotLight->quadratic);
+	Reg_Text_val(funcMap, str::SpotLight::angle, spotLight->angle);
+	Reg_Text_val(funcMap, str::SpotLight::fullRatio, spotLight->fullRatio);
+
+	LoadNode(ele, funcMap);
+
+	return spotLight;
 }
 
 // ------------ Material ----------------
