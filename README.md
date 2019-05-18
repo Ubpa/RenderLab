@@ -1,5 +1,9 @@
 # RenderLab
 
+<h1 align=center>
+<img src="logo/horizontal.png" width=50%>
+</h1>
+
 ## 0. 简介
 
 渲染实验室，包含了实时渲染，离线渲染和场景编辑的功能
