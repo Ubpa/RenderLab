@@ -2,6 +2,7 @@
 #define _CPPUTIL_ENGINE_MATERIAL_BSDF_FROSTED_GLASS_H_
 
 #include <CppUtil/Engine/BSDF.h>
+#include <CppUtil/Engine/GGX.h>
 
 namespace CppUtil {
 	namespace Basic {
@@ -39,9 +40,6 @@ namespace CppUtil {
 			virtual void ChangeNormal(const Point2 & texcoord, const Normalf & tangent, Normalf & normal) const override;
 
 		private:
-			static float GGX_D(const Normalf & h, float alpha);
-			static float GGX_G1(const Normalf & v, const Normalf & h, float alpha);
-			static float GGX_G(const Normalf & wo, const Normalf & wi, const Normalf & h, float alpha);
 			static float Fr(const Normalf & v, const Normalf & h, float ior);
 
 		private:
@@ -50,6 +48,8 @@ namespace CppUtil {
 			float GetAO(const Point2 & texcoord) const;
 
 		public:
+			GGX ggx;
+
 			RGBf colorFactor;
 			Basic::Ptr<Basic::Image> colorTexture;
 

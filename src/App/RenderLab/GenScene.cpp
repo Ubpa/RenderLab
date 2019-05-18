@@ -366,9 +366,9 @@ Ptr<Scene> GenScene07() {
 		for (int b = -11; b < 11; b++, id++) {
 			auto ball = SObj::New(balls, "ball " + to_string(id));
 			Point3 center(a + 0.9*Math::Rand_F(), 0.2, b + 0.9*Math::Rand_F());
-			auto tsfm = CmptTransform::New(ball, center, Vec3(0.2f));
+			CmptTransform::New(ball, center, Vec3(0.2f));
 
-			auto geo = CmptGeometry::New(ball, Sphere::New());
+			CmptGeometry::New(ball, Sphere::New());
 
 			Ptr<BSDF> bsdf;
 			float choose_mat = Math::Rand_F();
@@ -384,7 +384,7 @@ Ptr<Scene> GenScene07() {
 				bsdf = BSDF_Glass::New(1.2f + Math::Rand_F()*0.5f);
 			}
 
-			auto material = CmptMaterial::New(ball, bsdf);
+			CmptMaterial::New(ball, bsdf);
 		}
 	}
 
@@ -408,9 +408,9 @@ Ptr<Scene> GenScene07() {
 	};
 	for (int i = 0; i < 6; i++) {
 		auto sobj = SObj::New(sobjRoot, "sphere" + to_string(i));
-		auto tsfm = CmptTransform::New(sobj, center[i], Vec3(radius[i]));
-		auto geo = CmptGeometry::New(sobj, Sphere::New());
-		auto material = CmptMaterial::New(sobj, bsdf[i]);
+		CmptTransform::New(sobj, center[i], Vec3(radius[i]));
+		CmptGeometry::New(sobj, Sphere::New());
+		CmptMaterial::New(sobj, bsdf[i]);
 	}
 
 	return Scene::New(sobjRoot, "scene 07");

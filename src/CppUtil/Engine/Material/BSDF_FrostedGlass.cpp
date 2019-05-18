@@ -8,40 +8,10 @@ using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
 using namespace std;
 
-float BSDF_FrostedGlass::GGX_D(const Normalf & h, float alpha) {
-	float HoN = h.z;
-	if (HoN <= 0)
-		return 0;
-
-	float cos2 = HoN * HoN;
-	float alpha2 = alpha * alpha;
-
-	float root = alpha / (cos2 * (alpha2 - 1) + 1);
-
-	return Math::INV_PI * root * root;
-}
-
-float BSDF_FrostedGlass::GGX_G1(const Normalf & v, const Normalf & h, float alpha) {
-	float NoV = v.z;
-	float HoV = v.Dot(h);
-	if (NoV * HoV <= 0)
-		return 0;
-
-	float alpha2 = alpha * alpha;
-	float tan2 = 1.f / (NoV * NoV) - 1.f;
-	return 2.f / (1.f + sqrt(1 + alpha2 * tan2));
-}
-
-float BSDF_FrostedGlass::GGX_G(const Normalf & wo, const Normalf & wi, const Normalf & h, float alpha) {
-	return GGX_G1(wo, h, alpha) * GGX_G1(wi, h, alpha);
-}
-
 float BSDF_FrostedGlass::Fr(const Normalf & v, const Normalf & h, float ior) {
 	// 需要是低折射率介质中的角
 	float cosTheta = v.Dot(h);
-	bool entering = cosTheta > 0.0f;
-	
-	if (!entering) {
+	if (!SurfCoord::IsEntering(v,h)) {
 		Normalf vInLowIOR = Normalf::Refract(-v, -h, ior);
 		if (vInLowIOR.IsZero())
 			return 1.f;
@@ -55,39 +25,38 @@ float BSDF_FrostedGlass::Fr(const Normalf & v, const Normalf & h, float ior) {
 }
 
 const RGBf BSDF_FrostedGlass::F(const Normalf & wo, const Normalf & wi, const Point2 & texcoord) {
-	if (wo.z == 0 || wi.z == 0)
+	if (SurfCoord::CosTheta(wo) == 0 || SurfCoord::CosTheta(wi) == 0)
 		return RGBf(0.f);
-
-	bool entering = wo.z > 0;
-	bool isReflect = wo.z * wi.z > 0;
 
 	auto color = GetColor(texcoord);
 	color *= GetAO(texcoord);
-	float roughness = GetRoughness(texcoord);
-	float alpha = roughness * roughness;
 
+	float roughness = GetRoughness(texcoord);
+	ggx.SetAlpha(roughness);
+
+	bool isReflect = SurfCoord::IsSameSide(wo, wi);
 	if (isReflect) {
 		Normalf h = (wo + wi).Normalize();
+		SurfCoord::SetOurward(h);
 
-		h *= Math::sgn(h.z);// 使 h 指向外侧
-		float bsdfVal = Fr(wo, h, ior) * GGX_D(h, alpha) * GGX_G(wo, wi, h, alpha) / abs(4.f * wo.z * wi.z);
+		float bsdfVal = Fr(wo, h, ior) * ggx.D(h) * ggx.G(wo,wi,h) / abs(4.f * SurfCoord::CosTheta(wo) * SurfCoord::CosTheta(wi));
 		return bsdfVal * color;
 	}
 	else {
 		float etai = 1.f, etat = ior;
-		if (!entering)
+		if (!SurfCoord::IsEntering(wo))
 			swap(etai, etat);
 
 		Normalf h = -(etai * wo + etat * wi).Normalize();
-		h *= Math::sgn(h.z);// 使 h 指向外侧
+		SurfCoord::SetOurward(h);
 
 		float HoWo = h.Dot(wo);
 		float HoWi = h.Dot(wi);
 		float sqrtDenom = etai * HoWo + etat * HoWi;
 
-		float factor = abs(HoWo * HoWi / (wo.z * wi.z));
+		float factor = abs(HoWo * HoWi / (SurfCoord::CosTheta(wo) * SurfCoord::CosTheta(wi)));
 
-		float bsdfVal = factor * ((1 - Fr(wo, h, ior)) * GGX_D(h, alpha) * GGX_G(wo, wi, h, alpha) * etat * etat) / (sqrtDenom * sqrtDenom);
+		float bsdfVal = factor * ((1 - Fr(wo, h, ior)) * ggx.D(h) * ggx.G(wo, wi, h) * etat * etat) / (sqrtDenom * sqrtDenom);
 
 		return color * bsdfVal;
 	}
@@ -95,13 +64,12 @@ const RGBf BSDF_FrostedGlass::F(const Normalf & wo, const Normalf & wi, const Po
 
 // probability density function
 float BSDF_FrostedGlass::PDF(const Normalf & wo, const Normalf & wi, const Point2 & texcoord) {
-	bool isReflect = wo.z * wi.z > 0;
-
 	float roughness = GetRoughness(texcoord);
-	float alpha = roughness * roughness;
+	ggx.SetAlpha(roughness);
 
 	Normalf h;
 	float dwh_dwi;
+	bool isReflect = SurfCoord::IsSameSide(wo, wi);
 	if (isReflect) {
 		h = (wo + wi).Normalize();
 
@@ -109,8 +77,7 @@ float BSDF_FrostedGlass::PDF(const Normalf & wo, const Normalf & wi, const Point
 	}
 	else {
 		float etai = 1.f, etat = ior;
-		bool entering = wo.z > 0;
-		if (!entering)
+		if (!SurfCoord::IsEntering(wo))
 			swap(etai, etat);
 
 		h = -(etai * wo + etat * wi).Normalize();
@@ -121,51 +88,41 @@ float BSDF_FrostedGlass::PDF(const Normalf & wo, const Normalf & wi, const Point
 		dwh_dwi = (etat * etat * abs(HoWi)) / (sqrtDenom * sqrtDenom);
 	}
 
-	h *= Math::sgn(h.z);
-	float Dh = GGX_D(h, alpha);
+	SurfCoord::SetOurward(h);
+	float Dh = ggx.D(h);
 
 	float fr = Fr(wo, h, ior);
 
-	return Dh * h.z * dwh_dwi * (isReflect ? fr : 1 - fr);
+	return Dh * SurfCoord::CosTheta(h) * dwh_dwi * (isReflect ? fr : 1 - fr);
 }
 
 const RGBf BSDF_FrostedGlass::Sample_f(const Normalf & wo, const Point2 & texcoord, Normalf & wi, float & PD) {
 	float roughness = GetRoughness(texcoord);
-	float alpha = roughness * roughness;
+	ggx.SetAlpha(roughness);
 
-	// Sample h
-	float Xi1 = Math::Rand_F();
-	float Xi2 = Math::Rand_F();
-
-	float cosTheta2 = (1 - Xi1) / (Xi1*(alpha*alpha - 1) + 1);
-	float cosTheta = sqrt(cosTheta2);
-	float sinTheta = sqrt(1 - cosTheta2);
-	float phi = 2 * Math::PI * Xi2;
-
-	Normalf h(sinTheta * cos(phi), sinTheta * sin(phi), cosTheta);
+	auto h = ggx.Sample_wh();
 
 	float fr = Fr(wo, h, ior);
 	bool isReflect = Math::Rand_F() < fr;
 
 	if (isReflect) {
 		wi = Normalf::Reflect(-wo, h);
-		if (wi.z * wo.z <= 0) {
+		if (!SurfCoord::IsSameSide(wo,wi)) {
 			PD = 0;
 			return RGBf(0.f);
 		}
 
-		float Dh = GGX_D(h, alpha);
-		PD = Dh * h.z / (4.f * abs(wo.Dot(h))) * fr;
-		float Gwowih = GGX_G(wo, wi, h, alpha);
+		float Dh = ggx.D(h);
+		PD = Dh * SurfCoord::CosTheta(h) / (4.f * abs(wo.Dot(h))) * fr;
+
 		auto color = GetColor(texcoord);
 		color *= GetAO(texcoord);
-		float bsdfVal = fr * Dh * Gwowih / abs(4.f*wo.z*wi.z);
+		float bsdfVal = fr * Dh * ggx.G(wo, wi, h) / abs(4.f * SurfCoord::CosTheta(wo) * SurfCoord::CosTheta(wi));
 		return bsdfVal * color;
 	}
 	else {
-		bool entering = wo.z > 0.f;
 		float etai = 1.f, etat = ior;
-		if (entering) {
+		if (SurfCoord::IsEntering(wo)) {
 			wi = Normalf::Refract(-wo, h, etai / etat);
 		}
 		else {
@@ -173,20 +130,20 @@ const RGBf BSDF_FrostedGlass::Sample_f(const Normalf & wo, const Point2 & texcoo
 			wi = Normalf::Refract(-wo, -h, etai / etat);
 		}
 
-		if (wi.z * wo.z >= 0 || wi.IsZero()) {
+		if (SurfCoord::IsSameSide(wi,wo) || wi.IsZero()) {
 			PD = 0;
 			return RGBf(0.f);
 		}
 
-		float Dh = GGX_D(h, alpha);
+		float Dh = ggx.D(h);
 		float HoWo = h.Dot(wo);
 		float HoWi = h.Dot(wi);
 		float sqrtDenom = etai * HoWo + etat * HoWi;
 		float dwh_dwi = (etat * etat * abs(HoWi)) / (sqrtDenom * sqrtDenom);
-		PD = Dh * h.z * dwh_dwi * (1 - fr);
+		PD = Dh * SurfCoord::CosTheta(h) * dwh_dwi * (1 - fr);
 
-		float Gwowih = GGX_G(wo, wi, h, alpha);
-		float factor = abs(HoWo * HoWi / (wo.z * wi.z));
+		float Gwowih = ggx.G(wo, wi, h);
+		float factor = abs(HoWo * HoWi / (SurfCoord::CosTheta(wo) * SurfCoord::CosTheta(wi)));
 		auto color = GetColor(texcoord);
 		color *= GetAO(texcoord);
 		float bsdfVal = factor * ((1 - fr) * Dh * Gwowih * etat * etat) /
