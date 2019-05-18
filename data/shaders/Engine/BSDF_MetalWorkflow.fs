@@ -278,14 +278,18 @@ float SchlickGGX_D(vec3 norm, vec3 h, float alpha){
 	return alpha2 / (PI * t * t);
 }
 
-float SchlickGGX_G1(vec3 norm, vec3 w, float alpha) {
-	float k = (alpha + 1)*(alpha + 1) / 8;
+float SchlickGGX_G1(vec3 norm, vec3 w, float alpha, float isDirect) {
+	float k_direct = (alpha + 1)*(alpha + 1) / 8;
+	float k_IBL = alpha * alpha / 2;
+	float k = mix(k_IBL, k_direct, isDirect);
+	
 	float NoW = max(0.f, dot(norm, w));
 	return NoW / (NoW * (1 - k) + k);
 }
 
 float SchlickGGX_G(vec3 norm, vec3 wo, vec3 wi, float alpha){
-	return SchlickGGX_G1(norm, wo, alpha) * SchlickGGX_G1(norm, wi, alpha);
+	float isDirect = 1.0f;
+	return SchlickGGX_G1(norm, wo, alpha, isDirect) * SchlickGGX_G1(norm, wi, alpha, isDirect);
 }
 
 vec3 Fr(vec3 w, vec3 h, vec3 albedo, float metallic) {
