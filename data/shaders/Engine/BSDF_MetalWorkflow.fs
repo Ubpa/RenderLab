@@ -145,10 +145,11 @@ uniform float lightFar;
 
 vec3 CalcBumpedNormal(vec3 normal, vec3 tangent, sampler2D normalTexture, vec2 texcoord);
 
-float NDF(vec3 norm, vec3 h, float roughness);
-vec3 Fr(vec3 wi, vec3 h, vec3 albedo, float metallic);
-float G(vec3 norm, vec3 wo, vec3 wi, float roughness);
-vec3 MS_BRDF(vec3 norm, vec3 wo, vec3 wi, vec3 fr, vec3 albedo, float roughness);
+float SchlickGGX_D(vec3 norm, vec3 h, float alpha);
+float SchlickGGX_G1(vec3 norm, vec3 w, float alpha);
+float SchlickGGX_G(vec3 norm, vec3 wo, vec3 wi, float alpha);
+vec3 Fr(vec3 w, vec3 h, vec3 albedo, float metallic);
+
 vec3 BRDF(vec3 norm, vec3 wo, vec3 wi, vec3 albedo, float metallic, float roughness, float ao);
 
 float PointLightVisibility(vec3 lightToFrag, int id);
@@ -264,45 +265,54 @@ void main() {
 
 // ----------------- 函数定义
 
-float NDF(vec3 norm, vec3 h, float roughness) {
-	float alpha = roughness * roughness;
-	float alpha2 = alpha * alpha;
+float SchlickGGX_D(vec3 norm, vec3 h, float alpha){
 	float NoH = dot(norm, h);
-	return alpha2 / (PI*pow(NoH*NoH*(alpha2 - 1) + 1, 2));
+	if(NoH < 0)
+		return 0;
+	
+	float cos2Theta = NoH * NoH;
+	float alpha2 = alpha * alpha;
+	
+	float t = (alpha2 - 1) * cos2Theta + 1;
+	
+	return alpha2 / (PI * t * t);
 }
 
-vec3 Fr(vec3 wi, vec3 h, vec3 albedo, float metallic) {
+float SchlickGGX_G1(vec3 norm, vec3 w, float alpha) {
+	float k = (alpha + 1)*(alpha + 1) / 8;
+	float NoW = max(0.f, dot(norm, w));
+	return NoW / (NoW * (1 - k) + k);
+}
+
+float SchlickGGX_G(vec3 norm, vec3 wo, vec3 wi, float alpha){
+	return SchlickGGX_G1(norm, wo, alpha) * SchlickGGX_G1(norm, wi, alpha);
+}
+
+vec3 Fr(vec3 w, vec3 h, vec3 albedo, float metallic) {
 	vec3 F0 = mix(vec3(0.04f), albedo, metallic);
-	float HoWi = dot(h, wi);
-	return F0 + pow(2.0f, (-5.55473f * HoWi - 6.98316f) * HoWi) * (vec3(1.0f) - F0);
-}
-
-float G(vec3 norm, vec3 wo, vec3 wi, float roughness) {
-	float NoWo = dot(norm, wo);
-	float NoWi = dot(norm, wi);
-
-	float k = pow(roughness + 1, 2) / 8.f;
-	float one_minus_k = 1 - k;
-
-	float G1_wo = max(NoWo, 0) / (NoWo * one_minus_k + k);
-	float G1_wi = max(NoWi, 0) / (NoWi * one_minus_k + k);
-
-	return G1_wo * G1_wi;
-}
-
-vec3 MS_BRDF(vec3 norm, vec3 wo, vec3 wi, vec3 fr, vec3 albedo, float roughness) {
-	float NoWo = dot(norm, wo);
-	float NoWi = dot(norm, wi);
-	vec3 h = normalize(wo + wi);
-	return NDF(norm, h, roughness) * G(norm, wo, wi, roughness) / (4 * NoWo * NoWi) * fr;
+	float HoW = dot(h, w);
+	return F0 + exp2((-5.55473f * HoW - 6.98316f) * HoW) * (vec3(1.0f) - F0);
 }
 
 vec3 BRDF(vec3 norm, vec3 wo, vec3 wi, vec3 albedo, float metallic, float roughness, float ao) {
-	vec3 h = normalize(wo + wi);
+	vec3 wh = normalize(wo + wi);
+	float alpha = roughness * roughness;
+	
+	float D = SchlickGGX_D(norm, wh, alpha);
+	float G = SchlickGGX_G(norm, wo, wi, alpha);
+	vec3 F = Fr(wo, wh, albedo, metallic);
+	
+	vec3 specular = D * G * F / (4.0f * dot(wh, wo) * dot(wh, wi));
+	
 	vec3 diffuse = albedo * INV_PI;
-	vec3 fr = Fr(wi, h, albedo, metallic);
+	
+	vec3 kS = 1 - F;
+	vec3 kD = (1-metallic) * (1 - kS);
+	
+	vec3 rst = kD * diffuse + specular;
 
-	return ao * ((1 - metallic)*(1.0f - fr)*diffuse + MS_BRDF(norm, wo, wi, fr, albedo, roughness));
+	//return ao * rst;
+	return rst;
 }
 
 vec3 CalcBumpedNormal(vec3 normal, vec3 tangent, sampler2D normalTexture, vec2 texcoord) {

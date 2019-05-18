@@ -13,7 +13,7 @@ namespace CppUtil {
 			inline float Sin2Theta(const Normalf & w) { return 1.f - Cos2Theta(w); }
 			inline float SinTheta(const Normalf & w) { return std::sqrt(Sin2Theta(w)); }
 			inline float TanTheta(const Normalf & w) { return SinTheta(w) / CosTheta(w); }
-			inline float Tan2Theta(const Normalf & w) { return Sin2Theta(w) / Cos2Theta(w); }
+			inline float Tan2Theta(const Normalf & w) { return 1 / Cos2Theta(w) - 1; }
 			inline float CosPhi(const Normalf & w) {
 				float sinTheta = SinTheta(w);
 				return sinTheta == 0 ? 1 : Basic::Math::Clamp(w.x / sinTheta, -1, 1);

@@ -10,18 +10,12 @@ float GGX::D(const Normalf & wh) const {
 	if (SurfCoord::CosTheta(wh) < 0)
 		return 0.f;
 
-	const auto tan2Theta = SurfCoord::Tan2Theta(wh);
-	if (std::isinf(tan2Theta))
-		return 0.f;
+	float alpha2 = alpha * alpha;
+	float cos2Theta = SurfCoord::Cos2Theta(wh);
+	
+	float t = (alpha2 - 1) * cos2Theta + 1;
 
-	const auto cos4Theta = SurfCoord::Cos2Theta(wh) * SurfCoord::Cos2Theta(wh);
-
-	//const auto alpha2 = alpha * alpha;
-	//auto e = tan2Theta / alpha2;
-	//return 1 / (Math::PI * alpha2 * cos4Theta * (1 + e) * (1 + e));
-
-	float t = alpha + tan2Theta / alpha;
-	return 1 / (Math::PI * cos4Theta * t * t);
+	return alpha2 / (Math::PI * t * t);
 }
 
 float GGX::Lambda(const Normalf & w) const {

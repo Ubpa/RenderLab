@@ -26,11 +26,12 @@ namespace CppUtil {
 		public:
 			// 法线分布函数
 			virtual float D(const Normalf & wh) const override;
-
-			virtual float Lambda(const Normalf & w) const override;
 			virtual const Normalf Sample_wh() const override;
 
-		private:
+		protected:
+			virtual float Lambda(const Normalf & w) const override;
+
+		protected:
 			float alpha;
 		};
 	}

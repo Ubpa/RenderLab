@@ -3,6 +3,8 @@
 
 #include <CppUtil/Engine/BSDF.h>
 
+#include <CppUtil/Engine/SchlickGGX.h>
+
 namespace CppUtil {
 	namespace Basic {
 		class Image;
@@ -65,16 +67,8 @@ namespace CppUtil {
 			}
 
 		private:
-			// Microfacet Specular BRDF
-			static const RGBf MS_BRDF(const Normalf & wo, const Normalf & wi, const RGBf & albedo, float metallic, float roughness);
-			// Microfacet Specular BRDF
-			static const RGBf MS_BRDF(const Normalf & wo, const Normalf & wi, const RGBf & fr, const RGBf & albedo, float roughness);
-			// Normal Distribution Function
-			static float NDF(const Normalf & h, float roughness);
 			// Fresnel
-			static const RGBf Fr(const Normalf & wi, const Normalf & h, const RGBf & albedo, float metallic);
-			// Geometric Attenuation
-			static float G(const Normalf & wo, const Normalf & wi, float roughness);
+			static const RGBf Fr(const Normalf & w, const Normalf & h, const RGBf & albedo, float metallic);
 
 			const RGBf GetAlbedo(const Point2 & texcoord) const;
 			float GetMetallic(const Point2 & texcoord) const;
@@ -82,6 +76,8 @@ namespace CppUtil {
 			float GetAO(const Point2 & texcoord) const;
 
 		public:
+			SchlickGGX sggx;
+
 			RGBf colorFactor;
 			Basic::Ptr<Basic::Image> albedoTexture;
 

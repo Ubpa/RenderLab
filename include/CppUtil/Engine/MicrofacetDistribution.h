@@ -11,17 +11,13 @@ namespace CppUtil {
 			// 法线分布函数
 			virtual float D(const Normalf & wh) const = 0;
 
-			virtual float Lambda(const Normalf & w) const = 0;
 			virtual const Normalf Sample_wh() const = 0;
 
-			float G1(const Normalf & w, const Normalf & wh) const {
-				if (!SurfCoord::IsVisible(w, wh))
-					return 0.f;
-
+			virtual float G1(const Normalf & w) const {
 				return 1.f / (1.f + Lambda(w));
 			}
 
-			// 几何遮蔽函数
+			// 几何函数
 			virtual float G(const Normalf & wo, const Normalf & wi, const Normalf & wh) const {
 				if (!SurfCoord::IsVisible(wo, wh) || !SurfCoord::IsVisible(wi, wh))
 					return 0.f;
@@ -34,6 +30,9 @@ namespace CppUtil {
 			float PDF(const Normalf & wh) const {
 				return D(wh) * abs(wh.z);
 			}
+
+		protected:
+			virtual float Lambda(const Normalf & w) const = 0;
 		};
 	}
 }
