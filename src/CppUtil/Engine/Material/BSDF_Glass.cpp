@@ -1,6 +1,6 @@
 #include <CppUtil/Engine/BSDF_Glass.h>
 
-#include <CppUtil/Basic/Math.h>
+#include <CppUtil/Engine/SurfCoord.h>
 
 using namespace CppUtil;
 using namespace CppUtil::Engine;
@@ -9,10 +9,10 @@ using namespace CppUtil::Basic::Math;
 const RGBf BSDF_Glass::Sample_f(const Normalf & wo, const Point2 & texcoord, Normalf & wi, float & PD) {
 	// PDF is delta
 
-	if (!LocalRefract(wo, wi, ior)) {
+	if (!SurfCoord::Refract(wo, wi, ior)) {
 		// È«·´Éä
 		PD = 1.0f;
-		wi = LocalReflect(wo);
+		wi = SurfCoord::Reflect(wo);
 		return 1.0f / abs(wi.z) * reflectance;
 	}
 
@@ -27,7 +27,7 @@ const RGBf BSDF_Glass::Sample_f(const Normalf & wo, const Point2 & texcoord, Nor
 		// ·ÆÄù¶û ·´Éä
 
 		PD = Fr;
-		wi = LocalReflect(wo);
+		wi = SurfCoord::Reflect(wo);
 		return Fr / abs(wi.z) * reflectance;
 	}
 

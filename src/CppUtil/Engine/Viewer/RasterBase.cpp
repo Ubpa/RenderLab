@@ -127,6 +127,8 @@ void RasterBase::OGL_Init() {
 	pldmGenerator->OGL_Init();
 	dldmGenerator->OGL_Init();
 	sldmGenerator->OGL_Init();
+
+	InitShaders();
 }
 
 void RasterBase::InitShaders() {

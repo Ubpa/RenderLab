@@ -1,6 +1,6 @@
 #include <CppUtil/Engine/BSDF_Mirror.h>
 
-#include <CppUtil/Basic/Math.h>
+#include <CppUtil/Engine/SurfCoord.h>
 
 using namespace CppUtil;
 using namespace CppUtil::Engine;
@@ -8,7 +8,7 @@ using namespace CppUtil::Basic::Math;
 
 
 const RGBf BSDF_Mirror::Sample_f(const Normalf & wo, const Point2 & texcoord, Normalf & wi, float & PD) {
-	wi = LocalReflect(wo);
+	wi = SurfCoord::Reflect(wo);
 
 	// delta
 	PD = 1.0f;

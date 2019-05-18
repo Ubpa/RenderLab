@@ -4,6 +4,7 @@
 #include <vector>
 #include <sstream>
 #include <string>
+#include <algorithm>
 #include <cassert>
 
 namespace CppUtil {
