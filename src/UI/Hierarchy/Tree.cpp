@@ -10,10 +10,12 @@
 #include <CppUtil/Engine/AllBSDFs.h>
 #include <CppUtil/Engine/Sphere.h>
 #include <CppUtil/Engine/Plane.h>
+
 #include <CppUtil/Engine/AreaLight.h>
 #include <CppUtil/Engine/PointLight.h>
 #include <CppUtil/Engine/SpotLight.h>
 #include <CppUtil/Engine/DirectionalLight.h>
+#include <CppUtil/Engine/InfiniteAreaLight.h>
 
 #include <qmenu.h>
 #include <qdrag.h>
@@ -247,6 +249,11 @@ void Tree::contextMenuEvent(QContextMenuEvent *event) {
 		auto sobj = Hierarchy::GetInstance()->CreateSObj("Spot Light");
 		CmptLight::New(sobj, SpotLight::New());
 		CmptTransform::New(sobj);
+	});
+
+	genLightMenu->addAction("Infinite Area Light", this, []() {
+		auto sobj = Hierarchy::GetInstance()->CreateSObj("Infinite Area Light");
+		CmptLight::New(sobj, InfiniteAreaLight::New(nullptr));
 	});
 
 	mainMenu.addMenu(genLightMenu);

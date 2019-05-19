@@ -13,6 +13,7 @@
 #include <CppUtil/Engine/PointLight.h>
 #include <CppUtil/Engine/DirectionalLight.h>
 #include <CppUtil/Engine/SpotLight.h>
+#include <CppUtil/Engine/InfiniteAreaLight.h>
 
 #include <CppUtil/Engine/AllBSDFs.h>
 
@@ -114,6 +115,14 @@ namespace str {
 		const char * const quadratic = "quadratic";
 		const char * const angle = "angle";
 		const char * const fullRatio = "fullRatio";
+	}
+
+	namespace InfiniteAreaLight {
+		const char * const type = "Infinite_Area_Light";
+		
+		const char * const colorFactor = "colorFactor";
+		const char * const intensity = "intensity";
+		const char * const img = "img";
 	}
 
 	// ------------- Material

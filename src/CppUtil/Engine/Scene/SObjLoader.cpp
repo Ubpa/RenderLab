@@ -242,6 +242,7 @@ static Ptr<Light> SObjLoader::Load(XMLElement * ele, Ptr<Light>*) {
 	Reg_Load_val<Ptr<PointLight>>(funcMap, str::PointLight::type, light);
 	Reg_Load_val<Ptr<DirectionalLight>>(funcMap, str::DirectionalLight::type, light);
 	Reg_Load_val<Ptr<SpotLight>>(funcMap, str::SpotLight::type, light);
+	Reg_Load_val<Ptr<InfiniteAreaLight>>(funcMap, str::InfiniteAreaLight::type, light);
 
 	LoadNode(ele, funcMap);
 
@@ -306,6 +307,20 @@ static Ptr<SpotLight> SObjLoader::Load(XMLElement * ele, Ptr<SpotLight>*) {
 	LoadNode(ele, funcMap);
 
 	return spotLight;
+}
+
+template<>
+static Ptr<InfiniteAreaLight> SObjLoader::Load(XMLElement * ele, Ptr<InfiniteAreaLight>*) {
+	auto infiniteAreaLight = InfiniteAreaLight::New(nullptr);
+
+	FuncMap funcMap;
+	Reg_Text_val(funcMap, str::InfiniteAreaLight::colorFactor, infiniteAreaLight->colorFactor);
+	Reg_Text_val(funcMap, str::InfiniteAreaLight::intensity, infiniteAreaLight->intensity);
+	Reg_Load_setVal<Image>(funcMap, str::InfiniteAreaLight::img, infiniteAreaLight, &InfiniteAreaLight::SetImg);
+
+	LoadNode(ele, funcMap);
+
+	return infiniteAreaLight;
 }
 
 // ------------ Material ----------------

@@ -107,22 +107,19 @@ Optix: 6.0
   
 - [ ] 环境光
 
-  - [ ] 离线
+  - [x] 离线
     - [x] 别名法 AliasMethod
-    - [ ] 无限远光源 InifiniteAreaLight
+    - [x] 无限远光源 InifiniteAreaLight
   - [ ] 实时
-
     - [ ] 从 equirectangular map 到 cubemap
-  - [ ] irradiace map
+    - [ ] irradiace map
     - [ ] pre-filtering an HDR environment map
-  - [ ] pre-computing the BRDF
+    - [ ] pre-computing the BRDF
     - [ ] IBL
-  - [ ] UI
-  - [ ] （反）序列化
+  - [x] UI
+  - [x] （反）序列化
 
 - [ ] 旋转拖动缩放物体
-
-- [ ] 方向标明
 
 - [ ] 统一相机
 

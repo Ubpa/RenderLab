@@ -1,6 +1,8 @@
 #ifndef _ENGINE_LIGHT_LIGHT_H_
 #define _ENGINE_LIGHT_LIGHT_H_
 
+#include <CppUtil/Engine/Ray.h>
+
 #include <CppUtil/Basic/Element.h>
 
 #include <CppUtil/Basic/UGM/RGB.h>
@@ -40,6 +42,9 @@ namespace CppUtil {
 			virtual float PDF(const Point3 & p, const Normalf & wi) const = 0;
 
 			virtual bool IsDelta() const = 0;
+
+			// 对那些没有击中任何物体的射线调用
+			virtual const RGBf Le(const ERay & ray) const { return RGBf(0.f); }
 		};
 	}
 }

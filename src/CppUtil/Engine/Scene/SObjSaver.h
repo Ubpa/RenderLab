@@ -35,6 +35,7 @@ namespace CppUtil {
 		class PointLight;
 		class DirectionalLight;
 		class SpotLight;
+		class InfiniteAreaLight;
 
 		class CmptMaterial;
 		class BSDF_CookTorrance;
@@ -75,6 +76,7 @@ namespace CppUtil {
 			void Visit(Basic::Ptr<PointLight> pointLight);
 			void Visit(Basic::Ptr<DirectionalLight> directionalLight);
 			void Visit(Basic::Ptr<SpotLight> spotLight);
+			void Visit(Basic::Ptr<InfiniteAreaLight> infiniteAreaLight);
 
 			void Visit(Basic::Ptr<CmptMaterial> meterial);
 			void Visit(Basic::Ptr<BSDF_CookTorrance> bsdf);

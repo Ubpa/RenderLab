@@ -5,9 +5,9 @@
 using namespace CppUtil::Basic;
 using namespace std;
 
-void AliasMethod::Init(const vector<float> & distribution) {
+void AliasMethod::Init(const vector<double> & distribution) {
 	table.clear();
-	const auto num = distribution.size();
+	const auto num = static_cast<int>(distribution.size());
 	table.resize(num);
 
 	vector<int> overfulls;
@@ -15,14 +15,15 @@ void AliasMethod::Init(const vector<float> & distribution) {
 	overfulls.reserve(num);
 	underfulls.reserve(num);
 
-	for (size_t i = 0; i < num; i++) {
+	for (int i = 0; i < num; i++) {
+		table[i].p = distribution[i];
 		table[i].u = num * distribution[i];
 		if (table[i].u < 1)
 			underfulls.push_back(i);
 		else if (table[i].u > 1)
 			overfulls.push_back(i);
 		else
-			table[i].k = i;
+			table[i].k = static_cast<int>(i);
 	}
 
 	while (!overfulls.empty() && !underfulls.empty()) {
@@ -51,17 +52,29 @@ void AliasMethod::Init(const vector<float> & distribution) {
 }
 
 int AliasMethod::Sample() const {
-	float x = Math::Rand_F();
+	double x = Math::Rand_F();
 	auto n = static_cast<int>(table.size());
+	auto nx = n * x;
 
 	// 0, 1, ..., n - 1
-	auto i = static_cast<int>(floor(n*x));
+	auto i = static_cast<int>(nx);
 
 	// [0, 1)
-	auto y = n * x - i;
+	auto y = nx - i;
 
 	if (y < table[i].u)
 		return i;
 	else
 		return table[i].k;
+}
+
+int AliasMethod::Sample(double & p) const {
+	int i = Sample();
+	p = P(i);
+	return i;
+}
+
+double AliasMethod::P(int i) const {
+	assert(i >= 0 && i < static_cast<int>(table.size()));
+	return table[i].p;
 }

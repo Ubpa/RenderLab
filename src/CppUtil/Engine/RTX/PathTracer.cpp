@@ -58,13 +58,11 @@ const RGBf PathTracer::Trace(ERay & ray, int depth, RGBf pathThroughput) {
 	bvhAccel->Accept(rayIntersector);
 	auto closestRst = rayIntersector->GetRst();
 	if (!closestRst.closestSObj) {
-		return RGBf(0);
-		/*
-		float t = 0.5f * (normalize(ray->GetDir()).y + 1.0f);
-		vec3 white(1.0f, 1.0f, 1.0f);
-		vec3 blue(0.5f, 0.7f, 1.0f);
-		return t * white + (1 - t)*blue;
-		*/
+		RGBf Le(0.f);
+		for (auto light : lights)
+			Le += light->Le(ray);
+
+		return Le;
 	}
 
 	const Point3 hitPos = ray.EndPos();

@@ -22,6 +22,7 @@ SObjSaver::SObjSaver() {
 	RegMemberFunc<PointLight>(&SObjSaver::Visit);
 	RegMemberFunc<DirectionalLight>(&SObjSaver::Visit);
 	RegMemberFunc<SpotLight>(&SObjSaver::Visit);
+	RegMemberFunc<InfiniteAreaLight>(&SObjSaver::Visit);
 
 	RegMemberFunc<CmptMaterial>(&SObjSaver::Visit);
 	RegMemberFunc<BSDF_CookTorrance>(&SObjSaver::Visit);
@@ -212,6 +213,16 @@ void SObjSaver::Visit(Ptr<SpotLight> spotLight) {
 	});
 }
 
+void SObjSaver::Visit(Ptr<InfiniteAreaLight> infiniteAreaLight) {
+	NewEle(str::InfiniteAreaLight::type, [=]() {
+		NewEle(str::InfiniteAreaLight::colorFactor, infiniteAreaLight->colorFactor);
+		NewEle(str::InfiniteAreaLight::intensity, infiniteAreaLight->intensity);
+		NewEle(str::InfiniteAreaLight::img, [=]() {
+			Visit(infiniteAreaLight->GetImg());
+		});
+	});
+}
+
 // ----------------- Material -----------------
 
 void SObjSaver::Visit(Ptr<CmptMaterial> cmpt) {
@@ -259,27 +270,17 @@ void SObjSaver::Visit(Ptr<BSDF_Glass> bsdf){
 void SObjSaver::Visit(Ptr<BSDF_MetalWorkflow> bsdf){
 	NewEle(str::BSDF_MetalWorkflow::type, [=]() {
 		NewEle(str::BSDF_MetalWorkflow::colorFactor, bsdf->colorFactor);
-		NewEle(str::BSDF_MetalWorkflow::albedoTexture, [=]() {
-			Visit(bsdf->GetAlbedoTexture());
-		});
+		NewEle(str::BSDF_MetalWorkflow::albedoTexture, bsdf->albedoTexture);
 
 		NewEle(str::BSDF_MetalWorkflow::metallicFactor, bsdf->metallicFactor);
-		NewEle(str::BSDF_MetalWorkflow::metallicTexture, [=]() {
-			Visit(bsdf->GetMetallicTexture());
-		});
+		NewEle(str::BSDF_MetalWorkflow::metallicTexture, bsdf->metallicTexture);
 
 		NewEle(str::BSDF_MetalWorkflow::roughnessFactor, bsdf->roughnessFactor);
-		NewEle(str::BSDF_MetalWorkflow::roughnessTexture, [=]() {
-			Visit(bsdf->GetRoughnessTexture());
-		});
+		NewEle(str::BSDF_MetalWorkflow::roughnessTexture, bsdf->roughnessTexture);
 
-		NewEle(str::BSDF_MetalWorkflow::aoTexture, [=]() {
-			Visit(bsdf->GetAOTexture());
-		});
+		NewEle(str::BSDF_MetalWorkflow::aoTexture, bsdf->aoTexture);
 
-		NewEle(str::BSDF_MetalWorkflow::normalTexture, [=]() {
-			Visit(bsdf->GetNormalTexture());
-		});
+		NewEle(str::BSDF_MetalWorkflow::normalTexture, bsdf->normalTexture);
 	});
 }
 

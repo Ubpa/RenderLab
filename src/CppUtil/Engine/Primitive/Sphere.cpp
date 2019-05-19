@@ -22,3 +22,12 @@ const Normalf Sphere::TangentOf(const Normalf & normal) {
 
 	return Normalf(cos(phi), 0, -sin(phi));
 }
+
+const Normalf Sphere::SphereCoord::ToDir() const {
+	const auto sinTheta = sin(theta);
+
+	float x = sinTheta * sin(phi);
+	float y = cos(theta);
+	float z = sinTheta * cos(phi);
+	return { x,y,z };
+}

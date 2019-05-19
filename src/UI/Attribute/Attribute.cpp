@@ -15,6 +15,7 @@
 #include <CppUtil/Engine/PointLight.h>
 #include <CppUtil/Engine/DirectionalLight.h>
 #include <CppUtil/Engine/SpotLight.h>
+#include <CppUtil/Engine/InfiniteAreaLight.h>
 
 #include <CppUtil/Basic/Visitor.h>
 #include <CppUtil/Basic/Math.h>
@@ -49,6 +50,7 @@ public:
 		RegMemberFunc<PointLight>(&Attribute::ComponentVisitor::Visit);
 		RegMemberFunc<DirectionalLight>(&Attribute::ComponentVisitor::Visit);
 		RegMemberFunc<SpotLight>(&Attribute::ComponentVisitor::Visit);
+		RegMemberFunc<InfiniteAreaLight>(&Attribute::ComponentVisitor::Visit);
 
 		RegMemberFunc<CmptMaterial>(&Attribute::ComponentVisitor::Visit);
 		RegMemberFunc<BSDF_Diffuse>(&Attribute::ComponentVisitor::Visit);
@@ -83,6 +85,7 @@ public:
 	void Visit(Ptr<PointLight> light);
 	void Visit(Ptr<DirectionalLight> light);
 	void Visit(Ptr<SpotLight> light);
+	void Visit(Ptr<InfiniteAreaLight> light);
 
 	void Visit(Ptr<CmptMaterial> cmpt);
 	void Visit(Ptr<BSDF_Diffuse> bsdf);
@@ -388,14 +391,18 @@ void Attribute::ComponentVisitor::Visit(Ptr<CmptLight> cmpt) {
 	getTypeStr->Reg([&typeStr](Ptr<SpotLight>) {
 		typeStr = "SpotLight";
 	});
+	getTypeStr->Reg([&typeStr](Ptr<InfiniteAreaLight>) {
+		typeStr = "InfiniteAreaLight";
+	});
 
-	const int lightNum = 5;
+	const int lightNum = 6;
 	tuple<string, function<Ptr<Light>()>> lightArr[lightNum] = {
 		{"None", []()->Ptr<Light> { return nullptr; } },
 		{"AreaLight", []()->Ptr<Light> { return AreaLight::New(); } },
 		{"PointLight", []()->Ptr<Light> { return PointLight::New(); } },
 		{"DirectionalLight", []()->Ptr<Light> { return DirectionalLight::New(); } },
 		{"SpotLight", []()->Ptr<Light> { return SpotLight::New(); } },
+		{"InfiniteAreaLight", []()->Ptr<Light> { return InfiniteAreaLight::New(nullptr); } },
 	};
 
 	Grid::pSlotMap pSlotMap(new Grid::SlotMap);
@@ -453,6 +460,15 @@ void Attribute::ComponentVisitor::Visit(Ptr<SpotLight> light) {
 	grid->AddEditVal("- Quadratic", light->quadratic, 0, 2.0, 200);
 	grid->AddEditVal("- Angle", light->angle, 1.0, 179.0, 178);
 	grid->AddEditVal("- Full Ratio", light->fullRatio, 0.0, 1.0, 100);
+}
+
+void Attribute::ComponentVisitor::Visit(Ptr<InfiniteAreaLight> light) {
+	auto grid = GetGrid(attr->componentType2item[typeid(CmptLight)]);
+	grid->AddEditVal("- Intensity", light->intensity, 0, 20, 2000);
+	grid->AddEditColor("- Color Factor", light->colorFactor);
+	grid->AddEditImage("- Envirment Image", light->GetImg(), [light](Ptr<Image> img) {
+		light->SetImg(img);
+	});
 }
 
 // -------------- Attribute --------------

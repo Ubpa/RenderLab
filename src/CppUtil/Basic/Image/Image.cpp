@@ -12,6 +12,7 @@
 
 #include <CppUtil/Basic/File.h>
 #include <CppUtil/Basic/Math.h>
+#include <CppUtil/Basic/StrAPI.h>
 
 using namespace CppUtil;
 using namespace CppUtil::Basic;
@@ -29,7 +30,7 @@ Image::Image(int width, int height, int channel)
 Image::Image(const string & path, bool flip)
 	: data(nullptr)
 {
-	Load(path.c_str(), flip);
+	Load(path, flip);
 }
 
 Image::~Image() {
@@ -41,18 +42,35 @@ bool Image::Load(const std::string & fileName, bool flip) {
 
 	stbi_set_flip_vertically_on_load(flip);
 
-	auto ucData = stbi_load(fileName.c_str(), &width, &height, &channel, 0);
-	if (ucData == nullptr) {
-		data = nullptr;
-		return false;
+	if (StrAPI::IsEndWith(fileName, ".hdr")) {
+		auto fData = stbi_loadf(fileName.c_str(), &width, &height, &channel, 0);
+		if (!fData) {
+			data = nullptr;
+			return false;
+		}
+
+		const int valNum = width * height * channel;
+		data = new float[valNum];
+		for (int i = 0; i < valNum; i++)
+			data[i] = fData[i];
+
+		stbi_image_free(fData);
+	}
+	else {
+		auto ucData = stbi_load(fileName.c_str(), &width, &height, &channel, 0);
+		if (!ucData) {
+			data = nullptr;
+			return false;
+		}
+
+		const int valNum = width * height * channel;
+		data = new float[valNum];
+		for (int i = 0; i < valNum; i++)
+			data[i] = static_cast<float>(ucData[i]) / 255.f;
+
+		stbi_image_free(ucData);
 	}
 
-	const int valNum = width * height * channel;
-	data = new float[valNum];
-	for (int i = 0; i < valNum; i++)
-		data[i] = static_cast<float>(ucData[i]) / 255.f;
-
-	stbi_image_free(ucData);
 	path = fileName;
 	return true;
 }
@@ -256,4 +274,18 @@ void Image::Clear(const RGBAf & clearColor) {
 				SetPixel(x, y, clearColor);
 		}
 	}
+}
+
+int Image::xy2idx(int x, int y) const {
+	assert(x >= 0 && x < width);
+	assert(y >= 0 && y < height);
+
+	return x + y * width;
+}
+
+const Point2i Image::idx2xy(int idx) const {
+	assert(idx >= 0 && idx < width * height);
+	int y = idx / width;
+	int x = idx - y * width;
+	return { x, y };
 }

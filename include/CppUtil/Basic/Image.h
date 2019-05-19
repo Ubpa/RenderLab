@@ -47,6 +47,13 @@ namespace CppUtil {
 			const std::string & GetPath() const { return path; }
 
 		public:
+			int xy2idx(int x, int y) const;
+			int xy2idx(const Point2i & xy) const {
+				return xy2idx(xy.x, xy.y);
+			}
+			const Point2i idx2xy(int idx) const;
+
+		public:
 			const RGBAf GetPixel(int x, int y) const;
 			const RGBAf GetPixel(const Point2i & xy) const {
 				return GetPixel(xy.x, xy.y);

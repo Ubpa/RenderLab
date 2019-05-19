@@ -143,7 +143,7 @@ namespace CppUtil {
 			// 将 ele 视为 ValImpl 载入，并调用一个设置函数
 			template<typename ValImplType, typename ValBaseType, typename ObjType, typename RetType>
 			static void Reg_Load_setVal(FuncMap & funcMap, Key key, Basic::Ptr<ObjType> obj, RetType(ObjType::*setVal)(Basic::Ptr<ValBaseType>), ValImplType * useless = nullptr) {
-				Reg_Load_Lambda<ValImplType>(funcMap, key, [=](const Basic::Ptr<ValImplType> & ptr) {
+				Reg_Load_Lambda(funcMap, key, [=](const Basic::Ptr<ValImplType> & ptr) {
 					((*obj).*setVal)(ptr);
 				});
 			}

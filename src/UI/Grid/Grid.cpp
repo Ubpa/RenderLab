@@ -287,13 +287,15 @@ void Grid::AddEditImage(const string & text, PtrC<Image> img, const function<voi
 		QString fileName = QFileDialog::getOpenFileName(nullptr,
 			"Ñ¡ÔñÒ»ÕÅÍ¼Æ¬",
 			"./",
-			"Image Files (*.png)");
+			"Image Files (*.png *.hdr)");
 		if (fileName.isEmpty())
 			return;
 		
 		auto img = Image::New(fileName.toStdString());
-		if(SetImgLabel(imgLabel, img))
-			slot(img);
+		if (!SetImgLabel(imgLabel, img))
+			return;
+		
+		slot(img);
 	});
 
 	auto clearImgBtn = new QPushButton;
