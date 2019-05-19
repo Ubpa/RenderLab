@@ -373,8 +373,10 @@ void RasterBase::UseLightTex(const Shader & shader) const {
 	auto environment = scene->GetInfiniteAreaLight();
 	if (!environment || !environment->GetImg())
 		return;
-	auto cubemap = cmGenerator->GetSkybox(environment->GetImg());
-	cubemap.Use(depthmapBase + maxPointLights + maxDirectionalLights + maxSpotLights);
+	auto skybox = cmGenerator->GetSkybox(environment->GetImg());
+	skybox.Use(depthmapBase + maxPointLights + maxDirectionalLights + maxSpotLights);
+	auto irradianceMap = cmGenerator->GetIrradianceMap(environment->GetImg());
+	irradianceMap.Use(depthmapBase + maxPointLights + maxDirectionalLights + maxSpotLights + 1);
 }
 
 void RasterBase::RegShader(const OpenGL::Shader & shader, int depthmapBase) {
@@ -414,6 +416,7 @@ void RasterBase::RegShader(const OpenGL::Shader & shader, int depthmapBase) {
 
 	int environmentBase = spotLightBase + maxSpotLights;
 	shader.SetInt("skybox", environmentBase);
+	shader.SetInt("irradianceMap", environmentBase + 1);
 }
 
 void RasterBase::DrawEnvironment() {

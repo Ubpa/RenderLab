@@ -117,6 +117,8 @@ Optix: 6.0
     - [ ] pre-filtering an HDR environment map
     - [ ] pre-computing the BRDF
     - [ ] IBL
+      - [x] diffuse
+      - [ ] specular
   - [x] UI
   - [x] （反）序列化
 

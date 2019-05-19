@@ -44,7 +44,7 @@ namespace CppUtil {
 		public:
 			void OGL_Init();
 			const OpenGL::Texture GetSkybox(Basic::PtrC<Basic::Image> img) const;
-			const OpenGL::Texture GetIrradiance(Basic::PtrC<Basic::Image> img) const;
+			const OpenGL::Texture GetIrradianceMap(Basic::PtrC<Basic::Image> img) const;
 
 		private:
 			void Visit(Basic::Ptr<Scene> scene);
@@ -69,7 +69,7 @@ namespace CppUtil {
 
 			Basic::WPtrC<Basic::Image> curImg;
 			OpenGL::Texture skybox;
-			OpenGL::Texture irradiance;
+			OpenGL::Texture irradianceMap;
 		};
 	}
 }

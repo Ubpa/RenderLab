@@ -91,6 +91,14 @@ layout (std140) uniform Camera{
 	float ar;			// 4	156	160
 };
 
+// 32
+layout (std140) uniform Environment{
+	vec3 colorFactor;     // 12     0
+	float intensity;      //  4    12
+	bool haveSkybox;      //  4    16
+	bool haveEnvironment; //  4    20
+};
+
 // 400
 layout (std140) uniform PointLights{
 	int numLight;// 16
@@ -138,6 +146,9 @@ uniform sampler2D spotLightDepthMap5;
 uniform sampler2D spotLightDepthMap6;
 uniform sampler2D spotLightDepthMap7;
 
+uniform samplerCube skybox; // 25
+uniform samplerCube irradianceMap; // 26
+
 uniform float lightNear;
 uniform float lightFar;
 
@@ -148,7 +159,9 @@ vec3 CalcBumpedNormal(vec3 normal, vec3 tangent, sampler2D normalTexture, vec2 t
 float SchlickGGX_D(vec3 norm, vec3 h, float alpha);
 float SchlickGGX_G1(vec3 norm, vec3 w, float alpha);
 float SchlickGGX_G(vec3 norm, vec3 wo, vec3 wi, float alpha);
+vec3 GetF0(vec3 albedo, float metallic);
 vec3 Fr(vec3 w, vec3 h, vec3 albedo, float metallic);
+vec3 FrR(vec3 wo, vec3 norm, vec3 F0, float roughness);
 
 vec3 BRDF(vec3 norm, vec3 wo, vec3 wi, vec3 albedo, float metallic, float roughness, float ao);
 
@@ -259,6 +272,20 @@ void main() {
 		result += visibility * SpotLightFalloff(wi, i) * cosTheta / attenuation * f * spotLights[i].L;
 	}
 	
+	// ambient light
+	if(haveEnvironment) {
+		vec3 irradiance = haveSkybox ? texture(irradianceMap, norm).rgb : vec3(1);
+		irradiance *= intensity * colorFactor;
+		
+		vec3 F0 = GetF0(albedo, metallic);
+		vec3 F = FrR(wo, norm, F0, roughness);
+		vec3 kS = F;
+		vec3 kD = (1 - metallic) * (vec3(1) - kS);
+		vec3 diffuse = irradiance * albedo;
+		vec3 ambient = kD * diffuse * ao;
+		result += ambient;
+	}
+	
 	// gamma 校正
     FragColor = vec4(sqrt(result), 1.0);
 }
@@ -288,14 +315,23 @@ float SchlickGGX_G1(vec3 norm, vec3 w, float alpha, float isDirect) {
 }
 
 float SchlickGGX_G(vec3 norm, vec3 wo, vec3 wi, float alpha){
-	float isDirect = 1.0f;
+	float isDirect = haveEnvironment ? 0 : 1;
 	return SchlickGGX_G1(norm, wo, alpha, isDirect) * SchlickGGX_G1(norm, wi, alpha, isDirect);
 }
 
+vec3 GetF0(vec3 albedo, float metallic) {
+    return mix(vec3(0.04), albedo, metallic);
+}
+
 vec3 Fr(vec3 w, vec3 h, vec3 albedo, float metallic) {
-	vec3 F0 = mix(vec3(0.04f), albedo, metallic);
+	vec3 F0 = GetF0(albedo, metallic);
 	float HoW = dot(h, w);
 	return F0 + exp2((-5.55473f * HoW - 6.98316f) * HoW) * (vec3(1.0f) - F0);
+}
+
+vec3 FrR(vec3 wo, vec3 norm, vec3 F0, float roughness) {
+	float cosTheta = max(dot(wo, norm), 0);
+    return F0 + (max(vec3(1.0 - roughness), F0) - F0) * pow(1.0 - cosTheta, 5.0);
 }
 
 vec3 BRDF(vec3 norm, vec3 wo, vec3 wi, vec3 albedo, float metallic, float roughness, float ao) {

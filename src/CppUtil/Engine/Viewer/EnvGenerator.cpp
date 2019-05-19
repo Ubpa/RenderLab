@@ -134,9 +134,9 @@ void EnvGenerator::Visit(Ptr<Scene> scene) {
 		pOGLW->GetVAO(ShapeType::Cube).Draw(shader_genSkybox);
 	}
 
-	// gen irradiance
-	irradiance = Texture(Texture::ENUM_TYPE_CUBE_MAP);
-	irradiance.GenBufferForCubemap(irradianceSize, irradianceSize);
+	// gen irradianceMap
+	irradianceMap = Texture(Texture::ENUM_TYPE_CUBE_MAP);
+	irradianceMap.GenBufferForCubemap(irradianceSize, irradianceSize);
 
 	genIrradianceFBO.Use();
 	glViewport(0, 0, irradianceSize, irradianceSize);
@@ -145,7 +145,7 @@ void EnvGenerator::Visit(Ptr<Scene> scene) {
 
 	for (int i = 0; i < 6; i++) {
 		shader_genIrradiance.SetMat4f("view", captureViews[i]);
-		genIrradianceFBO.SetColor(irradiance, mapper[i]);
+		genIrradianceFBO.SetColor(irradianceMap, mapper[i]);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		pOGLW->GetVAO(ShapeType::Cube).Draw(shader_genIrradiance);
 	}
@@ -163,17 +163,17 @@ const Texture EnvGenerator::GetSkybox(PtrC<Image> img) const {
 	return skybox;
 }
 
-const Texture EnvGenerator::GetIrradiance(PtrC<Image> img) const {
+const Texture EnvGenerator::GetIrradianceMap(PtrC<Image> img) const {
 	if (curImg.lock() != img) {
 		printf("ERROR::EnvGenerator::GetSkybox:\n"
 			"\t""img is not regist\n");
 	}
 
-	return irradiance;
+	return irradianceMap;
 }
 
 void EnvGenerator::Clear() {
 	curImg.reset();
 	skybox = Texture::InValid;
-	irradiance = Texture::InValid;
+	irradianceMap = Texture::InValid;
 }
