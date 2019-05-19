@@ -36,12 +36,14 @@ namespace CppUtil {
 			bool Load(const std::vector<std::string> & skybox);
 			bool Load(const std::string & path, bool flip = false, bool gammaCorrection = false);
 			bool SetImg(const Basic::Image & img);
+			bool GenBufferForCubemap(uint width, uint height);
 
 			bool Use(uint id = 0) const;
 			void Bind() const;
 			void UnBind() const;
 
-			uint GetID() const;
+			uint GetID() const { return ID; }
+			ENUM_TYPE GetType() const { return type; }
 			bool IsValid() const;
 
 			static const Texture InValid;

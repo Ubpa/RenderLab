@@ -15,6 +15,8 @@ namespace CppUtil {
 		class CmptCamera;
 		class CmptLight;
 
+		class InfiniteAreaLight;
+
 		class Scene : public Basic::Element {
 		public:
 			Scene(Basic::Ptr<SObj> root, const std::string & name = "")
@@ -34,6 +36,8 @@ namespace CppUtil {
 			const Basic::Ptr<CmptCamera> GetCmptCamera() const;
 
 			const std::vector<Basic::Ptr<CmptLight>> GetCmptLights() const;
+
+			const Basic::Ptr<InfiniteAreaLight> GetInfiniteAreaLight() const;
 
 			// sobjs have no same name
 			// ID >= 1

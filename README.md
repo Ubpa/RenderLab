@@ -111,7 +111,8 @@ Optix: 6.0
     - [x] 别名法 AliasMethod
     - [x] 无限远光源 InifiniteAreaLight
   - [ ] 实时
-    - [ ] 从 equirectangular map 到 cubemap
+    - [x] 从 equirectangular map 到 cubemap
+    - [x] 渲染 skybox
     - [ ] irradiace map
     - [ ] pre-filtering an HDR environment map
     - [ ] pre-computing the BRDF

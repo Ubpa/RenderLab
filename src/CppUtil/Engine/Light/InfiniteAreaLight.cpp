@@ -13,7 +13,10 @@ void InfiniteAreaLight::SetImg(Ptr<Image> img) {
 	aliasMethod.Clear();
 	this->img = img;
 
-	if (!img || !img->IsValid() || img->GetChannel() != 3) {
+	if (!img)
+		return;
+
+	if (!img->IsValid() || img->GetChannel() != 3) {
 		printf("ERROR::InfiniteAreaLight::SetImg:\n"
 			"\t""img is invalid\n");
 		return;

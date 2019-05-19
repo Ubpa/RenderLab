@@ -52,10 +52,6 @@ Texture::Texture(const vector<string> & skybox) {
 	Load(skybox);
 }
 
-uint Texture::GetID() const{
-	return ID;
-}
-
 bool Texture::IsValid() const{
 	return ID != 0 && type != ENUM_TYPE_NOT_VALID;
 }
@@ -284,4 +280,31 @@ void Texture::UnBind() const{
 		return;
 	
 	glBindTexture(Type2GL(type), 0);
+}
+
+bool Texture::GenBufferForCubemap(uint width, uint height) {
+	if (type != ENUM_TYPE_CUBE_MAP) {
+		printf("ERROR::Texture::GenBufferForCubemap:\n"
+			"\t""type is not ENUM_TYPE_CUBE_MAP\n");
+		return false;
+	}
+
+	glGenTextures(1, &ID);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, ID);
+
+	for (uint i = 0; i < 6; i++)
+	{
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, nullptr);
+	}
+
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	type = ENUM_TYPE_CUBE_MAP;
+	UnBind();
+
+	return true;
 }

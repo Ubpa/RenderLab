@@ -16,14 +16,16 @@ void AliasMethod::Init(const vector<double> & distribution) {
 	underfulls.reserve(num);
 
 	for (int i = 0; i < num; i++) {
+		// Ä¬ÈÏÉèÖÃÎª i
+		table[i].k = static_cast<int>(i);
+
 		table[i].p = distribution[i];
 		table[i].u = num * distribution[i];
+
 		if (table[i].u < 1)
 			underfulls.push_back(i);
-		else if (table[i].u > 1)
+		if (table[i].u > 1)
 			overfulls.push_back(i);
-		else
-			table[i].k = static_cast<int>(i);
 	}
 
 	while (!overfulls.empty() && !underfulls.empty()) {
@@ -37,18 +39,16 @@ void AliasMethod::Init(const vector<double> & distribution) {
 		table[j].k = i;
 
 		if (table[i].u > 1)
+			overfulls.push_back(i);
+		if (table[i].u < 1)
 			underfulls.push_back(i);
 	}
 	
-	for (auto i : overfulls) {
+	for (auto i : overfulls)
 		table[i].u = 1.f;
-		table[i].k = i;
-	}
 
-	for (auto j : underfulls) {
+	for (auto j : underfulls)
 		table[j].u = 1.f;
-		table[j].k = j;
-	}
 }
 
 int AliasMethod::Sample() const {

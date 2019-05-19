@@ -27,6 +27,7 @@ namespace CppUtil {
 		class PLDM_Generator;
 		class DLDM_Generator;
 		class SLDM_Generator;
+		class CM_Generator;
 
 		class Scene;
 		class SObj;
@@ -59,7 +60,7 @@ namespace CppUtil {
 
 		protected:// Use for SubClass
 			void RegShader(const OpenGL::Shader & shader, int depthmapBase = -1);
-			void UseLightDepthMap(const OpenGL::Shader & shader) const;
+			void UseLightTex(const OpenGL::Shader & shader) const;
 
 			void SetCurShader(const OpenGL::Shader & shader) { curShader = shader; }
 
@@ -83,20 +84,28 @@ namespace CppUtil {
 		private:
 			void InitShaders();
 			void InitShader_Basic();
+			void InitShader_Skybox();
 
 			// 更新光源的 UniformBlock
 			void UpdateLights();
 			void UpdatePointLights();
 			void UpdateDirectionalLights();
 			void UpdateSpotLights();
+			void UpdateEnvironment();
+
+			// draw skybox as last
+			void DrawEnvironment();
 
 		protected:
 			Basic::Ptr<Scene> scene;
 			QT::RawAPI_OGLW * pOGLW;
 
 		private:
+			Basic::Ptr<OpenGL::Camera> camera;
+
 			OpenGL::Shader curShader;
 			OpenGL::Shader shader_basic;
+			OpenGL::Shader shader_skybox;
 
 			std::vector<Transform> modelVec;
 
@@ -106,6 +115,7 @@ namespace CppUtil {
 			unsigned int pointLightsUBO;
 			unsigned int directionalLightsUBO;
 			unsigned int spotLightsUBO;
+			unsigned int environmentUBO;
 
 			static const int maxPointLights;// 8
 			Basic::Ptr<PLDM_Generator> pldmGenerator;
@@ -113,6 +123,7 @@ namespace CppUtil {
 			Basic::Ptr<DLDM_Generator> dldmGenerator;
 			static const int maxSpotLights;// 8
 			Basic::Ptr<SLDM_Generator> sldmGenerator;
+			Basic::Ptr<CM_Generator> cmGenerator;
 
 			static const float lightNear;// 0.01
 			static const float lightFar;// 25

@@ -27,6 +27,7 @@ namespace CppUtil {
 				ENUM_TYPE_GBUFFER,
 				ENUM_TYPE_RAYTRACING,
 				ENUM_TYPE_RTX,
+				ENUM_TYPE_DYNAMIC_COLOR,
 			};
 			enum ENUM_PASS_TYPE {
 				ENUM_PASS_COLOR,
@@ -46,6 +47,17 @@ namespace CppUtil {
 			const Texture & GetColorTexture(uint idx) const;
 			const Texture & GetDepthTexture() const;
 			bool IsValid() const;
+
+			enum class TexTarget {
+				TEXTURE_2D,
+				TEXTURE_CUBE_MAP_POSITIVE_X,
+				TEXTURE_CUBE_MAP_NEGATIVE_X,
+				TEXTURE_CUBE_MAP_POSITIVE_Y,
+				TEXTURE_CUBE_MAP_NEGATIVE_Y,
+				TEXTURE_CUBE_MAP_POSITIVE_Z,
+				TEXTURE_CUBE_MAP_NEGATIVE_Z,
+			};
+			bool SetColor(const Texture & tex, TexTarget textarget);
 		private:
 			bool GenFBO_BASIC(uint width, uint height);
 			bool GenFBO_RGBF_DEPTH(uint width, uint height, uint colorBufferNum = 1);
@@ -57,6 +69,7 @@ namespace CppUtil {
 			bool GenFBO_GBUFFER(uint width, uint height);
 			bool GenFBO_RAYTRACING(uint width, uint height);
 			bool GenFBO_RTX(uint width, uint height);
+			bool GenFBO_DYNAMIC_COLOR(uint width, uint height);
 
 			bool IsComplete() const;
 			static uint PassType2GL(ENUM_PASS_TYPE passType);

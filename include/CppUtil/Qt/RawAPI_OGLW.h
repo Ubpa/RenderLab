@@ -26,7 +26,7 @@ namespace CppUtil {
 
 	namespace QT {
 
-		BETTER_ENUM(ShapeType, int, Sphere, Plane);
+		BETTER_ENUM(ShapeType, int, Sphere, Plane, Cube);
 
 		class RawAPI_OGLW : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core {
 			Q_OBJECT
@@ -36,7 +36,7 @@ namespace CppUtil {
 
 		public:
 			const OpenGL::VAO GetVAO(ShapeType shapeType);
-			const OpenGL::VAO GetVAO(const Basic::Ptr<Engine::TriMesh> mesh);
+			const OpenGL::VAO GetVAO(const Basic::PtrC<Engine::TriMesh> mesh);
 			const OpenGL::Texture GetTex(Basic::PtrC<Basic::Image> img);
 
 			template<typename T>
@@ -85,6 +85,8 @@ namespace CppUtil {
 			std::map<Basic::WPtrC<Basic::Image>, OpenGL::Texture> img2tex;
 
 			size_t ID;
+
+			static const Basic::PtrC<Engine::TriMesh> cube;
 		};
 
 		template<typename T>

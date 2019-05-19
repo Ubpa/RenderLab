@@ -4,6 +4,7 @@
 
 #include <CppUtil/Engine/CmptCamera.h>
 #include <CppUtil/Engine/CmptLight.h>
+#include <CppUtil/Engine/InfiniteAreaLight.h>
 
 #include <CppUtil/Basic/Math.h>
 
@@ -88,4 +89,15 @@ const string Scene::GetName(int ID) const {
 		return "";
 
 	return target->second;
+}
+
+const Ptr<InfiniteAreaLight> Scene::GetInfiniteAreaLight() const {
+	auto lightCmpts = GetCmptLights();
+	for (auto lightCmpt : lightCmpts) {
+		auto rst = CastTo<InfiniteAreaLight>(lightCmpt->light);
+		if (rst)
+			return rst;
+	}
+
+	return nullptr;
 }

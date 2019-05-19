@@ -71,6 +71,10 @@ FBO::FBO(uint width, uint height, ENUM_TYPE type)
 		if (!GenFBO_RTX(width, height))
 			printf("GenFBO_RTX fail\n");
 		break;
+	case OpenGL::FBO::ENUM_TYPE_DYNAMIC_COLOR:
+		if (!GenFBO_DYNAMIC_COLOR(width, height))
+			printf("GenFBO_DYNAMIC_COLOR fail\n");
+		break;
 	default:
 		printf("ERROR: FBO type not know\n");
 		isValid = false;
@@ -478,6 +482,29 @@ bool FBO::GenFBO_RAYTRACING(uint width, uint height) {
 	return true;
 }
 
+bool FBO::GenFBO_DYNAMIC_COLOR(uint width, uint height) {
+	glGenFramebuffers(1, &ID);
+	glBindFramebuffer(GL_FRAMEBUFFER, ID);
+
+	// create and attach depth buffer (renderbuffer)
+	uint rboDepth;
+	glGenRenderbuffers(1, &rboDepth);
+	glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth);
+
+	UseDefault();
+
+	isValid = IsComplete();
+	if (!isValid) {
+		printf("Framebuffer is not complete!\n");
+		colorTextures.clear();
+		return false;
+	}
+
+	return true;
+}
+
 uint FBO::GetID() const {
 	if (!isValid)
 		return 0;
@@ -569,7 +596,7 @@ const Texture & FBO::GetDepthTexture() const {
 bool FBO::Use() const{
 	if (!isValid) {
 		printf("ERROR::FBO::Use:\n"
-			"\t""use a invalid FBO\n");
+			"\t""FBO is invalid\n");
 		return false;
 	}
 	
@@ -579,4 +606,43 @@ bool FBO::Use() const{
 
 void FBO::UseDefault() {
 	glBindFramebuffer(GL_FRAMEBUFFER, DEFAULT_FRAMEBUFFER);
+}
+
+bool FBO::SetColor(const Texture & tex, TexTarget textarget) {
+	if (!isValid) {
+		printf("ERROR::FBO::SetColor:\n"
+			"\t""FBO is invalid\n");
+		return false;
+	}
+
+	GLenum mapper[7] = {
+		GL_TEXTURE_2D,
+		GL_TEXTURE_CUBE_MAP_POSITIVE_X,
+		GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
+		GL_TEXTURE_CUBE_MAP_POSITIVE_Y,
+		GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
+		GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
+		GL_TEXTURE_CUBE_MAP_NEGATIVE_Z,
+	};
+
+	auto idx = static_cast<uint>(textarget);
+
+	if (idx == 0 && (tex.GetType() != Texture::ENUM_TYPE::ENUM_TYPE_2D && tex.GetType() != Texture::ENUM_TYPE::ENUM_TYPE_2D_DYNAMIC)) {
+		printf("ERROR::FBO::SetColor:\n"
+			"\t""tex is not support GL_TEXTURE_2D\n");
+		return false;
+	}
+
+	if (idx > 0 && tex.GetType() != Texture::ENUM_TYPE::ENUM_TYPE_CUBE_MAP) {
+		printf("ERROR::FBO::SetColor:\n"
+			"\t""tex is not support GL_TEXTURE_CUBE_MAP\n");
+		return false;
+	}
+
+	GLenum glTexTarget = mapper[idx];
+
+	Use();
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, glTexTarget, tex.GetID(), 0);
+
+	return true;
 }

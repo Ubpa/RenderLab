@@ -19,6 +19,8 @@ using namespace CppUtil::OpenGL;
 using namespace CppUtil::Basic;
 using namespace std;
 
+const PtrC<TriMesh> RawAPI_OGLW::cube = TriMesh::GenCube();
+
 RawAPI_OGLW::RawAPI_OGLW(QWidget* parent,Qt::WindowFlags f)
 	: QOpenGLWidget(parent, f), resizeOp(nullptr), paintOp(nullptr), initOp(nullptr) {
 	setFocusPolicy(Qt::ClickFocus);
@@ -127,6 +129,8 @@ const VAO RawAPI_OGLW::GetVAO(ShapeType shapeType){
 		return VAO_P3N3T2T3_Sphere;
 	case ShapeType::Plane:
 		return VAO_P3N3T2T3_Plane;
+	case ShapeType::Cube:
+		return GetVAO(cube);
 	default:
 		printf("ERROR::MgrVAO::GetShapeVAO:\n"
 			"\t""not support shape(%s)\n", shapeType._to_string());
@@ -134,7 +138,7 @@ const VAO RawAPI_OGLW::GetVAO(ShapeType shapeType){
 	}
 }
 
-const VAO RawAPI_OGLW::GetVAO(const Ptr<TriMesh> mesh) {
+const VAO RawAPI_OGLW::GetVAO(const PtrC<TriMesh> mesh) {
 	auto target = mesh2VAO.find(mesh);
 	if (target != mesh2VAO.end())
 		return target->second;

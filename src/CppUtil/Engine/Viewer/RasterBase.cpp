@@ -3,6 +3,7 @@
 #include "DLDM_Generator.h"
 #include "PLDM_Generator.h"
 #include "SLDM_Generator.h"
+#include "CM_Generator.h"
 
 #include <CppUtil/Engine/Scene.h>
 #include <CppUtil/Engine/SObj.h>
@@ -21,6 +22,7 @@
 #include <CppUtil/Engine/PointLight.h>
 #include <CppUtil/Engine/DirectionalLight.h>
 #include <CppUtil/Engine/SpotLight.h>
+#include <CppUtil/Engine/InfiniteAreaLight.h>
 
 #include <CppUtil/Qt/RawAPI_OGLW.h>
 #include <CppUtil/Qt/RawAPI_Define.h>
@@ -56,7 +58,7 @@ const float RasterBase::lightFar = 25.f;
 
 const string rootPath = ROOT_PATH;
 
-bool RasterBase::ShaderCompare::operator()(const OpenGL::Shader & lhs, const OpenGL::Shader & rhs) const{
+bool RasterBase::ShaderCompare::operator()(const OpenGL::Shader & lhs, const OpenGL::Shader & rhs) const {
 	if (!lhs.IsValid())
 		return true;
 
@@ -70,7 +72,8 @@ RasterBase::RasterBase(RawAPI_OGLW * pOGLW, Ptr<Scene> scene, Ptr<Camera> camera
 	: pOGLW(pOGLW), scene(scene),
 	pldmGenerator(PLDM_Generator::New(pOGLW, lightNear, lightFar)),
 	dldmGenerator(DLDM_Generator::New(pOGLW, camera)),
-	sldmGenerator(SLDM_Generator::New(pOGLW, camera, lightNear, lightFar)) {
+	sldmGenerator(SLDM_Generator::New(pOGLW, camera, lightNear, lightFar)),
+	cmGenerator(CM_Generator::New(pOGLW)) {
 	RegMemberFunc<SObj>(&RasterBase::Visit);
 
 	// primitive
@@ -96,6 +99,7 @@ void RasterBase::Draw() {
 	scene->Accept(pldmGenerator);
 	scene->Accept(dldmGenerator);
 	scene->Accept(sldmGenerator);
+	scene->Accept(cmGenerator);
 
 	// 要放在深度图生成之后
 	UpdateLights();
@@ -103,6 +107,8 @@ void RasterBase::Draw() {
 	modelVec.clear();
 	modelVec.push_back(Transform(1.f));
 	scene->GetRoot()->Accept(This());
+
+	DrawEnvironment();
 }
 
 void RasterBase::OGL_Init() {
@@ -124,21 +130,38 @@ void RasterBase::OGL_Init() {
 	glBindBufferBase(GL_UNIFORM_BUFFER, 3, spotLightsUBO);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
+	glGenBuffers(1, &environmentUBO);
+	glBindBuffer(GL_UNIFORM_BUFFER, environmentUBO);
+	glBufferData(GL_UNIFORM_BUFFER, 32, NULL, GL_DYNAMIC_DRAW);
+	glBindBufferBase(GL_UNIFORM_BUFFER, 4, environmentUBO);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+
 	pldmGenerator->OGL_Init();
 	dldmGenerator->OGL_Init();
 	sldmGenerator->OGL_Init();
+	cmGenerator->OGL_Init();
 
 	InitShaders();
 }
 
 void RasterBase::InitShaders() {
 	InitShader_Basic();
+	InitShader_Skybox();
 }
 
 void RasterBase::InitShader_Basic() {
 	shader_basic = Shader(rootPath + str_Basic_P3_vs, rootPath + str_Basic_fs);
 
 	RegShader(shader_basic);
+}
+
+void RasterBase::InitShader_Skybox() {
+	string vsPath = "data/shaders/Engine/Skybox/skybox.vs";
+	string fsPath = "data/shaders/Engine/Skybox/skybox.fs";
+	shader_skybox = Shader(rootPath + vsPath, rootPath + fsPath);
+
+	RegShader(shader_skybox, 0);
 }
 
 void RasterBase::Visit(Ptr<SObj> sobj) {
@@ -186,6 +209,7 @@ void RasterBase::UpdateLights() {
 	UpdatePointLights();
 	UpdateDirectionalLights();
 	UpdateSpotLights();
+	UpdateEnvironment();
 }
 
 void RasterBase::UpdatePointLights() {
@@ -276,10 +300,36 @@ void RasterBase::UpdateSpotLights() {
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
-void RasterBase::UseLightDepthMap(const Shader & shader) const {
+void RasterBase::UpdateEnvironment() {
+	glBindBuffer(GL_UNIFORM_BUFFER, environmentUBO);
+
+	auto environment = scene->GetInfiniteAreaLight();
+	if (!environment) {
+		auto color = RGBf(0.f);
+		float intensity = 0;
+		bool haveSkybox = false;
+		bool haveEnvironment = false;
+		glBufferSubData(GL_UNIFORM_BUFFER, 0, 12, color.Data());
+		glBufferSubData(GL_UNIFORM_BUFFER, 12, 4, &intensity);
+		glBufferSubData(GL_UNIFORM_BUFFER, 16, 4, &haveSkybox);
+		glBufferSubData(GL_UNIFORM_BUFFER, 20, 4, &haveEnvironment);
+	}
+	else {
+		bool haveSkybox = environment->GetImg() != nullptr;
+		bool haveEnvironment = true;
+		glBufferSubData(GL_UNIFORM_BUFFER, 0, 12, environment->colorFactor.Data());
+		glBufferSubData(GL_UNIFORM_BUFFER, 12, 4, &environment->intensity);
+		glBufferSubData(GL_UNIFORM_BUFFER, 16, 4, &haveSkybox);
+		glBufferSubData(GL_UNIFORM_BUFFER, 20, 4, &haveEnvironment);
+	}
+
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+}
+
+void RasterBase::UseLightTex(const Shader & shader) const {
 	auto target = shader2depthmapBase.find(shader);
 	if (target == shader2depthmapBase.cend()) {
-		printf("ERROR::RasterBase::UseLightDepthMap:\n"
+		printf("ERROR::RasterBase::UseLightTex:\n"
 			"\t""shader not regist\n");
 		return;
 	}
@@ -318,6 +368,13 @@ void RasterBase::UseLightDepthMap(const Shader & shader) const {
 
 		sldmGenerator->GetDepthMap(cmptLight).Use(depthmapBase + maxPointLights + maxDirectionalLights + spotLightIdx);
 	}
+
+	// environment
+	auto environment = scene->GetInfiniteAreaLight();
+	if (!environment || !environment->GetImg())
+		return;
+	auto cubemap = cmGenerator->GetCubeMap(environment->GetImg());
+	cubemap.Use(depthmapBase + maxPointLights + maxDirectionalLights + maxSpotLights);
 }
 
 void RasterBase::RegShader(const OpenGL::Shader & shader, int depthmapBase) {
@@ -334,18 +391,38 @@ void RasterBase::RegShader(const OpenGL::Shader & shader, int depthmapBase) {
 	// point light
 	shader.UniformBlockBind("PointLights", 1);
 
+	int pointLightBase = depthmapBase;
 	for (int i = 0; i < maxPointLights; i++)
-		shader.SetInt("pointLightDepthMap" + to_string(i), depthmapBase + i);
+		shader.SetInt("pointLightDepthMap" + to_string(i), pointLightBase + i);
 
 	// directional light
 	shader.UniformBlockBind("DirectionalLights", 2);
 
+	int directionalLightBase = pointLightBase + maxPointLights;
 	for (int i = 0; i < maxDirectionalLights; i++)
-		shader.SetInt("directionalLightDepthMap" + to_string(i), depthmapBase + maxPointLights + i);
+		shader.SetInt("directionalLightDepthMap" + to_string(i), directionalLightBase + i);
 
 	// spot light
 	shader.UniformBlockBind("SpotLights", 3);
 
+	int spotLightBase = directionalLightBase + maxDirectionalLights;
 	for (int i = 0; i < maxSpotLights; i++)
 		shader.SetInt("spotLightDepthMap" + to_string(i), depthmapBase + maxPointLights + maxDirectionalLights + i);
+
+	// environment
+	shader.UniformBlockBind("Environment", 4);
+
+	int environmentBase = spotLightBase + maxSpotLights;
+	shader.SetInt("skybox", environmentBase);
+}
+
+void RasterBase::DrawEnvironment() {
+	auto environment = scene->GetInfiniteAreaLight();
+	if (!environment)
+		return;
+
+	glDepthFunc(GL_LEQUAL);
+	UseLightTex(shader_skybox);
+	pOGLW->GetVAO(ShapeType::Cube).Draw(shader_skybox);
+	glDepthFunc(GL_LESS);
 }
