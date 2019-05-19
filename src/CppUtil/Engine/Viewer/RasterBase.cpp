@@ -3,7 +3,7 @@
 #include "DLDM_Generator.h"
 #include "PLDM_Generator.h"
 #include "SLDM_Generator.h"
-#include "CM_Generator.h"
+#include "EnvGenerator.h"
 
 #include <CppUtil/Engine/Scene.h>
 #include <CppUtil/Engine/SObj.h>
@@ -73,7 +73,7 @@ RasterBase::RasterBase(RawAPI_OGLW * pOGLW, Ptr<Scene> scene, Ptr<Camera> camera
 	pldmGenerator(PLDM_Generator::New(pOGLW, lightNear, lightFar)),
 	dldmGenerator(DLDM_Generator::New(pOGLW, camera)),
 	sldmGenerator(SLDM_Generator::New(pOGLW, camera, lightNear, lightFar)),
-	cmGenerator(CM_Generator::New(pOGLW)) {
+	cmGenerator(EnvGenerator::New(pOGLW)) {
 	RegMemberFunc<SObj>(&RasterBase::Visit);
 
 	// primitive
@@ -311,16 +311,16 @@ void RasterBase::UpdateEnvironment() {
 		bool haveEnvironment = false;
 		glBufferSubData(GL_UNIFORM_BUFFER, 0, 12, color.Data());
 		glBufferSubData(GL_UNIFORM_BUFFER, 12, 4, &intensity);
-		glBufferSubData(GL_UNIFORM_BUFFER, 16, 4, &haveSkybox);
-		glBufferSubData(GL_UNIFORM_BUFFER, 20, 4, &haveEnvironment);
+		glBufferSubData(GL_UNIFORM_BUFFER, 16, 1, &haveSkybox);
+		glBufferSubData(GL_UNIFORM_BUFFER, 20, 1, &haveEnvironment);
 	}
 	else {
 		bool haveSkybox = environment->GetImg() != nullptr;
 		bool haveEnvironment = true;
 		glBufferSubData(GL_UNIFORM_BUFFER, 0, 12, environment->colorFactor.Data());
 		glBufferSubData(GL_UNIFORM_BUFFER, 12, 4, &environment->intensity);
-		glBufferSubData(GL_UNIFORM_BUFFER, 16, 4, &haveSkybox);
-		glBufferSubData(GL_UNIFORM_BUFFER, 20, 4, &haveEnvironment);
+		glBufferSubData(GL_UNIFORM_BUFFER, 16, 1, &haveSkybox);
+		glBufferSubData(GL_UNIFORM_BUFFER, 20, 1, &haveEnvironment);
 	}
 
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
@@ -373,7 +373,7 @@ void RasterBase::UseLightTex(const Shader & shader) const {
 	auto environment = scene->GetInfiniteAreaLight();
 	if (!environment || !environment->GetImg())
 		return;
-	auto cubemap = cmGenerator->GetCubeMap(environment->GetImg());
+	auto cubemap = cmGenerator->GetSkybox(environment->GetImg());
 	cubemap.Use(depthmapBase + maxPointLights + maxDirectionalLights + maxSpotLights);
 }
 

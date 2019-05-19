@@ -27,7 +27,7 @@ namespace CppUtil {
 		class PLDM_Generator;
 		class DLDM_Generator;
 		class SLDM_Generator;
-		class CM_Generator;
+		class EnvGenerator;
 
 		class Scene;
 		class SObj;
@@ -123,7 +123,7 @@ namespace CppUtil {
 			Basic::Ptr<DLDM_Generator> dldmGenerator;
 			static const int maxSpotLights;// 8
 			Basic::Ptr<SLDM_Generator> sldmGenerator;
-			Basic::Ptr<CM_Generator> cmGenerator;
+			Basic::Ptr<EnvGenerator> cmGenerator;
 
 			static const float lightNear;// 0.01
 			static const float lightFar;// 25

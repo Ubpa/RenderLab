@@ -29,34 +29,47 @@ namespace CppUtil {
 		class InfiniteAreaLight;
 
 		// Cubemap Generator, GPU-driven
-		class CM_Generator : public Basic::Visitor {
+		class EnvGenerator : public Basic::Visitor {
 		public:
-			CM_Generator(QT::RawAPI_OGLW * pOGLW);
+			EnvGenerator(QT::RawAPI_OGLW * pOGLW);
 
 		public:
-			static const Basic::Ptr<CM_Generator> New(QT::RawAPI_OGLW * pOGLW) {
-				return Basic::New<CM_Generator>(pOGLW);
+			static const Basic::Ptr<EnvGenerator> New(QT::RawAPI_OGLW * pOGLW) {
+				return Basic::New<EnvGenerator>(pOGLW);
 			}
 
 		protected:
-			virtual ~CM_Generator() = default;
+			virtual ~EnvGenerator() = default;
 
 		public:
 			void OGL_Init();
-			const OpenGL::Texture GetCubeMap(Basic::PtrC<Basic::Image> img) const;
+			const OpenGL::Texture GetSkybox(Basic::PtrC<Basic::Image> img) const;
+			const OpenGL::Texture GetIrradiance(Basic::PtrC<Basic::Image> img) const;
 
 		private:
 			void Visit(Basic::Ptr<Scene> scene);
 
 		private:
+			void InitShader_genSkybox();
+			void InitShader_genIrradiance();
+
+			void Clear();
+
+		private:
 			QT::RawAPI_OGLW * pOGLW;
 
-			std::map<Basic::WPtrC<Basic::Image>, OpenGL::Texture> img2tex;
-			int mapSize;
+			int skyboxSize;
+			int irradianceSize;
 
-			OpenGL::Shader shader_genCubemap;
+			OpenGL::Shader shader_genSkybox;
+			OpenGL::Shader shader_genIrradiance;
 
-			OpenGL::FBO captureFBO;
+			OpenGL::FBO genSkyboxFBO;
+			OpenGL::FBO genIrradianceFBO;
+
+			Basic::WPtrC<Basic::Image> curImg;
+			OpenGL::Texture skybox;
+			OpenGL::Texture irradiance;
 		};
 	}
 }

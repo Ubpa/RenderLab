@@ -30,10 +30,5 @@ vec3 GetEnvironment(vec3 texcoord) {
 	if(!haveSkybox)
 		return intensity * colorFactor;
 	
-	texcoord = - texcoord;
-	float tmp = texcoord.x;
-	texcoord.x = texcoord.z;
-	texcoord.z = tmp;
-	
 	return intensity * colorFactor * texture(skybox, texcoord).rgb;
 }

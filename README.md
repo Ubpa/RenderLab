@@ -113,7 +113,7 @@ Optix: 6.0
   - [ ] 实时
     - [x] 从 equirectangular map 到 cubemap
     - [x] 渲染 skybox
-    - [ ] irradiace map
+    - [x] irradiace map
     - [ ] pre-filtering an HDR environment map
     - [ ] pre-computing the BRDF
     - [ ] IBL
