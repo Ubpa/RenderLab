@@ -57,7 +57,7 @@ namespace CppUtil {
 				TEXTURE_CUBE_MAP_POSITIVE_Z,
 				TEXTURE_CUBE_MAP_NEGATIVE_Z,
 			};
-			bool SetColor(const Texture & tex, TexTarget textarget);
+			bool SetColor(const Texture & tex, TexTarget textarget, int mip = 0);
 		private:
 			bool GenFBO_BASIC(uint width, uint height);
 			bool GenFBO_RGBF_DEPTH(uint width, uint height, uint colorBufferNum = 1);

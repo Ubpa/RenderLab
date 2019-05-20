@@ -17,7 +17,7 @@ namespace CppUtil {
 			}
 
 			virtual float G1(const Normalf & w) const override {
-				auto k = (alpha + 1)*(alpha + 1) / 8;
+				auto k = alpha / 2;
 				auto NoW = std::max(0.f, SurfCoord::CosTheta(w));
 				return NoW / (NoW * (1 - k) + k);
 			}

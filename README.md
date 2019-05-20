@@ -105,20 +105,20 @@ Optix: 6.0
   - [x] UI
   - [x] （反）序列化
   
-- [ ] 环境光
+- [x] 环境光
 
   - [x] 离线
     - [x] 别名法 AliasMethod
     - [x] 无限远光源 InifiniteAreaLight
-  - [ ] 实时
+  - [x] 实时
     - [x] 从 equirectangular map 到 cubemap
     - [x] 渲染 skybox
     - [x] irradiace map
-    - [ ] pre-filtering an HDR environment map
-    - [ ] pre-computing the BRDF
-    - [ ] IBL
+    - [x] pre-filtering an HDR environment map
+    - [x] pre-computing the BRDF
+    - [x] IBL
       - [x] diffuse
-      - [ ] specular
+      - [x] specular
   - [x] UI
   - [x] （反）序列化
 

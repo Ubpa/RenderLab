@@ -148,6 +148,8 @@ uniform sampler2D spotLightDepthMap7;
 
 uniform samplerCube skybox; // 25
 uniform samplerCube irradianceMap; // 26
+uniform samplerCube prefilterMap; // 27
+uniform sampler2D   brdfLUT; // 28
 
 uniform float lightNear;
 uniform float lightFar;
@@ -156,9 +158,9 @@ uniform float lightFar;
 
 vec3 CalcBumpedNormal(vec3 normal, vec3 tangent, sampler2D normalTexture, vec2 texcoord);
 
-float SchlickGGX_D(vec3 norm, vec3 h, float alpha);
-float SchlickGGX_G1(vec3 norm, vec3 w, float alpha);
-float SchlickGGX_G(vec3 norm, vec3 wo, vec3 wi, float alpha);
+float SchlickGGX_D(vec3 norm, vec3 h, float roughness);
+float SchlickGGX_G1(vec3 norm, vec3 w, float roughness);
+float SchlickGGX_G(vec3 norm, vec3 wo, vec3 wi, float roughness);
 vec3 GetF0(vec3 albedo, float metallic);
 vec3 Fr(vec3 w, vec3 h, vec3 albedo, float metallic);
 vec3 FrR(vec3 wo, vec3 norm, vec3 F0, float roughness);
@@ -274,15 +276,23 @@ void main() {
 	
 	// ambient light
 	if(haveEnvironment) {
-		vec3 irradiance = haveSkybox ? texture(irradianceMap, norm).rgb : vec3(1);
-		irradiance *= intensity * colorFactor;
-		
 		vec3 F0 = GetF0(albedo, metallic);
 		vec3 F = FrR(wo, norm, F0, roughness);
 		vec3 kS = F;
 		vec3 kD = (1 - metallic) * (vec3(1) - kS);
+		
+		vec3 irradiance = haveSkybox ? texture(irradianceMap, norm).rgb : vec3(1);
+		
 		vec3 diffuse = irradiance * albedo;
-		vec3 ambient = kD * diffuse * ao;
+		
+		vec3 R = reflect(-wo, norm);
+		const float MAX_REFLECTION_LOD = 4.0;
+		// 用 R 来采样
+		vec3 prefilteredColor = haveSkybox ? textureLod(prefilterMap, R,  roughness * MAX_REFLECTION_LOD).rgb : vec3(1);
+		vec2 envBRDF = texture(brdfLUT, vec2(max(dot(norm, wo), 0.0), roughness)).rg;
+		vec3 specular = prefilteredColor * (F * envBRDF.x + envBRDF.y);
+		
+		vec3 ambient = (kD * diffuse + specular) * ao * intensity * colorFactor;
 		result += ambient;
 	}
 	
@@ -292,31 +302,30 @@ void main() {
 
 // ----------------- 函数定义
 
-float SchlickGGX_D(vec3 norm, vec3 h, float alpha){
+float SchlickGGX_D(vec3 norm, vec3 h, float roughness){
 	float NoH = dot(norm, h);
 	if(NoH < 0)
 		return 0;
 	
-	float cos2Theta = NoH * NoH;
+	float alpha = roughness * roughness;
+	
 	float alpha2 = alpha * alpha;
+	float cos2Theta = NoH * NoH;
 	
 	float t = (alpha2 - 1) * cos2Theta + 1;
 	
 	return alpha2 / (PI * t * t);
 }
 
-float SchlickGGX_G1(vec3 norm, vec3 w, float alpha, float isDirect) {
-	float k_direct = (alpha + 1)*(alpha + 1) / 8;
-	float k_IBL = alpha * alpha / 2;
-	float k = mix(k_IBL, k_direct, isDirect);
+float SchlickGGX_G1(vec3 norm, vec3 w, float roughness) {
+	float k = (roughness+1) * (roughness+1) / 8;
 	
 	float NoW = max(0.f, dot(norm, w));
 	return NoW / (NoW * (1 - k) + k);
 }
 
-float SchlickGGX_G(vec3 norm, vec3 wo, vec3 wi, float alpha){
-	float isDirect = haveEnvironment ? 0 : 1;
-	return SchlickGGX_G1(norm, wo, alpha, isDirect) * SchlickGGX_G1(norm, wi, alpha, isDirect);
+float SchlickGGX_G(vec3 norm, vec3 wo, vec3 wi, float roughness){
+	return SchlickGGX_G1(norm, wo, roughness) * SchlickGGX_G1(norm, wi, roughness);
 }
 
 vec3 GetF0(vec3 albedo, float metallic) {
@@ -336,10 +345,9 @@ vec3 FrR(vec3 wo, vec3 norm, vec3 F0, float roughness) {
 
 vec3 BRDF(vec3 norm, vec3 wo, vec3 wi, vec3 albedo, float metallic, float roughness, float ao) {
 	vec3 wh = normalize(wo + wi);
-	float alpha = roughness * roughness;
 	
-	float D = SchlickGGX_D(norm, wh, alpha);
-	float G = SchlickGGX_G(norm, wo, wi, alpha);
+	float D = SchlickGGX_D(norm, wh, roughness);
+	float G = SchlickGGX_G(norm, wo, wi, roughness);
 	vec3 F = Fr(wo, wh, albedo, metallic);
 	
 	vec3 specular = D * G * F / (4.0f * dot(wh, wo) * dot(wh, wi));

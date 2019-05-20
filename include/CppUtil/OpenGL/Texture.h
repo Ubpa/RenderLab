@@ -37,6 +37,7 @@ namespace CppUtil {
 			bool Load(const std::string & path, bool flip = false, bool gammaCorrection = false);
 			bool SetImg(const Basic::Image & img);
 			bool GenBufferForCubemap(uint width, uint height);
+			bool GenMipmap();
 
 			bool Use(uint id = 0) const;
 			void Bind() const;

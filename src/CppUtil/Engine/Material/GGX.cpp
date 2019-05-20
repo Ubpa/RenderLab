@@ -34,11 +34,9 @@ const Normalf GGX::Sample_wh() const {
 	const float Xi2 = Math::Rand_F();
 
 	// theta
-	const auto alpha2 = alpha * alpha;
-	const auto tan2Theta = alpha2 * Xi1 / (1 - Xi1);
-
-	const auto cosTheta = 1.f / sqrt(1 + tan2Theta);
-	const auto sinTheta = std::max(0.f, sqrt(1.f - cosTheta * cosTheta));
+	const auto cos2Theta = (1 - Xi1) / ((alpha*alpha - 1)*Xi1 + 1);
+	const auto cosTheta = sqrt(cos2Theta);
+	const auto sinTheta = sqrt(1 - cos2Theta);
 
 	// phi
 	const auto phi = 2 * Math::PI * Xi2;

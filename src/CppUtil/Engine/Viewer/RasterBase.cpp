@@ -73,7 +73,7 @@ RasterBase::RasterBase(RawAPI_OGLW * pOGLW, Ptr<Scene> scene, Ptr<Camera> camera
 	pldmGenerator(PLDM_Generator::New(pOGLW, lightNear, lightFar)),
 	dldmGenerator(DLDM_Generator::New(pOGLW, camera)),
 	sldmGenerator(SLDM_Generator::New(pOGLW, camera, lightNear, lightFar)),
-	cmGenerator(EnvGenerator::New(pOGLW)) {
+	envGenerator(EnvGenerator::New(pOGLW)) {
 	RegMemberFunc<SObj>(&RasterBase::Visit);
 
 	// primitive
@@ -99,7 +99,7 @@ void RasterBase::Draw() {
 	scene->Accept(pldmGenerator);
 	scene->Accept(dldmGenerator);
 	scene->Accept(sldmGenerator);
-	scene->Accept(cmGenerator);
+	scene->Accept(envGenerator);
 
 	// 要放在深度图生成之后
 	UpdateLights();
@@ -140,7 +140,7 @@ void RasterBase::OGL_Init() {
 	pldmGenerator->OGL_Init();
 	dldmGenerator->OGL_Init();
 	sldmGenerator->OGL_Init();
-	cmGenerator->OGL_Init();
+	envGenerator->OGL_Init();
 
 	InitShaders();
 }
@@ -348,6 +348,7 @@ void RasterBase::UseLightTex(const Shader & shader) const {
 	}
 
 	// directional light
+	const int directionalLightBase = depthmapBase + maxPointLights;
 	for (auto cmptLight : scene->GetCmptLights()) {
 		auto directionalLight = CastTo<DirectionalLight>(cmptLight->light);
 		auto target = directionalLight2idx.find(directionalLight);
@@ -355,10 +356,11 @@ void RasterBase::UseLightTex(const Shader & shader) const {
 			continue;
 		const auto directionalLightIdx = target->second;
 
-		dldmGenerator->GetDepthMap(cmptLight).Use(depthmapBase + maxPointLights + directionalLightIdx);
+		dldmGenerator->GetDepthMap(cmptLight).Use(directionalLightBase + directionalLightIdx);
 	}
 
 	// spot light
+	const int spotLightBase = directionalLightBase + maxDirectionalLights;
 	for (auto cmptLight : scene->GetCmptLights()) {
 		auto spotLight = CastTo<SpotLight>(cmptLight->light);
 		auto target = spotLight2idx.find(spotLight);
@@ -366,17 +368,25 @@ void RasterBase::UseLightTex(const Shader & shader) const {
 			continue;
 		const auto spotLightIdx = target->second;
 
-		sldmGenerator->GetDepthMap(cmptLight).Use(depthmapBase + maxPointLights + maxDirectionalLights + spotLightIdx);
+		sldmGenerator->GetDepthMap(cmptLight).Use(spotLightBase + spotLightIdx);
 	}
 
 	// environment
 	auto environment = scene->GetInfiniteAreaLight();
-	if (!environment || !environment->GetImg())
-		return;
-	auto skybox = cmGenerator->GetSkybox(environment->GetImg());
-	skybox.Use(depthmapBase + maxPointLights + maxDirectionalLights + maxSpotLights);
-	auto irradianceMap = cmGenerator->GetIrradianceMap(environment->GetImg());
-	irradianceMap.Use(depthmapBase + maxPointLights + maxDirectionalLights + maxSpotLights + 1);
+	const int environmentBase = spotLightBase + maxSpotLights;
+	if (environment) {
+		auto brdfLUT = envGenerator->GetBRDFMap();
+		brdfLUT.Use(environmentBase + 3);
+
+		if (environment->GetImg()) {
+			auto skybox = envGenerator->GetSkybox(environment->GetImg());
+			skybox.Use(environmentBase);
+			auto irradianceMap = envGenerator->GetIrradianceMap(environment->GetImg());
+			irradianceMap.Use(environmentBase + 1);
+			auto prefilterMap = envGenerator->GetPrefilterMap(environment->GetImg());
+			prefilterMap.Use(environmentBase + 2);
+		}
+	}
 }
 
 void RasterBase::RegShader(const OpenGL::Shader & shader, int depthmapBase) {
@@ -409,14 +419,16 @@ void RasterBase::RegShader(const OpenGL::Shader & shader, int depthmapBase) {
 
 	int spotLightBase = directionalLightBase + maxDirectionalLights;
 	for (int i = 0; i < maxSpotLights; i++)
-		shader.SetInt("spotLightDepthMap" + to_string(i), depthmapBase + maxPointLights + maxDirectionalLights + i);
+		shader.SetInt("spotLightDepthMap" + to_string(i), spotLightBase + i);
 
 	// environment
 	shader.UniformBlockBind("Environment", 4);
 
-	int environmentBase = spotLightBase + maxSpotLights;
+	const int environmentBase = spotLightBase + maxSpotLights;
 	shader.SetInt("skybox", environmentBase);
 	shader.SetInt("irradianceMap", environmentBase + 1);
+	shader.SetInt("prefilterMap", environmentBase + 2);
+	shader.SetInt("brdfLUT", environmentBase + 3);
 }
 
 void RasterBase::DrawEnvironment() {

@@ -45,6 +45,8 @@ namespace CppUtil {
 			void OGL_Init();
 			const OpenGL::Texture GetSkybox(Basic::PtrC<Basic::Image> img) const;
 			const OpenGL::Texture GetIrradianceMap(Basic::PtrC<Basic::Image> img) const;
+			const OpenGL::Texture GetPrefilterMap(Basic::PtrC<Basic::Image> img) const;
+			const OpenGL::Texture GetBRDFMap() const { return brdfFBO.GetColorTexture(0); }
 
 		private:
 			void Visit(Basic::Ptr<Scene> scene);
@@ -52,6 +54,8 @@ namespace CppUtil {
 		private:
 			void InitShader_genSkybox();
 			void InitShader_genIrradiance();
+			void InitShader_Prefilter();
+			void InitShader_brdf();
 
 			void Clear();
 
@@ -60,16 +64,25 @@ namespace CppUtil {
 
 			int skyboxSize;
 			int irradianceSize;
+			int prefilterSize;
+			int brdfSize;
 
 			OpenGL::Shader shader_genSkybox;
 			OpenGL::Shader shader_genIrradiance;
+			OpenGL::Shader shader_prefilter;
+			OpenGL::Shader shader_brdf;
 
 			OpenGL::FBO genSkyboxFBO;
 			OpenGL::FBO genIrradianceFBO;
+			static constexpr int maxMipLevels = 5;
+			OpenGL::FBO prefilterFBOs[maxMipLevels];
+			bool isInitBrdfFBO{ false };
+			OpenGL::FBO brdfFBO;
 
 			Basic::WPtrC<Basic::Image> curImg;
 			OpenGL::Texture skybox;
 			OpenGL::Texture irradianceMap;
+			OpenGL::Texture prefilterMap;
 		};
 	}
 }

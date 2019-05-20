@@ -308,3 +308,17 @@ bool Texture::GenBufferForCubemap(uint width, uint height) {
 
 	return true;
 }
+
+bool Texture::GenMipmap() {
+	if (!IsValid()) {
+		printf("ERROR::Texture::GenMipmap:\n"
+			"\t""texture is not valid\n");
+		return false;
+	}
+
+	Bind();
+	auto glType = Type2GL(type);
+	glTexParameteri(glType, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glGenerateMipmap(glType);
+	return true;
+}

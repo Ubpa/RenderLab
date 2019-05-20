@@ -4,6 +4,8 @@
 
 #include <CppUtil/Qt/RawAPI_Define.h>
 
+#include <CppUtil/OpenGL/CommonDefine.h>
+
 #include <CppUtil/Basic/Sphere.h>
 #include <CppUtil/Basic/Plane.h>
 #include <CppUtil/Basic/GStorage.h>
@@ -103,6 +105,7 @@ void RawAPI_OGLW::wheelEvent(QWheelEvent *event) {
 }
 
 void RawAPI_OGLW::InitShapeVAOs() {
+	// sphere
 	Sphere sphere(50);
 	vector<VAO::VBO_DataPatch> P3_Sphere_Vec_VBO_Data_Patch = {
 		{sphere.GetPosArr(), sphere.GetPosArrSize(), 3},
@@ -112,6 +115,7 @@ void RawAPI_OGLW::InitShapeVAOs() {
 	};
 	VAO_P3N3T2T3_Sphere = VAO(P3_Sphere_Vec_VBO_Data_Patch, sphere.GetIndexArr(), sphere.GetIndexArrSize());
 
+	// plane
 	auto plane = TriMesh::GenPlane();
 	vector<VAO::VBO_DataPatch> P3_Plane_Vec_VBO_Data_Patch = {
 		{plane->GetPositions().data()->Data(), static_cast<uint>(plane->GetPositions().size() * 3 * sizeof(float)), 3},
@@ -120,6 +124,9 @@ void RawAPI_OGLW::InitShapeVAOs() {
 		{plane->GetTangents().data()->Data(), static_cast<uint>(plane->GetTangents().size() * 3 * sizeof(float)), 3},
 	};
 	VAO_P3N3T2T3_Plane = VAO(P3_Plane_Vec_VBO_Data_Patch, plane->GetIndice().data(), static_cast<uint>(plane->GetIndice().size() * sizeof(uint)));
+
+	// screen
+	VAO_P3T2_Screen = VAO(Define::data_ScreenVertices, sizeof(Define::data_ScreenVertices), { 2,2 });
 }
 
 const VAO RawAPI_OGLW::GetVAO(ShapeType shapeType){
@@ -131,6 +138,8 @@ const VAO RawAPI_OGLW::GetVAO(ShapeType shapeType){
 		return VAO_P3N3T2T3_Plane;
 	case ShapeType::Cube:
 		return GetVAO(cube);
+	case ShapeType::Screen:
+		return VAO_P3T2_Screen;
 	default:
 		printf("ERROR::MgrVAO::GetShapeVAO:\n"
 			"\t""not support shape(%s)\n", shapeType._to_string());

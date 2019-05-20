@@ -123,7 +123,7 @@ namespace CppUtil {
 			Basic::Ptr<DLDM_Generator> dldmGenerator;
 			static const int maxSpotLights;// 8
 			Basic::Ptr<SLDM_Generator> sldmGenerator;
-			Basic::Ptr<EnvGenerator> cmGenerator;
+			Basic::Ptr<EnvGenerator> envGenerator;
 
 			static const float lightNear;// 0.01
 			static const float lightFar;// 25
