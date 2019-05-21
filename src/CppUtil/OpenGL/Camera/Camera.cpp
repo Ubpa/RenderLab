@@ -132,8 +132,8 @@ void Camera::ProcessMouseScroll(float yoffset) {
 		fov -= yoffset;
 	else if (fov <= 1.0f)
 		fov = 1.0f;
-	else if (fov >= 45.0f)
-		fov = 45.0f;
+	else if (fov >= 179.0f)
+		fov = 179.0f;
 }
 
 // Processes input received from any keyboard-like input system. Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)

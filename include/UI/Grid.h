@@ -19,6 +19,7 @@ class QLabel;
 class QWidget;
 class QGridLayout;
 class QComboBox;
+class QPushButton;
 
 namespace CppUtil {
 	namespace Basic {
@@ -107,6 +108,8 @@ namespace Ui {
 		void AddEditImage(const std::string & text, CppUtil::Basic::Ptr<CppUtil::Basic::Image> & img) {
 			AddEditImage(text, img, [&](CppUtil::Basic::Ptr<CppUtil::Basic::Image> newImg) {img = newImg; });
 		}
+
+		void AddButton(const std::string & text, const std::function<void()> & slot);
 
 		// clear and delete
 		void Clear();

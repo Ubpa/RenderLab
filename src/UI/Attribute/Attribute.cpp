@@ -17,8 +17,11 @@
 #include <CppUtil/Engine/SpotLight.h>
 #include <CppUtil/Engine/InfiniteAreaLight.h>
 
+#include <CppUtil/OpenGL/Camera.h>
+
 #include <CppUtil/Basic/Visitor.h>
 #include <CppUtil/Basic/Math.h>
+#include <CppUtil/Basic/EventManager.h>
 
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QDoubleSpinBox>
@@ -32,6 +35,7 @@ using namespace CppUtil;
 using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
 using namespace CppUtil::Basic::Math;
+using namespace CppUtil::OpenGL;
 using namespace std;
 
 class Attribute::ComponentVisitor : public Visitor {
@@ -153,6 +157,59 @@ void Attribute::ComponentVisitor::Visit(Ptr<CmptCamera> camera) {
 	
 	grid->AddEditVal("- Field of View", camera->GetFOV(), 1, 179, [camera](double fov) {
 		camera->SetFOV(fov);
+	});
+
+	grid->AddButton("- To Roamer Camera", [camera]() {
+		WPtr<Camera> wptrRoamerCam;
+		if (!GS::GetV("Roamer::camera", wptrRoamerCam)) {
+			printf("ERROR::Attribute::ComponentVisitor::Visit(Ptr<CmptCamera>):\n"
+				"\t""GS::GetV(\"Roamer::camera\") fail\n");
+			return;
+		}
+
+		auto roamerCam = wptrRoamerCam.lock();
+		if (!roamerCam) {
+			printf("ERROR::Attribute::ComponentVisitor::Visit(Ptr<CmptCamera>):\n"
+				"\t""roamerCam is nullptr\n");
+			return;
+		}
+
+		auto fov = camera->GetFOV();
+		auto transform = camera->GetSObj()->GetLocalToWorldMatrix();
+
+		auto eulerAngle = transform.RotationEulerYXZ();
+		roamerCam->SetPose(transform.Position(), -eulerAngle.y - 90, eulerAngle.x);
+		roamerCam->SetFOV(fov);
+		EventMngr::GetInstance().Response(0, roamerCam);
+	});
+
+	grid->AddButton("- From Roamer Camera", [camera]() {
+		WPtr<Camera> wptrRoamerCam;
+		if (!GS::GetV("Roamer::camera", wptrRoamerCam)) {
+			printf("ERROR::Attribute::ComponentVisitor::Visit(Ptr<CmptCamera>):\n"
+				"\t""GS::GetV(\"Roamer::camera\") fail\n");
+			return;
+		}
+
+		auto roamerCam = wptrRoamerCam.lock();
+		if (!roamerCam) {
+			printf("ERROR::Attribute::ComponentVisitor::Visit(Ptr<CmptCamera>):\n"
+				"\t""roamerCam is nullptr\n");
+			return;
+		}
+
+		auto transformCmpt = camera->GetSObj()->GetComponent<CmptTransform>();
+		if (!transformCmpt)
+			transformCmpt = CmptTransform::New(camera->GetSObj());
+
+		camera->SetFOV(roamerCam->GetFOV());
+
+		auto front = roamerCam->GetFront();
+		auto pos = roamerCam->GetPos();
+		auto lookAt = Transform::LookAt(pos, pos + front);
+		auto w2parent = camera->GetSObj()->GetWorldToLocalMatrix() * transformCmpt->GetTransform();
+		transformCmpt->SetTransform(lookAt.Inverse() *  w2parent);
+
 	});
 }
 

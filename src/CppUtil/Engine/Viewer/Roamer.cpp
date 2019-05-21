@@ -7,6 +7,7 @@
 
 #include <CppUtil/Basic/LambdaOp.h>
 #include <CppUtil/Basic/EventManager.h>
+#include <CppUtil/Basic/GStorage.h>
 
 #include <QtWidgets/QApplication>
 
@@ -19,6 +20,7 @@ using namespace std;
 
 Roamer::Roamer(RawAPI_OGLW * pOGLW)
 	: pOGLW(pOGLW), camera(new Camera(Point3(0,0.75,2.3))), lock(false) {
+	GS::Reg("Roamer::camera", WPtr<Camera>(camera));
 }
 
 void Roamer::OGL_Init() {
@@ -135,6 +137,12 @@ void Roamer::ListenerInit() {
 
 		EventMngr::GetInstance().Reg(moveKey[i], (void*)this->GetOGLW(), EventMngr::KB_PRESS, op);
 	}
+
+	// UpdateCamera
+	auto updateCam = LambdaOp_New([this]() {
+		UpdateCamera();
+	});
+	EventMngr::GetInstance().Reg(0, camera, updateCam);
 }
 
 void Roamer::UpdateCamera() {

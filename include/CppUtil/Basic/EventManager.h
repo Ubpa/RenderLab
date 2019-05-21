@@ -31,12 +31,28 @@ namespace CppUtil {
 
 			void Reg(size_t event, Ptr<Op> op);
 			void Reg(size_t event, ENUM_EVENT_TYPE eventType, Ptr<Op> op);
+			template<typename T>
+			void Reg(size_t event, Ptr<T> target, Ptr<Op> op) {
+				return Reg(event, target.get(), op);
+			}
 			void Reg(size_t event, void * target, Ptr<Op> op);
+			template<typename T>
+			void Reg(size_t event, Ptr<T> target, ENUM_EVENT_TYPE eventType, Ptr<Op> op) {
+				return Reg(event, target.get(), eventType, op);
+			}
 			void Reg(size_t event, void * target, ENUM_EVENT_TYPE eventType, Ptr<Op> op);
 
 			void Response(size_t event);
 			void Response(size_t event, ENUM_EVENT_TYPE eventType);
+			template<typename T>
+			void Response(size_t event, Ptr<T> target) {
+				return Response(event, target.get());
+			}
 			void Response(size_t event, void * target);
+			template<typename T>
+			void Response(size_t event, Ptr<T> target, ENUM_EVENT_TYPE eventType) {
+				return Response(event, target.get(), eventType);
+			}
 			void Response(size_t event, void * target, ENUM_EVENT_TYPE eventType);
 
 		protected:

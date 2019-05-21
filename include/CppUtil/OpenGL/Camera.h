@@ -61,7 +61,7 @@ namespace CppUtil {
 
 			void SetRatioWH(float w, float h) { ratioWH = w / h; }
 			void SetRatioWH(float ratioWH) { this->ratioWH = ratioWH; }
-
+			void SetFOV(float fov) { this->fov = fov; }
 			void SetPose(const Point3 & pos, float yaw, float pitch);
 
 		private:

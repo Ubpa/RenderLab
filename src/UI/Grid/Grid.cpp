@@ -467,3 +467,13 @@ void Grid::AddEditVal(const vector<string> & texts, const Val3 & val, const Val3
 		AddRow(texts[i], spinboxs[i]);
 	}
 }
+
+void Grid::AddButton(const std::string & text, const std::function<void()> & slot) {
+	auto button = new QPushButton;
+	stringstream stylesheet;
+	stylesheet << "background-color: rgb(107,208,137);";
+	button->setStyleSheet(QString::fromStdString(stylesheet.str()));
+
+	page->connect(button, &QPushButton::clicked, slot);
+	AddRow(text, button);
+}

@@ -32,10 +32,11 @@
     - 平面 Plane
     - 三角网格 TriMesh
   - 光源 Light
-    - 面光源 AreaLight
+    - 面光源 AreaLight（不支持实时）
     - 点光源 PointLight
     - 方向光 DirectionalLight
     - 聚光灯 SpotLight
+    - 无限远光源 InfiniteAreaLight
 - 查看器 Viewer
   - 拣选器 Picker
   - 直接光照光栅器 DirectIllumRaster
@@ -122,19 +123,16 @@ Optix: 6.0
   - [x] UI
   - [x] （反）序列化
 
+- [ ] 实时渲染——面光源
 - [ ] 旋转拖动缩放物体
 
-- [ ] 统一相机
-
 - [ ] 重新架构 Raster
-
-- [ ] 实时渲染——面光源
 
 - [ ] ...
 
 ### Unimportant
 
 - [ ] 添加注释
-- [ ] 保存 Code 模式的 Trimesh 
+- [ ] 保存 Code 模式的 Trimesh
 - [ ] ...
 
