@@ -375,7 +375,7 @@ void RasterBase::UseLightTex(const Shader & shader) const {
 	auto environment = scene->GetInfiniteAreaLight();
 	const int environmentBase = spotLightBase + maxSpotLights;
 	if (environment) {
-		auto brdfLUT = envGenerator->GetBRDFMap();
+		auto brdfLUT = envGenerator->GetBRDF_LUT();
 		brdfLUT.Use(environmentBase + 3);
 
 		if (environment->GetImg()) {

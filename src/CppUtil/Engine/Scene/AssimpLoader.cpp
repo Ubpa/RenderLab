@@ -1,5 +1,7 @@
 #include "AssimpLoader.h"
 
+#include <3rdParty/assimp/pbrmaterial.h>
+
 #include <CppUtil/Engine/SObj.h>
 
 #include <CppUtil/Engine/CmptMaterial.h>
@@ -7,7 +9,10 @@
 #include <CppUtil/Engine/CmptGeometry.h>
 
 #include <CppUtil/Engine/TriMesh.h>
-#include <CppUtil/Engine/BSDF_Diffuse.h>
+#include <CppUtil/Engine/BSDF_MetalWorkflow.h>
+
+#include <CppUtil/Basic/StrAPI.h>
+#include <CppUtil/Basic/Image.h>
 
 #include <iostream>
 
@@ -17,6 +22,17 @@ using namespace CppUtil::Engine;
 using namespace std;
 
 const Ptr<SObj> AssimpLoader::Load(const std::string & path) {
+	bool isSupport = false;
+	const string support[2]= { ".obj", ".FBX"};
+	for (auto postfix : support) {
+		if (StrAPI::IsEndWith(path, postfix)) {
+			isSupport = true;
+			break;
+		}
+	}
+	if (!isSupport)
+		return nullptr;
+
 	Assimp::Importer importer;
 
 	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace | aiProcess_GenNormals);
@@ -27,11 +43,14 @@ const Ptr<SObj> AssimpLoader::Load(const std::string & path) {
 		return nullptr;
 	}
 
+	auto dir = StrAPI::DelTailAfter(path, '/');
+
 	// process ASSIMP's root node recursively
-	return LoadNode(scene->mRootNode, scene);
+	Str2Img str2img;
+	return LoadNode(str2img, dir, scene->mRootNode, scene);
 }
 
-const Ptr<SObj> AssimpLoader::LoadNode(aiNode *node, const aiScene *scene) {
+const Ptr<SObj> AssimpLoader::LoadNode(Str2Img & str2img, const string & dir, aiNode *node, const aiScene *scene) {
 	auto sobj = SObj::New(nullptr, node->mName.C_Str());
 	CmptTransform::New(sobj);
 
@@ -42,22 +61,20 @@ const Ptr<SObj> AssimpLoader::LoadNode(aiNode *node, const aiScene *scene) {
 		// the scene contains all the data, node is just to keep stuff organized (like relations between nodes).
 		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
 
-		auto triMesh = LoadMesh(mesh, scene);
 		auto meshObj = SObj::New(sobj, "mesh_" + to_string(i));
-		CmptGeometry::New(meshObj, triMesh);
-		CmptMaterial::New(meshObj, BSDF_Diffuse::New());
 		CmptTransform::New(meshObj);
+		LoadMesh(str2img, dir, mesh, scene, meshObj);
 	}
 	// after we've processed all of the meshes (if any) we then recursively process each of the children nodes
 	for (uint i = 0; i < node->mNumChildren; i++) {
-		auto child = LoadNode(node->mChildren[i], scene);
+		auto child = LoadNode(str2img, dir, node->mChildren[i], scene);
 		sobj->AddChild(child);
 	}
 
 	return sobj;
 }
 
-const Ptr<TriMesh> AssimpLoader::LoadMesh(aiMesh *mesh, const aiScene *scene) {
+void AssimpLoader::LoadMesh(Str2Img & str2img, const string & dir, aiMesh *mesh, const aiScene *scene, Basic::Ptr<SObj> sobj) {
 	// data to fill
 	vector<Point3> poses;
 	vector<Point2> texcoords;
@@ -113,30 +130,53 @@ const Ptr<TriMesh> AssimpLoader::LoadMesh(aiMesh *mesh, const aiScene *scene) {
 		for (uint j = 0; j < face.mNumIndices; j++)
 			indices.push_back(face.mIndices[j]);
 	}
+	auto triMesh = TriMesh::New(indices, poses, normals, texcoords);
+	CmptGeometry::New(sobj, triMesh);
+
+	auto bsdf = BSDF_MetalWorkflow::New();
+	CmptMaterial::New(sobj, bsdf);
+
 	// process materials
-	//aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-	// we assume a convention for sampler names in the shaders. Each diffuse texture should be named
-	// as 'texture_diffuseN' where N is a sequential number ranging from 1 to MAX_SAMPLER_NUMBER. 
-	// Same applies to other texture as the following list summarizes:
-	// diffuse: texture_diffuseN
-	// specular: texture_specularN
-	// normal: texture_normalN
+	aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 
-	// 1. diffuse maps
-	//vector<Mesh::TextureInfo> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
-	//textureInfos.insert(textureInfos.end(), diffuseMaps.begin(), diffuseMaps.end());
-	// 2. specular maps
-	//vector<Mesh::TextureInfo> specularMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
-	//textureInfos.insert(textureInfos.end(), specularMaps.begin(), specularMaps.end());
-	// 3. normal maps
-	//std::vector<Mesh::TextureInfo> normalMaps = LoadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal");
-	//textureInfos.insert(textureInfos.end(), normalMaps.begin(), normalMaps.end());
-	// 4. height maps
-	//std::vector<Mesh::TextureInfo> heightMaps = LoadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height");
-	//textureInfos.insert(textureInfos.end(), heightMaps.begin(), heightMaps.end());
+	for (int i = 0; i <= 12; i++) {
+		auto n = material->GetTextureCount(static_cast<aiTextureType>(i));
+		printf("%d : %d\n", i, n);
+	}
 
-	// return a mesh object created from the extracted mesh data
-	//return Mesh(vertices, indices, textureInfos);
+	bsdf->albedoTexture = LoadTexture(str2img, dir, material, aiTextureType_DIFFUSE);
+	bsdf->metallicTexture = LoadTexture(str2img, dir, material, aiTextureType_SPECULAR);
+	auto shininess = LoadTexture(str2img, dir, material, aiTextureType_SHININESS);
+	if(shininess)
+		bsdf->roughnessTexture = shininess->Inverse();
+	bsdf->normalTexture = LoadTexture(str2img, dir, material, aiTextureType_NORMALS);
+	bsdf->aoTexture = LoadTexture(str2img, dir, material, aiTextureType_AMBIENT);
+}
 
-	return TriMesh::New(indices, poses, normals, texcoords);
+Ptr<Image> AssimpLoader::LoadTexture(Str2Img & str2img, const string & dir, aiMaterial* material, aiTextureType type) {
+	auto num = material->GetTextureCount(type);
+	if (num == 0)
+		return nullptr;
+
+	if (num >= 2) {
+		printf("WARNNING::AssimpLoader::LoadMaterial:\n"
+			"\t""texture(type %d) >= 2\n", static_cast<int>(type));
+	}
+
+	aiString str;
+	material->GetTexture(type, 0, &str);
+
+	string path = dir + "/" + str.C_Str();
+
+	if (str2img.find(path) != str2img.end())
+		return str2img[path];
+
+	auto img = Image::New(path);
+	if (!img->IsValid()) {
+		printf("ERROR::AssimpLoader::LoadMeshTexture:"
+			"\t""[%s] load fail.\n", path.c_str());
+		return nullptr;
+	}
+	str2img[path] = img;
+	return img;
 }

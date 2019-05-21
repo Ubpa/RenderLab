@@ -6,17 +6,26 @@
 #include <3rdParty/assimp/postprocess.h>
 
 #include <CppUtil/Basic/Ptr.h>
+
 #include <string>
+#include <map>
+#include <array>
 
 namespace CppUtil {
+	namespace Basic {
+		class Image;
+	}
+
 	namespace Engine {
 		class SObj;
 		class TriMesh;
 
 		namespace AssimpLoader {
 			const Basic::Ptr<SObj> Load(const std::string & path);
-			const Basic::Ptr<SObj> LoadNode(aiNode *node, const aiScene *scene);
-			const Basic::Ptr<TriMesh> LoadMesh(aiMesh *mesh, const aiScene *scene);
+			using Str2Img = std::map<std::string, Basic::Ptr<Basic::Image>>;
+			const Basic::Ptr<SObj> LoadNode(Str2Img & str2img, const std::string & dir, aiNode *node, const aiScene *scene);
+			void LoadMesh(Str2Img & str2img, const std::string & dir, aiMesh *mesh, const aiScene *scene, Basic::Ptr<SObj> sobj);
+			Basic::Ptr<Basic::Image> LoadTexture(Str2Img & str2img, const std::string & dir, aiMaterial* material, aiTextureType type);
 		};
 	}
 }

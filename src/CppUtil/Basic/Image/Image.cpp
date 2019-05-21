@@ -253,10 +253,11 @@ const RGBAf Image::SampleBilinear(float u, float v) const {
 	return mixColor;
 }
 
-void Image::Clear(const RGBAf & clearColor) {
+Ptr<Image> Image::Clear(const RGBAf & clearColor) {
 	if (!IsValid()) {
-		printf("ERROR::Image::Clear: img is invalid\n");
-		return;
+		printf("ERROR::Image::Clear:\n"
+			"\t""img is invalid\n");
+		return nullptr;
 	}
 
 	if (channel <= 3) {
@@ -274,6 +275,8 @@ void Image::Clear(const RGBAf & clearColor) {
 				SetPixel(x, y, clearColor);
 		}
 	}
+
+	return This<Image>();
 }
 
 int Image::xy2idx(int x, int y) const {
@@ -288,4 +291,18 @@ const Point2i Image::idx2xy(int idx) const {
 	int y = idx / width;
 	int x = idx - y * width;
 	return { x, y };
+}
+
+Ptr<Image> Image::Inverse() {
+	if (!IsValid()) {
+		printf("ERROR::Image::Clear:\n"
+			"\t""img is invalid\n");
+		return nullptr;
+	}
+
+	int n = GetValNum();
+	for (int i = 0; i < n; i++)
+		data[i] = 1 - data[i];
+
+	return This<Image>();
 }

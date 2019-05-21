@@ -57,8 +57,8 @@ RenderLab::RenderLab(QWidget *parent)
 	const size_t fps = 60;
 	timer->start(1000 / fps);
 
-	//auto root = SObj::Load(ROOT_PATH + "data/SObjs/CB_Glass.xml");
-	auto root = SObj::Load("C:/Users/Administrator/Documents/env.xml");
+	//auto root = SObj::Load(ROOT_PATH + "data/SObjs/CB_Glass.sobj");
+	auto root = SObj::Load("C:/Users/Administrator/Documents/env.sobj");
 	scene = Scene::New(root);
 	//scene = GenScene(7);
 

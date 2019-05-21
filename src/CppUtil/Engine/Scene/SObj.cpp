@@ -58,13 +58,17 @@ bool SObj::HaveComponentSameTypeWith(Ptr<Component> ptr) const {
 
 bool SObj::Save(const string & path) {
 	auto saver = SObjSaver::New();
-	saver->Init(path);
+	if (StrAPI::IsEndWith(path, ".sobj"))
+		saver->Init(path);
+	else
+		saver->Init(path + ".sobj");
+
 	Accept(saver);
 	return true;
 }
 
 const Ptr<SObj> SObj::Load(const string & path) {
-	if (StrAPI::IsEndWith(path, ".xml"))
+	if (StrAPI::IsEndWith(path, ".sobj"))
 		return SObjLoader::Load(path);
 
 	return AssimpLoader::Load(path);

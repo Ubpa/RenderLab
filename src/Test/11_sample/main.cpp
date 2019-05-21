@@ -52,7 +52,7 @@ int main(int argc, const char** argv)
 	vector<thread> workers;
 	for (int k = 0; k < threadNum; k++)
 		workers.push_back(thread([=](int id) {
-		auto root = SObj::Load(ROOT_PATH + "data/SObjs/App/RTGIwRRF/CB_Glass.xml");
+		auto root = SObj::Load(ROOT_PATH + "data/SObjs/App/RTGIwRRF/CB_Glass.sobj");
 		auto camera = root->GetComponentInChildren<CmptCamera>();
 		auto transform = camera->GetSObj()->GetComponent<CmptTransform>();
 
@@ -63,7 +63,7 @@ int main(int argc, const char** argv)
 			Point3 center = Point3(Math::Rand_F() - 0.5, Math::Rand_F()*1 + 0.25, Math::Rand_F() - 0.5);
 			transform->LookAt(eye, center);
 
-			string sobjPath = "data/SObjs/App/RTGIwRRF/CB_Glass_tmp" + to_string(id) + ".xml";
+			string sobjPath = "data/SObjs/App/RTGIwRRF/CB_Glass_tmp" + to_string(id) + ".sobj";
 			root->Save(ROOT_PATH + sobjPath);
 
 			string cmd = GenCmd(loop, base + i, sobjPath);

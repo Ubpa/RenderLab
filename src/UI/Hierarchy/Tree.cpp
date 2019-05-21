@@ -203,21 +203,21 @@ void Tree::contextMenuEvent(QContextMenuEvent *event) {
 		auto sobj = Hierarchy::GetInstance()->CreateSObj("Cube");
 		CmptTransform::New(sobj);
 		CmptGeometry::New(sobj, TriMesh::GenCube());
-		CmptMaterial::New(sobj, BSDF_Diffuse::New());
+		CmptMaterial::New(sobj, BSDF_MetalWorkflow::New());
 	});
 
 	genObjMenu->addAction("Sphere", this, []() {
 		auto sobj = Hierarchy::GetInstance()->CreateSObj("Sphere");
 		CmptTransform::New(sobj);
 		CmptGeometry::New(sobj, Sphere::New());
-		CmptMaterial::New(sobj, BSDF_Diffuse::New());
+		CmptMaterial::New(sobj, BSDF_MetalWorkflow::New());
 	});
 
 	genObjMenu->addAction("Plane", this, []() {
 		auto sobj = Hierarchy::GetInstance()->CreateSObj("Plane");
 		CmptTransform::New(sobj);
 		CmptGeometry::New(sobj, Plane::New());
-		CmptMaterial::New(sobj, BSDF_Diffuse::New());
+		CmptMaterial::New(sobj, BSDF_MetalWorkflow::New());
 	});
 
 	mainMenu.addMenu(genObjMenu);
@@ -273,7 +273,7 @@ void Tree::contextMenuEvent(QContextMenuEvent *event) {
 		QString fileName = QFileDialog::getOpenFileName(this,
 			tr("Load SObj"),
 			"./",
-			tr("SObj Files (*.xml *.obj)"));
+			tr("SObj Files (*.sobj *.obj *.FBX)"));
 
 		if (fileName.isEmpty())
 			return;
@@ -290,7 +290,7 @@ void Tree::contextMenuEvent(QContextMenuEvent *event) {
 			QString fileName = QFileDialog::getSaveFileName(this,
 				tr("Save SObj"),
 				"./",
-				tr("SObj XML Files (*.xml)"));
+				tr("SObj Files (*.sobj)"));
 
 			if (fileName.isEmpty())
 				return;

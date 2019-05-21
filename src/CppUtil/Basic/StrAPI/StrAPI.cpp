@@ -61,3 +61,12 @@ const string StrAPI::Join(const vector<string> & strs, const string & separator)
 const string StrAPI::Replace(const string & str, const string & orig, const string & target) {
 	return Join(Spilt(str, orig), target);
 }
+
+const std::string StrAPI::DelTailAfter(const std::string & str, char c) {
+	for (size_t i = str.size() - 1; i >= 0; i--) {
+		if (str[i] == c)
+			return str.substr(0, i);
+	}
+
+	return str;
+}

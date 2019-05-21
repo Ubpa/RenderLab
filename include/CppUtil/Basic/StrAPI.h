@@ -19,6 +19,9 @@ namespace CppUtil {
 			const std::string Join(const std::vector<std::string> & strs, const std::string & separator = "");
 
 			const std::string Replace(const std::string & str, const std::string & orig, const std::string & target);
+
+			// exclusive
+			const std::string DelTailAfter(const std::string & str, char c);
 		}
 	}
 }

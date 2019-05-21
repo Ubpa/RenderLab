@@ -30,8 +30,10 @@ namespace CppUtil {
 			void GenBuffer(int width, int height, int channel);
 			void Free() noexcept;
 			bool SaveAsPNG(const std::string & fileName, bool flip = false) const;
+
 			Ptr<Image> GenFlip() const;
-			void Clear(const RGBAf & clearColor = RGBAf{0.f});
+			Ptr<Image> Clear(const RGBAf & clearColor = RGBAf{0.f});
+			Ptr<Image> Inverse();
 
 			Image & operator =(const Image & img) noexcept;
 			Image & operator =(Image && img) noexcept;
