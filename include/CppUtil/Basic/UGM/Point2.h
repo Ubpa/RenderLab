@@ -16,27 +16,41 @@ namespace CppUtil {
 			using EXT::ME_B<2, T, Point<2, T>>::ME_B;
 
 		public:
-			const Point operator+(const Vector<2, T> &v) const {
-				return Point(x + v.x, y + v.y);
+			template<typename U>
+			const Point operator+(const Vector<2, U> &v) const {
+				return Point(
+					x + static_cast<T>(v.x),
+					y + static_cast<T>(v.y)
+				);
 			}
 
-			Point & operator+=(const Vector<2, T> &v) {
-				x += v.x;
-				y += v.y;
+			template<typename U>
+			Point & operator+=(const Vector<2, U> &v) {
+				x += static_cast<T>(v.x);
+				y += static_cast<T>(v.y);
 				return *this;
 			}
 
-			const Vector<2, T> operator-(const Point &p) const {
-				return Vector<2, T>(x - p.x, y - p.y);
+			template<typename U>
+			const Vector<2, T> operator-(const Point<2, U> &p) const {
+				return Vector<2, T>(
+					x - static_cast<T>(p.x),
+					y - static_cast<T>(p.y)
+					);
 			}
 
-			const Point operator-(const Vector<2, T> &v) const {
-				return Point(x - v.x, y - v.y);
+			template<typename U>
+			const Point operator-(const Vector<2, U> &v) const {
+				return Point(
+					x - static_cast<T>(v.x),
+					y - static_cast<T>(v.y)
+				);
 			}
 
-			const Point & operator-=(const Vector<2, T> &v) {
-				x -= v.x;
-				y -= v.y;
+			template<typename U>
+			const Point & operator-=(const Vector<2, U> &v) {
+				x -= static_cast<T>(v.x);
+				y -= static_cast<T>(v.y);
 				return *this;
 			}
 		};

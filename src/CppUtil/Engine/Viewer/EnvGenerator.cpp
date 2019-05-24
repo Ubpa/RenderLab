@@ -48,7 +48,7 @@ const OpenGL::FBO::TexTarget EnvGenerator::mapper[6] = {
 };
 
 EnvGenerator::EnvGenerator(QT::RawAPI_OGLW * pOGLW)
-	: pOGLW(pOGLW), skyboxSize(1024), irradianceSize(32), prefilterSize(128), brdfSize(512)
+	: pOGLW(pOGLW), skyboxSize(1024), irradianceSize(128), prefilterSize(1024), brdfSize(512)
 {
 	RegMemberFunc<Scene>(&EnvGenerator::Visit);
 }

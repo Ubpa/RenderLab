@@ -109,7 +109,7 @@ void SLDM_Generator::Visit(Ptr<Scene> scene) {
 		auto pos = l2w(Point3(0.f));
 		auto dir = l2w(Normalf(0, -1, 0));
 
-		auto view = Transform::LookAt(pos, pos + dir);
+		auto view = Transform::LookAt(pos, pos + Vec3(dir));
 
 		auto proj = Transform::Perspcetive(spotLight->angle, 1.f, lightNear, lightFar);
 

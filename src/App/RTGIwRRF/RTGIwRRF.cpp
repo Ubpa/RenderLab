@@ -63,7 +63,7 @@ void RTGIwRRF::Init() {
 }
 
 void RTGIwRRF::InitScene() {
-	auto root = SObj::Load(ROOT_PATH+"data/SObjs/App/RTGIwRRF/CB_Glass.xml");
+	auto root = SObj::Load(ROOT_PATH+"data/SObjs/App/RTGIwRRF/CB_Glass.sobj");
 	scene = Scene::New(root, "scene");
 }
 

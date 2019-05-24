@@ -11,7 +11,7 @@ const RGBf AreaLight::Sample_L(const Point3 & p, Normalf & wi, float & distToLig
 		return RGBf(0);
 	}
 
-	Point2 sample = Point2(sampler.GetSample()) - Point2(0.5f, 0.5f);
+	auto sample = Point2(sampler.GetSample()) - Point2(0.5f, 0.5f);
 	Point3 posOnLight(sample.x*width / 2, 0, sample.y*height / 2);
 
 	const auto d = posOnLight - p;

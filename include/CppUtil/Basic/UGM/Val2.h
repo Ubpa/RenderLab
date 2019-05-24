@@ -17,7 +17,9 @@ namespace CppUtil {
 			template<typename U, typename V>
 			Val(U x, V y) :
 				x(static_cast<T>(x)),
-				y(static_cast<T>(y)) { }
+				y(static_cast<T>(y)) {
+				assert(!HasNaN());
+			}
 
 			explicit Val(T val) : Val(val, val) { }
 
@@ -27,16 +29,16 @@ namespace CppUtil {
 			Val(U(&arr)[N]) : Val(arr[0], arr[1]) { assert(N >= 2); }
 
 			template<typename U>
-			Val(const Val<2, U> & xy) : Val(xy.x, xy.y) { }
+			explicit Val(const Val<2, U> & xy) : Val(xy.x, xy.y) { }
 
 			template<typename U>
-			Val(const Val<3, U> & val3) : Val(val3.x, val3.y) { }
+			explicit Val(const Val<3, U> & val3) : Val(val3.x, val3.y) { }
 
 			template<typename U>
-			Val(const Val<4, U> & val4) : Val(val4.x, val4.y) { }
+			explicit Val(const Val<4, U> & val4) : Val(val4.x, val4.y) { }
 
 		public:
-			bool HasNaN() const { return std::isnan(x) || std::isnan(y); }
+			bool HasNaN() const { return std::isnan<double>(x) || std::isnan<double>(y); }
 			const bool IsVal(T val) const {
 				return Math::ToVal(x, val) == val && Math::ToVal(y, val) == val;
 			}
@@ -61,8 +63,8 @@ namespace CppUtil {
 			}
 
 		public:
-			const T & operator[](int i) const { assert(i >= 0 && i <= (valNum - 1)); return _data[i]; }
-			T & operator[](int i) { assert(i >= 0 && i <= (valNum - 1)); return _data[i]; }
+			const T & operator[](int i) const { assert(i >= 0 && i < valNum); return _data[i]; }
+			T & operator[](int i) { assert(i >= 0 && i < valNum); return _data[i]; }
 
 			bool operator==(const Val & rhs) const {
 				return Math::Equal(x, rhs.x) && Math::Equal(y, rhs.y);

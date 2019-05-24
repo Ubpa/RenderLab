@@ -14,7 +14,7 @@ namespace CppUtil {
 			using valType = T;
 
 		public:
-			explicit Val(T x) : x(x) { }
+			explicit Val(T x) : x(x) { assert(!HasNaN()); }
 
 			Val() : Val(static_cast<T>(0)) { }
 
@@ -22,10 +22,10 @@ namespace CppUtil {
 			Val(U(&arr)[N]) : Val(arr[0]) { assert(N >= 1); }
 
 			template<int N, typename U>
-			Val(const Val<N, U> & val) : Val(val.x) { }
+			explicit Val(const Val<N, U> & val) : Val(val.x) { }
 
 		public:
-			bool HasNaN() const { return std::isnan(x); }
+			bool HasNaN() const { return std::isnan<double>(x); }
 			const bool IsVal(T val) const {
 				return Math::ToVal(x, val) == val;
 			}
@@ -50,8 +50,8 @@ namespace CppUtil {
 			}
 
 		public:
-			const T & operator[](int i) const { assert(i >= 0 && i <= (valNum - 1)); return _data[i]; }
-			T & operator[](int i) { assert(i >= 0 && i <= (valNum - 1)); return _data[i]; }
+			const T & operator[](int i) const { assert(i >= 0 && i < valNum); return _data[i]; }
+			T & operator[](int i) { assert(i >= 0 && i < valNum); return _data[i]; }
 
 			bool operator==(const Val & rhs) const {
 				return Math::Equal(x, rhs.x);

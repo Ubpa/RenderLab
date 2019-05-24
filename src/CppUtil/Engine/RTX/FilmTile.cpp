@@ -7,8 +7,8 @@ using namespace CppUtil::Basic;
 using namespace CppUtil::Engine;
 
 const Framei FilmTile::SampleFrame() const {
-	const Point2i minP = Vec2f(frame[0]) + Vec2f(0.5f) - filter->radius;
-	const Point2i maxP = Vec2f(frame[1]) - Vec2f(0.5f) + filter->radius; // 因为 frame 不包含上边界，所以这里是减去半像素
+	auto minP = static_cast<Point2i>(frame[0] + Vec2f(0.5f) - filter->radius);
+	auto maxP = static_cast<Point2i>(frame[1] - Vec2f(0.5f) + filter->radius); // 因为 frame 不包含上边界，所以这里是减去半像素
 	return Framei(minP, maxP);
 }
 
@@ -31,7 +31,7 @@ void FilmTile::AddSample(const Point2f & pos, const RGBf & radiance) {
 		for (int y = y0; y < y1; y++) {
 			int idxY = y - frame.minP.y;
 
-			const auto weight = filter->Evaluate(pos - Point2f(x, y));
+			const auto weight = filter->Evaluate(pos - (Vec2(x, y) + Vec2(0.5f)));
 			pixels[idxX][idxY].filterWeightSum += weight;
 			pixels[idxX][idxY].weightRadianceSum += weight * radiance;
 		}

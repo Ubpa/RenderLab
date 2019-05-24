@@ -7,18 +7,18 @@ namespace CppUtil {
 	namespace Engine {
 		class FilterMitchell : public Filter {
 		public:
-			FilterMitchell(const Val2 & radius, float B, float C) : Filter(radius), B(B), C(C) { }
+			FilterMitchell(const Vec2 & radius, float B, float C) : Filter(radius), B(B), C(C) { }
 
 		protected:
 			virtual ~FilterMitchell() = default;
 
 		public:
-			static const Basic::Ptr<FilterMitchell> New(const Val2 & radius, float B, float C) {
+			static const Basic::Ptr<FilterMitchell> New(const Vec2 & radius, float B, float C) {
 				return Basic::New<FilterMitchell>(radius, B, C);
 			}
 
 		public:
-			virtual float Evaluate(const Point2f & p) override {
+			virtual float Evaluate(const Point2f & p) const override {
 				return Mitchell1D(p.x * invRadius.x) * Mitchell1D(p.y * invRadius.y);
 			}
 

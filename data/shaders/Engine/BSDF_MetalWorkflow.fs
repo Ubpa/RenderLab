@@ -290,7 +290,7 @@ void main() {
 		// 用 R 来采样
 		vec3 prefilteredColor = haveSkybox ? textureLod(prefilterMap, R,  roughness * MAX_REFLECTION_LOD).rgb : vec3(1);
 		vec2 envBRDF = texture(brdfLUT, vec2(max(dot(norm, wo), 0.0), roughness)).rg;
-		vec3 specular = prefilteredColor * (F * envBRDF.x + envBRDF.y);
+		vec3 specular = prefilteredColor * (F0 * envBRDF.x + envBRDF.y);
 		
 		vec3 ambient = (kD * diffuse + specular) * ao * intensity * colorFactor;
 		result += ambient;

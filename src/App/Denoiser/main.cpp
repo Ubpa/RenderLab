@@ -3,6 +3,8 @@
 
 #include <3rdParty/docopt/docopt.h>
 
+#include <CppUtil/Basic/StrAPI.h>
+
 #include <ROOT_PATH.h>
 
 #include <iostream>
@@ -36,8 +38,10 @@ int main(int argc, char *argv[]) {
 	string outpath;
 	if (result["--outpath"])
 		outpath = result["--outpath"].asString();
-	else
-		outpath = imgpath.substr(0, imgpath.rfind('.')) + "_denoised.png";
+	else {
+		auto prefix = StrAPI::DelTailAfter(imgpath, '.');
+		outpath = prefix + "_denoised.png";
+	}
 
 	auto img = Image::New(prefix + imgpath);
 	

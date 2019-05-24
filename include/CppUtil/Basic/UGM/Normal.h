@@ -7,6 +7,8 @@
 #include <CppUtil/Basic/UGM/ext/InnerProduct_Euclidean_3.h>
 #include <CppUtil/Basic/UGM/ext/Normed_InnerProduct.h>
 
+#include <CppUtil/Basic/UGM/Vector3.h>
+
 #include <CppUtil/Basic/UGM/Mat3x3.h>
 
 namespace CppUtil {
@@ -15,6 +17,12 @@ namespace CppUtil {
 		class Normal : public EXT::NI_C_IE_L_B_3<T, Normal<T>> {
 		public:
 			using EXT::NI_C_IE_L_B_3<T, Normal<T>>::NI_C_IE_L_B_3;
+
+		public:
+			template<typename U>
+			operator Vector<3, U>() const {
+				return Vector<3, U>(*this);
+			}
 
 		public:
 			const Mat3x3<T> GenCoordSpace() const {

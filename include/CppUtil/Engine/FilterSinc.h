@@ -7,18 +7,18 @@ namespace CppUtil {
 	namespace Engine {
 		class FilterSinc : public Filter {
 		public:
-			FilterSinc(const Val2 & radius, float tau) : Filter(radius), tau(tau) { }
+			FilterSinc(const Vec2 & radius, float tau) : Filter(radius), tau(tau) { }
 
 		protected:
 			virtual ~FilterSinc() = default;
 
 		public:
-			const Basic::Ptr<FilterSinc> New(const Val2 & radius, float tau) {
+			const Basic::Ptr<FilterSinc> New(const Vec2 & radius, float tau) {
 				return Basic::New<FilterSinc>(radius, tau);
 			}
 
 		public:
-			virtual float Evaluate(const Point2f & p) override {
+			virtual float Evaluate(const Point2f & p) const override {
 				return WindowSinc(p.x, radius.x) * WindowSinc(p.y, radius.y);
 			}
 

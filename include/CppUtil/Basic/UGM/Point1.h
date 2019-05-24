@@ -16,25 +16,30 @@ namespace CppUtil {
 			using EXT::ME_B<1, T, Point<1, T>>::ME_B;
 
 		public:
-			const Point operator+(const Vector<1, T> &v) const {
-				return Point(x + v.x);
+			template<typename U>
+			const Point operator+(const Vector<1, U> &v) const {
+				return Point(x + static_cast<U>(v.x));
 			}
 
-			Point & operator+=(const Vector<1, T> &v) {
-				x += v.x;
+			template<typename U>
+			Point & operator+=(const Vector<1, U> &v) {
+				x += static_cast<U>(v.x);
 				return *this;
 			}
 
-			const Vector<1, T> operator-(const Point &p) const {
-				return Vector<1, T>(x - p.x);
+			template<typename U>
+			const Vector<1, T> operator-(const Point<1,U> &p) const {
+				return Vector<1, T>(x - static_cast<T>(p.x));
 			}
 
-			const Point operator-(const Vector<1, T> &v) const {
-				return Point(x - v.x);
+			template<typename U>
+			const Point operator-(const Vector<1, U> &v) const {
+				return Point(x - static_cast<T>(v.x));
 			}
 
-			const Point & operator-=(const Vector<1, T> &v) {
-				x -= v.x;
+			template<typename U>
+			const Point & operator-=(const Vector<1, U> &v) {
+				x -= static_cast<T>(v.x);
 				return *this;
 			}
 		};

@@ -13,7 +13,7 @@ const Point2 BasicSampler::UniformInDisk() {
 	auto u = UniformInSquare();
 
 	// Map uniform random numbers to $[-1,1]^2$
-	Point2 uOffset = 2.f * Vec2(u) - Vec2(1, 1);
+	auto uOffset = static_cast<Point2>(2.f * Vec2(u) - Vec2(1, 1));
 
 	// Handle degeneracy at the origin
 	if (uOffset.x == 0 && uOffset.y == 0)
@@ -29,7 +29,7 @@ const Point2 BasicSampler::UniformInDisk() {
 		r = uOffset.y;
 		theta = Math::PI / 2.f - Math::PI / 4.f * (uOffset.x / uOffset.y);
 	}
-	return r * Point2f(std::cos(theta), std::sin(theta));
+	return Point2f(r * std::cos(theta), r * std::sin(theta));
 }
 
 const Vec3 BasicSampler::UniformOnSphere() {

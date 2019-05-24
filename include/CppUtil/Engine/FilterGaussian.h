@@ -7,7 +7,7 @@ namespace CppUtil {
 	namespace Engine {
 		class FilterGaussian : public Filter {
 		public:
-			FilterGaussian(const Val2 & radius, float alpha)
+			FilterGaussian(const Vec2 & radius, float alpha)
 				: Filter(radius), alpha(alpha),
 				expX(std::exp(-alpha * radius.x*radius.x)),
 				expY(std::exp(-alpha * radius.y*radius.y)) { }
@@ -16,12 +16,12 @@ namespace CppUtil {
 			virtual ~FilterGaussian() = default;
 
 		public:
-			const Basic::Ptr<FilterGaussian> New(const Val2 & radius, float alpha) {
+			const Basic::Ptr<FilterGaussian> New(const Vec2 & radius, float alpha) {
 				return Basic::New<FilterGaussian>(radius, alpha);
 			}
 
 		public:
-			virtual float Evaluate(const Point2f & p) override {
+			virtual float Evaluate(const Point2f & p) const override {
 				return Gaussian(p.x, expX) * Gaussian(p.y, expY);
 			}
 

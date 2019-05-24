@@ -72,14 +72,15 @@ float InfiniteAreaLight::PDF(const Point3 & p, const Normalf & wi) const {
 	if (!img || !img->IsValid())
 		return BasicSampler::PDofUniformOnSphere();
 
+	// [0, 1]
 	auto texcoord = Sphere::TexcoordOf(wi);
 	auto sphereCoord = Sphere::SphereCoord(texcoord);
 
 	int w = img->GetWidth();
 	int h = img->GetHeight();
 
-	auto x = static_cast<int>(texcoord.x * w);
-	auto y = static_cast<int>(texcoord.y * h);
+	auto x = Math::Clamp(static_cast<int>(texcoord.x * w), 0, w-1);
+	auto y = Math::Clamp(static_cast<int>(texcoord.y * h), 0, h-1);
 
 	int idx = img->xy2idx(x, y);
 

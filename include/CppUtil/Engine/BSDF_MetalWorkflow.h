@@ -89,7 +89,7 @@ namespace CppUtil {
 			float roughnessFactor;
 			Basic::Ptr<Basic::Image> roughnessTexture;
 
-			Basic::Ptr<Basic::Image> aoTexture;
+			Basic::Ptr<Basic::Image> aoTexture; // 只用与实时渲染
 
 			Basic::Ptr<Basic::Image> normalTexture;
 		private:

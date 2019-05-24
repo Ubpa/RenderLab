@@ -102,7 +102,7 @@ void RTX_Renderer::Run(Ptr<Scene> scene, Ptr<Image> img) {
 
 	// init rst image
 
-	auto film = Film::New(img, FilterMitchell::New({ 1.5, 1.5 }, 0.333f, 0.333f));
+	auto film = Film::New(img, FilterMitchell::New(Vec2(2.f), 1.f / 3.f, 1.f / 3.f));
 	int w = img->GetWidth();
 	int h = img->GetHeight();
 
@@ -157,9 +157,9 @@ void RTX_Renderer::Run(Ptr<Scene> scene, Ptr<Image> img) {
 			auto filmTile = film->GenFilmTile(Framei({ baseX, baseY }, { baseX + tileSize, baseY + tileSize }));
 
 			for (const auto pos : filmTile->AllPos()) {
-
-				const float u = (pos.x + Math::Rand_F()) / (float)w;
-				const float v = (pos.y + Math::Rand_F()) / (float)h;
+				auto posf = Point2f(pos) + Vec2(Math::Rand_F(), Math::Rand_F());
+				const float u = posf.x / w;
+				const float v = posf.y / h;
 
 				auto ray = camera->GenRay(u, v);
 				RGBf radiance = rayTracer->Trace(ray);
@@ -169,7 +169,9 @@ void RTX_Renderer::Run(Ptr<Scene> scene, Ptr<Image> img) {
 				//if (illum > lightNum)
 				//	radiance *= lightNum / illum;
 
-				filmTile->AddSample(pos, radiance);
+				assert(!radiance.HasNaN());
+
+				filmTile->AddSample(posf, radiance);
 			}
 
 			film->MergeFilmTile(filmTile);

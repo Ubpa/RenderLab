@@ -23,8 +23,6 @@ namespace CppUtil {
 			double P(int i) const;
 
 		private:
-
-		private:
 			struct Item {
 				Item() :u(-1), k(-1) {}
 

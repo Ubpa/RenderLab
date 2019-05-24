@@ -52,12 +52,16 @@ void AliasMethod::Init(const vector<double> & distribution) {
 }
 
 int AliasMethod::Sample() const {
-	double x = Math::Rand_F();
+	double x = Math::Rand_D();
 	auto n = static_cast<int>(table.size());
 	auto nx = n * x;
 
 	// 0, 1, ..., n - 1
 	auto i = static_cast<int>(nx);
+
+	// 因为 0 <= x <= 1，所以 i 可能为 n
+	if (i == n)
+		i = n - 1;
 
 	// [0, 1)
 	auto y = nx - i;

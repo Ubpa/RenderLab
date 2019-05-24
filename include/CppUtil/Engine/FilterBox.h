@@ -18,7 +18,7 @@ namespace CppUtil {
 			}
 
 		public:
-			virtual float Evaluate(const Point2f & p) override {
+			virtual float Evaluate(const Point2f & p) const override {
 				return 1;
 			}
 		};

@@ -16,31 +16,51 @@ namespace CppUtil {
 			using EXT::ME_B<4, T, Point<4, T>>::ME_B;
 
 		public:
-			const Point operator+(const Vector<4, T> &v) const {
-				return Point(x + v.x, y + v.y, z + v.z, w + v.w);
+			template<typename U>
+			const Point operator+(const Vector<4, U> &v) const {
+				return Point(
+					x + static_cast<T>(v.x),
+					y + static_cast<T>(v.y),
+					z + static_cast<T>(v.z),
+					w + static_cast<T>(v.w)
+				);
 			}
 
-			Point & operator+=(const Vector<4, T> &v) {
-				x += v.x;
-				y += v.y;
-				z += v.z;
-				w += v.w;
+			template<typename U>
+			Point & operator+=(const Vector<4, U> &v) {
+				x += static_cast<T>(v.x);
+				y += static_cast<T>(v.y);
+				z += static_cast<T>(v.z);
+				w += static_cast<T>(v.w);
 				return *this;
 			}
 
-			const Vector<4, T> operator-(const Point &p) const {
-				return Vector<4, T>(x - p.x, y - p.y, z - p.z, w - p.w);
+			template<typename U>
+			const Vector<4, T> operator-(const Point<4,U> &p) const {
+				return Vector<4, T>(
+					x - static_cast<T>(p.x),
+					y - static_cast<T>(p.y),
+					z - static_cast<T>(p.z),
+					w - static_cast<T>(p.w)
+				);
 			}
 
-			const Point operator-(const Vector<4, T> &v) const {
-				return Point(x - v.x, y - v.y, z - v.z, w - v.w);
+			template<typename U>
+			const Point operator-(const Vector<4, U> &v) const {
+				return Point(
+					x - static_cast<T>(v.x),
+					y - static_cast<T>(v.y),
+					z - static_cast<T>(v.z),
+					w - static_cast<T>(v.w)
+				);
 			}
 
-			const Point & operator-=(const Vector<4, T> &v) {
-				x -= v.x;
-				y -= v.y;
-				z -= v.z;
-				w -= v.w;
+			template<typename U>
+			const Point & operator-=(const Vector<4, U> &v) {
+				x -= static_cast<T>(v.x);
+				y -= static_cast<T>(v.y);
+				z -= static_cast<T>(v.z);
+				w -= static_cast<T>(v.w);
 				return *this;
 			}
 		};

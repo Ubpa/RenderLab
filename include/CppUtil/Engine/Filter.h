@@ -13,7 +13,7 @@ namespace CppUtil {
 			virtual ~Filter() = default;
 
 		public:
-			virtual float Evaluate(const Point2f & p) = 0;
+			virtual float Evaluate(const Point2f & p) const = 0;
 
 		public:
 			const Vec2 radius;

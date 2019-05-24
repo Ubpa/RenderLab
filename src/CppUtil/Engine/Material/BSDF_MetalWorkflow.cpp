@@ -24,14 +24,16 @@ const RGBf BSDF_MetalWorkflow::F(const Normalf & wo, const Normalf & wi, const P
 	auto D = sggx.D(wh);
 	auto G = sggx.G(wo, wi, wh);
 	auto F = Fr(wo, wh, albedo, metallic);
-	auto specular = D * G * F / (4.f * abs(SurfCoord::CosTheta(wo) * SurfCoord::CosTheta(wi)));
+	float denominator = 4.f * abs(SurfCoord::CosTheta(wo) * SurfCoord::CosTheta(wi));
+	if (denominator == 0) // 极少发生。所以放在这里虽然性能不是最优，但逻辑顺畅些
+		return RGBf(0.f);
+	auto specular = D * G * F / denominator;
 
-	auto kS = F;
+	auto kS = G * F;
 	auto kD = (1 - metallic) * (RGBf(1.f) - kS);
 
 	auto rst = kD * diffuse + specular;
 
-	//return ao * rst;
 	return rst;
 }
 
@@ -41,10 +43,14 @@ float BSDF_MetalWorkflow::PDF(const Normalf & wo, const Normalf & wi, const Poin
 
 	auto metallic = GetMetallic(texcoord);
 
-	const auto wh = (wo + wi).Normalize();
+	auto wh = wo + wi;
+	if (wh.IsZero())
+		return 0;
+	
+	wh.NormalizeSelf();
 
 	float pdDiffuse = SurfCoord::CosTheta(wh) * Math::INV_PI;
-	float pdSpecular = sggx.PDF(wh) / (4.f*abs(wo.Dot(wh)));
+	float pdSpecular = sggx.PDF(wh) / (4.f*abs(wo.Dot(wh))); // 根据几何关系以及前边的判 0 结果，这里无需判 0
 	return Math::Lerp(pdDiffuse, pdSpecular, metallic);
 }
 
@@ -73,14 +79,21 @@ const RGBf BSDF_MetalWorkflow::Sample_f(const Normalf & wo, const Point2 & texco
 	pd = Math::Lerp(pdDiffuse, pdSpecular, metallic);
 
 	auto albedo = GetAlbedo(texcoord);
-	auto diffuse = albedo / Math::PI;
+	auto diffuse = albedo * Math::INV_PI;
 
 	auto D = sggx.D(wh);
 	auto G = sggx.G(wo, wi, wh);
 	auto F = Fr(wo, wh, albedo, metallic);
-	auto specular = D * G * F / (4.f * abs(SurfCoord::CosTheta(wo) * SurfCoord::CosTheta(wi)));
+	float denominator = 4.f * abs(SurfCoord::CosTheta(wo) * SurfCoord::CosTheta(wi));
+	if (denominator == 0) {// 极少发生。所以放在这里虽然性能不是最优，但逻辑顺畅些
+		pd = 0;
+		wi = Normalf(0.f);
+		return RGBf(0.f);
+	}
+	
+	auto specular = D * G * F / denominator;
 
-	auto kS = F;
+	auto kS = G * F;
 	auto kD = (1 - metallic) * (RGBf(1.f) - kS);
 
 	auto rst = kD * diffuse + specular;
