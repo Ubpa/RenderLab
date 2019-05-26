@@ -63,7 +63,7 @@ RenderLab::RenderLab(QWidget *parent)
 	//scene = GenScene(7);
 
 	// viewer
-	viewer = Viewer::New(ui.OGLW_Raster, scene, RasterType::DirectIllum);
+	viewer = Viewer::New(ui.OGLW_Raster, scene, RasterType::DeferredPipline);
 
 	// raytracer
 	PaintImgOpCreator pioc(ui.OGLW_RayTracer);

@@ -79,17 +79,11 @@ Optix: 6.0
 ### Impotant
 
 - [x] 自己编写数学运算库，放弃 glm
-
 - [x] 重构指针
-
 - [x] 补充安装方法
-
 - [x] 线性化 BVH
-
 - [x] Imaging Pipline
-
 - [x] 简单模型载入
-
 - [x] 方向光
   - [x] 离线
   - [x] 实时
@@ -97,7 +91,6 @@ Optix: 6.0
     - [x] 阴影
   - [x] UI
   - [x] （反）序列化
-  
 - [x] 聚光灯
   - [x] 离线
   - [x] 实时
@@ -105,7 +98,6 @@ Optix: 6.0
     - [x] 阴影
   - [x] UI
   - [x] （反）序列化
-  
 - [x] 环境光
 
   - [x] 离线
@@ -122,13 +114,14 @@ Optix: 6.0
       - [x] specular
   - [x] UI
   - [x] （反）序列化
-
 - [ ] 延迟管线（金属工作流）
+  - [x] GBuffer
+  - [ ] Direct Light
+  - [ ] Ambient Light
+  - [ ] Sky Box
 - [ ] 实时渲染——面光源
 - [ ] 旋转拖动缩放物体
-
 - [ ] 重新架构 Raster
-
 - [ ] ...
 
 ### Unimportant

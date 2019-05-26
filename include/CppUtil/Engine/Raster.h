@@ -39,6 +39,7 @@ namespace CppUtil {
 		public:
 			// 改写后应调用该类 Init()
 			virtual void Init();
+			virtual void Resize() {}
 			virtual void Draw() = 0;
 
 		protected:

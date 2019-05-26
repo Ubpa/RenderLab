@@ -1,6 +1,8 @@
 #include <CppUtil/Engine/Viewer.h>
 
 #include <CppUtil/Engine/DirectIllumRaster.h>
+#include <CppUtil/Engine/DeferredRaster.h>
+
 #include <CppUtil/Engine/Roamer.h>
 #include "Picker.h"
 
@@ -18,6 +20,9 @@ Viewer::Viewer(RawAPI_OGLW * pOGLW, Ptr<Scene> scene, RasterType rasterType)
 	{
 	case RasterType::DirectIllum:
 		raster = DirectIllumRaster::New(pOGLW, scene, roamer->GetCamera());
+		break;
+	case RasterType::DeferredPipline:
+		raster = DeferredRaster::New(pOGLW, scene, roamer->GetCamera());
 		break;
 	default:
 		printf("ERROR::Viewer::Viewer:\n"
@@ -42,6 +47,7 @@ Viewer::Viewer(RawAPI_OGLW * pOGLW, Ptr<Scene> scene, RasterType rasterType)
 		int h = pOGLW->h;
 
 		roamer->SetWH(w, h);
+		raster->Resize();
 	}));
 }
 

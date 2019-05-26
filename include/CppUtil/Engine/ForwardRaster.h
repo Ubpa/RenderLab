@@ -44,9 +44,8 @@ namespace CppUtil {
 			virtual ~ForwardRaster() = default;
 
 		public:
-			virtual void Draw();
-
-			virtual void Init();
+			virtual void Init() override;
+			virtual void Draw() override;
 
 		protected:// Use for SubClass
 			void RegShader(OpenGL::Shader & shader, int depthmapBase = -1);

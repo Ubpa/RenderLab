@@ -69,6 +69,7 @@ namespace CppUtil {
 			float lightFar;
 
 			OpenGL::Shader shader_genDepth;
+
 			std::vector<Transform> modelVec;
 		};
 	}
