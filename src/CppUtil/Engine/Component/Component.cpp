@@ -4,7 +4,7 @@
 
 using namespace CppUtil::Engine;
 
-void Component::Init() {
+void Component::Init_AfterGenPtr() {
 	auto sobj = GetSObj();
 	if (sobj)
 		sobj->AttachComponent(This<Component>());

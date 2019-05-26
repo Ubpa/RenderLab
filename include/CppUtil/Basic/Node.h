@@ -64,7 +64,7 @@ namespace CppUtil {
 			}
 
 		protected:
-			virtual void Init() override {
+			virtual void Init_AfterGenPtr() override {
 				const auto parent = GetParent();
 				if (parent)
 					parent->AddChild(This<ImplT>());

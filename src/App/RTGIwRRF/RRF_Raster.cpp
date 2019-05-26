@@ -23,8 +23,8 @@ using namespace CppUtil::OpenGL;
 using namespace Define;
 using namespace std;
 
-void RRF_Raster::OGL_Init() {
-	RasterBase::OGL_Init();
+void RRF_Raster::Init() {
+	ForwardRaster::Init();
 
 	scene->GenID();
 
@@ -120,13 +120,13 @@ void RRF_Raster::InitShader(int ID) {
 }
 
 void RRF_Raster::Draw() {
-	RasterBase::Draw();
+	ForwardRaster::Draw();
 }
 
 void RRF_Raster::Visit(Ptr<SObj> sobj) {
 	curID = scene->GetID(sobj);
 
-	RasterBase::Visit(sobj);
+	ForwardRaster::Visit(sobj);
 }
 
 void RRF_Raster::Visit(Ptr<BSDF_FrostedGlass> bsdf) {

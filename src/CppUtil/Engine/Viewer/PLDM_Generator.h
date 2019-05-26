@@ -24,6 +24,9 @@ namespace CppUtil {
 
 		class CmptLight;
 
+		class PointLight;
+		class DirectionalLight;
+		class SpotLight;
 
 		// Point Light Depth Map Generator
 		class PLDM_Generator: public Basic::Visitor {
@@ -39,7 +42,7 @@ namespace CppUtil {
 			virtual ~PLDM_Generator() = default;
 			
 		public:
-			void OGL_Init();
+			void Init();
 			const OpenGL::Texture GetDepthCubeMap(Basic::PtrC<CmptLight> light) const;
 
 		private:

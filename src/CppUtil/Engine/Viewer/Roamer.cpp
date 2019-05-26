@@ -23,7 +23,7 @@ Roamer::Roamer(RawAPI_OGLW * pOGLW)
 	GS::Reg("Roamer::camera", WPtr<Camera>(camera));
 }
 
-void Roamer::OGL_Init() {
+void Roamer::Init() {
 	glGenBuffers(1, &cameraUBO);
 	glBindBuffer(GL_UNIFORM_BUFFER, cameraUBO);
 	glBufferData(GL_UNIFORM_BUFFER, 160, NULL, GL_DYNAMIC_DRAW);

@@ -1,14 +1,14 @@
-#ifndef _ENGINE_VIEWER_RASTER_H_
-#define _ENGINE_VIEWER_RASTER_H_
+#ifndef _ENGINE_VIEWER_DIRECT_ILLUM_RASTER_H_
+#define _ENGINE_VIEWER_DIRECT_ILLUM_RASTER_H_
 
-#include <CppUtil/Engine/RasterBase.h>
+#include <CppUtil/Engine/ForwardRaster.h>
 
 namespace CppUtil {
 	namespace Engine {
-		class DirectIllumRaster final : public RasterBase {
+		class DirectIllumRaster final : public ForwardRaster {
 		public:
 			DirectIllumRaster(QT::RawAPI_OGLW * pOGLW, Basic::Ptr<Scene> scene, Basic::Ptr<OpenGL::Camera> camera)
-				: RasterBase(pOGLW, scene, camera) { }
+				: ForwardRaster(pOGLW, scene, camera) { }
 
 		public:
 			static const Basic::Ptr<DirectIllumRaster> New(QT::RawAPI_OGLW * pOGLW, Basic::Ptr<Scene> scene, Basic::Ptr<OpenGL::Camera> camera) {
@@ -19,7 +19,7 @@ namespace CppUtil {
 			virtual ~DirectIllumRaster() = default;
 
 		public:
-			virtual void OGL_Init() override;
+			virtual void Init() override;
 
 		protected:
 			virtual void Visit(Basic::Ptr<BSDF_Diffuse> bsdf);
@@ -40,4 +40,4 @@ namespace CppUtil {
 	}
 }
 
-#endif//!_ENGINE_VIEWER_RASTER_H_
+#endif//!_ENGINE_VIEWER_DIRECT_ILLUM_RASTER_H_

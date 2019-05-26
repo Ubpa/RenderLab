@@ -73,8 +73,8 @@ void RTGIwRRF::InitRaster() {
 	roamer->SetLock(false);
 
 	ui.OGLW_Raster->SetInitOp(LambdaOp_New(([=]() {
-		roamer->OGL_Init();
-		rrfRaster->OGL_Init();
+		roamer->Init();
+		rrfRaster->Init();
 	})));
 
 	ui.OGLW_Raster->SetPaintOp(LambdaOp_New([=]() {

@@ -20,8 +20,8 @@ using namespace CppUtil::Basic;
 using namespace Define;
 using namespace std;
 
-void SampleRaster::OGL_Init() {
-	RasterBase::OGL_Init();
+void SampleRaster::Init() {
+	ForwardRaster::Init();
 
 	scene->GenID();
 
@@ -63,7 +63,7 @@ void SampleRaster::Draw() {
 		gBuffer.Use();
 		GLint lastFBO;
 		glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &lastFBO);
-		RasterBase::Draw();
+		ForwardRaster::Draw();
 		FBO::UseDefault();
 
 		haveSampled = true;
@@ -78,7 +78,7 @@ void SampleRaster::Draw() {
 void SampleRaster::Visit(Ptr<SObj> sobj) {
 	shader_sampleFrostedGlass.SetInt("ID", scene->GetID(sobj));
 
-	RasterBase::Visit(sobj);
+	ForwardRaster::Visit(sobj);
 }
 
 void SampleRaster::Visit(Ptr<BSDF_FrostedGlass> bsdf) {

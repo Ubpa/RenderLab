@@ -26,10 +26,10 @@ namespace CppUtil {
 
 		protected:
 			// 由于构造函数中不可使用 This(), WPtr()
-			// 所以专门提供了一个 Init 函数
+			// 所以专门提供了一个 Init_AfterGenPtr 函数
 			// 该函数会在 new 对象，生成 shared_ptr 后调用
 			// 所以该函数内部可使用 This(), WPtr()
-			virtual void Init() {}
+			virtual void Init_AfterGenPtr() {}
 
 		protected:
 			// 这里 protected 构造函数和析构函数
@@ -71,7 +71,7 @@ namespace CppUtil {
 		template<typename ImplT, typename ...Args>
 		const Ptr<ImplT> New(Args && ... args) {
 			const auto pImplT = Ptr<ImplT>(new ImplT(std::forward<Args>(args)...), HeapObj::Delete);
-			static_cast<Ptr<HeapObj>>(pImplT)->Init();
+			static_cast<Ptr<HeapObj>>(pImplT)->Init_AfterGenPtr();
 			return pImplT;
 		}
 	}

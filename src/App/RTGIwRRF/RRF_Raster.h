@@ -1,7 +1,7 @@
 #ifndef _APP_RTGI_WITH_RRF_RRF_RASTER_H_
 #define _APP_RTGI_WITH_RRF_RRF_RASTER_H_
 
-#include <CppUtil/Engine/RasterBase.h>
+#include <CppUtil/Engine/ForwardRaster.h>
 #include <CppUtil/OpenGL/FBO.h>
 
 #include <3rdParty/enum.h>
@@ -16,10 +16,10 @@ namespace App {
 
 	BETTER_ENUM(MODE, int, DIRECT, INDIRECT, GLOBAL);
 
-	class RRF_Raster : public RasterBase {
+	class RRF_Raster : public ForwardRaster {
 	public:
 		RRF_Raster(RawAPI_OGLW * pOGLW, Ptr<Scene> scene, Basic::Ptr<OpenGL::Camera> camera)
-			: RasterBase(pOGLW, scene, camera), interpolateRatio(0.2f) { }
+			: ForwardRaster(pOGLW, scene, camera), interpolateRatio(0.2f) { }
 		
 	public:
 		static const Ptr<RRF_Raster> New(RawAPI_OGLW * pOGLW, Ptr<Scene> scene, Basic::Ptr<OpenGL::Camera> camera) {
@@ -31,7 +31,7 @@ namespace App {
 
 	public:
 		virtual void Draw() override;
-		virtual void OGL_Init() override;
+		virtual void Init() override;
 
 	protected:
 		virtual void Visit(Ptr<SObj> sobj);

@@ -53,7 +53,7 @@ EnvGenerator::EnvGenerator(QT::RawAPI_OGLW * pOGLW)
 	RegMemberFunc<Scene>(&EnvGenerator::Visit);
 }
 
-void EnvGenerator::OGL_Init() {
+void EnvGenerator::Init() {
 	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
 	InitFBOs();

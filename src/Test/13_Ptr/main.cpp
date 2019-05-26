@@ -26,7 +26,7 @@ public:
 	const vector<Ptr<ImplT>> & GetChildren() const { return children; }
 
 protected:
-	virtual void Init() override {
+	virtual void Init_AfterGenPtr() override {
 		cout << "Init Node" << endl;
 		if (!parent.expired())
 			parent.lock()->children.push_back(This<ImplT>());
@@ -60,9 +60,9 @@ public:
 	}
 
 protected:
-	virtual void Init() override {
+	virtual void Init_AfterGenPtr() override {
 		cout << "Init SObj " << name << ", ";
-		Node<SObj>::Init();
+		Node<SObj>::Init_AfterGenPtr();
 	}
 
 private:

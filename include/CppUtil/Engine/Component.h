@@ -13,7 +13,7 @@ namespace CppUtil {
 			virtual ~Component() = default;
 
 		protected:
-			virtual void Init() override;
+			virtual void Init_AfterGenPtr() override;
 
 		public:
 			const Basic::Ptr<SObj> GetSObj() const { return wSObj.lock(); }

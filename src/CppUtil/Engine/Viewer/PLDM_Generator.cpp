@@ -48,7 +48,7 @@ PLDM_Generator::PLDM_Generator(QT::RawAPI_OGLW * pOGLW, float lightNear, float l
 	RegMemberFunc<TriMesh>(&PLDM_Generator::Visit);
 }
 
-void PLDM_Generator::OGL_Init() {
+void PLDM_Generator::Init() {
 	shader_genDepth = Shader(ROOT_PATH + str_genDepth_vs, ROOT_PATH + str_genDepth_fs, ROOT_PATH + str_genDepth_gs);
 	shader_genDepth.UniformBlockBind("Camera", 0);
 	shader_genDepth.SetFloat("lightFar", lightFar);

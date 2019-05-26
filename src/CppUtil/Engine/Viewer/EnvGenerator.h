@@ -42,7 +42,7 @@ namespace CppUtil {
 			virtual ~EnvGenerator() = default;
 
 		public:
-			void OGL_Init();
+			void Init();
 			const OpenGL::Texture GetSkybox(Basic::PtrC<Basic::Image> img) const;
 			const OpenGL::Texture GetIrradianceMap(Basic::PtrC<Basic::Image> img) const;
 			const OpenGL::Texture GetPrefilterMap(Basic::PtrC<Basic::Image> img) const;

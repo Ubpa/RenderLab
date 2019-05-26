@@ -1,10 +1,9 @@
-#ifndef _CPPUTIL_ENGINE_VIEWER_RASTER_BASE_H_
-#define _CPPUTIL_ENGINE_VIEWER_RASTER_BASE_H_
+#ifndef _CPPUTIL_ENGINE_VIEWER_FORWARD_RASTER_H_
+#define _CPPUTIL_ENGINE_VIEWER_FORWARD_RASTER_H_
 
-#include <CppUtil/Basic/Visitor.h>
+#include <CppUtil/Engine/Raster.h>
 
 #include <CppUtil/OpenGL/VAO.h>
-#include <CppUtil/OpenGL/Shader.h>
 #include <CppUtil/OpenGL/Texture.h>
 
 #include <CppUtil/Basic/UGM/Transform.h>
@@ -24,11 +23,6 @@ namespace CppUtil {
 	}
 
 	namespace Engine {
-		class PLDM_Generator;
-		class DLDM_Generator;
-		class SLDM_Generator;
-		class EnvGenerator;
-
 		class Scene;
 		class SObj;
 
@@ -44,22 +38,18 @@ namespace CppUtil {
 		class BSDF_MetalWorkflow;
 		class BSDF_FrostedGlass;
 
-		class PointLight;
-		class DirectionalLight;
-		class SpotLight;
-
-		class RasterBase : public Basic::Visitor {
+		class ForwardRaster : public Raster {
 		protected:
-			RasterBase(QT::RawAPI_OGLW * pOGLW, Basic::Ptr<Scene> scene, Basic::Ptr<OpenGL::Camera> camera);
-			virtual ~RasterBase() = default;
+			ForwardRaster(QT::RawAPI_OGLW * pOGLW, Basic::Ptr<Scene> scene, Basic::Ptr<OpenGL::Camera> camera);
+			virtual ~ForwardRaster() = default;
 
 		public:
 			virtual void Draw();
 
-			virtual void OGL_Init();
+			virtual void Init();
 
 		protected:// Use for SubClass
-			void RegShader(const OpenGL::Shader & shader, int depthmapBase = -1);
+			void RegShader(OpenGL::Shader & shader, int depthmapBase = -1);
 			void UseLightTex(const OpenGL::Shader & shader) const;
 
 			void SetCurShader(const OpenGL::Shader & shader) { curShader = shader; }
@@ -86,55 +76,26 @@ namespace CppUtil {
 			void InitShader_Basic();
 			void InitShader_Skybox();
 
-			// 更新光源的 UniformBlock
-			void UpdateLights();
-			void UpdatePointLights();
-			void UpdateDirectionalLights();
-			void UpdateSpotLights();
-			void UpdateEnvironment();
-
 			// draw skybox as last
 			void DrawEnvironment();
 
-		protected:
-			Basic::Ptr<Scene> scene;
-			QT::RawAPI_OGLW * pOGLW;
-
 		private:
-			Basic::Ptr<OpenGL::Camera> camera;
-
 			OpenGL::Shader curShader;
 			OpenGL::Shader shader_basic;
 			OpenGL::Shader shader_skybox;
 
 			std::vector<Transform> modelVec;
 
-
 			std::map<Basic::WPtrC<Basic::Image>, OpenGL::Texture> img2tex;
 
-			unsigned int pointLightsUBO;
-			unsigned int directionalLightsUBO;
-			unsigned int spotLightsUBO;
-			unsigned int environmentUBO;
-
 			static const int maxPointLights;// 8
-			Basic::Ptr<PLDM_Generator> pldmGenerator;
 			static const int maxDirectionalLights;// 8
-			Basic::Ptr<DLDM_Generator> dldmGenerator;
 			static const int maxSpotLights;// 8
-			Basic::Ptr<SLDM_Generator> sldmGenerator;
-			Basic::Ptr<EnvGenerator> envGenerator;
-
-			static const float lightNear;// 0.01
-			static const float lightFar;// 25
 
 			struct ShaderCompare { bool operator()(const OpenGL::Shader & lhs, const OpenGL::Shader & rhs) const; };
 			std::map<OpenGL::Shader, int, ShaderCompare> shader2depthmapBase;
-			std::map<Basic::WPtrC<PointLight>, int> pointLight2idx;
-			std::map<Basic::WPtrC<DirectionalLight>, int> directionalLight2idx;
-			std::map<Basic::WPtrC<SpotLight>, int> spotLight2idx;
 		};
 	}
 }
 
-#endif//!_CPPUTIL_ENGINE_VIEWER_RASTER_BASE_H_
+#endif//!_CPPUTIL_ENGINE_VIEWER_FORWARD_RASTER_H_

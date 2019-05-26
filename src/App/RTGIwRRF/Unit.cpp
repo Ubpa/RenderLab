@@ -10,7 +10,7 @@ using namespace App;
 using namespace CppUtil::Basic;
 using namespace std;
 
-void Unit::Init() {
+void Unit::Init_AfterGenPtr() {
 	if (layer.expired())
 		return;
 

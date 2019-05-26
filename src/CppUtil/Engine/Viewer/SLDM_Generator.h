@@ -42,7 +42,7 @@ namespace CppUtil {
 			virtual ~SLDM_Generator() = default;
 
 		public:
-			void OGL_Init();
+			void Init();
 			const OpenGL::Texture GetDepthMap(Basic::PtrC<CmptLight> light) const;
 			const Transform GetProjView(Basic::PtrC<CmptLight> light) const;
 

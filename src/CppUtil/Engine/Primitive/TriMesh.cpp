@@ -72,7 +72,7 @@ TriMesh::TriMesh(uint triNum, uint vertexNum,
 	GenTangents();
 }
 
-void TriMesh::Init() {
+void TriMesh::Init_AfterGenPtr() {
 	auto triMesh = This<TriMesh>();
 	for (auto triangle : triangles)
 		triangle->mesh = triMesh;

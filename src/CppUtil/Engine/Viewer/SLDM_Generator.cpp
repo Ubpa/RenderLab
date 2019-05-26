@@ -52,7 +52,7 @@ SLDM_Generator::SLDM_Generator(QT::RawAPI_OGLW * pOGLW, Ptr<Camera> camera, floa
 	RegMemberFunc<TriMesh>(&SLDM_Generator::Visit);
 }
 
-void SLDM_Generator::OGL_Init() {
+void SLDM_Generator::Init() {
 	shader_genDepth = Shader(ROOT_PATH + str_MVP_P3_vs, ROOT_PATH + str_empty_fs);
 }
 

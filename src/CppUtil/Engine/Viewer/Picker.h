@@ -22,7 +22,7 @@ namespace CppUtil {
 			virtual ~Picker() = default;
 
 		public:
-			void OGL_Init();
+			void Init();
 
 			Viewer * GetViewer() const { return viewer; }
 

@@ -113,8 +113,8 @@ void SObjSampler::InitRaster() {
 	roamer->GetCamera()->SetPose(transform->GetPosition(), - eulerAngle.y - 90, eulerAngle.x);
 
 	ui.OGLW_Raster->SetInitOp(LambdaOp_New([=]() {
-		roamer->OGL_Init();
-		sampleRaster->OGL_Init();
+		roamer->Init();
+		sampleRaster->Init();
 	}));
 
 	auto paintOp = OpQueue::New();

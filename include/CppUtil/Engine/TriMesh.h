@@ -56,7 +56,7 @@ namespace CppUtil {
 			virtual ~TriMesh() = default;
 
 		private:
-			virtual void Init() override;
+			virtual void Init_AfterGenPtr() override;
 
 		public:
 			ENUM_TYPE GetType() const { return type; }

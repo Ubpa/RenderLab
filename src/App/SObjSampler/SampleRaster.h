@@ -1,7 +1,7 @@
 #ifndef _APP_SOBJ_SAMPLER_SAMPLE_RASTER_H_
 #define _APP_SOBJ_SAMPLER_SAMPLE_RASTER_H_
 
-#include <CppUtil/Engine/RasterBase.h>
+#include <CppUtil/Engine/ForwardRaster.h>
 #include <CppUtil/OpenGL/FBO.h>
 
 namespace App {
@@ -11,10 +11,10 @@ namespace App {
 	using namespace CppUtil::OpenGL;
 	using namespace CppUtil::QT;
 
-	class SampleRaster : public RasterBase {
+	class SampleRaster : public ForwardRaster {
 	public:
 		SampleRaster(RawAPI_OGLW * pOGLW, Ptr<Scene> scene, Ptr<Camera> camera)
-			: RasterBase(pOGLW, scene, camera), haveSampled(false) { }
+			: ForwardRaster(pOGLW, scene, camera), haveSampled(false) { }
 
 	public:
 		static const Ptr<SampleRaster> New(RawAPI_OGLW * pOGLW, Ptr<Scene> scene, Ptr<Camera> camera) {
@@ -26,7 +26,7 @@ namespace App {
 
 	public:
 		void Draw();
-		void OGL_Init();
+		void Init();
 
 		enum class ENUM_TYPE {
 			DirectIllum,

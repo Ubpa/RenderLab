@@ -12,7 +12,7 @@ namespace CppUtil {
 	namespace Engine {
 		class Scene;
 
-		class RasterBase;
+		class Raster;
 		class Roamer;
 		class Picker;
 
@@ -33,7 +33,7 @@ namespace CppUtil {
 		public:
 			QT::RawAPI_OGLW * GetOGLW() const { return pOGLW; }
 			Basic::Ptr<Scene> GetScene() const { return scene; }
-			Basic::Ptr<RasterBase> GetRaster() const { return raster; }
+			Basic::Ptr<Raster> GetRaster() const { return raster; }
 			Basic::Ptr<Roamer> GetRoamer() const { return roamer; }
 			Basic::Ptr<Picker> GetPicker() const { return picker; }
 
@@ -43,7 +43,7 @@ namespace CppUtil {
 		private:
 			QT::RawAPI_OGLW * pOGLW;
 			Basic::Ptr<Scene> scene;
-			Basic::Ptr<RasterBase> raster;
+			Basic::Ptr<Raster> raster;
 			Basic::Ptr<Roamer> roamer;
 			Basic::Ptr<Picker> picker;
 		};

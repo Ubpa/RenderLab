@@ -1,6 +1,6 @@
 #include <CppUtil/Engine/Viewer.h>
 
-#include "DirectIllumRaster.h"
+#include <CppUtil/Engine/DirectIllumRaster.h>
 #include <CppUtil/Engine/Roamer.h>
 #include "Picker.h"
 
@@ -26,9 +26,9 @@ Viewer::Viewer(RawAPI_OGLW * pOGLW, Ptr<Scene> scene, RasterType rasterType)
 	}
 
 	pOGLW->SetInitOp(LambdaOp_New([this]() {
-		roamer->OGL_Init();
-		raster->OGL_Init();
-		picker->OGL_Init();
+		roamer->Init();
+		raster->Init();
+		picker->Init();
 	}));
 
 	pOGLW->SetPaintOp(LambdaOp_New([this]() {

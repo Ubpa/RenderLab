@@ -24,7 +24,7 @@ using namespace CppUtil::Basic;
 Picker::Picker(Viewer * viewer)
 	: viewer(viewer), rayIntersector(RayIntersector::New()) { }
 
-void Picker::OGL_Init() {
+void Picker::Init() {
 	auto MRB_PressOp = LambdaOp_New([this]() {
 		Viewer * viewer = this->GetViewer();
 		auto pOGWL = viewer->GetOGLW();

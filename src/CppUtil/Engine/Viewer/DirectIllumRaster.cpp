@@ -1,4 +1,4 @@
-#include "DirectIllumRaster.h"
+#include <CppUtil/Engine/DirectIllumRaster.h>
 
 #include <CppUtil/Engine/Scene.h>
 #include <CppUtil/Engine/SObj.h>
@@ -43,8 +43,8 @@ using namespace std;
 
 const string rootPath = ROOT_PATH;
 
-void DirectIllumRaster::OGL_Init() {
-	RasterBase::OGL_Init();
+void DirectIllumRaster::Init() {
+	ForwardRaster::Init();
 
 	InitShaders();
 }

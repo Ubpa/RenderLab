@@ -60,7 +60,7 @@ namespace App {
 		const std::string GenFunc(bool genUnits = true) const;
 
 	private:
-		virtual void Init() override;
+		virtual void Init_AfterGenPtr() override;
 
 	private:
 		mutable CppUtil::Basic::WPtrC<Model> model;

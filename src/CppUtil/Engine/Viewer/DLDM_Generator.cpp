@@ -52,7 +52,7 @@ DLDM_Generator::DLDM_Generator(QT::RawAPI_OGLW * pOGLW, Ptr<Camera> camera)
 	RegMemberFunc<TriMesh>(&DLDM_Generator::Visit);
 }
 
-void DLDM_Generator::OGL_Init() {
+void DLDM_Generator::Init() {
 	shader_genDepth = Shader(ROOT_PATH + str_MVP_P3_vs, ROOT_PATH + str_empty_fs);
 }
 
