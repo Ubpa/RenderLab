@@ -83,7 +83,7 @@ FBO::FBO(uint width, uint height, ENUM_TYPE type)
 }
 
 FBO::FBO(uint width, uint height, const std::vector<uint> & dimVecForGBuffer)
-	: width(width), height(height)
+	: width(width), height(height), dimVec(dimVecForGBuffer)
 {
 	glGenFramebuffers(1, &ID);
 	glBindFramebuffer(GL_FRAMEBUFFER, ID);
@@ -110,12 +110,30 @@ FBO::FBO(uint width, uint height, const std::vector<uint> & dimVecForGBuffer)
 
 	glDrawBuffers(static_cast<GLsizei>(dimVecForGBuffer.size()), attachments.data());
 
+	/*
 	// create and attach depth buffer (renderbuffer)
 	uint rboDepth;
 	glGenRenderbuffers(1, &rboDepth);
 	glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth);
+	*/
+
+	uint depthBufferID;
+	glGenTextures(1, &depthBufferID);
+	glBindTexture(GL_TEXTURE_2D, depthBufferID);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+	GLfloat borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
+	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+	// attach depth texture as FBO's depth buffer
+	glBindFramebuffer(GL_FRAMEBUFFER, ID);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthBufferID, 0);
+
+	depthTexture = Texture(depthBufferID, Texture::ENUM_TYPE_2D);
 
 	// finally check if framebuffer is complete
 	isValid = IsComplete();
@@ -583,7 +601,8 @@ const Texture & FBO::GetDepthTexture() const {
 		return Texture::InValid;
 
 	if (type != ENUM_TYPE_DEPTH
-		&& type != ENUM_TYPE_CUBE_DEPTH)
+		&& type != ENUM_TYPE_CUBE_DEPTH
+		&& type != ENUM_TYPE_GBUFFER)
 		return Texture::InValid;
 
 	return depthTexture;
@@ -641,4 +660,83 @@ bool FBO::SetColor(const Texture & tex, TexTarget textarget, int mip) {
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, glTexTarget, tex.GetID(), mip);
 
 	return true;
+}
+
+void FBO::Resize(uint width, uint height) {
+	if (!IsValid())
+		return;
+	if (type != ENUM_TYPE_GBUFFER)
+		return;
+	if (this->width == width && this->height == height)
+		return;
+
+	this->width = width;
+	this->height = height;
+
+	for (auto colorTex : colorTextures)
+		glDeleteTextures(1, &colorTex.GetID());
+	colorTextures.clear();
+	glDeleteTextures(1, &depthTexture.GetID());
+	depthTexture = Texture::InValid;
+
+	glBindFramebuffer(GL_FRAMEBUFFER, ID);
+
+	const uint formats[4] = { GL_RED, GL_RG, GL_RGB, GL_RGBA };
+	const uint internalFormats[4] = { GL_R16F, GL_RG16F, GL_RGB16F, GL_RGBA16F };
+	vector<uint> attachments;
+
+	for (int i = 0; i < dimVec.size(); i++) {
+		const int dim = dimVec[i];
+		uint texID;
+		glGenTextures(1, &texID);
+		glBindTexture(GL_TEXTURE_2D, texID);
+		glTexImage2D(GL_TEXTURE_2D, 0, internalFormats[dim - 1], width, height, 0, formats[dim - 1], GL_FLOAT, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, texID, 0);
+
+		attachments.push_back(GL_COLOR_ATTACHMENT0 + i);
+		colorTextures.push_back(Texture(texID, Texture::ENUM_TYPE_2D));
+	}
+
+	glDrawBuffers(static_cast<GLsizei>(dimVec.size()), attachments.data());
+
+	/*
+	// create and attach depth buffer (renderbuffer)
+	uint rboDepth;
+	glGenRenderbuffers(1, &rboDepth);
+	glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth);
+	*/
+
+	uint depthBufferID;
+	glGenTextures(1, &depthBufferID);
+	glBindTexture(GL_TEXTURE_2D, depthBufferID);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+	GLfloat borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
+	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+	// attach depth texture as FBO's depth buffer
+	glBindFramebuffer(GL_FRAMEBUFFER, ID);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthBufferID, 0);
+
+	depthTexture = Texture(depthBufferID, Texture::ENUM_TYPE_2D);
+
+	// finally check if framebuffer is complete
+	isValid = IsComplete();
+	if (!isValid) {
+		printf("Framebuffer is not complete!\n");
+		type = ENUM_TYPE_INVALID;
+		ID = 0;
+		return;
+	}
+
+	type = ENUM_TYPE_GBUFFER;
+	return;
 }

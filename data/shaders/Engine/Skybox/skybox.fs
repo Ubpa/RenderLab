@@ -20,7 +20,7 @@ void main()
     vec3 ambient = GetEnvironment(TexCoords);
 	
 	// gamma
-	FragColor = vec4(sqrt(ambient), 1);
+	FragColor = vec4(ambient, 1);
 }
 
 vec3 GetEnvironment(vec3 texcoord) {

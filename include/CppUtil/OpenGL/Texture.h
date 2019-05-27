@@ -43,7 +43,7 @@ namespace CppUtil {
 			void Bind() const;
 			void UnBind() const;
 
-			uint GetID() const { return ID; }
+			const uint & GetID() const { return ID; }
 			ENUM_TYPE GetType() const { return type; }
 			bool IsValid() const;
 

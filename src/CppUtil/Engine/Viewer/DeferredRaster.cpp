@@ -66,14 +66,15 @@ void DeferredRaster::Init() {
 	InitShaders();
 
 	gbufferFBO = FBO(pOGLW->width(), pOGLW->height(), { 3,3,3,3 });
-	windowFBO = FBO(pOGLW->width(), pOGLW->height(), FBO::ENUM_TYPE_COLOR_FLOAT);
+	windowFBO = FBO(pOGLW->width(), pOGLW->height(), {3});
 }
 
 void DeferredRaster::InitShaders() {
 	InitShader_GBuffer();
 	InitShader_DirectLight();
 	InitShader_AmbientLight();
-	InitShader_Window();
+	InitShader_Skybox();
+	InitShader_PostProcess();
 }
 
 void DeferredRaster::InitShader_GBuffer() {
@@ -122,7 +123,6 @@ void DeferredRaster::InitShader_AmbientLight() {
 	ambientLightShader.SetInt("Albedo", idx++);
 	ambientLightShader.SetInt("RMAO", idx++);
 
-	//ambientLightShader.SetInt("skybox", idx++);
 	ambientLightShader.SetInt("irradianceMap", idx++);
 	ambientLightShader.SetInt("prefilterMap", idx++);
 	ambientLightShader.SetInt("brdfLUT", idx++);
@@ -130,15 +130,26 @@ void DeferredRaster::InitShader_AmbientLight() {
 	BindUBO(ambientLightShader);
 }
 
-void DeferredRaster::InitShader_Window() {
-	windowShader = Shader(rootPath + str_Screen_vs, rootPath + "data/shaders/Engine/DeferredPipline/postProcess.fs");
+void DeferredRaster::InitShader_Skybox() {
+	string vsPath = "data/shaders/Engine/Skybox/skybox.vs";
+	string fsPath = "data/shaders/Engine/Skybox/skybox.fs";
+	skyboxShader = Shader(rootPath + vsPath, rootPath + fsPath);
+
+	skyboxShader.SetInt("skybox", 0);
+
+	BindUBO(skyboxShader);
+}
+
+void DeferredRaster::InitShader_PostProcess() {
+	postProcessShader = Shader(rootPath + str_Screen_vs, rootPath + "data/shaders/Engine/DeferredPipline/postProcess.fs");
 	
-	windowShader.SetInt("img", 0);
+	postProcessShader.SetInt("img", 0);
 }
 
 void DeferredRaster::Resize() {
-	gbufferFBO = FBO(pOGLW->w, pOGLW->h, { 3,3,3,3 });
-	windowFBO = FBO(pOGLW->w, pOGLW->h, FBO::ENUM_TYPE_COLOR_FLOAT);
+	gbufferFBO.Resize(pOGLW->w, pOGLW->h);
+
+	windowFBO.Resize(pOGLW->w, pOGLW->h);
 }
 
 void DeferredRaster::Draw() {
@@ -150,8 +161,13 @@ void DeferredRaster::Draw() {
 	UpdateUBO();
 
 	Pass_GBuffer();
+
+	glDisable(GL_DEPTH_TEST);
 	Pass_DirectLight();
 	Pass_AmbientLight();
+	glEnable(GL_DEPTH_TEST);
+
+	Pass_Skybox();
 	Pass_PostProcess();
 }
 
@@ -216,8 +232,6 @@ void DeferredRaster::Pass_DirectLight() {
 
 void DeferredRaster::Pass_AmbientLight() {
 	windowFBO.Use();
-	//glClearColor(0, 0, 0, 1);
-	//glClear(GL_COLOR_BUFFER_BIT);
 
 	windowFBO.GetColorTexture(0).Use(0);
 
@@ -245,10 +259,28 @@ void DeferredRaster::Pass_AmbientLight() {
 	pOGLW->GetVAO(ShapeType::Screen).Draw(ambientLightShader);
 }
 
+void DeferredRaster::Pass_Skybox() {
+	gbufferFBO.PassTo(windowFBO, FBO::ENUM_PASS_DEPTH);
+
+	auto environment = scene->GetInfiniteAreaLight();
+	if (!environment)
+		return;
+
+	windowFBO.Use();
+
+	auto img = environment->GetImg();
+	if (img)
+		envGenerator->GetSkybox(img).Use(0);
+
+	glDepthFunc(GL_LEQUAL);
+	pOGLW->GetVAO(ShapeType::Cube).Draw(skyboxShader);
+	glDepthFunc(GL_LESS);
+}
+
 void DeferredRaster::Pass_PostProcess() {
 	FBO::UseDefault();
 	windowFBO.GetColorTexture(0).Use(0);
-	pOGLW->GetVAO(ShapeType::Screen).Draw(windowShader);
+	pOGLW->GetVAO(ShapeType::Screen).Draw(postProcessShader);
 }
 
 void DeferredRaster::Visit(Ptr<SObj> sobj) {

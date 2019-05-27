@@ -41,6 +41,7 @@ namespace CppUtil {
 			bool PassTo(uint fboID, uint width, uint height, ENUM_PASS_TYPE passType = ENUM_PASS_COLOR) const;
 
 			bool Use() const;
+			void Resize(uint width, uint height);
 			static void UseDefault();
 			static uint DefaultBuffer;
 			uint GetID() const;
@@ -81,6 +82,7 @@ namespace CppUtil {
 			uint width;
 			uint height;
 			bool isValid;
+			std::vector<uint> dimVec;
 		};
 	}
 }

@@ -39,7 +39,8 @@ namespace CppUtil{
 			void InitShader_GBuffer();
 			void InitShader_DirectLight();
 			void InitShader_AmbientLight();
-			void InitShader_Window();
+			void InitShader_Skybox();
+			void InitShader_PostProcess();
 
 		private:
 			virtual void Visit(Basic::Ptr<SObj> sobj);
@@ -54,6 +55,7 @@ namespace CppUtil{
 			void Pass_GBuffer();
 			void Pass_DirectLight();
 			void Pass_AmbientLight();
+			void Pass_Skybox();
 			void Pass_PostProcess();
 
 		private:
@@ -64,7 +66,8 @@ namespace CppUtil{
 			OpenGL::Shader metalShader;
 			OpenGL::Shader directLightShader;
 			OpenGL::Shader ambientLightShader;
-			OpenGL::Shader windowShader;
+			OpenGL::Shader skyboxShader;
+			OpenGL::Shader postProcessShader;
 
 			static const int maxPointLights;// 8
 			static const int maxDirectionalLights;// 8

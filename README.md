@@ -40,6 +40,7 @@
 - 查看器 Viewer
   - 拣选器 Picker
   - 直接光照光栅器 DirectIllumRaster
+  - 延迟管线 DeferredPipline
   - 漫游器 Roamer
 - 相交器 Intersector
   - 最近 RayIntersector
@@ -114,11 +115,11 @@ Optix: 6.0
       - [x] specular
   - [x] UI
   - [x] （反）序列化
-- [ ] 延迟管线（金属工作流）
+- [x] 延迟管线（金属工作流）
   - [x] GBuffer
   - [x] Direct Light
   - [x] Ambient Light
-  - [ ] Sky Box
+  - [x] Sky Box
   - [x] window
 - [ ] 实时渲染——面光源
 - [ ] 旋转拖动缩放物体
