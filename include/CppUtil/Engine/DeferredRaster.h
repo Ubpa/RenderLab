@@ -17,8 +17,8 @@ namespace CppUtil{
 		class BSDF_MetalWorkflow;
 
 		/*
-		ï¿½Ó³Ù¹ï¿½ï¿½ï¿½
-		ï¿½ï¿½Ê±Ö»ï¿½ï¿½ï¿½Ú½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä»ï¿½ï¿½ï¿½
+		ÑÓ³Ù¹ÜÏß
+		ÔÝÊ±Ö»ÓÃÓÚ½ðÊô¹¤×÷Á÷£¬µ±ÐèÇóÀ´µÄÊ±ºò£¬ÔÙÀ´¸ãÒ»¸ö¹«¹²µÄ»ùÀà
 		*/
 		class DeferredRaster : public Raster {
 		public:
@@ -35,6 +35,12 @@ namespace CppUtil{
 			virtual void Draw() override;
 
 		private:
+			void InitShaders();
+			void InitShader_GBuffer();
+			void InitShader_AmbientLight();
+			void InitShader_Window();
+
+		private:
 			virtual void Visit(Basic::Ptr<SObj> sobj);
 
 			virtual void Visit(Basic::Ptr<BSDF_MetalWorkflow> bsdf);
@@ -45,11 +51,17 @@ namespace CppUtil{
 
 		private:
 			void Pass_GBuffer();
+			void Pass_AmbientLight();
+			void Pass_Window();
 
 		private:
 			OpenGL::FBO gbufferFBO;
+			OpenGL::FBO windowFBO;
+
 			std::vector<Transform> modelVec;
 			OpenGL::Shader metalShader;
+			OpenGL::Shader ambientLightShader;
+			OpenGL::Shader windowShader;
 		};
 	}
 }

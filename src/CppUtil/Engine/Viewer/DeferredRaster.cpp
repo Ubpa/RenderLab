@@ -1,5 +1,7 @@
 #include <CppUtil/Engine/DeferredRaster.h>
 
+#include "EnvGenerator.h"
+
 #include <CppUtil/Qt/RawAPI_OGLW.h>
 #include <CppUtil/Qt/RawAPI_Define.h>
 
@@ -13,6 +15,8 @@
 #include <CppUtil/Engine/Sphere.h>
 #include <CppUtil/Engine/Plane.h>
 #include <CppUtil/Engine/TriMesh.h>
+
+#include <CppUtil/Engine/InfiniteAreaLight.h>
 
 #include <CppUtil/Engine/BSDF_MetalWorkflow.h>
 
@@ -48,6 +52,19 @@ DeferredRaster::DeferredRaster(RawAPI_OGLW * pOGLW, Ptr<Scene> scene, Ptr<Camera
 void DeferredRaster::Init() {
 	Raster::Init();
 
+	InitShaders();
+
+	gbufferFBO = FBO(pOGLW->width(), pOGLW->height(), { 3,3,3,3 });
+	windowFBO = FBO(pOGLW->width(), pOGLW->height(), FBO::ENUM_TYPE_COLOR_FLOAT);
+}
+
+void DeferredRaster::InitShaders() {
+	InitShader_GBuffer();
+	InitShader_AmbientLight();
+	InitShader_Window();
+}
+
+void DeferredRaster::InitShader_GBuffer() {
 	metalShader = Shader(rootPath + str_Basic_P3N3T2T3_vs, rootPath + "data/shaders/Engine/DeferredPipline/Metal_GBuffer.fs");
 
 	metalShader.SetInt("metal.albedoTexture", 0);
@@ -57,18 +74,46 @@ void DeferredRaster::Init() {
 	metalShader.SetInt("metal.normalTexture", 4);
 
 	BindUBO(metalShader);
+}
 
-	gbufferFBO = FBO(pOGLW->width(), pOGLW->height(), { 3,3,3 });
+void DeferredRaster::InitShader_AmbientLight() {
+	ambientLightShader = Shader(rootPath + str_Screen_vs, rootPath + "data/shaders/Engine/DeferredPipline/ambientLight.fs");
+
+	int idx = 0;
+
+	ambientLightShader.SetInt("Position", idx++);
+	ambientLightShader.SetInt("Normal", idx++);
+	ambientLightShader.SetInt("Albedo", idx++);
+	ambientLightShader.SetInt("RMAO", idx++);
+
+	//ambientLightShader.SetInt("skybox", idx++);
+	ambientLightShader.SetInt("irradianceMap", idx++);
+	ambientLightShader.SetInt("prefilterMap", idx++);
+	ambientLightShader.SetInt("brdfLUT", idx++);
+
+	BindUBO(ambientLightShader);
+}
+
+void DeferredRaster::InitShader_Window() {
+	windowShader = Shader(rootPath + str_Screen_vs, rootPath + str_Screen_fs);
+	
+	windowShader.SetInt("texture0", 0);
 }
 
 void DeferredRaster::Resize() {
-	gbufferFBO = FBO(pOGLW->w, pOGLW->h, { 3,3,3 });
+	gbufferFBO = FBO(pOGLW->w, pOGLW->h, { 3,3,3,3 });
+	windowFBO = FBO(pOGLW->w, pOGLW->h, FBO::ENUM_TYPE_COLOR_FLOAT);
 }
 
 void DeferredRaster::Draw() {
 	glEnable(GL_DEPTH_TEST);
 
+	UpdateEnvironment();
+	UpdateUBO();
+
 	Pass_GBuffer();
+	Pass_AmbientLight();
+	Pass_Window();
 }
 
 void DeferredRaster::Pass_GBuffer() {
@@ -79,6 +124,41 @@ void DeferredRaster::Pass_GBuffer() {
 	modelVec.clear();
 	modelVec.push_back(Transform(1.f));
 	scene->GetRoot()->Accept(This());
+}
+
+void DeferredRaster::Pass_AmbientLight() {
+	windowFBO.Use();
+	glClearColor(0, 0, 0, 1);
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	// set gbuffer
+	gbufferFBO.GetColorTexture(0).Use(0);
+	gbufferFBO.GetColorTexture(1).Use(1);
+	gbufferFBO.GetColorTexture(2).Use(2);
+	gbufferFBO.GetColorTexture(3).Use(3);
+
+	// set environment
+	auto environment = scene->GetInfiniteAreaLight();
+	const int environmentBase = 4;
+	if (environment) {
+		if (environment->GetImg()) {
+			auto irradianceMap = envGenerator->GetIrradianceMap(environment->GetImg());
+			irradianceMap.Use(environmentBase);
+			auto prefilterMap = envGenerator->GetPrefilterMap(environment->GetImg());
+			prefilterMap.Use(environmentBase + 1);
+		}
+
+		auto brdfLUT = envGenerator->GetBRDF_LUT();
+		brdfLUT.Use(environmentBase + 2);
+	}
+
+	pOGLW->GetVAO(ShapeType::Screen).Draw(ambientLightShader);
+}
+
+void DeferredRaster::Pass_Window() {
+	FBO::UseDefault();
+	windowFBO.GetColorTexture(0).Use(0);
+	pOGLW->GetVAO(ShapeType::Screen).Draw(windowShader);
 }
 
 void DeferredRaster::Visit(Ptr<SObj> sobj) {

@@ -117,8 +117,9 @@ Optix: 6.0
 - [ ] 延迟管线（金属工作流）
   - [x] GBuffer
   - [ ] Direct Light
-  - [ ] Ambient Light
+  - [x] Ambient Light
   - [ ] Sky Box
+  - [x] window
 - [ ] 实时渲染——面光源
 - [ ] 旋转拖动缩放物体
 - [ ] 重新架构 Raster

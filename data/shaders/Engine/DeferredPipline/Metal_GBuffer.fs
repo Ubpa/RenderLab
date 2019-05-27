@@ -1,8 +1,9 @@
 #version 330 core
 
-layout (location = 0) out vec3 Normal;
-layout (location = 1) out vec3 Albedo;
-layout (location = 2) out vec3 RMAO;
+layout (location = 0) out vec3 Position;
+layout (location = 1) out vec3 Normal;
+layout (location = 2) out vec3 Albedo;
+layout (location = 3) out vec3 RMAO;
 
 in VS_OUT {
     vec3 FragPos;
@@ -62,6 +63,7 @@ void main(){
 		norm = CalcBumpedNormal(norm, normalize(fs_in.Tangent), metal.normalTexture, fs_in.TexCoords);
 	}
 	
+	Position = fs_in.FragPos;
 	Normal = norm;
 	Albedo = albedo;
 	RMAO = vec3(roughness, metallic, ao);
