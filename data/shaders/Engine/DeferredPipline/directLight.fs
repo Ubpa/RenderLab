@@ -2,14 +2,9 @@
 
 // ----------------- 输入输出
 
-out vec4 FragColor;
+out vec3 FragColor;
 
-in VS_OUT {
-    vec3 FragPos;
-    vec3 Normal;
-    vec2 TexCoords;
-    vec3 Tangent;
-} fs_in;
+in vec2 TexCoords;
 
 // ----------------- 常量
 
@@ -28,28 +23,6 @@ const vec3 gridSamplingDisk[20] = vec3[]
    vec3(1, 0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1, 0, -1),
    vec3(0, 1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0, 1, -1)
 );
-
-// ----------------- 结构
-
-struct BSDF_MetalWorkflow {
-	vec3 colorFactor;
-	bool haveAlbedoTexture;
-    sampler2D albedoTexture;
-
-	float metallicFactor;
-	bool haveMetallicTexture;
-    sampler2D metallicTexture;
-
-	float roughnessFactor;
-	bool haveRoughnessTexture;
-    sampler2D roughnessTexture;
-	
-	bool haveAOTexture;
-    sampler2D aoTexture;
-
-	bool haveNormalTexture;
-	sampler2D normalTexture;
-};
 
 // ----------------- Uniform
 
@@ -91,17 +64,9 @@ layout (std140) uniform Camera{
 	float ar;			// 4	156	160
 };
 
-// 32
-layout (std140) uniform Environment{
-	vec3 colorFactor;     // 12     0
-	float intensity;      //  4    12
-	bool haveSkybox;      //  4    16
-	bool haveEnvironment; //  4    20
-};
-
 // 400
 layout (std140) uniform PointLights{
-	int numLight;// 16
+	int numPointLight;// 16
 	PointLight pointLights[MAX_POINT_LIGHTS];// 48 * MAX_POINT_LIGHTS = 48 * 8
 };
 
@@ -117,9 +82,12 @@ layout (std140) uniform SpotLights{
 	SpotLight spotLights[MAX_SPOT_LIGHTS];// 128 * MAX_SPOT_LIGHTS = 128 * 8 = 1024
 };
 
-uniform BSDF_MetalWorkflow bsdf;
+uniform sampler2D Position; // 0
+uniform sampler2D Normal;
+uniform sampler2D Albedo;
+uniform sampler2D RMAO;
 
-uniform samplerCube pointLightDepthMap0;
+uniform samplerCube pointLightDepthMap0; // 4
 uniform samplerCube pointLightDepthMap1;
 uniform samplerCube pointLightDepthMap2;
 uniform samplerCube pointLightDepthMap3;
@@ -128,7 +96,7 @@ uniform samplerCube pointLightDepthMap5;
 uniform samplerCube pointLightDepthMap6;
 uniform samplerCube pointLightDepthMap7;
 
-uniform sampler2D directionalLightDepthMap0; // 9
+uniform sampler2D directionalLightDepthMap0; // 12
 uniform sampler2D directionalLightDepthMap1;
 uniform sampler2D directionalLightDepthMap2;
 uniform sampler2D directionalLightDepthMap3;
@@ -137,7 +105,7 @@ uniform sampler2D directionalLightDepthMap5;
 uniform sampler2D directionalLightDepthMap6;
 uniform sampler2D directionalLightDepthMap7;
 
-uniform sampler2D spotLightDepthMap0; // 17
+uniform sampler2D spotLightDepthMap0; // 20
 uniform sampler2D spotLightDepthMap1;
 uniform sampler2D spotLightDepthMap2;
 uniform sampler2D spotLightDepthMap3;
@@ -146,17 +114,10 @@ uniform sampler2D spotLightDepthMap5;
 uniform sampler2D spotLightDepthMap6;
 uniform sampler2D spotLightDepthMap7;
 
-uniform samplerCube skybox; // 25
-uniform samplerCube irradianceMap; // 26
-uniform samplerCube prefilterMap; // 27
-uniform sampler2D   brdfLUT; // 28
-
 uniform float lightNear;
 uniform float lightFar;
 
 // ----------------- 函数声明
-
-vec3 CalcBumpedNormal(vec3 normal, vec3 tangent, sampler2D normalTexture, vec2 texcoord);
 
 float SchlickGGX_D(vec3 norm, vec3 h, float roughness);
 float SchlickGGX_G1(vec3 norm, vec3 w, float roughness);
@@ -185,43 +146,30 @@ float PerpDepth(float linearDepth, float near, float far) {
 	return (z + 1.0) / 2.0;
 }
 
+vec3 pos;
+
 // ----------------- 主函数
 
 void main() {
 	// 获取属性值
-	vec3 albedo = bsdf.colorFactor;
-	if(bsdf.haveAlbedoTexture) {
-		albedo *= texture(bsdf.albedoTexture, fs_in.TexCoords).xyz;
-	}
-
-	float metallic = bsdf.metallicFactor;
-	if(bsdf.haveMetallicTexture) {
-		metallic *= texture(bsdf.metallicTexture, fs_in.TexCoords).x;
-	}
-
-	float roughness = bsdf.roughnessFactor;
-	if(bsdf.haveRoughnessTexture) {
-		roughness *= texture(bsdf.roughnessTexture, fs_in.TexCoords).x;
-	}
-
-	float ao = 1.0f;
-	if(bsdf.haveAOTexture) {
-		ao *= texture(bsdf.aoTexture, fs_in.TexCoords).x;
-	}
-
-	vec3 wo = normalize(viewPos - fs_in.FragPos);
-
-	vec3 norm = normalize(fs_in.Normal);
-	if(bsdf.haveNormalTexture) {
-		norm = CalcBumpedNormal(norm, normalize(fs_in.Tangent), bsdf.normalTexture, fs_in.TexCoords);
-	}
+	pos = texture(Position, TexCoords).xyz;
+	vec3 wo = normalize(viewPos - pos);
+	
+	vec3 norm = texture(Normal, TexCoords).xyz;
+	
+	vec3 albedo = texture(Albedo, TexCoords).xyz;
+	
+	vec3 rmao = texture(RMAO, TexCoords).xyz;
+	float roughness = rmao.x;
+	float metallic = rmao.y;
+	float ao = rmao.z;
 	
 	// 采样光源
 	
 	// point light
 	vec3 result = vec3(0);
-    for(int i = 0; i < numLight; i++) {
-		vec3 fragToLight = pointLights[i].position - fs_in.FragPos;
+    for(int i = 0; i < numPointLight; i++) {
+		vec3 fragToLight = pointLights[i].position - pos;
 		float dist2 = dot(fragToLight, fragToLight);
 		float dist = sqrt(dist2);
 		vec3 wi = fragToLight / dist;
@@ -237,17 +185,18 @@ void main() {
 		float attenuation = 1.0f + pointLights[i].linear * dist + pointLights[i].quadratic * dist2;
 		
 		result += visibility * cosTheta / attenuation * f * pointLights[i].L;
+		//result += cosTheta / attenuation * f * pointLights[i].L;
 	}
 	
 	// directional light
-	for(int i=0; i < numDirectionalLight; i++){
+	for(int i=0; i < numDirectionalLight; i++) {
 		vec3 wi = -normalize(directionaLights[i].dir);
 
 		vec3 f = BRDF(norm, wo, wi, albedo, metallic, roughness, ao);
 
 		float cosTheta = max(dot(wi, norm), 0);
 		
-		vec4 pos4 = directionaLights[i].ProjView * vec4(fs_in.FragPos, 1);
+		vec4 pos4 = directionaLights[i].ProjView * vec4(pos, 1);
 		vec3 normPos = ((pos4.xyz / pos4.w) + 1) / 2;
 		float visibility = DirectionalLightVisibility(normPos, cosTheta, i);
 		
@@ -255,8 +204,8 @@ void main() {
 	}
 	
 	// spot light
-	for(int i=0; i < numSpotLight; i++){
-		vec3 fragToLight = spotLights[i].position - fs_in.FragPos;
+	for(int i=0; i < numSpotLight; i++) {
+		vec3 fragToLight = spotLights[i].position - pos;
 		float dist2 = dot(fragToLight, fragToLight);
 		float dist = sqrt(dist2);
 		vec3 wi = fragToLight/dist;
@@ -267,37 +216,14 @@ void main() {
 		
 		float attenuation = 1.0f + spotLights[i].linear * dist + spotLights[i].quadratic * dist2;
 		
-		vec4 pos4 = spotLights[i].ProjView * vec4(fs_in.FragPos, 1);
+		vec4 pos4 = spotLights[i].ProjView * vec4(pos, 1);
 		vec3 normPos = ((pos4.xyz / pos4.w) + 1) / 2;
 		float visibility = SpotLightVisibility(normPos, cosTheta, i);
 		
 		result += visibility * SpotLightFalloff(wi, i) * cosTheta / attenuation * f * spotLights[i].L;
 	}
 	
-	// ambient light
-	if(haveEnvironment) {
-		vec3 F0 = GetF0(albedo, metallic);
-		vec3 F = FrR(wo, norm, F0, roughness);
-		vec3 kS = F;
-		vec3 kD = (1 - metallic) * (vec3(1) - kS);
-		
-		vec3 irradiance = haveSkybox ? texture(irradianceMap, norm).rgb : vec3(1);
-		
-		vec3 diffuse = irradiance * albedo;
-		
-		vec3 R = reflect(-wo, norm);
-		const float MAX_REFLECTION_LOD = 4.0;
-		// 用 R 来采样
-		vec3 prefilteredColor = haveSkybox ? textureLod(prefilterMap, R,  roughness * MAX_REFLECTION_LOD).rgb : vec3(1);
-		vec2 envBRDF = texture(brdfLUT, vec2(max(dot(norm, wo), 0.0), roughness)).rg;
-		vec3 specular = prefilteredColor * (F0 * envBRDF.x + envBRDF.y);
-		
-		vec3 ambient = (kD * diffuse + specular) * ao * intensity * colorFactor;
-		result += ambient;
-	}
-	
-	// gamma 校正
-    FragColor = vec4(sqrt(result), 1.0);
+    FragColor = result;
 }
 
 // ----------------- 函数定义
@@ -363,17 +289,6 @@ vec3 BRDF(vec3 norm, vec3 wo, vec3 wi, vec3 albedo, float metallic, float roughn
 	return rst;
 }
 
-vec3 CalcBumpedNormal(vec3 normal, vec3 tangent, sampler2D normalTexture, vec2 texcoord) {
-    tangent = normalize(tangent - dot(tangent, normal) * normal);
-    vec3 bitangent = cross(tangent, normal);
-    vec3 bumpMapNormal = texture(normalTexture, texcoord).xyz;
-    bumpMapNormal = 2.0 * bumpMapNormal - 1.0;
-    mat3 TBN = mat3(tangent, bitangent, normal);
-    vec3 newNormal = TBN * bumpMapNormal;
-    newNormal = normalize(newNormal);
-    return newNormal;
-}
-
 float PointLightVisibility(vec3 lightToFrag, int id){
 	if(id == 0) {
 		return PointLightVisibility(lightToFrag, pointLightDepthMap0);
@@ -400,7 +315,7 @@ float PointLightVisibility(vec3 lightToFrag, samplerCube depthMap) {
 	float bias = 0.08;
 	int samples = 20;
 	float shadow = 0.0;
-	float viewDistance = length(viewPos - fs_in.FragPos);
+	float viewDistance = length(viewPos - pos);
 	float diskRadius = (1.0 + (viewDistance / lightFar)) / 50.0;
 	for(int i = 0; i < samples; ++i) {
 		float closestDepth = lightFar * texture(depthMap, lightToFrag + gridSamplingDisk[i] * diskRadius).r;

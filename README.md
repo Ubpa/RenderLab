@@ -116,7 +116,7 @@ Optix: 6.0
   - [x] （反）序列化
 - [ ] 延迟管线（金属工作流）
   - [x] GBuffer
-  - [ ] Direct Light
+  - [x] Direct Light
   - [x] Ambient Light
   - [ ] Sky Box
   - [x] window

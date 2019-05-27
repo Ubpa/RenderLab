@@ -22,6 +22,8 @@ layout (std140) uniform Environment{
 	bool haveEnvironment; //  4    20
 };
 
+uniform sampler2D DirectLight;
+
 uniform sampler2D Position;
 uniform sampler2D Normal;
 uniform sampler2D Albedo;
@@ -77,7 +79,9 @@ void main() {
 	
 	vec3 ambient = (kD * diffuse + specular) * ao * intensity * colorFactor;
 	
-	FragColor = ambient;
+	
+	vec3 direct = texture(DirectLight, TexCoords).xyz;
+	FragColor = direct + ambient;
 }
 
 vec3 GetF0(vec3 albedo, float metallic) {

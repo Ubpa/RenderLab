@@ -37,6 +37,7 @@ namespace CppUtil{
 		private:
 			void InitShaders();
 			void InitShader_GBuffer();
+			void InitShader_DirectLight();
 			void InitShader_AmbientLight();
 			void InitShader_Window();
 
@@ -51,8 +52,9 @@ namespace CppUtil{
 
 		private:
 			void Pass_GBuffer();
+			void Pass_DirectLight();
 			void Pass_AmbientLight();
-			void Pass_Window();
+			void Pass_PostProcess();
 
 		private:
 			OpenGL::FBO gbufferFBO;
@@ -60,8 +62,13 @@ namespace CppUtil{
 
 			std::vector<Transform> modelVec;
 			OpenGL::Shader metalShader;
+			OpenGL::Shader directLightShader;
 			OpenGL::Shader ambientLightShader;
 			OpenGL::Shader windowShader;
+
+			static const int maxPointLights;// 8
+			static const int maxDirectionalLights;// 8
+			static const int maxSpotLights;// 8
 		};
 	}
 }
