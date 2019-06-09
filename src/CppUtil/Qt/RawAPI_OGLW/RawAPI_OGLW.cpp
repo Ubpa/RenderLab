@@ -10,7 +10,7 @@
 #include <CppUtil/Basic/Plane.h>
 #include <CppUtil/Basic/GStorage.h>
 #include <CppUtil/Basic/EventManager.h>
-#include <CppUtil/Basic/Op.h>
+#include <CppUtil/Basic/OpQueue.h>
 
 #include <qevent.h>
 #include <qnamespace.h>
@@ -24,51 +24,44 @@ using namespace std;
 const PtrC<TriMesh> RawAPI_OGLW::cube = TriMesh::GenCube();
 
 RawAPI_OGLW::RawAPI_OGLW(QWidget* parent,Qt::WindowFlags f)
-	: QOpenGLWidget(parent, f), resizeOp(nullptr), paintOp(nullptr), initOp(nullptr) {
+	: QOpenGLWidget(parent, f), resizeOpQueue(OpQueue::New()), paintOpQueue(OpQueue::New()), initOpQueue(OpQueue::New()) {
 	setFocusPolicy(Qt::ClickFocus);
 }
 
 RawAPI_OGLW::~RawAPI_OGLW() { }
 
-void RawAPI_OGLW::SetInitOp(Ptr<Op> initOp) {
-	this->initOp = initOp;
+void RawAPI_OGLW::AddInitOp(Ptr<Op> initOp) {
+	initOpQueue->Push(initOp);
 }
 
-void RawAPI_OGLW::SetPaintOp(Ptr<Op> paintOp) {
-	this->paintOp = paintOp;
+void RawAPI_OGLW::AddPaintOp(Ptr<Op> paintOp) {
+	paintOpQueue->Push(paintOp);
 }
 
-void RawAPI_OGLW::SetResizeOp(Ptr<Op> resizeOp) {
-	this->resizeOp = resizeOp;
+void RawAPI_OGLW::AddResizeOp(Ptr<Op> resizeOp) {
+	resizeOpQueue->Push(resizeOp);
 }
 
 void RawAPI_OGLW::initializeGL(){
-	if (initOp != nullptr) {
-		initOp->Run();
-		initOp = nullptr;
-	}
+	initOpQueue->Run();
 
 	InitShapeVAOs();
 }
 
 void RawAPI_OGLW::resizeGL(int w, int h) {
-	if (resizeOp != nullptr) {
+	if (!resizeOpQueue->IsEmpty()) {
 		this->w = w;
 		this->h = h;
-		resizeOp->Run();
+		resizeOpQueue->Run();
 	}
 	else
 		glViewport(0, 0, w, h);
 }
 
 void RawAPI_OGLW::paintGL() {
-	if (initOp != nullptr) {
-		initOp->Run();
-		initOp = nullptr;
-	}
+	initOpQueue->Run();
 
-	if (paintOp != nullptr)
-		paintOp->Run();
+	paintOpQueue->Run();
 }
 
 void RawAPI_OGLW::keyPressEvent(QKeyEvent *event) {

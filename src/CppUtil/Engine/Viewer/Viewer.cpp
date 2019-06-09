@@ -2,6 +2,7 @@
 
 #include <CppUtil/Engine/DirectIllumRaster.h>
 #include <CppUtil/Engine/DeferredRaster.h>
+#include <CppUtil/Engine/ForwardNPR.h>
 
 #include <CppUtil/Engine/Roamer.h>
 #include "Picker.h"
@@ -16,6 +17,33 @@ using namespace CppUtil::Basic;
 
 Viewer::Viewer(RawAPI_OGLW * pOGLW, Ptr<Scene> scene, RasterType rasterType)
 	: pOGLW(pOGLW), scene(scene), roamer(Roamer::New(pOGLW)), picker(Picker::New(this)) {
+	SetRaster(rasterType);
+
+	pOGLW->AddInitOp(LambdaOp_New([this]() {
+		roamer->Init();
+		picker->Init();
+	}, false));
+
+	pOGLW->AddPaintOp(LambdaOp_New([this]() {
+		raster->Draw();
+	}, true));
+
+	pOGLW->AddResizeOp(LambdaOp_New([this]() {
+		auto pOGLW = this->GetOGLW();
+
+		int w = pOGLW->w;
+		int h = pOGLW->h;
+
+		roamer->SetWH(w, h);
+		raster->Resize();
+	}, true));
+}
+
+void Viewer::SetLock(bool isLock) {
+	roamer->SetLock(isLock);
+}
+
+void Viewer::SetRaster(RasterType rasterType) {
 	switch (rasterType)
 	{
 	case RasterType::DirectIllum:
@@ -24,33 +52,16 @@ Viewer::Viewer(RawAPI_OGLW * pOGLW, Ptr<Scene> scene, RasterType rasterType)
 	case RasterType::DeferredPipline:
 		raster = DeferredRaster::New(pOGLW, scene, roamer->GetCamera());
 		break;
+	case RasterType::ForwardNPR:
+		raster = ForwardNPR::New(pOGLW, scene, roamer->GetCamera());
+		break;
 	default:
 		printf("ERROR::Viewer::Viewer:\n"
 			"\t""not support RasterType(%s)\n", rasterType._to_string());
 		break;
 	}
 
-	pOGLW->SetInitOp(LambdaOp_New([this]() {
-		roamer->Init();
+	pOGLW->AddInitOp(LambdaOp_New([this]() {
 		raster->Init();
-		picker->Init();
-	}));
-
-	pOGLW->SetPaintOp(LambdaOp_New([this]() {
-		raster->Draw();
-	}));
-
-	pOGLW->SetResizeOp(LambdaOp_New([this]() {
-		auto pOGLW = this->GetOGLW();
-
-		int w = pOGLW->w;
-		int h = pOGLW->h;
-
-		roamer->SetWH(w, h);
-		raster->Resize();
-	}));
-}
-
-void Viewer::SetLock(bool isLock) {
-	roamer->SetLock(isLock);
+	}, false));
 }

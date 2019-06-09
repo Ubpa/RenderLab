@@ -37,6 +37,7 @@ namespace CppUtil {
 		class BSDF_CookTorrance;
 		class BSDF_MetalWorkflow;
 		class BSDF_FrostedGlass;
+		class Gooch;
 
 		class ForwardRaster : public Raster {
 		protected:
@@ -64,6 +65,7 @@ namespace CppUtil {
 			virtual void Visit(Basic::Ptr<BSDF_CookTorrance> bsdf) { curShader = shader_basic; }
 			virtual void Visit(Basic::Ptr<BSDF_MetalWorkflow> bsdf) { curShader = shader_basic; }
 			virtual void Visit(Basic::Ptr<BSDF_FrostedGlass> bsdf) { curShader = shader_basic; }
+			virtual void Visit(Basic::Ptr<Gooch> gooch) { curShader = shader_basic; }
 
 		private: // no need to change
 			/*virtual */void Visit(Basic::Ptr<Sphere> sphere);

@@ -67,7 +67,7 @@ namespace CppUtil {
 			using std::enable_shared_from_this<HeapObj>::weak_from_this;
 		};
 
-		// 调用 ImplT 的构造函数，然后生成 shared_ptr，然后调用 virtual 的 Init 函数
+		// 调用 ImplT 的构造函数，然后生成 shared_ptr，然后调用 virtual 的 Init_AfterGenPtr 函数
 		template<typename ImplT, typename ...Args>
 		const Ptr<ImplT> New(Args && ... args) {
 			const auto pImplT = Ptr<ImplT>(new ImplT(std::forward<Args>(args)...), HeapObj::Delete);

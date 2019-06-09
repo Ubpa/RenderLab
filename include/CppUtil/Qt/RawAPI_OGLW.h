@@ -18,6 +18,7 @@
 namespace CppUtil {
 	namespace Basic {
 		class Op;
+		class OpQueue;
 		class Image;
 	}
 	namespace Engine {
@@ -47,9 +48,9 @@ namespace CppUtil {
 			bool GetV(const std::string & uniqueID, T & val);
 
 		public:
-			void SetInitOp(Basic::Ptr<Basic::Op> initOp);
-			void SetPaintOp(Basic::Ptr<Basic::Op> paintOp);
-			void SetResizeOp(Basic::Ptr<Basic::Op> resizeOp);
+			void AddInitOp(Basic::Ptr<Basic::Op> initOp);
+			void AddPaintOp(Basic::Ptr<Basic::Op> paintOp);
+			void AddResizeOp(Basic::Ptr<Basic::Op> resizeOp);
 
 		protected:
 			virtual void initializeGL();
@@ -75,9 +76,9 @@ namespace CppUtil {
 			int angle;
 
 		private:
-			Basic::Ptr<Basic::Op> initOp;
-			Basic::Ptr<Basic::Op> paintOp;
-			Basic::Ptr<Basic::Op> resizeOp;
+			Basic::Ptr<Basic::OpQueue> initOpQueue;
+			Basic::Ptr<Basic::OpQueue> paintOpQueue;
+			Basic::Ptr<Basic::OpQueue> resizeOpQueue;
 
 			OpenGL::VAO VAO_P3N3T2T3_Sphere;
 			OpenGL::VAO VAO_P3N3T2T3_Plane;

@@ -29,29 +29,13 @@ const vec3 gridSamplingDisk[20] = vec3[]
    vec3(0, 1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0, 1, -1)
 );
 
-// ----------------- 结构
-
-struct BSDF_MetalWorkflow {
-	vec3 colorFactor;
-	bool haveAlbedoTexture;
-    sampler2D albedoTexture;
-
-	float metallicFactor;
-	bool haveMetallicTexture;
-    sampler2D metallicTexture;
-
-	float roughnessFactor;
-	bool haveRoughnessTexture;
-    sampler2D roughnessTexture;
-	
-	bool haveAOTexture;
-    sampler2D aoTexture;
-
-	bool haveNormalTexture;
-	sampler2D normalTexture;
-};
-
 // ----------------- Uniform
+
+struct Gooch {
+	vec3 colorFactor;
+	bool haveColorTexture;
+    sampler2D colorTexture;
+};
 
 // 48
 struct PointLight {
@@ -91,17 +75,9 @@ layout (std140) uniform Camera{
 	float ar;			// 4	156	160
 };
 
-// 32
-layout (std140) uniform Environment{
-	vec3 colorFactor;     // 12     0
-	float intensity;      //  4    12
-	bool haveSkybox;      //  4    16
-	bool haveEnvironment; //  4    20
-};
-
 // 400
 layout (std140) uniform PointLights{
-	int numLight;// 16
+	int numPointLight;// 16
 	PointLight pointLights[MAX_POINT_LIGHTS];// 48 * MAX_POINT_LIGHTS = 48 * 8
 };
 
@@ -117,9 +93,9 @@ layout (std140) uniform SpotLights{
 	SpotLight spotLights[MAX_SPOT_LIGHTS];// 128 * MAX_SPOT_LIGHTS = 128 * 8 = 1024
 };
 
-uniform BSDF_MetalWorkflow bsdf;
+uniform Gooch gooch;
 
-uniform samplerCube pointLightDepthMap0;
+uniform samplerCube pointLightDepthMap0; // 4
 uniform samplerCube pointLightDepthMap1;
 uniform samplerCube pointLightDepthMap2;
 uniform samplerCube pointLightDepthMap3;
@@ -128,7 +104,7 @@ uniform samplerCube pointLightDepthMap5;
 uniform samplerCube pointLightDepthMap6;
 uniform samplerCube pointLightDepthMap7;
 
-uniform sampler2D directionalLightDepthMap0; // 9
+uniform sampler2D directionalLightDepthMap0; // 12
 uniform sampler2D directionalLightDepthMap1;
 uniform sampler2D directionalLightDepthMap2;
 uniform sampler2D directionalLightDepthMap3;
@@ -137,7 +113,7 @@ uniform sampler2D directionalLightDepthMap5;
 uniform sampler2D directionalLightDepthMap6;
 uniform sampler2D directionalLightDepthMap7;
 
-uniform sampler2D spotLightDepthMap0; // 17
+uniform sampler2D spotLightDepthMap0; // 20
 uniform sampler2D spotLightDepthMap1;
 uniform sampler2D spotLightDepthMap2;
 uniform sampler2D spotLightDepthMap3;
@@ -146,26 +122,10 @@ uniform sampler2D spotLightDepthMap5;
 uniform sampler2D spotLightDepthMap6;
 uniform sampler2D spotLightDepthMap7;
 
-uniform samplerCube skybox; // 25
-uniform samplerCube irradianceMap; // 26
-uniform samplerCube prefilterMap; // 27
-uniform sampler2D   brdfLUT; // 28
-
 uniform float lightNear;
 uniform float lightFar;
 
 // ----------------- 函数声明
-
-vec3 CalcBumpedNormal(vec3 normal, vec3 tangent, sampler2D normalTexture, vec2 texcoord);
-
-float SchlickGGX_D(vec3 norm, vec3 h, float roughness);
-float SchlickGGX_G1(vec3 norm, vec3 w, float roughness);
-float SchlickGGX_G(vec3 norm, vec3 wo, vec3 wi, float roughness);
-vec3 GetF0(vec3 albedo, float metallic);
-vec3 Fr(vec3 w, vec3 h, vec3 albedo, float metallic);
-vec3 FrR(vec3 wo, vec3 norm, vec3 F0, float roughness);
-
-vec3 BRDF(vec3 norm, vec3 wo, vec3 wi, vec3 albedo, float metallic, float roughness, float ao);
 
 float PointLightVisibility(vec3 lightToFrag, int id);
 float PointLightVisibility(vec3 lightToFrag, samplerCube depthMap);
@@ -189,38 +149,26 @@ float PerpDepth(float linearDepth, float near, float far) {
 
 void main() {
 	// 获取属性值
-	vec3 albedo = bsdf.colorFactor;
-	if(bsdf.haveAlbedoTexture) {
-		albedo *= texture(bsdf.albedoTexture, fs_in.TexCoords).xyz;
-	}
-
-	float metallic = bsdf.metallicFactor;
-	if(bsdf.haveMetallicTexture) {
-		metallic *= texture(bsdf.metallicTexture, fs_in.TexCoords).x;
-	}
-
-	float roughness = bsdf.roughnessFactor;
-	if(bsdf.haveRoughnessTexture) {
-		roughness *= texture(bsdf.roughnessTexture, fs_in.TexCoords).x;
-	}
-
-	float ao = 1.0f;
-	if(bsdf.haveAOTexture) {
-		ao *= texture(bsdf.aoTexture, fs_in.TexCoords).x;
-	}
-
+	vec3 color = gooch.colorFactor;
+	if(gooch.haveColorTexture)
+		color *= texture(gooch.colorTexture, fs_in.TexCoords).rgb;
+	
+	vec3 color_cool = vec3(0,0,0.55) + 0.25 * color;
+	vec3 color_warm = vec3(0.3,0.3,0) + 0.25 * color;
+	vec3 hightlight = vec3(2);
+	
 	vec3 wo = normalize(viewPos - fs_in.FragPos);
 
 	vec3 norm = normalize(fs_in.Normal);
-	if(bsdf.haveNormalTexture) {
-		norm = CalcBumpedNormal(norm, normalize(fs_in.Tangent), bsdf.normalTexture, fs_in.TexCoords);
-	}
+	//if(bsdf.haveNormalTexture) {
+	//	norm = CalcBumpedNormal(norm, normalize(fs_in.Tangent), bsdf.normalTexture, fs_in.TexCoords);
+	//}
 	
 	// 采样光源
 	vec3 result = vec3(0);
 	
 	// point light
-    for(int i = 0; i < numLight; i++) {
+    for(int i = 0; i < numPointLight; i++) {
 		vec3 fragToLight = pointLights[i].position - fs_in.FragPos;
 		float dist2 = dot(fragToLight, fragToLight);
 		float dist = sqrt(dist2);
@@ -229,21 +177,25 @@ void main() {
 		float visibility = PointLightVisibility(-fragToLight, i);
 		if(visibility==0)
 			continue;
-
-		vec3 f = BRDF(norm, wo, wi, albedo, metallic, roughness, ao);
+		
+		vec3 R = reflect(-wi, norm);
+		float s = clamp(100.0 * dot(R, wo) - 97.0, 0.0, 1.0);
+		
+		vec3 f = mix(color_warm, hightlight, s);
 
 		float cosTheta = max(dot(wi, norm), 0);
 		
-		float attenuation = 1.0f + pointLights[i].linear * dist + pointLights[i].quadratic * dist2;
-		
-		result += visibility * cosTheta / attenuation * f * pointLights[i].L;
+		result += visibility * cosTheta * pointLights[i].L * f;
 	}
 	
 	// directional light
 	for(int i=0; i < numDirectionalLight; i++){
 		vec3 wi = -normalize(directionaLights[i].dir);
 
-		vec3 f = BRDF(norm, wo, wi, albedo, metallic, roughness, ao);
+		vec3 R = reflect(-wi, norm);
+		float s = clamp(100.0 * dot(R, wo) - 97.0, 0.0, 1.0);
+		
+		vec3 f = mix(color_warm, hightlight, s);
 
 		float cosTheta = max(dot(wi, norm), 0);
 		
@@ -261,119 +213,27 @@ void main() {
 		float dist = sqrt(dist2);
 		vec3 wi = fragToLight/dist;
 
-		vec3 f = BRDF(norm, wo, wi, albedo, metallic, roughness, ao);
+		vec3 R = reflect(-wi, norm);
+		float s = clamp(100.0 * dot(R, wo) - 97.0, 0.0, 1.0);
+		
+		vec3 f = mix(color_warm, hightlight, s);
 
 		float cosTheta = max(dot(wi, norm), 0);
-		
-		float attenuation = 1.0f + spotLights[i].linear * dist + spotLights[i].quadratic * dist2;
 		
 		vec4 pos4 = spotLights[i].ProjView * vec4(fs_in.FragPos, 1);
 		vec3 normPos = ((pos4.xyz / pos4.w) + 1) / 2;
 		float visibility = SpotLightVisibility(normPos, cosTheta, i);
 		
-		result += visibility * SpotLightFalloff(wi, i) * cosTheta / attenuation * f * spotLights[i].L;
+		result += visibility * SpotLightFalloff(wi, i) * cosTheta * f * spotLights[i].L;
 	}
 	
 	// ambient light
-	if(haveEnvironment) {
-		vec3 F0 = GetF0(albedo, metallic);
-		vec3 F = FrR(wo, norm, F0, roughness);
-		vec3 kS = F;
-		vec3 kD = (1 - metallic) * (vec3(1) - kS);
-		
-		vec3 irradiance = haveSkybox ? texture(irradianceMap, norm).rgb : vec3(1);
-		
-		vec3 diffuse = irradiance * albedo;
-		
-		vec3 R = reflect(-wo, norm);
-		const float MAX_REFLECTION_LOD = 4.0;
-		// 用 R 来采样
-		vec3 prefilteredColor = haveSkybox ? textureLod(prefilterMap, R,  roughness * MAX_REFLECTION_LOD).rgb : vec3(1);
-		vec2 envBRDF = texture(brdfLUT, vec2(max(dot(norm, wo), 0.0), roughness)).rg;
-		vec3 specular = prefilteredColor * (F0 * envBRDF.x + envBRDF.y);
-		
-		vec3 ambient = (kD * diffuse + specular) * ao * intensity * colorFactor;
-		result += ambient;
-	}
+	result += 0.5 * color_cool;
 	
-	// gamma 校正
-	result = pow(result, vec3(1.0/2.2));
-    FragColor = vec4(result, 1.0);
+    FragColor = vec4(result, 1);
 }
 
 // ----------------- 函数定义
-
-float SchlickGGX_D(vec3 norm, vec3 h, float roughness){
-	float NoH = dot(norm, h);
-	if(NoH < 0)
-		return 0;
-	
-	float alpha = roughness * roughness;
-	
-	float alpha2 = alpha * alpha;
-	float cos2Theta = NoH * NoH;
-	
-	float t = (alpha2 - 1) * cos2Theta + 1;
-	
-	return alpha2 / (PI * t * t);
-}
-
-float SchlickGGX_G1(vec3 norm, vec3 w, float roughness) {
-	float k = (roughness+1) * (roughness+1) / 8;
-	
-	float NoW = max(0.f, dot(norm, w));
-	return NoW / (NoW * (1 - k) + k);
-}
-
-float SchlickGGX_G(vec3 norm, vec3 wo, vec3 wi, float roughness){
-	return SchlickGGX_G1(norm, wo, roughness) * SchlickGGX_G1(norm, wi, roughness);
-}
-
-vec3 GetF0(vec3 albedo, float metallic) {
-    return mix(vec3(0.04), albedo, metallic);
-}
-
-vec3 Fr(vec3 w, vec3 h, vec3 albedo, float metallic) {
-	vec3 F0 = GetF0(albedo, metallic);
-	float HoW = dot(h, w);
-	return F0 + exp2((-5.55473f * HoW - 6.98316f) * HoW) * (vec3(1.0f) - F0);
-}
-
-vec3 FrR(vec3 wo, vec3 norm, vec3 F0, float roughness) {
-	float cosTheta = max(dot(wo, norm), 0);
-    return F0 + (max(vec3(1.0 - roughness), F0) - F0) * pow(1.0 - cosTheta, 5.0);
-}
-
-vec3 BRDF(vec3 norm, vec3 wo, vec3 wi, vec3 albedo, float metallic, float roughness, float ao) {
-	vec3 wh = normalize(wo + wi);
-	
-	float D = SchlickGGX_D(norm, wh, roughness);
-	float G = SchlickGGX_G(norm, wo, wi, roughness);
-	vec3 F = Fr(wo, wh, albedo, metallic);
-	
-	vec3 specular = D * G * F / (4.0f * dot(wh, wo) * dot(wh, wi));
-	
-	vec3 diffuse = albedo * INV_PI;
-	
-	vec3 kS = 1 - F;
-	vec3 kD = (1-metallic) * (1 - kS);
-	
-	vec3 rst = kD * diffuse + specular;
-
-	//return ao * rst;
-	return rst;
-}
-
-vec3 CalcBumpedNormal(vec3 normal, vec3 tangent, sampler2D normalTexture, vec2 texcoord) {
-    tangent = normalize(tangent - dot(tangent, normal) * normal);
-    vec3 bitangent = cross(tangent, normal);
-    vec3 bumpMapNormal = texture(normalTexture, texcoord).xyz;
-    bumpMapNormal = 2.0 * bumpMapNormal - 1.0;
-    mat3 TBN = mat3(tangent, bitangent, normal);
-    vec3 newNormal = TBN * bumpMapNormal;
-    newNormal = normalize(newNormal);
-    return newNormal;
-}
 
 float PointLightVisibility(vec3 lightToFrag, int id){
 	if(id == 0) {

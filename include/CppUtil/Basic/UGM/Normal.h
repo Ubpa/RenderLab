@@ -49,7 +49,7 @@ namespace CppUtil {
 			static const Normal<T> Refract(const Normal<T> & I, const Normal<T> & N, T eta) {
 				const auto dotValue = N.Dot(I);
 				const auto k = static_cast<T>(1) - eta * eta * (static_cast<T>(1) - dotValue * dotValue);
-				if (k < static_cast<T>(0))
+				if (k <= static_cast<T>(0))
 					return Normalf(static_cast<T>(0));
 				else
 					return eta * I - (eta * dotValue + sqrt(k)) * N;

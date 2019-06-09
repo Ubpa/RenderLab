@@ -227,7 +227,8 @@ void main() {
 	else
 		finalColor = result + indirectIllum;
 		
-    FragColor = vec4(sqrt(finalColor), 1.0);
+	finalColor = pow(finalColor, vec3(1.0/2.2));
+    FragColor = vec4(finalColor, 1.0);
 }
 
 // ----------------- definition

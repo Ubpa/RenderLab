@@ -40,17 +40,11 @@
 - 查看器 Viewer
   - 拣选器 Picker
   - 直接光照光栅器 DirectIllumRaster
-  - 延迟管线 DeferredPipline
+  - 延迟管线 DeferredPipeline
   - 漫游器 Roamer
 - 相交器 Intersector
   - 最近 RayIntersector
   - 可见性 VisibilityChecker
-- 过滤器
-  - Box
-  - Gaussian
-  - Mitchell
-  - Sinc
-  - Triangle
 - 离线渲染
   - 路径追踪 PathTracing
 - 其他功能
@@ -71,7 +65,7 @@ CUDA: 9.0
 
 Optix: 6.0
 
-驱动：418.81 or later is required.
+驱动：418.81 or later is required
 
 安装方法见于 [setup.md](https://github.com/Ubpa/RenderLab/blob/master/setup.md) 
 
@@ -121,6 +115,11 @@ Optix: 6.0
   - [x] Ambient Light
   - [x] Sky Box
   - [x] window
+- [x] Gooch
+- [ ] 拷贝粘贴，模型、图像等复用
+- [ ] CSM
+- [ ] 封装 UBO，改进 FBO
+- [ ] 解析 Shader
 - [ ] 实时渲染——面光源
 - [ ] 旋转拖动缩放物体
 - [ ] 重新架构 Raster
@@ -130,5 +129,8 @@ Optix: 6.0
 
 - [ ] 添加注释
 - [ ] 保存 Code 模式的 Trimesh
+- [ ] 优化 intersector
 - [ ] ...
+
+### Bugs
 

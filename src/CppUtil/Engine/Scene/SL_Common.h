@@ -16,6 +16,7 @@
 #include <CppUtil/Engine/InfiniteAreaLight.h>
 
 #include <CppUtil/Engine/AllBSDFs.h>
+#include <CppUtil/Engine/Gooch.h>
 
 #include <CppUtil/Basic/Image.h>
 
@@ -207,6 +208,13 @@ namespace str {
 		const char * const type = "BSDF_Mirror";
 
 		const char * const reflectance = "reflectance";
+	}
+
+	namespace Gooch {
+		const char * const type = "Gooch";
+
+		const char * const colorFactor = "colorFactor";
+		const char * const colorTexture = "colorTexture";
 	}
 }
 

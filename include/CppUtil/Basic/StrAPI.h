@@ -20,7 +20,7 @@ namespace CppUtil {
 
 			const std::string Replace(const std::string & str, const std::string & orig, const std::string & target);
 
-			// exclusive
+			// inclusive
 			const std::string DelTailAfter(const std::string & str, char c);
 		}
 	}

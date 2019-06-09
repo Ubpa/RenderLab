@@ -23,6 +23,8 @@ namespace CppUtil {
 			
 			virtual void Run() override;
 
+			bool IsEmpty() const { return opList.empty(); }
+
 		private:
 			virtual ~OpQueue() = default;
 

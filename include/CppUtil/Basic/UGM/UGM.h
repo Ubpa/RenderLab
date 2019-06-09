@@ -1,10 +1,12 @@
 #ifndef _CPPUTIL_BASIC_MATH_UGM_UGM_H_
 #define _CPPUTIL_BASIC_MATH_UGM_UGM_H_
 
+#include "Point1.h"
 #include "Point2.h"
 #include "Point3.h"
 #include "Point4.h"
 
+#include "Vector1.h"
 #include "Vector2.h"
 #include "Vector3.h"
 #include "Vector4.h"

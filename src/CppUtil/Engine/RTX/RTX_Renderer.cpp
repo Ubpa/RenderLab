@@ -21,8 +21,8 @@
 #ifdef NDEBUG
 #define THREAD_NUM omp_get_num_procs() - 1
 #else
-#define THREAD_NUM 1
-//#define THREAD_NUM omp_get_num_procs() - 1
+//#define THREAD_NUM 1
+#define THREAD_NUM omp_get_num_procs() - 1
 #endif //  NDEBUG
 
 using namespace CppUtil;
@@ -164,12 +164,16 @@ void RTX_Renderer::Run(Ptr<Scene> scene, Ptr<Image> img) {
 				auto ray = camera->GenRay(u, v);
 				RGBf radiance = rayTracer->Trace(ray);
 
-				// 这一步可以极大的减少白噪点（特别是由点光源产生）
-				//float illum = radiance.Illumination();
-				//if (illum > lightNum)
-				//	radiance *= lightNum / illum;
+				if (radiance.HasNaN()) {
+					printf("WARNING::RTX_Renderer::Run:\n"
+						"\t""radiance is NaN\n");
+					continue;
+				}
 
-				assert(!radiance.HasNaN());
+				// 这一步可以极大的减少白噪点（特别是由点光源产生）
+				float illum = radiance.Illumination();
+				if (illum > lightNum)
+					radiance *= lightNum / illum;
 
 				filmTile->AddSample(posf, radiance);
 			}

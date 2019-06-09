@@ -9,7 +9,7 @@ namespace CppUtil {
 		template<typename LambdaExpr>
 		class LambdaOp : public Op {
 		public:
-			LambdaOp(const LambdaExpr & op, bool isHold = true) : op(op), Op(isHold) { }
+			LambdaOp(const LambdaExpr & op, bool isHold) : op(op), Op(isHold) { }
 
 		protected:
 			virtual ~LambdaOp() = default;
@@ -22,7 +22,7 @@ namespace CppUtil {
 		};
 
 		template<typename LambdaExpr>
-		const Ptr<LambdaOp<LambdaExpr>> LambdaOp_New(const LambdaExpr & op, bool isHold = true) {
+		const Ptr<LambdaOp<LambdaExpr>> LambdaOp_New(const LambdaExpr & op, bool isHold = false) {
 			return CppUtil::Basic::New<LambdaOp<LambdaExpr>>(op, isHold);
 		}
 	}

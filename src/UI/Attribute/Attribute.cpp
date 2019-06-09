@@ -10,6 +10,7 @@
 #include <CppUtil/Engine/TriMesh.h>
 
 #include <CppUtil/Engine/AllBSDFs.h>
+#include <CppUtil/Engine/Gooch.h>
 
 #include <CppUtil/Engine/AreaLight.h>
 #include <CppUtil/Engine/PointLight.h>
@@ -64,6 +65,7 @@ public:
 		RegMemberFunc<BSDF_CookTorrance>(&Attribute::ComponentVisitor::Visit);
 		RegMemberFunc<BSDF_MetalWorkflow>(&Attribute::ComponentVisitor::Visit);
 		RegMemberFunc<BSDF_FrostedGlass>(&Attribute::ComponentVisitor::Visit);
+		RegMemberFunc<Gooch>(&Attribute::ComponentVisitor::Visit);
 
 		RegMemberFunc<CmptTransform>(&Attribute::ComponentVisitor::Visit);
 	}
@@ -99,6 +101,7 @@ public:
 	void Visit(Ptr<BSDF_CookTorrance> bsdf);
 	void Visit(Ptr<BSDF_MetalWorkflow> bsdf);
 	void Visit(Ptr<BSDF_FrostedGlass> bsdf);
+	void Visit(Ptr<Gooch> gooch);
 
 
 	void Visit(Ptr<CmptTransform> cmpt);
@@ -321,23 +324,27 @@ void Attribute::ComponentVisitor::Visit(Ptr<CmptMaterial> cmpt) {
 	getTypeStr->Reg([&typeStr](Ptr<BSDF_FrostedGlass>) {
 		typeStr = "BSDF_FrostedGlass";
 	});
+	getTypeStr->Reg([&typeStr](Ptr<Gooch>) {
+		typeStr = "Gooch";
+	});
 
-	const int bsdfNum = 8;
-	tuple<string, function<Ptr<BSDF>()>> bsdfArr[bsdfNum] = {
-		{"None", []()->Ptr<BSDF> { return nullptr; } },
-		{"BSDF_Diffuse", []()->Ptr<BSDF> { return BSDF_Diffuse::New(); } },
-		{"BSDF_Emission", []()->Ptr<BSDF> { return BSDF_Emission::New(); } },
-		{"BSDF_Glass", []()->Ptr<BSDF> { return BSDF_Glass::New(); } },
-		{"BSDF_Mirror", []()->Ptr<BSDF> { return BSDF_Mirror::New(); } },
-		{"BSDF_CookTorrance", []()->Ptr<BSDF> { return BSDF_CookTorrance::New(); } },
-		{"BSDF_MetalWorkflow", []()->Ptr<BSDF> { return BSDF_MetalWorkflow::New(); } },
-		{"BSDF_FrostedGlass", []()->Ptr<BSDF> { return BSDF_FrostedGlass::New(); } },
+	const int materialNum = 9;
+	tuple<string, function<Ptr<Material>()>> bsdfArr[materialNum] = {
+		{"None", []()->Ptr<Material> { return nullptr; } },
+		{"BSDF_Diffuse", []()->Ptr<Material> { return BSDF_Diffuse::New(); } },
+		{"BSDF_Emission", []()->Ptr<Material> { return BSDF_Emission::New(); } },
+		{"BSDF_Glass", []()->Ptr<Material> { return BSDF_Glass::New(); } },
+		{"BSDF_Mirror", []()->Ptr<Material> { return BSDF_Mirror::New(); } },
+		{"BSDF_CookTorrance", []()->Ptr<Material> { return BSDF_CookTorrance::New(); } },
+		{"BSDF_MetalWorkflow", []()->Ptr<Material> { return BSDF_MetalWorkflow::New(); } },
+		{"BSDF_FrostedGlass", []()->Ptr<Material> { return BSDF_FrostedGlass::New(); } },
+		{"Gooch", []()->Ptr<Material> { return Gooch::New(); } },
 	};
 
 	Grid::pSlotMap pSlotMap(new Grid::SlotMap);
 	Grid::wpSlotMap wpSlotMap = pSlotMap;
 
-	for (int i = 0; i < bsdfNum; i++) {
+	for (int i = 0; i < materialNum; i++) {
 		(*pSlotMap)[get<0>(bsdfArr[i])] = [=]() {
 			grid->Clear();
 			grid->AddComboBox("Type", get<0>(bsdfArr[i]), wpSlotMap.lock());
@@ -426,6 +433,14 @@ void Attribute::ComponentVisitor::Visit(Ptr<BSDF_FrostedGlass> bsdf) {
 
 	grid->AddEditImage("- AO Texture", bsdf->aoTexture);
 	grid->AddEditImage("- Normal Texture", bsdf->normalTexture);
+}
+
+
+void Attribute::ComponentVisitor::Visit(Ptr<Gooch> gooch) {
+	auto grid = GetGrid(attr->componentType2item[typeid(CmptMaterial)]);
+
+	grid->AddEditColor("- Color Factor", gooch->colorFactor);
+	grid->AddEditImage("- Color Texture", gooch->colorTexture);
 }
 
 // -------------- Light --------------

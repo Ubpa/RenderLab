@@ -51,6 +51,11 @@ namespace CppUtil {
 				return ToZero(rhs - lhs, bound) == static_cast<T>(0);
 			}
 
+			template<typename T>
+			constexpr bool IsZero(T orig, T bound = static_cast<T>(0.000001)) {
+				return Equal(orig, static_cast<T>(0));
+			}
+
 			// [-0x7FFFFFFFF, 0x7FFFFFFF]
 			int Rand_I();
 

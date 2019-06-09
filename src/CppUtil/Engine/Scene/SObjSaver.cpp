@@ -32,6 +32,7 @@ SObjSaver::SObjSaver() {
 	RegMemberFunc<BSDF_MetalWorkflow>(&SObjSaver::Visit);
 	RegMemberFunc<BSDF_Mirror>(&SObjSaver::Visit);
 	RegMemberFunc<BSDF_FrostedGlass>(&SObjSaver::Visit);
+	RegMemberFunc<Gooch>(&SObjSaver::Visit);
 
 	RegMemberFunc<CmptTransform>(&SObjSaver::Visit);
 }
@@ -303,5 +304,13 @@ void SObjSaver::Visit(Ptr<BSDF_FrostedGlass> bsdf) {
 void SObjSaver::Visit(Ptr<BSDF_Mirror> bsdf){
 	NewEle(str::BSDF_Mirror::type, [=]() {
 		NewEle(str::BSDF_Mirror::reflectance, bsdf->reflectance);
+	});
+}
+
+void SObjSaver::Visit(Ptr<Gooch> gooch) {
+	NewEle(str::Gooch::type, [=]() {
+
+		NewEle(str::Gooch::colorFactor, gooch->colorFactor);
+		NewEle(str::Gooch::colorTexture, gooch->colorTexture);
 	});
 }

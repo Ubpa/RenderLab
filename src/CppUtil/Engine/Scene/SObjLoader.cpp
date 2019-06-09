@@ -350,6 +350,7 @@ static Ptr<Material> SObjLoader::Load(XMLElement * ele, Ptr<Material>*) {
 	Reg_Load_val<Ptr<BSDF_MetalWorkflow>>(funcMap, str::BSDF_MetalWorkflow::type, material);
 	Reg_Load_val<Ptr<BSDF_Mirror>>(funcMap, str::BSDF_Mirror::type, material);
 	Reg_Load_val<Ptr<BSDF_FrostedGlass>>(funcMap, str::BSDF_FrostedGlass::type, material);
+	Reg_Load_val<Ptr<Gooch>>(funcMap, str::Gooch::type, material);
 
 	LoadNode(ele, funcMap);
 
@@ -465,6 +466,20 @@ static Ptr<BSDF_FrostedGlass> SObjLoader::Load(XMLElement * ele, Ptr<BSDF_Froste
 	LoadNode(ele, funcMap);
 
 	return bsdf;
+}
+
+template<>
+static Ptr<Gooch> SObjLoader::Load(XMLElement * ele, Ptr<Gooch>*) {
+	auto gooch = Gooch::New();
+
+	FuncMap funcMap;
+	
+	Reg_Text_val(funcMap, str::Gooch::colorFactor, gooch->colorFactor);
+	Reg_Load_val<Ptr<Image>>(funcMap, str::Gooch::colorTexture, gooch->colorTexture);
+
+	LoadNode(ele, funcMap);
+
+	return gooch;
 }
 
 // ------------ Transform ----------------

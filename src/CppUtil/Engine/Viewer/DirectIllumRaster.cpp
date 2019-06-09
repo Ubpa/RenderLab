@@ -1,34 +1,14 @@
 #include <CppUtil/Engine/DirectIllumRaster.h>
 
-#include <CppUtil/Engine/Scene.h>
-#include <CppUtil/Engine/SObj.h>
-
-#include <CppUtil/Engine/CmptGeometry.h>
-#include <CppUtil/Engine/CmptMaterial.h>
-#include <CppUtil/Engine/CmptTransform.h>
-
-#include <CppUtil/Engine/Sphere.h>
-#include <CppUtil/Engine/Plane.h>
-#include <CppUtil/Engine/TriMesh.h>
 #include <CppUtil/Engine/AllBSDFs.h>
-
-#include <CppUtil/Engine/Light.h>
-#include <CppUtil/Engine/AreaLight.h>
-#include <CppUtil/Engine/PointLight.h>
 
 #include <CppUtil/Qt/RawAPI_OGLW.h>
 #include <CppUtil/Qt/RawAPI_Define.h>
 
-#include <CppUtil/OpenGL/VAO.h>
 #include <CppUtil/OpenGL/CommonDefine.h>
 #include <CppUtil/OpenGL/Texture.h>
 #include <CppUtil/OpenGL/Shader.h>
-#include <CppUtil/OpenGL/Camera.h>
-#include <CppUtil/OpenGL/FBO.h>
 
-#include <CppUtil/Basic/LambdaOp.h>
-#include <CppUtil/Basic/Sphere.h>
-#include <CppUtil/Basic/Plane.h>
 #include <CppUtil/Basic/Image.h>
 
 #include <ROOT_PATH.h>
@@ -40,8 +20,6 @@ using namespace CppUtil::Basic;
 using namespace CppUtil;
 using namespace Define;
 using namespace std;
-
-const string rootPath = ROOT_PATH;
 
 void DirectIllumRaster::Init() {
 	ForwardRaster::Init();
@@ -56,7 +34,7 @@ void DirectIllumRaster::InitShaders() {
 }
 
 void DirectIllumRaster::InitShaderDiffuse() {
-	shader_diffuse = Shader(rootPath + str_Basic_P3N3T2_vs, rootPath + "data/shaders/Engine/BSDF_Diffuse.fs");
+	shader_diffuse = Shader(ROOT_PATH + str_Basic_P3N3T2_vs, ROOT_PATH + "data/shaders/Engine/BSDF_Diffuse.fs");
 
 	shader_diffuse.SetInt("bsdf.albedoTexture", 0);
 
@@ -64,7 +42,7 @@ void DirectIllumRaster::InitShaderDiffuse() {
 }
 
 void DirectIllumRaster::InitShaderMetalWorkflow() {
-	shader_metalWorkflow = Shader(rootPath + str_Basic_P3N3T2T3_vs, rootPath + "data/shaders/Engine/BSDF_MetalWorkflow.fs");
+	shader_metalWorkflow = Shader(ROOT_PATH + str_Basic_P3N3T2T3_vs, ROOT_PATH + "data/shaders/Engine/BSDF_MetalWorkflow.fs");
 
 	shader_metalWorkflow.SetInt("bsdf.albedoTexture", 0);
 	shader_metalWorkflow.SetInt("bsdf.metallicTexture", 1);
@@ -76,7 +54,7 @@ void DirectIllumRaster::InitShaderMetalWorkflow() {
 }
 
 void DirectIllumRaster::InitShaderFrostedGlass() {
-	shader_frostedGlass = Shader(rootPath + str_Basic_P3N3T2T3_vs, rootPath + "data/shaders/Engine/BSDF_FrostedGlass.fs");
+	shader_frostedGlass = Shader(ROOT_PATH + str_Basic_P3N3T2T3_vs, ROOT_PATH + "data/shaders/Engine/BSDF_FrostedGlass.fs");
 
 	shader_frostedGlass.SetInt("bsdf.colorTexture", 0);
 	shader_frostedGlass.SetInt("bsdf.roughnessTexture", 1);

@@ -45,6 +45,7 @@ namespace CppUtil {
 		class BSDF_MetalWorkflow;
 		class BSDF_Mirror;
 		class BSDF_FrostedGlass;
+		class Gooch;
 
 		class CmptTransform;
 
@@ -86,6 +87,7 @@ namespace CppUtil {
 			void Visit(Basic::Ptr<BSDF_MetalWorkflow> bsdf);
 			void Visit(Basic::Ptr<BSDF_Mirror> bsdf);
 			void Visit(Basic::Ptr<BSDF_FrostedGlass> bsdf);
+			void Visit(Basic::Ptr<Gooch> gooch);
 
 			void Visit(Basic::Ptr<CmptTransform> transform);
 

@@ -11,8 +11,8 @@ float Beckmann::D(const Normalf & wh) const {
 		return 0.f;
 
 	const auto tan2Theta = SurfCoord::Tan2Theta(wh);
-	if (std::isinf(tan2Theta))
-		return 0.f;
+	if (!std::isnan(tan2Theta))
+		return 98e8f;
 
 	const auto cos4Theta = SurfCoord::Cos2Theta(wh) * SurfCoord::Cos2Theta(wh);
 	const auto alpha2 = alpha * alpha;
@@ -21,8 +21,8 @@ float Beckmann::D(const Normalf & wh) const {
 
 float Beckmann::Lambda(const Normalf & w) const {
 	auto absTanTheta = std::abs(SurfCoord::TanTheta(w));
-	if (std::isinf(absTanTheta))
-		return 0.f;
+	if (std::isnan(absTanTheta))
+		return 98e8f;
 	
 	auto a = 1 / (alpha * absTanTheta);
 	if (a >= 1.6f)

@@ -20,8 +20,8 @@ float GGX::D(const Normalf & wh) const {
 
 float GGX::Lambda(const Normalf & w) const {
 	auto absTanTheta = std::abs(SurfCoord::TanTheta(w));
-	if (std::isinf(absTanTheta))
-		return 0.f;
+	if (std::isnan(absTanTheta))
+		return 98e8f;
 
 	auto alpha2Tan2Theta = (alpha * absTanTheta) * (alpha * absTanTheta);
 

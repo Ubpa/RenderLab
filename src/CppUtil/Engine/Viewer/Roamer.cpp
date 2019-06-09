@@ -61,7 +61,7 @@ void Roamer::ListenerInit() {
 		pOGWL->Reg("lockY", y);
 
 		QApplication::setOverrideCursor(Qt::BlankCursor);
-	});
+	}, true);
 	EventMngr::GetInstance().Reg(Qt::RightButton, (void*)this->GetOGLW(), EventMngr::MOUSE_PRESS, MRB_PressOp);
 
 	// lock mouse and rotate camera
@@ -91,7 +91,7 @@ void Roamer::ListenerInit() {
 		UpdateCamera();
 
 		QCursor::setPos(pOGWL->mapToGlobal(QPoint(lockX, lockY)));
-	});
+	}, true);
 	EventMngr::GetInstance().Reg(Qt::NoButton, (void*)this->GetOGLW(), EventMngr::MOUSE_MOVE, mouseMoveOp);
 
 	// release mouse cursor
@@ -106,7 +106,7 @@ void Roamer::ListenerInit() {
 		pOGWL->Reg("lock", false);
 
 		QApplication::restoreOverrideCursor();
-	});
+	}, true);
 	EventMngr::GetInstance().Reg(Qt::RightButton, (void*)this->GetOGLW(), EventMngr::MOUSE_RELEASE, MRB_ReleaseOp);
 
 	// wheel
@@ -120,7 +120,7 @@ void Roamer::ListenerInit() {
 
 		this->GetCamera()->ProcessMouseScroll(angle*0.1f);
 		UpdateCamera();
-	});
+	}, true);
 	EventMngr::GetInstance().Reg(Qt::NoButton, (void*)this->GetOGLW(), EventMngr::MOUSE_WHEEL, wheelOp);
 
 	// Move
@@ -133,7 +133,7 @@ void Roamer::ListenerInit() {
 			auto pOGLW = this->GetOGLW();
 			this->GetCamera()->ProcessKeyboard(OpenGL::Camera::ENUM_Movement(OpenGL::Camera::MOVE_FORWARD + i), 0.015f);
 			UpdateCamera();
-		});
+		}, true);
 
 		EventMngr::GetInstance().Reg(moveKey[i], (void*)this->GetOGLW(), EventMngr::KB_PRESS, op);
 	}
@@ -141,7 +141,7 @@ void Roamer::ListenerInit() {
 	// UpdateCamera
 	auto updateCam = LambdaOp_New([this]() {
 		UpdateCamera();
-	});
+	}, true);
 	EventMngr::GetInstance().Reg(0, camera, updateCam);
 }
 

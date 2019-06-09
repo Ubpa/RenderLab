@@ -16,7 +16,9 @@
 #include <CppUtil/Engine/Sphere.h>
 #include <CppUtil/Engine/Plane.h>
 #include <CppUtil/Engine/TriMesh.h>
+
 #include <CppUtil/Engine/AllBSDFs.h>
+#include <CppUtil/Engine/Gooch.h>
 
 #include <CppUtil/Engine/CmptLight.h>
 #include <CppUtil/Engine/PointLight.h>
@@ -82,6 +84,7 @@ ForwardRaster::ForwardRaster(RawAPI_OGLW * pOGLW, Ptr<Scene> scene, Ptr<Camera> 
 	RegMemberFunc<BSDF_CookTorrance>(&ForwardRaster::Visit);
 	RegMemberFunc<BSDF_MetalWorkflow>(&ForwardRaster::Visit);
 	RegMemberFunc<BSDF_FrostedGlass>(&ForwardRaster::Visit);
+	RegMemberFunc<Gooch>(&ForwardRaster::Visit);
 }
 
 void ForwardRaster::Draw() {
@@ -272,6 +275,7 @@ void ForwardRaster::DrawEnvironment() {
 
 	glDepthFunc(GL_LEQUAL);
 	UseLightTex(shader_skybox);
+	shader_skybox.SetBool("needGamma", true);
 	pOGLW->GetVAO(ShapeType::Cube).Draw(shader_skybox);
 	glDepthFunc(GL_LESS);
 }

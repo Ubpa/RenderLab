@@ -63,6 +63,10 @@ namespace CppUtil {
 
 				return true;
 			}
+
+			inline bool IsOnSurf(const Normalf & w) {
+				return Basic::Math::IsZero(CosTheta(w));
+			}
 		}
 	}
 }

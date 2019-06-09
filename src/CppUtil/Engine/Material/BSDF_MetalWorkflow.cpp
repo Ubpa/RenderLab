@@ -42,6 +42,7 @@ float BSDF_MetalWorkflow::PDF(const Normalf & wo, const Normalf & wi, const Poin
 	sggx.SetAlpha(roughness);
 
 	auto metallic = GetMetallic(texcoord);
+	auto pSpecular = 1 / (2 - metallic);
 
 	auto wh = wo + wi;
 	if (wh.IsZero())
@@ -49,9 +50,9 @@ float BSDF_MetalWorkflow::PDF(const Normalf & wo, const Normalf & wi, const Poin
 	
 	wh.NormalizeSelf();
 
-	float pdDiffuse = SurfCoord::CosTheta(wh) * Math::INV_PI;
+	float pdDiffuse = SurfCoord::CosTheta(wi) * Math::INV_PI;
 	float pdSpecular = sggx.PDF(wh) / (4.f*abs(wo.Dot(wh))); // 根据几何关系以及前边的判 0 结果，这里无需判 0
-	return Math::Lerp(pdDiffuse, pdSpecular, metallic);
+	return Math::Lerp(pdDiffuse, pdSpecular, pSpecular);
 }
 
 const RGBf BSDF_MetalWorkflow::Sample_f(const Normalf & wo, const Point2 & texcoord, Normalf & wi, float & pd) {
@@ -61,22 +62,25 @@ const RGBf BSDF_MetalWorkflow::Sample_f(const Normalf & wo, const Point2 & texco
 	// 根据 metallic 来分别采样
 	Normalf wh;
 	auto metallic = GetMetallic(texcoord);
-	if (Math::Rand_F() < metallic)
+	auto pSpecular = 1 / (2 - metallic);
+	if (Math::Rand_F() < pSpecular) {
 		wh = sggx.Sample_wh();
+		wi = Normalf::Reflect(-wo, wh);
+	}
 	else {
 		CosineWeightedHemisphereSampler3D sampler;
-		wh = sampler.GetSample();
+		wi = sampler.GetSample();
+		wh = (wo + wi).Normalize();
 	}
 
-	wi = Normalf::Reflect(-wo, wh);
 	if (SurfCoord::CosTheta(wi) <= 0) {
 		pd = 0;
 		return RGBf(0.f);
 	}
 
-	float pdDiffuse = SurfCoord::CosTheta(wh) * Math::INV_PI;
+	float pdDiffuse = SurfCoord::CosTheta(wi) * Math::INV_PI;
 	float pdSpecular = sggx.PDF(wh) / (4.f*abs(wo.Dot(wh)));
-	pd = Math::Lerp(pdDiffuse, pdSpecular, metallic);
+	pd = Math::Lerp(pdDiffuse, pdSpecular, pSpecular);
 
 	auto albedo = GetAlbedo(texcoord);
 	auto diffuse = albedo * Math::INV_PI;

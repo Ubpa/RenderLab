@@ -16,7 +16,7 @@ namespace CppUtil {
 		class Roamer;
 		class Picker;
 
-		BETTER_ENUM(RasterType, int, DirectIllum, DeferredPipline);
+		BETTER_ENUM(RasterType, int, DirectIllum, DeferredPipline, ForwardNPR);
 
 		class Viewer final : public Basic::HeapObj {
 		public:
@@ -29,6 +29,9 @@ namespace CppUtil {
 
 		protected:
 			virtual ~Viewer() = default;
+
+		public:
+			void SetRaster(RasterType rasterType);
 
 		public:
 			QT::RawAPI_OGLW * GetOGLW() const { return pOGLW; }

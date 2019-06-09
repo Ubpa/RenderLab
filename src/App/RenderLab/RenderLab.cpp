@@ -208,4 +208,11 @@ void RenderLab::InitSetting() {
 	setting->AddEditVal("- Max Depth", maxDepth, 1, 100, [&](int val) {
 		maxDepth = val;
 	});
+
+	setting->AddTitle("[ Viewer ]");
+	Grid::pSlotMap slotmap = std::make_shared<Grid::SlotMap>();
+	(*slotmap)["Deferred"] = [this]() {viewer->SetRaster(RasterType::DeferredPipline); };
+	(*slotmap)["Direct"] = [this]() {viewer->SetRaster(RasterType::DeferredPipline); };
+	(*slotmap)["ForwardNPR"] = [this]() {viewer->SetRaster(RasterType::ForwardNPR); };
+	setting->AddComboBox("Raster Type", "Deferred", slotmap);
 }

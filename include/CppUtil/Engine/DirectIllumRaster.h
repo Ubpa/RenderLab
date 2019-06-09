@@ -22,9 +22,9 @@ namespace CppUtil {
 			virtual void Init() override;
 
 		protected:
-			virtual void Visit(Basic::Ptr<BSDF_Diffuse> bsdf);
-			virtual void Visit(Basic::Ptr<BSDF_MetalWorkflow> bsdf);
-			virtual void Visit(Basic::Ptr<BSDF_FrostedGlass> bsdf);
+			virtual void Visit(Basic::Ptr<BSDF_Diffuse> bsdf) override;
+			virtual void Visit(Basic::Ptr<BSDF_MetalWorkflow> bsdf) override;
+			virtual void Visit(Basic::Ptr<BSDF_FrostedGlass> bsdf) override;
 
 		private:
 			void InitShaders();

@@ -12,6 +12,7 @@ layout (std140) uniform Environment{
 };
 
 uniform samplerCube skybox;
+uniform bool needGamma = false;
 
 vec3 GetEnvironment(vec3 texcoord);
 
@@ -20,6 +21,9 @@ void main()
     vec3 ambient = GetEnvironment(TexCoords);
 	
 	// gamma
+	if(needGamma)
+		ambient = pow(ambient, vec3(1.0/2.2));
+	
 	FragColor = vec4(ambient, 1);
 }
 

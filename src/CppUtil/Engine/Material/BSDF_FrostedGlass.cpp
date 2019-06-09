@@ -39,7 +39,7 @@ const RGBf BSDF_FrostedGlass::F(const Normalf & wo, const Normalf & wi, const Po
 		Normalf h = (wo + wi).Normalize();
 		SurfCoord::SetOurward(h);
 
-		float bsdfVal = Fr(wo, h, ior) * ggx.D(h) * ggx.G(wo,wi,h) / abs(4.f * SurfCoord::CosTheta(wo) * SurfCoord::CosTheta(wi));
+		float bsdfVal = Fr(wo, h, ior) * ggx.D(h) * ggx.G_Smith(wo,wi,h) / abs(4.f * SurfCoord::CosTheta(wo) * SurfCoord::CosTheta(wi));
 		return bsdfVal * color;
 	}
 	else {
@@ -48,6 +48,9 @@ const RGBf BSDF_FrostedGlass::F(const Normalf & wo, const Normalf & wi, const Po
 			swap(etai, etat);
 
 		Normalf h = -(etai * wo + etat * wi).Normalize();
+		if (SurfCoord::IsOnSurf(h))
+			return RGBf(0.f);
+
 		SurfCoord::SetOurward(h);
 
 		float HoWo = h.Dot(wo);
@@ -56,7 +59,7 @@ const RGBf BSDF_FrostedGlass::F(const Normalf & wo, const Normalf & wi, const Po
 
 		float factor = abs(HoWo * HoWi / (SurfCoord::CosTheta(wo) * SurfCoord::CosTheta(wi)));
 
-		float bsdfVal = factor * ((1 - Fr(wo, h, ior)) * ggx.D(h) * ggx.G(wo, wi, h) * etat * etat) / (sqrtDenom * sqrtDenom);
+		float bsdfVal = factor * ((1 - Fr(wo, h, ior)) * ggx.D(h) * ggx.G_Smith(wo, wi, h) * etat * etat) / (sqrtDenom * sqrtDenom);
 
 		return color * bsdfVal;
 	}
@@ -117,11 +120,11 @@ const RGBf BSDF_FrostedGlass::Sample_f(const Normalf & wo, const Point2 & texcoo
 
 		auto color = GetColor(texcoord);
 		color *= GetAO(texcoord);
-		float bsdfVal = fr * Dh * ggx.G(wo, wi, h) / abs(4.f * SurfCoord::CosTheta(wo) * SurfCoord::CosTheta(wi));
+		float bsdfVal = fr * Dh * ggx.G_Smith(wo, wi, h) / abs(4.f * SurfCoord::CosTheta(wo) * SurfCoord::CosTheta(wi));
 		return bsdfVal * color;
 	}
 	else {
-		float etai = 1.f, etat = ior;
+		float etai = 1.f, etat = ior;    
 		if (SurfCoord::IsEntering(wo)) {
 			wi = Normalf::Refract(-wo, h, etai / etat);
 		}
@@ -142,7 +145,7 @@ const RGBf BSDF_FrostedGlass::Sample_f(const Normalf & wo, const Point2 & texcoo
 		float dwh_dwi = (etat * etat * abs(HoWi)) / (sqrtDenom * sqrtDenom);
 		PD = Dh * SurfCoord::CosTheta(h) * dwh_dwi * (1 - fr);
 
-		float Gwowih = ggx.G(wo, wi, h);
+		float Gwowih = ggx.G_Smith(wo, wi, h);
 		float factor = abs(HoWo * HoWi / (SurfCoord::CosTheta(wo) * SurfCoord::CosTheta(wi)));
 		auto color = GetColor(texcoord);
 		color *= GetAO(texcoord);

@@ -36,9 +36,9 @@ bool PaintImgOpCreator::PaintImgOp::SetOp(int w, int h) {
 		return false;
 
 	img = Image::New(w, h, 3);
-	pOGLW->SetInitOp(initOp);
-	pOGLW->SetPaintOp(paintOp);
-	pOGLW->SetResizeOp(resizeOp);
+	pOGLW->AddInitOp(initOp);
+	pOGLW->AddPaintOp(paintOp);
+	pOGLW->AddResizeOp(resizeOp);
 	return true;
 }
 
@@ -75,7 +75,7 @@ Ptr<PaintImgOpCreator::PaintImgOp> PaintImgOpCreator::GenScenePaintOp() {
 		}
 		screenShader.SetInt("texture0", 0);
 		pOGLW->Reg("screenShader", screenShader);
-	});
+	}, false);
 
 	auto paintOp = LambdaOp_New([paintImgOp]() {
 		auto pOGLW = paintImgOp->GetOGLW();
@@ -99,7 +99,7 @@ Ptr<PaintImgOpCreator::PaintImgOp> PaintImgOpCreator::GenScenePaintOp() {
 			showImgTex->Use(0);
 			imgVAO->Draw(*screenShader);
 		}
-	});
+	}, true);
 
 	auto resizeOp = LambdaOp_New([paintImgOp]() {
 		auto pOGLW = paintImgOp->GetOGLW();
@@ -114,7 +114,7 @@ Ptr<PaintImgOpCreator::PaintImgOp> PaintImgOpCreator::GenScenePaintOp() {
 
 		Ptr<VAO> imgVAO = GenImgVAO(imgW, imgH, w, h);
 		pOGLW->Reg("imgVAO", imgVAO);
-	});
+	}, true);
 
 	paintImgOp->initOp = initOp;
 	paintImgOp->paintOp = paintOp;
