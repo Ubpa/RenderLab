@@ -16,7 +16,7 @@ namespace CppUtil {
 		class Roamer;
 		class Picker;
 
-		BETTER_ENUM(RasterType, int, DirectIllum, DeferredPipline, ForwardNPR);
+		BETTER_ENUM(RasterType, int, DirectIllum, DeferredPipeline, ForwardNPR);
 
 		class Viewer final : public Basic::HeapObj {
 		public:

@@ -4,7 +4,11 @@
 #include <CppUtil/Engine/Raster.h>
 
 #include <CppUtil/OpenGL/FBO.h>
+
 #include <CppUtil/Basic/UGM/Transform.h>
+#include <CppUtil/Basic/TypeMap.h>
+
+#include <set>
 
 namespace CppUtil{
 	namespace Engine {
@@ -14,7 +18,9 @@ namespace CppUtil{
 		class Plane;
 		class TriMesh;
 
+		class Material;
 		class BSDF_MetalWorkflow;
+		class BSDF_Diffuse;
 
 		/*
 		—”≥Ÿπ‹œﬂ
@@ -37,6 +43,8 @@ namespace CppUtil{
 		private:
 			void InitShaders();
 			void InitShader_GBuffer();
+			void InitShader_GBuffer_MetalWorkflow();
+			void InitShader_GBuffer_Diffuse();
 			void InitShader_DirectLight();
 			void InitShader_AmbientLight();
 			void InitShader_Skybox();
@@ -46,6 +54,7 @@ namespace CppUtil{
 			virtual void Visit(Basic::Ptr<SObj> sobj);
 
 			virtual void Visit(Basic::Ptr<BSDF_MetalWorkflow> bsdf);
+			virtual void Visit(Basic::Ptr<BSDF_Diffuse> bsdf);
 
 			virtual void Visit(Basic::Ptr<Sphere> sphere);
 			virtual void Visit(Basic::Ptr<Plane> plane);
@@ -64,15 +73,69 @@ namespace CppUtil{
 
 			std::vector<Transform> modelVec;
 			OpenGL::Shader metalShader;
+			OpenGL::Shader diffuseShader;
 			OpenGL::Shader directLightShader;
 			OpenGL::Shader ambientLightShader;
 			OpenGL::Shader skyboxShader;
 			OpenGL::Shader postProcessShader;
 
+			OpenGL::Shader curMaterialShader;
+
 			static const int maxPointLights;// 8
 			static const int maxDirectionalLights;// 8
 			static const int maxSpotLights;// 8
+
+			// manager material ID
+			class MngrMID {
+			public:
+				// ID >= 0
+				template<typename T, typename = std::enable_if_t<std::is_base_of_v<Material, T>>>
+				inline void Reg(int ID);
+				template<typename T, typename = std::enable_if_t<std::is_base_of_v<Material, T>>>
+				inline int Get() const;
+				template<typename T, typename = std::enable_if_t<std::is_base_of_v<Material, T>>>
+				inline bool Contain() const;
+			private:
+				Basic::TypeMap<int> idMap;
+				std::set<int> registedID;
+			};
+			MngrMID mngrMID;
 		};
+
+		template<typename T, typename>
+		int DeferredRaster::MngrMID::Get() const {
+			auto target = idMap.find(typeid(T));
+			if (target == idMap.cend()) {
+				printf("ERROR::DeferredRaster::Get:\n"
+					"\ttype[%s] is not registed\n", typeid(T).name());
+				return -1;
+			}
+			return target->second;
+		}
+
+		template<typename T, typename>
+		void DeferredRaster::MngrMID::Reg(int ID) {
+			auto target = idMap.find(typeid(T));
+			if (target != idMap.end()) {
+				printf("WARNNING::DeferredRaster::Reg:\n"
+					"\t""type(%s) is already registed\n", typeid(T).name());
+				return;
+			}
+			if (registedID.find(ID) != registedID.end()) {
+				printf("ERROR::DeferredRaster::Reg:\n"
+					"\t""ID(%d) is already registed\n", ID);
+				return;
+			}
+			
+			idMap[typeid(T)] = ID;
+			registedID.insert(ID);
+		}
+
+		template<typename T, typename>
+		bool DeferredRaster::MngrMID::Contain() const {
+			auto target = idMap.find(typeid(T));
+			return target != idMap.end();
+		}
 	}
 }
 

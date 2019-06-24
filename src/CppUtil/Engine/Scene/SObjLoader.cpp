@@ -351,6 +351,7 @@ static Ptr<Material> SObjLoader::Load(XMLElement * ele, Ptr<Material>*) {
 	Reg_Load_val<Ptr<BSDF_Mirror>>(funcMap, str::BSDF_Mirror::type, material);
 	Reg_Load_val<Ptr<BSDF_FrostedGlass>>(funcMap, str::BSDF_FrostedGlass::type, material);
 	Reg_Load_val<Ptr<Gooch>>(funcMap, str::Gooch::type, material);
+	Reg_Load_val<Ptr<BSDF_Frostbite>>(funcMap, str::BSDF_Frostbite::type, material);
 
 	LoadNode(ele, funcMap);
 
@@ -480,6 +481,26 @@ static Ptr<Gooch> SObjLoader::Load(XMLElement * ele, Ptr<Gooch>*) {
 	LoadNode(ele, funcMap);
 
 	return gooch;
+}
+
+template<>
+static Ptr<BSDF_Frostbite> SObjLoader::Load(XMLElement * ele, Ptr<BSDF_Frostbite>*) {
+	auto bsdf = BSDF_Frostbite::New();
+
+	FuncMap funcMap;
+
+	Reg_Text_val(funcMap, str::BSDF_Frostbite::colorFactor, bsdf->colorFactor);
+	Reg_Load_val<Ptr<Image>>(funcMap, str::BSDF_Frostbite::albedoTexture, bsdf->albedoTexture);
+	Reg_Text_val(funcMap, str::BSDF_Frostbite::metallicFactor, bsdf->metallicFactor);
+	Reg_Load_val<Ptr<Image>>(funcMap, str::BSDF_Frostbite::metallicTexture, bsdf->metallicTexture);
+	Reg_Text_val(funcMap, str::BSDF_Frostbite::roughnessFactor, bsdf->roughnessFactor);
+	Reg_Load_val<Ptr<Image>>(funcMap, str::BSDF_Frostbite::roughnessTexture, bsdf->roughnessTexture);
+	Reg_Load_val<Ptr<Image>>(funcMap, str::BSDF_Frostbite::aoTexture, bsdf->aoTexture);
+	Reg_Load_val<Ptr<Image>>(funcMap, str::BSDF_Frostbite::normalTexture, bsdf->normalTexture);
+
+	LoadNode(ele, funcMap);
+
+	return bsdf;
 }
 
 // ------------ Transform ----------------

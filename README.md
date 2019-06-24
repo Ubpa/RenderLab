@@ -71,6 +71,25 @@ Optix: 6.0
 
 ## 3. TODO
 
+### Copy Frostbite
+
+[MovingFrostbiteToPBR](https://github.com/Ubpa/Note/tree/master/CG/courses/MovingFrostbiteToPBR) 
+
+- [x] 材质（HC-GGX + Disney Diffuse）
+  - [x] 离线
+  - [ ] 实时
+- [ ] 光照
+  - [ ] 直接
+    - [ ] 点
+    - [ ] 聚光灯
+    - [ ] 面
+    - [ ] 胶囊
+  - [ ] 间接
+    - [ ] distant light probe
+    - [ ] SSR
+    - [ ] local light probe
+- [ ] 相机
+
 ### Impotant
 
 - [x] 自己编写数学运算库，放弃 glm
@@ -115,8 +134,9 @@ Optix: 6.0
   - [x] Ambient Light
   - [x] Sky Box
   - [x] window
-  - [ ] 优化
+  - [x] 优化
 - [x] Gooch
+- [ ] Frostbite
 - [ ] 拷贝粘贴，模型、图像等复用
 - [ ] CSM
 - [ ] 封装 UBO，改进 FBO

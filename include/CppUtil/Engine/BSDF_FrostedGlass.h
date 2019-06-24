@@ -5,10 +5,6 @@
 #include <CppUtil/Engine/GGX.h>
 
 namespace CppUtil {
-	namespace Basic {
-		class Image;
-	}
-
 	namespace Engine {
 		class BSDF_FrostedGlass : public BSDF {
 		public:

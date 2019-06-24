@@ -216,6 +216,19 @@ namespace str {
 		const char * const colorFactor = "colorFactor";
 		const char * const colorTexture = "colorTexture";
 	}
+
+	namespace BSDF_Frostbite {
+		const char * const type = "BSDF_Frostbite";
+
+		const char * const colorFactor = "colorFactor";
+		const char * const albedoTexture = "albedoTexture";
+		const char * const metallicFactor = "metallicFactor";
+		const char * const metallicTexture = "metallicTexture";
+		const char * const roughnessFactor = "roughnessFactor";
+		const char * const roughnessTexture = "roughnessTexture";
+		const char * const aoTexture = "aoTexture";
+		const char * const normalTexture = "normalTexture";
+	}
 }
 
 #endif//!_CPPUTIL_ENGINE_SCENE_SL_COMMON_H_

@@ -570,16 +570,11 @@ Ptr<Scene> GenScene10() {
 	auto sobj_IronSphere = SObj::New(sobj_Root, "rusted iron sphere");
 
 	auto bsdfIron = BSDF_MetalWorkflow::New(RGBf(1));
-	auto ironAlbedoImg = Image::New((ROOT_PATH+"data/textures/pbr/rusted_iron/albedo.png").c_str());
-	bsdfIron->SetAlbedoTexture(ironAlbedoImg);
-	auto ironMatallicImg = Image::New((ROOT_PATH + "data/textures/pbr/rusted_iron/metallic.png").c_str());
-	bsdfIron->SetMetallicTexture(ironMatallicImg);
-	auto ironRoughnessImg = Image::New((ROOT_PATH + "data/textures/pbr/rusted_iron/roughness.png").c_str());
-	bsdfIron->SetRoughnessTexture(ironRoughnessImg);
-	auto ironAOImg = Image::New((ROOT_PATH + "data/textures/pbr/rusted_iron/ao.png").c_str());
-	bsdfIron->SetAOTexture(ironAOImg);
-	auto ironNormalImg = Image::New((ROOT_PATH + "data/textures/pbr/rusted_iron/normal.png").c_str());
-	bsdfIron->SetNormalTexture(ironNormalImg);
+	bsdfIron->albedoTexture = Image::New((ROOT_PATH+"data/textures/pbr/rusted_iron/albedo.png").c_str());
+	bsdfIron->metallicTexture = Image::New((ROOT_PATH + "data/textures/pbr/rusted_iron/metallic.png").c_str());
+	bsdfIron->roughnessTexture = Image::New((ROOT_PATH + "data/textures/pbr/rusted_iron/roughness.png").c_str());
+	bsdfIron->aoTexture = Image::New((ROOT_PATH + "data/textures/pbr/rusted_iron/ao.png").c_str());
+	bsdfIron->normalTexture = Image::New((ROOT_PATH + "data/textures/pbr/rusted_iron/normal.png").c_str());
 	auto materialIron = CmptMaterial::New(sobj_IronSphere, bsdfIron);
 
 	auto MWSphereTransform = CmptTransform::New(sobj_IronSphere, Point3(0, 0.3f, 0), Vec3(0.3f));

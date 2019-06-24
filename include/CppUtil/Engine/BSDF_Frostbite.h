@@ -1,27 +1,24 @@
-#ifndef _ENGINE_MATERIAL_BSDF_METAL_WORKFLOW_H_
-#define _ENGINE_MATERIAL_BSDF_METAL_WORKFLOW_H_
+#ifndef _CPPUTIL_ENGINE_MATERIAL_BSDF_FROSTBITE_H_
+#define _CPPUTIL_ENGINE_MATERIAL_BSDF_FROSTBITE_H_
 
 #include <CppUtil/Engine/BSDF.h>
-
-#include <CppUtil/Engine/SchlickGGX.h>
+#include <CppUtil/Engine/GGX.h>
 
 namespace CppUtil {
 	namespace Engine {
-
-		// Disney
-		class BSDF_MetalWorkflow : public BSDF {
+		class BSDF_Frostbite : public BSDF {
 		public:
-			BSDF_MetalWorkflow(const RGBf & colorFactor = RGBf(1.f), float roughnessFactor = 1.f, float metallicFactor = 1.f)
+			BSDF_Frostbite(const RGBf & colorFactor = RGBf(1.f), float roughnessFactor = 1.f, float metallicFactor = 1.f)
 				: colorFactor(colorFactor), roughnessFactor(roughnessFactor), metallicFactor(metallicFactor),
-				albedoTexture(nullptr), metallicTexture(nullptr), aoTexture(nullptr) { }
+				albedoTexture(nullptr), metallicTexture(nullptr), aoTexture(nullptr), roughnessTexture(nullptr), normalTexture(nullptr) { }
 
 		public:
-			static const Basic::Ptr<BSDF_MetalWorkflow> New(const RGBf & colorFactor = RGBf(1.f), float roughnessFactor = 1.f, float metallicFactor = 1.f) {
-				return Basic::New<BSDF_MetalWorkflow>(colorFactor, roughnessFactor, metallicFactor);
+			static const Basic::Ptr<BSDF_Frostbite> New(const RGBf & colorFactor = RGBf(1.f), float roughnessFactor = 1.f, float metallicFactor = 1.f) {
+				return Basic::New<BSDF_Frostbite>(colorFactor, roughnessFactor, metallicFactor);
 			}
 
 		protected:
-			virtual ~BSDF_MetalWorkflow() = default;
+			virtual ~BSDF_Frostbite() = default;
 
 		public:
 			virtual const RGBf F(const Normalf & wo, const Normalf & wi, const Point2 & texcoord) override;
@@ -44,8 +41,10 @@ namespace CppUtil {
 			float GetRoughness(const Point2 & texcoord) const;
 			float GetAO(const Point2 & texcoord) const;
 
+			static const Vec3f Fr_DisneyDiffuse(const Normalf & wo, const Normalf & wi, float linearRoughness);
+
 		public:
-			SchlickGGX sggx;
+			GGX ggx;
 
 			RGBf colorFactor;
 			Basic::Ptr<Basic::Image> albedoTexture;
@@ -65,4 +64,5 @@ namespace CppUtil {
 	}
 }
 
-#endif//!_ENGINE_MATERIAL_BSDF_METAL_WORKFLOW_H_
+
+#endif //!_CPPUTIL_ENGINE_MATERIAL_BSDF_FROSTBITE_H_

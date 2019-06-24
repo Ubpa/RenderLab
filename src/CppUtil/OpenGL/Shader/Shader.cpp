@@ -15,6 +15,8 @@ using namespace std;
 using namespace CppUtil::OpenGL;
 using namespace CppUtil::Basic;
 
+const Shader Shader::InValid = Shader();
+
 Shader::Shader() : valid(false){ }
 
 Shader::Shader(const string & vertexPath, const string & fragmentPath, const string & geometryPath) {

@@ -4,7 +4,12 @@
 #include <CppUtil/Basic/Element.h>
 
 namespace CppUtil {
+	namespace Basic {
+		class Image;
+	}
+
 	namespace Engine {
+
 		class Material : public Basic::Element {
 		protected:
 			Material() = default;

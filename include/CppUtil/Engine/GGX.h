@@ -21,7 +21,6 @@ namespace CppUtil {
 				//	0.0171201f * x3 + 0.000640711f * x4;
 				alpha = roughness * roughness;
 			}
-			float GetAlpha() const { return alpha; }
 
 		public:
 			// 法线分布函数

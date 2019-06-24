@@ -63,7 +63,7 @@ RenderLab::RenderLab(QWidget *parent)
 	//scene = GenScene(7);
 
 	// viewer
-	viewer = Viewer::New(ui.OGLW_Raster, scene, RasterType::DeferredPipline);
+	viewer = Viewer::New(ui.OGLW_Raster, scene, RasterType::DeferredPipeline);
 
 	// raytracer
 	PaintImgOpCreator pioc(ui.OGLW_RayTracer);
@@ -211,8 +211,8 @@ void RenderLab::InitSetting() {
 
 	setting->AddTitle("[ Viewer ]");
 	Grid::pSlotMap slotmap = std::make_shared<Grid::SlotMap>();
-	(*slotmap)["Deferred"] = [this]() {viewer->SetRaster(RasterType::DeferredPipline); };
-	(*slotmap)["Direct"] = [this]() {viewer->SetRaster(RasterType::DeferredPipline); };
+	(*slotmap)["Deferred"] = [this]() {viewer->SetRaster(RasterType::DeferredPipeline); };
+	(*slotmap)["Direct"] = [this]() {viewer->SetRaster(RasterType::DeferredPipeline); };
 	(*slotmap)["ForwardNPR"] = [this]() {viewer->SetRaster(RasterType::ForwardNPR); };
 	setting->AddComboBox("Raster Type", "Deferred", slotmap);
 }

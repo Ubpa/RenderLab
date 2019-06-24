@@ -65,6 +65,7 @@ public:
 		RegMemberFunc<BSDF_CookTorrance>(&Attribute::ComponentVisitor::Visit);
 		RegMemberFunc<BSDF_MetalWorkflow>(&Attribute::ComponentVisitor::Visit);
 		RegMemberFunc<BSDF_FrostedGlass>(&Attribute::ComponentVisitor::Visit);
+		RegMemberFunc<BSDF_Frostbite>(&Attribute::ComponentVisitor::Visit);
 		RegMemberFunc<Gooch>(&Attribute::ComponentVisitor::Visit);
 
 		RegMemberFunc<CmptTransform>(&Attribute::ComponentVisitor::Visit);
@@ -102,6 +103,7 @@ public:
 	void Visit(Ptr<BSDF_MetalWorkflow> bsdf);
 	void Visit(Ptr<BSDF_FrostedGlass> bsdf);
 	void Visit(Ptr<Gooch> gooch);
+	void Visit(Ptr<BSDF_Frostbite> bsdf);
 
 
 	void Visit(Ptr<CmptTransform> cmpt);
@@ -224,15 +226,9 @@ void Attribute::ComponentVisitor::Visit(Ptr<CmptGeometry> geo) {
 
 	string typeStr;
 	auto getTypeStr = Visitor::New();
-	getTypeStr->Reg([&typeStr](Ptr<Sphere>) {
-		typeStr = "Sphere";
-	});
-	getTypeStr->Reg([&typeStr](Ptr<Plane>) {
-		typeStr = "Plane";
-	});
-	getTypeStr->Reg([&typeStr](Ptr<TriMesh>) {
-		typeStr = "TriMesh";
-	});
+	getTypeStr->Reg([&typeStr](Ptr<Sphere>) { typeStr = "Sphere"; });
+	getTypeStr->Reg([&typeStr](Ptr<Plane>) { typeStr = "Plane"; });
+	getTypeStr->Reg([&typeStr](Ptr<TriMesh>) { typeStr = "TriMesh"; });
 
 	Grid::pSlotMap pSlotMap(new Grid::SlotMap);
 	Grid::wpSlotMap wpSlotMap = pSlotMap;
@@ -303,32 +299,17 @@ void Attribute::ComponentVisitor::Visit(Ptr<CmptMaterial> cmpt) {
 
 	string typeStr;
 	auto getTypeStr = Visitor::New();
-	getTypeStr->Reg([&typeStr](Ptr<BSDF_Diffuse>) {
-		typeStr = "BSDF_Diffuse";
-	});
-	getTypeStr->Reg([&typeStr](Ptr<BSDF_Emission>) {
-		typeStr = "BSDF_Emission";
-	});
-	getTypeStr->Reg([&typeStr](Ptr<BSDF_Glass>) {
-		typeStr = "BSDF_Glass";
-	});
-	getTypeStr->Reg([&typeStr](Ptr<BSDF_Mirror>) {
-		typeStr = "BSDF_Mirror";
-	});
-	getTypeStr->Reg([&typeStr](Ptr<BSDF_CookTorrance>) {
-		typeStr = "BSDF_CookTorrance";
-	});
-	getTypeStr->Reg([&typeStr](Ptr<BSDF_MetalWorkflow>) {
-		typeStr = "BSDF_MetalWorkflow";
-	});
-	getTypeStr->Reg([&typeStr](Ptr<BSDF_FrostedGlass>) {
-		typeStr = "BSDF_FrostedGlass";
-	});
-	getTypeStr->Reg([&typeStr](Ptr<Gooch>) {
-		typeStr = "Gooch";
-	});
+	getTypeStr->Reg([&typeStr](Ptr<BSDF_Diffuse>) { typeStr = "BSDF_Diffuse"; });
+	getTypeStr->Reg([&typeStr](Ptr<BSDF_Emission>) { typeStr = "BSDF_Emission"; });
+	getTypeStr->Reg([&typeStr](Ptr<BSDF_Glass>) { typeStr = "BSDF_Glass"; });
+	getTypeStr->Reg([&typeStr](Ptr<BSDF_Mirror>) { typeStr = "BSDF_Mirror"; });
+	getTypeStr->Reg([&typeStr](Ptr<BSDF_CookTorrance>) { typeStr = "BSDF_CookTorrance"; });
+	getTypeStr->Reg([&typeStr](Ptr<BSDF_MetalWorkflow>) { typeStr = "BSDF_MetalWorkflow"; });
+	getTypeStr->Reg([&typeStr](Ptr<BSDF_FrostedGlass>) { typeStr = "BSDF_FrostedGlass"; });
+	getTypeStr->Reg([&typeStr](Ptr<Gooch>) { typeStr = "Gooch"; });
+	getTypeStr->Reg([&typeStr](Ptr<BSDF_Frostbite>) { typeStr = "BSDF_Frostbite"; });
 
-	const int materialNum = 9;
+	const int materialNum = 10;
 	tuple<string, function<Ptr<Material>()>> bsdfArr[materialNum] = {
 		{"None", []()->Ptr<Material> { return nullptr; } },
 		{"BSDF_Diffuse", []()->Ptr<Material> { return BSDF_Diffuse::New(); } },
@@ -339,6 +320,7 @@ void Attribute::ComponentVisitor::Visit(Ptr<CmptMaterial> cmpt) {
 		{"BSDF_MetalWorkflow", []()->Ptr<Material> { return BSDF_MetalWorkflow::New(); } },
 		{"BSDF_FrostedGlass", []()->Ptr<Material> { return BSDF_FrostedGlass::New(); } },
 		{"Gooch", []()->Ptr<Material> { return Gooch::New(); } },
+		{"BSDF_Frostbite", []()->Ptr<Material> { return BSDF_Frostbite::New(); } },
 	};
 
 	Grid::pSlotMap pSlotMap(new Grid::SlotMap);
@@ -402,22 +384,17 @@ void Attribute::ComponentVisitor::Visit(Ptr<BSDF_MetalWorkflow> bsdf) {
 	auto grid = GetGrid(attr->componentType2item[typeid(CmptMaterial)]);
 
 	grid->AddEditColor("- Albedo Color", bsdf->colorFactor);
-	grid->AddEditImage("- Albedo Texture", bsdf->GetAlbedoTexture(),
-		[=](Ptr<Image> img) {bsdf->SetAlbedoTexture(img); });
+	grid->AddEditImage("- Albedo Texture", bsdf->albedoTexture);
 
 	grid->AddEditVal("- Metallic Factor", bsdf->metallicFactor, 0, 1, 100);
-	grid->AddEditImage("- Metallic Texture", bsdf->GetMetallicTexture(),
-		[=](Ptr<Image> img) {bsdf->SetMetallicTexture(img); });
+	grid->AddEditImage("- Metallic Texture", bsdf->metallicTexture);
 
 	grid->AddEditVal("- Roughness Factor", bsdf->roughnessFactor, 0, 1, 100);
-	grid->AddEditImage("- Roughness Texture", bsdf->GetRoughnessTexture(),
-		[=](Ptr<Image> img) {bsdf->SetRoughnessTexture(img); });
+	grid->AddEditImage("- Roughness Texture", bsdf->roughnessTexture);
 
-	grid->AddEditImage("- AO Texture", bsdf->GetAOTexture(),
-		[=](Ptr<Image> img) {bsdf->SetAOTexture(img); });
+	grid->AddEditImage("- AO Texture", bsdf->aoTexture);
 
-	grid->AddEditImage("- Normal Texture", bsdf->GetNormalTexture(),
-		[=](Ptr<Image> img) {bsdf->SetNormalTexture(img); });
+	grid->AddEditImage("- Normal Texture", bsdf->normalTexture);
 }
 
 void Attribute::ComponentVisitor::Visit(Ptr<BSDF_FrostedGlass> bsdf) {
@@ -441,6 +418,23 @@ void Attribute::ComponentVisitor::Visit(Ptr<Gooch> gooch) {
 
 	grid->AddEditColor("- Color Factor", gooch->colorFactor);
 	grid->AddEditImage("- Color Texture", gooch->colorTexture);
+}
+
+void Attribute::ComponentVisitor::Visit(Ptr<BSDF_Frostbite> bsdf) {
+	auto grid = GetGrid(attr->componentType2item[typeid(CmptMaterial)]);
+
+	grid->AddEditColor("- Albedo Color", bsdf->colorFactor);
+	grid->AddEditImage("- Albedo Texture", bsdf->albedoTexture);
+
+	grid->AddEditVal("- Metallic Factor", bsdf->metallicFactor, 0, 1, 100);
+	grid->AddEditImage("- Metallic Texture", bsdf->metallicTexture);
+
+	grid->AddEditVal("- Roughness Factor", bsdf->roughnessFactor, 0, 1, 100);
+	grid->AddEditImage("- Roughness Texture", bsdf->roughnessTexture);
+
+	grid->AddEditImage("- AO Texture", bsdf->albedoTexture);
+
+	grid->AddEditImage("- Normal Texture", bsdf->normalTexture);
 }
 
 // -------------- Light --------------

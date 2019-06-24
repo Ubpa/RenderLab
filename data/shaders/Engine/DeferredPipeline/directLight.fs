@@ -82,10 +82,10 @@ layout (std140) uniform SpotLights{
 	SpotLight spotLights[MAX_SPOT_LIGHTS];// 128 * MAX_SPOT_LIGHTS = 128 * 8 = 1024
 };
 
-uniform sampler2D Position; // 0
-uniform sampler2D Normal;
-uniform sampler2D Albedo;
-uniform sampler2D RMAO;
+uniform sampler2D GBuffer0;
+uniform sampler2D GBuffer1;
+uniform sampler2D GBuffer2;
+uniform sampler2D GBuffer3;
 
 uniform samplerCube pointLightDepthMap0; // 4
 uniform samplerCube pointLightDepthMap1;
@@ -123,10 +123,12 @@ float SchlickGGX_D(vec3 norm, vec3 h, float roughness);
 float SchlickGGX_G1(vec3 norm, vec3 w, float roughness);
 float SchlickGGX_G(vec3 norm, vec3 wo, vec3 wi, float roughness);
 vec3 GetF0(vec3 albedo, float metallic);
-vec3 Fr(vec3 w, vec3 h, vec3 albedo, float metallic);
-vec3 FrR(vec3 wo, vec3 norm, vec3 F0, float roughness);
+vec3 SchlickFr(vec3 w, vec3 h, vec3 albedo, float metallic);
+vec3 SchlickFrR(vec3 wo, vec3 norm, vec3 F0, float roughness);
 
-vec3 BRDF(vec3 norm, vec3 wo, vec3 wi, vec3 albedo, float metallic, float roughness, float ao);
+vec3 BRDF(int ID, vec3 norm, vec3 wo, vec3 wi, vec3 albedo, float metallic, float roughness, float ao);
+vec3 BRDF_Diffuse(vec3 albedo);
+vec3 BRDF_MetalWorkflow(vec3 norm, vec3 wo, vec3 wi, vec3 albedo, float metallic, float roughness, float ao);
 
 float PointLightVisibility(vec3 lightToFrag, int id);
 float PointLightVisibility(vec3 lightToFrag, samplerCube depthMap);
@@ -152,17 +154,20 @@ vec3 pos;
 
 void main() {
 	// 获取属性值
-	pos = texture(Position, TexCoords).xyz;
+	vec4 data0 = texture(GBuffer0, TexCoords);
+	vec4 data1 = texture(GBuffer1, TexCoords);
+	vec4 data2 = texture(GBuffer2, TexCoords);
+	vec4 data3 = texture(GBuffer3, TexCoords);
+	
+	int ID = int(data0.w);
+	vec3 pos = data0.xyz;
+	vec3 norm = data1.xyz;
+	vec3 albedo = data2.xyz;
+	float roughness = data1.w;
+	float metallic = data2.w;
+	float ao = data3.w;
+	
 	vec3 wo = normalize(viewPos - pos);
-	
-	vec3 norm = texture(Normal, TexCoords).xyz;
-	
-	vec3 albedo = texture(Albedo, TexCoords).xyz;
-	
-	vec3 rmao = texture(RMAO, TexCoords).xyz;
-	float roughness = rmao.x;
-	float metallic = rmao.y;
-	float ao = rmao.z;
 	
 	// 采样光源
 	
@@ -178,21 +183,20 @@ void main() {
 		if(visibility==0)
 			continue;
 
-		vec3 f = BRDF(norm, wo, wi, albedo, metallic, roughness, ao);
+		vec3 f = BRDF(ID, norm, wo, wi, albedo, metallic, roughness, ao);
 
 		float cosTheta = max(dot(wi, norm), 0);
 		
 		float attenuation = 1.0f + pointLights[i].linear * dist + pointLights[i].quadratic * dist2;
 		
 		result += visibility * cosTheta / attenuation * f * pointLights[i].L;
-		//result += cosTheta / attenuation * f * pointLights[i].L;
 	}
 	
 	// directional light
 	for(int i=0; i < numDirectionalLight; i++) {
 		vec3 wi = -normalize(directionaLights[i].dir);
 
-		vec3 f = BRDF(norm, wo, wi, albedo, metallic, roughness, ao);
+		vec3 f = BRDF(ID, norm, wo, wi, albedo, metallic, roughness, ao);
 
 		float cosTheta = max(dot(wi, norm), 0);
 		
@@ -210,7 +214,7 @@ void main() {
 		float dist = sqrt(dist2);
 		vec3 wi = fragToLight/dist;
 
-		vec3 f = BRDF(norm, wo, wi, albedo, metallic, roughness, ao);
+		vec3 f = BRDF(ID, norm, wo, wi, albedo, metallic, roughness, ao);
 
 		float cosTheta = max(dot(wi, norm), 0);
 		
@@ -258,23 +262,34 @@ vec3 GetF0(vec3 albedo, float metallic) {
     return mix(vec3(0.04), albedo, metallic);
 }
 
-vec3 Fr(vec3 w, vec3 h, vec3 albedo, float metallic) {
+vec3 SchlickFr(vec3 w, vec3 h, vec3 albedo, float metallic) {
 	vec3 F0 = GetF0(albedo, metallic);
 	float HoW = dot(h, w);
 	return F0 + exp2((-5.55473f * HoW - 6.98316f) * HoW) * (vec3(1.0f) - F0);
 }
 
-vec3 FrR(vec3 wo, vec3 norm, vec3 F0, float roughness) {
+vec3 SchlickFrR(vec3 wo, vec3 norm, vec3 F0, float roughness) {
 	float cosTheta = max(dot(wo, norm), 0);
     return F0 + (max(vec3(1.0 - roughness), F0) - F0) * pow(1.0 - cosTheta, 5.0);
 }
 
-vec3 BRDF(vec3 norm, vec3 wo, vec3 wi, vec3 albedo, float metallic, float roughness, float ao) {
+vec3 BRDF(int ID, vec3 norm, vec3 wo, vec3 wi, vec3 albedo, float metallic, float roughness, float ao) {
+	if(ID == 0) {
+		return BRDF_MetalWorkflow(norm, wo, wi, albedo, metallic, roughness, ao);
+	}
+	else if(ID == 1) {
+		return BRDF_Diffuse(albedo);
+	}
+	else
+		return vec3(0);// not support ID
+}
+
+vec3 BRDF_MetalWorkflow(vec3 norm, vec3 wo, vec3 wi, vec3 albedo, float metallic, float roughness, float ao) {
 	vec3 wh = normalize(wo + wi);
 	
 	float D = SchlickGGX_D(norm, wh, roughness);
 	float G = SchlickGGX_G(norm, wo, wi, roughness);
-	vec3 F = Fr(wo, wh, albedo, metallic);
+	vec3 F = SchlickFr(wo, wh, albedo, metallic);
 	
 	vec3 specular = D * G * F / (4.0f * dot(wh, wo) * dot(wh, wi));
 	
@@ -289,7 +304,13 @@ vec3 BRDF(vec3 norm, vec3 wo, vec3 wi, vec3 albedo, float metallic, float roughn
 	return rst;
 }
 
-float PointLightVisibility(vec3 lightToFrag, int id){
+vec3 BRDF_Diffuse(vec3 albedo) {
+	return albedo / PI;
+}
+
+// ------------------------ Visibility ------------------------ 
+
+float PointLightVisibility(vec3 lightToFrag, int id) {
 	if(id == 0) {
 		return PointLightVisibility(lightToFrag, pointLightDepthMap0);
 	} else if(id == 1) {
@@ -325,7 +346,7 @@ float PointLightVisibility(vec3 lightToFrag, samplerCube depthMap) {
 	return 1 - shadow;
 }
 
-float DirectionalLightVisibility(vec3 normPos, float cosTheta, int id){
+float DirectionalLightVisibility(vec3 normPos, float cosTheta, int id) {
 	if(id == 0) {
 		return DirectionalLightVisibility(normPos, cosTheta, directionalLightDepthMap0);
 	} else if(id == 1) {
@@ -346,7 +367,7 @@ float DirectionalLightVisibility(vec3 normPos, float cosTheta, int id){
 		return 1;// not support id
 }
 
-float DirectionalLightVisibility(vec3 normPos, float cosTheta, sampler2D depthMap){
+float DirectionalLightVisibility(vec3 normPos, float cosTheta, sampler2D depthMap) {
 	float visibility = 0.0;
 	vec2 texelSize = 1.0 / textureSize(depthMap, 0);
 	float bias = max(0.05 * (1.0 - cosTheta), 0.005);
@@ -362,7 +383,7 @@ float DirectionalLightVisibility(vec3 normPos, float cosTheta, sampler2D depthMa
 	return visibility;
 }
 
-float SpotLightVisibility(vec3 normPos, float cosTheta, int id){
+float SpotLightVisibility(vec3 normPos, float cosTheta, int id) {
 	if(id == 0) {
 		return SpotLightVisibility(normPos, cosTheta, spotLightDepthMap0);
 	} else if(id == 1) {
@@ -383,7 +404,7 @@ float SpotLightVisibility(vec3 normPos, float cosTheta, int id){
 		return 1;// not support id
 }
 
-float SpotLightVisibility(vec3 normPos, float cosTheta, sampler2D depthMap){
+float SpotLightVisibility(vec3 normPos, float cosTheta, sampler2D depthMap) {
 	float visibility = 0.0;
 	vec2 texelSize = 1.0 / textureSize(depthMap, 0);
 	float bias = max(0.05 * (1.0 - cosTheta), 0.005);
@@ -401,7 +422,7 @@ float SpotLightVisibility(vec3 normPos, float cosTheta, sampler2D depthMap){
 	return visibility;
 }
 
-float SpotLightFalloff(vec3 wi, int id){
+float SpotLightFalloff(vec3 wi, int id) {
 	float cosTheta = -dot(wi, spotLights[id].dir);
 	if (cosTheta < spotLights[id].cosHalfAngle) return 0;
 	if (cosTheta > spotLights[id].cosFalloffAngle) return 1;

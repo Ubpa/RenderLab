@@ -14,11 +14,12 @@ namespace CppUtil {
 			using valType = T;
 
 		public:
-			explicit Val(T x) : x(x) { assert(!HasNaN()); }
+			template<typename U, typename = std::enable_if_t<std::is_convertible_v<U,T>>>
+			Val(U x) : x(static_cast<T>(x)) { assert(!HasNaN()); }
 
-			Val() : Val(static_cast<T>(0)) { }
+			Val() : Val(0) { }
 
-			template<typename U, int N>
+			template<typename U, int N, typename = std::enable_if_t<std::is_convertible_v<U, T>>>
 			Val(U(&arr)[N]) : Val(arr[0]) { assert(N >= 1); }
 
 			template<int N, typename U>

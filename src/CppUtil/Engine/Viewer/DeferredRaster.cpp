@@ -25,7 +25,9 @@
 #include <CppUtil/Engine/SpotLight.h>
 #include <CppUtil/Engine/InfiniteAreaLight.h>
 
+// support material
 #include <CppUtil/Engine/BSDF_MetalWorkflow.h>
+#include <CppUtil/Engine/BSDF_Diffuse.h>
 
 #include <CppUtil/OpenGL/CommonDefine.h>
 
@@ -47,7 +49,7 @@ const int DeferredRaster::maxSpotLights = 8;
 const string rootPath = ROOT_PATH;
 
 DeferredRaster::DeferredRaster(RawAPI_OGLW * pOGLW, Ptr<Scene> scene, Ptr<Camera> camera)
-	: Raster(pOGLW,scene,camera)
+	: Raster(pOGLW,scene,camera), curMaterialShader(Shader::InValid)
 {
 	RegMemberFunc<SObj>(&DeferredRaster::Visit);
 
@@ -56,8 +58,13 @@ DeferredRaster::DeferredRaster(RawAPI_OGLW * pOGLW, Ptr<Scene> scene, Ptr<Camera
 	RegMemberFunc<Plane>(&DeferredRaster::Visit);
 	RegMemberFunc<TriMesh>(&DeferredRaster::Visit);
 
-	// metal
+	// material
 	RegMemberFunc<BSDF_MetalWorkflow>(&DeferredRaster::Visit);
+	RegMemberFunc<BSDF_Diffuse>(&DeferredRaster::Visit);
+
+	// regist id
+	mngrMID.Reg<BSDF_MetalWorkflow>(0);
+	mngrMID.Reg<BSDF_Diffuse>(1);
 }
 
 void DeferredRaster::Init() {
@@ -65,7 +72,7 @@ void DeferredRaster::Init() {
 
 	InitShaders();
 
-	gbufferFBO = FBO(pOGLW->width(), pOGLW->height(), { 3,3,3,3 });
+	gbufferFBO = FBO(pOGLW->width(), pOGLW->height(), { 4,4,4,4 });
 	windowFBO = FBO(pOGLW->width(), pOGLW->height(), {3});
 }
 
@@ -78,7 +85,12 @@ void DeferredRaster::InitShaders() {
 }
 
 void DeferredRaster::InitShader_GBuffer() {
-	metalShader = Shader(rootPath + str_Basic_P3N3T2T3_vs, rootPath + "data/shaders/Engine/DeferredPipline/Metal_GBuffer.fs");
+	InitShader_GBuffer_MetalWorkflow();
+	InitShader_GBuffer_Diffuse();
+}
+
+void DeferredRaster::InitShader_GBuffer_MetalWorkflow() {
+	metalShader = Shader(rootPath + str_Basic_P3N3T2T3_vs, rootPath + "data/shaders/Engine/DeferredPipeline/GBuffer_MetalWorkflow.fs");
 
 	metalShader.SetInt("metal.albedoTexture", 0);
 	metalShader.SetInt("metal.metallicTexture", 1);
@@ -86,18 +98,30 @@ void DeferredRaster::InitShader_GBuffer() {
 	metalShader.SetInt("metal.aoTexture", 3);
 	metalShader.SetInt("metal.normalTexture", 4);
 
+	metalShader.SetInt("ID", mngrMID.Get<BSDF_MetalWorkflow>());
+
 	BindUBO(metalShader);
 }
 
+void DeferredRaster::InitShader_GBuffer_Diffuse() {
+	diffuseShader = Shader(rootPath + str_Basic_P3N3T2T3_vs, rootPath + "data/shaders/Engine/DeferredPipeline/GBuffer_Diffuse.fs");
+
+	diffuseShader.SetInt("diffuse.albedoTexture", 0);
+
+	diffuseShader.SetInt("ID", mngrMID.Get<BSDF_Diffuse>());
+	
+	BindUBO(diffuseShader);
+}
+
 void DeferredRaster::InitShader_DirectLight() {
-	directLightShader = Shader(rootPath + str_Screen_vs, rootPath + "data/shaders/Engine/DeferredPipline/directLight.fs");
+	directLightShader = Shader(rootPath + str_Screen_vs, rootPath + "data/shaders/Engine/DeferredPipeline/directLight.fs");
 
 	int idx = 0;
 
-	directLightShader.SetInt("Position", idx++);
-	directLightShader.SetInt("Normal", idx++);
-	directLightShader.SetInt("Albedo", idx++);
-	directLightShader.SetInt("RMAO", idx++);
+	directLightShader.SetInt("GBuffer0", idx++);
+	directLightShader.SetInt("GBuffer1", idx++);
+	directLightShader.SetInt("GBuffer2", idx++);
+	directLightShader.SetInt("GBuffer3", idx++);
 
 	for (int i = 0; i < maxPointLights; i++)
 		directLightShader.SetInt("pointLightDepthMap" + to_string(i), idx++);
@@ -113,15 +137,16 @@ void DeferredRaster::InitShader_DirectLight() {
 }
 
 void DeferredRaster::InitShader_AmbientLight() {
-	ambientLightShader = Shader(rootPath + str_Screen_vs, rootPath + "data/shaders/Engine/DeferredPipline/ambientLight.fs");
+	ambientLightShader = Shader(rootPath + str_Screen_vs, rootPath + "data/shaders/Engine/DeferredPipeline/ambientLight.fs");
 
 	int idx = 0;
 
 	ambientLightShader.SetInt("DirectLight", idx++);
-	ambientLightShader.SetInt("Position", idx++);
-	ambientLightShader.SetInt("Normal", idx++);
-	ambientLightShader.SetInt("Albedo", idx++);
-	ambientLightShader.SetInt("RMAO", idx++);
+
+	ambientLightShader.SetInt("GBuffer0", idx++);
+	ambientLightShader.SetInt("GBuffer1", idx++);
+	ambientLightShader.SetInt("GBuffer2", idx++);
+	ambientLightShader.SetInt("GBuffer3", idx++);
 
 	ambientLightShader.SetInt("irradianceMap", idx++);
 	ambientLightShader.SetInt("prefilterMap", idx++);
@@ -141,7 +166,7 @@ void DeferredRaster::InitShader_Skybox() {
 }
 
 void DeferredRaster::InitShader_PostProcess() {
-	postProcessShader = Shader(rootPath + str_Screen_vs, rootPath + "data/shaders/Engine/DeferredPipline/postProcess.fs");
+	postProcessShader = Shader(rootPath + str_Screen_vs, rootPath + "data/shaders/Engine/DeferredPipeline/postProcess.fs");
 	
 	postProcessShader.SetInt("img", 0);
 }
@@ -296,14 +321,12 @@ void DeferredRaster::Visit(Ptr<SObj> sobj) {
 			break;
 
 		auto cmptMaterial = sobj->GetComponent<CmptMaterial>();
-		if (!cmptMaterial)
+		if (!cmptMaterial || !cmptMaterial->material)
 			break;
 
-		auto metal = CastTo<BSDF_MetalWorkflow>(cmptMaterial->material);
-		if (!metal)
-			break;
+		curMaterialShader = Shader::InValid;
+		cmptMaterial->material->Accept(This());
 
-		metal->Accept(This());
 		geometry->primitive->Accept(This());
 	} while (false);
 
@@ -333,19 +356,43 @@ void DeferredRaster::Visit(Ptr<BSDF_MetalWorkflow> metal) {
 		else
 			metalShader.SetBool(wholeName, false);
 	}
+
+	curMaterialShader = metalShader;
+}
+
+void DeferredRaster::Visit(Ptr<BSDF_Diffuse> diffuse) {
+	string strBSDF = "diffuse.";
+	diffuseShader.SetVec3f(strBSDF + "colorFactor", diffuse->colorFactor);
+	if (diffuse->albedoTexture && diffuse->albedoTexture->IsValid()) {
+		diffuseShader.SetBool(strBSDF + "haveAlbedoTexture", true);
+		pOGLW->GetTex(diffuse->albedoTexture).Use(0);
+	}
+	else
+		diffuseShader.SetBool(strBSDF + "haveAlbedoTexture", false);
+
+	curMaterialShader = diffuseShader;
 }
 
 void DeferredRaster::Visit(Ptr<Sphere> sphere) {
-	metalShader.SetMat4f("model", modelVec.back());
-	pOGLW->GetVAO(ShapeType::Sphere).Draw(metalShader);
+	if (!curMaterialShader.IsValid())
+		return;
+
+	curMaterialShader.SetMat4f("model", modelVec.back());
+	pOGLW->GetVAO(ShapeType::Sphere).Draw(curMaterialShader);
 }
 
 void DeferredRaster::Visit(Ptr<Plane> plane) {
-	metalShader.SetMat4f("model", modelVec.back());
-	pOGLW->GetVAO(ShapeType::Plane).Draw(metalShader);
+	if (!curMaterialShader.IsValid())
+		return;
+
+	curMaterialShader.SetMat4f("model", modelVec.back());
+	pOGLW->GetVAO(ShapeType::Plane).Draw(curMaterialShader);
 }
 
 void DeferredRaster::Visit(Ptr<TriMesh> mesh) {
-	metalShader.SetMat4f("model", modelVec.back());
-	pOGLW->GetVAO(mesh).Draw(metalShader);
+	if (!curMaterialShader.IsValid())
+		return;
+
+	curMaterialShader.SetMat4f("model", modelVec.back());
+	pOGLW->GetVAO(mesh).Draw(curMaterialShader);
 }

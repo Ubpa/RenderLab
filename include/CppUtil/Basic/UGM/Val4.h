@@ -24,11 +24,12 @@ namespace CppUtil {
 				assert(!HasNaN());
 			}
 
-			explicit Val(T val) : Val(val, val, val, val) { }
+			template<typename U, typename = std::enable_if_t<std::is_convertible_v<U, T>>>
+			Val(U val) : Val(val, val, val, val) { }
 
-			Val() : Val(static_cast<T>(0)) { }
+			Val() : Val(0) { }
 
-			template<typename U, int N>
+			template<typename U, int N, typename = std::enable_if_t<std::is_convertible_v<U, T>>>
 			Val(U(&arr)[N]) : Val(arr[0], arr[1], arr[2], arr[3]) { assert(N >= 4); }
 
 			template<typename U, typename V, typename W>
@@ -61,8 +62,8 @@ namespace CppUtil {
 				return IsVal(static_cast<T>(0));
 			}
 
-			const T * Data() const { return _data; }
-			T * Data() { return _data; }
+			const T * Data() const & { return _data; }
+			T * Data() & { return _data; }
 
 			constexpr const T & MinComponent() const {
 				return std::min(x, std::min(y, std::min(z, w)));

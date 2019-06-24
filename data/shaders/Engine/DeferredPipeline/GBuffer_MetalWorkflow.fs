@@ -1,9 +1,16 @@
 #version 330 core
 
-layout (location = 0) out vec3 Position;
-layout (location = 1) out vec3 Normal;
-layout (location = 2) out vec3 Albedo;
-layout (location = 3) out vec3 RMAO;
+layout (location = 0) out vec4 GBuffer0;
+layout (location = 1) out vec4 GBuffer1;
+layout (location = 2) out vec4 GBuffer2;
+layout (location = 3) out vec4 GBuffer3;
+
+// layout
+//      x   y   z   w
+// 0 [    pos   ]  ID
+// 1 [   norm   ]   r
+// 2 [  albedo  ]   m
+// 3               ao
 
 in VS_OUT {
     vec3 FragPos;
@@ -33,10 +40,11 @@ struct BSDF_MetalWorkflow {
 };
 
 uniform BSDF_MetalWorkflow metal;
+uniform int ID;
 
 vec3 CalcBumpedNormal(vec3 normal, vec3 tangent, sampler2D normalTexture, vec2 texcoord);
 
-void main(){
+void main() {
 	// 获取属性值
 	vec3 albedo = metal.colorFactor;
 	if(metal.haveAlbedoTexture) {
@@ -63,10 +71,11 @@ void main(){
 		norm = CalcBumpedNormal(norm, normalize(fs_in.Tangent), metal.normalTexture, fs_in.TexCoords);
 	}
 	
-	Position = fs_in.FragPos;
-	Normal = norm;
-	Albedo = albedo;
-	RMAO = vec3(roughness, metallic, ao);
+	// pack GBuffer
+	GBuffer0 = vec4(fs_in.FragPos, ID);
+	GBuffer1 = vec4(norm, roughness);
+	GBuffer2 = vec4(albedo, metallic);
+	GBuffer3 = vec4(0, 0, 0, ao);
 }
 
 vec3 CalcBumpedNormal(vec3 normal, vec3 tangent, sampler2D normalTexture, vec2 texcoord) {

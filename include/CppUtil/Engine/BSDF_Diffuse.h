@@ -6,10 +6,6 @@
 #include <CppUtil/Basic/CosineWeightedHemisphereSampler3D.h>
 
 namespace CppUtil {
-	namespace Basic {
-		class Image;
-	}
-
 	namespace Engine {
 		class BSDF_Diffuse final : public BSDF {
 		public:

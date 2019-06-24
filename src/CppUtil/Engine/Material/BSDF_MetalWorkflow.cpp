@@ -19,6 +19,7 @@ const RGBf BSDF_MetalWorkflow::F(const Normalf & wo, const Normalf & wi, const P
 
 	auto wh = (wo + wi).Normalize();
 
+	// Lambertian
 	auto diffuse = albedo / Math::PI;
 
 	auto D = sggx.D(wh);
@@ -29,7 +30,7 @@ const RGBf BSDF_MetalWorkflow::F(const Normalf & wo, const Normalf & wi, const P
 		return RGBf(0.f);
 	auto specular = D * G * F / denominator;
 
-	auto kS = G * F;
+	auto kS = F;
 	auto kD = (1 - metallic) * (RGBf(1.f) - kS);
 
 	auto rst = kD * diffuse + specular;
@@ -97,7 +98,7 @@ const RGBf BSDF_MetalWorkflow::Sample_f(const Normalf & wo, const Point2 & texco
 	
 	auto specular = D * G * F / denominator;
 
-	auto kS = G * F;
+	auto kS = F;
 	auto kD = (1 - metallic) * (RGBf(1.f) - kS);
 
 	auto rst = kD * diffuse + specular;

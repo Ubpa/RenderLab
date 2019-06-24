@@ -58,6 +58,10 @@ namespace CppUtil {
 
 			//------------
 			void UniformBlockBind(const std::string &name, uint bindPoint) const;
+
+		public:
+			static const Shader InValid;
+
 		private:
 			// utility function for checking shader compilation/linking errors.
 			int CheckCompileErrors(uint shader, CompileType type);

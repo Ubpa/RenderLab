@@ -49,7 +49,7 @@ void Viewer::SetRaster(RasterType rasterType) {
 	case RasterType::DirectIllum:
 		raster = DirectIllumRaster::New(pOGLW, scene, roamer->GetCamera());
 		break;
-	case RasterType::DeferredPipline:
+	case RasterType::DeferredPipeline:
 		raster = DeferredRaster::New(pOGLW, scene, roamer->GetCamera());
 		break;
 	case RasterType::ForwardNPR:

@@ -8,5 +8,6 @@
 #include <CppUtil/Engine/BSDF_CookTorrance.h>
 #include <CppUtil/Engine/BSDF_MetalWorkflow.h>
 #include <CppUtil/Engine/BSDF_FrostedGlass.h>
+#include <CppUtil/Engine/BSDF_Frostbite.h>
 
 #endif//!_ENGINE_ALL_BSDFS_H_

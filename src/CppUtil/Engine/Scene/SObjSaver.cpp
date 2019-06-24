@@ -33,6 +33,7 @@ SObjSaver::SObjSaver() {
 	RegMemberFunc<BSDF_Mirror>(&SObjSaver::Visit);
 	RegMemberFunc<BSDF_FrostedGlass>(&SObjSaver::Visit);
 	RegMemberFunc<Gooch>(&SObjSaver::Visit);
+	RegMemberFunc<BSDF_Frostbite>(&SObjSaver::Visit);
 
 	RegMemberFunc<CmptTransform>(&SObjSaver::Visit);
 }
@@ -309,8 +310,24 @@ void SObjSaver::Visit(Ptr<BSDF_Mirror> bsdf){
 
 void SObjSaver::Visit(Ptr<Gooch> gooch) {
 	NewEle(str::Gooch::type, [=]() {
-
 		NewEle(str::Gooch::colorFactor, gooch->colorFactor);
 		NewEle(str::Gooch::colorTexture, gooch->colorTexture);
+	});
+}
+
+void SObjSaver::Visit(Ptr<BSDF_Frostbite> bsdf) {
+	NewEle(str::BSDF_Frostbite::type, [=]() {
+		NewEle(str::BSDF_Frostbite::colorFactor, bsdf->colorFactor);
+		NewEle(str::BSDF_Frostbite::albedoTexture, bsdf->albedoTexture);
+
+		NewEle(str::BSDF_Frostbite::metallicFactor, bsdf->metallicFactor);
+		NewEle(str::BSDF_Frostbite::metallicTexture, bsdf->metallicTexture);
+
+		NewEle(str::BSDF_Frostbite::roughnessFactor, bsdf->roughnessFactor);
+		NewEle(str::BSDF_Frostbite::roughnessTexture, bsdf->roughnessTexture);
+
+		NewEle(str::BSDF_Frostbite::aoTexture, bsdf->aoTexture);
+
+		NewEle(str::BSDF_Frostbite::normalTexture, bsdf->normalTexture);
 	});
 }
