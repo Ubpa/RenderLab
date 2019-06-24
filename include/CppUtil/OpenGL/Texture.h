@@ -47,6 +47,8 @@ namespace CppUtil {
 			ENUM_TYPE GetType() const { return type; }
 			bool IsValid() const;
 
+			void Free();
+
 			static const Texture InValid;
 		private:
 			static uint Type2GL(ENUM_TYPE type);

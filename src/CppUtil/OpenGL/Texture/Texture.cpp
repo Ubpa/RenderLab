@@ -322,3 +322,12 @@ bool Texture::GenMipmap() {
 	glGenerateMipmap(glType);
 	return true;
 }
+
+void Texture::Free() {
+	if (!IsValid())
+		return;
+
+	glDeleteTextures(1, &ID);
+	ID = -1;
+	type = ENUM_TYPE_NOT_VALID;
+}

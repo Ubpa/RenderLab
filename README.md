@@ -115,6 +115,7 @@ Optix: 6.0
   - [x] Ambient Light
   - [x] Sky Box
   - [x] window
+  - [ ] 优化
 - [x] Gooch
 - [ ] 拷贝粘贴，模型、图像等复用
 - [ ] CSM

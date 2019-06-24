@@ -48,7 +48,7 @@ const OpenGL::FBO::TexTarget EnvGenerator::mapper[6] = {
 };
 
 EnvGenerator::EnvGenerator(QT::RawAPI_OGLW * pOGLW)
-	: pOGLW(pOGLW), skyboxSize(1024), irradianceSize(128), prefilterSize(1024), brdfSize(512)
+	: pOGLW(pOGLW), skyboxSize(1024), irradianceSize(128), prefilterSize(1024), brdfSize(128)
 {
 	RegMemberFunc<Scene>(&EnvGenerator::Visit);
 }
@@ -127,13 +127,12 @@ void EnvGenerator::Visit(Ptr<Scene> scene) {
 	}
 
 	auto environment = scene->GetInfiniteAreaLight();
-	if (!environment || !environment->GetImg()) {
+	if (!environment) {
 		Clear();
 		return;
 	}
 
-	auto img = environment->GetImg();
-	UpdateTextures(img);
+	UpdateTextures(environment->GetImg());
 }
 
 void EnvGenerator::InitBRDF_LUT() {
@@ -156,6 +155,9 @@ void EnvGenerator::InitBRDF_LUT() {
 }
 
 void EnvGenerator::UpdateTextures(PtrC<Image> img) {
+	// TODO
+	// ÓÅ»¯Âß¼­
+
 	GLint origFBO;
 	glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &origFBO);
 	GLint origViewport[4];
@@ -164,11 +166,15 @@ void EnvGenerator::UpdateTextures(PtrC<Image> img) {
 	do {
 		InitBRDF_LUT();
 
+		if (img == nullptr) {
+			Clear();
+			break;
+		}
+
 		if (img == curImg.lock())
 			break;
 
 		curImg = img;
-
 
 		UpdateSkybox();
 		UpdateIrradianceMap();
@@ -220,6 +226,7 @@ void EnvGenerator::UpdatePrefilterMap() {
 	prefilterMap.GenBufferForCubemap(prefilterSize, prefilterSize);
 	prefilterMap.GenMipmap();
 
+	shader_prefilter.SetFloat("resolution", static_cast<float>(prefilterSize));
 	for (int mip = 0; mip < maxMipLevels; mip++) {
 		prefilterFBOs[mip].Use();
 
@@ -269,7 +276,7 @@ const Texture EnvGenerator::GetPrefilterMap(PtrC<Image> img) const {
 
 void EnvGenerator::Clear() {
 	curImg.reset();
-	skybox = Texture::InValid;
-	irradianceMap = Texture::InValid;
-	prefilterMap = Texture::InValid;
+	skybox.Free();
+	irradianceMap.Free();
+	prefilterMap.Free();
 }

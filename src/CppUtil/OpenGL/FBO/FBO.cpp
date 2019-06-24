@@ -673,11 +673,11 @@ void FBO::Resize(uint width, uint height) {
 	this->width = width;
 	this->height = height;
 
+	// Free all textures
 	for (auto colorTex : colorTextures)
-		glDeleteTextures(1, &colorTex.GetID());
+		colorTex.Free();
 	colorTextures.clear();
-	glDeleteTextures(1, &depthTexture.GetID());
-	depthTexture = Texture::InValid;
+	depthTexture.Free();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, ID);
 
