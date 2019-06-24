@@ -21,6 +21,7 @@ namespace CppUtil{
 		class Material;
 		class BSDF_MetalWorkflow;
 		class BSDF_Diffuse;
+		class BSDF_Frostbite;
 
 		/*
 		—”≥Ÿπ‹œﬂ
@@ -45,6 +46,7 @@ namespace CppUtil{
 			void InitShader_GBuffer();
 			void InitShader_GBuffer_MetalWorkflow();
 			void InitShader_GBuffer_Diffuse();
+			void InitShader_GBuffer_Frostbite();
 			void InitShader_DirectLight();
 			void InitShader_AmbientLight();
 			void InitShader_Skybox();
@@ -55,6 +57,7 @@ namespace CppUtil{
 
 			virtual void Visit(Basic::Ptr<BSDF_MetalWorkflow> bsdf);
 			virtual void Visit(Basic::Ptr<BSDF_Diffuse> bsdf);
+			virtual void Visit(Basic::Ptr<BSDF_Frostbite> bsdf);
 
 			virtual void Visit(Basic::Ptr<Sphere> sphere);
 			virtual void Visit(Basic::Ptr<Plane> plane);
@@ -74,6 +77,7 @@ namespace CppUtil{
 			std::vector<Transform> modelVec;
 			OpenGL::Shader metalShader;
 			OpenGL::Shader diffuseShader;
+			OpenGL::Shader frostbiteShader;
 			OpenGL::Shader directLightShader;
 			OpenGL::Shader ambientLightShader;
 			OpenGL::Shader skyboxShader;
@@ -93,8 +97,6 @@ namespace CppUtil{
 				inline void Reg(int ID);
 				template<typename T, typename = std::enable_if_t<std::is_base_of_v<Material, T>>>
 				inline int Get() const;
-				template<typename T, typename = std::enable_if_t<std::is_base_of_v<Material, T>>>
-				inline bool Contain() const;
 			private:
 				Basic::TypeMap<int> idMap;
 				std::set<int> registedID;
@@ -129,12 +131,6 @@ namespace CppUtil{
 			
 			idMap[typeid(T)] = ID;
 			registedID.insert(ID);
-		}
-
-		template<typename T, typename>
-		bool DeferredRaster::MngrMID::Contain() const {
-			auto target = idMap.find(typeid(T));
-			return target != idMap.end();
 		}
 	}
 }

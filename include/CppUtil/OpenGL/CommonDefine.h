@@ -56,8 +56,8 @@ namespace Define{
 	const std::string str_Interpolation_vs = str_Basic_P2T2_vs;
 	const std::string str_Interpolation_fs = str_ShadersCommon_Prefix + "Interpolation" + str_FsPostfix;
 
-	const std::string str_Gamma_vs = str_Basic_P2T2_vs;
-	const std::string str_Gamma_fs = str_ShadersCommon_Prefix + "Gamma" + str_FsPostfix;
+	const std::string str_PostProcess_vs = str_Basic_P2T2_vs;
+	const std::string str_PostProcess_fs = str_ShadersCommon_Prefix + "postProcess" + str_FsPostfix;
 
 	const std::string str_empty_fs = str_ShadersCommon_Prefix + "empty" + str_FsPostfix;
 

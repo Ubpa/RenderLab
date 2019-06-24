@@ -77,7 +77,7 @@ Optix: 6.0
 
 - [x] 材质（HC-GGX + Disney Diffuse）
   - [x] 离线
-  - [ ] 实时
+  - [x] 实时
 - [ ] 光照
   - [ ] 直接
     - [ ] 点

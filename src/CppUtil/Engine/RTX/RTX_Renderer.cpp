@@ -171,9 +171,9 @@ void RTX_Renderer::Run(Ptr<Scene> scene, Ptr<Image> img) {
 				}
 
 				// 这一步可以极大的减少白噪点（特别是由点光源产生）
-				float illum = radiance.Illumination();
-				if (illum > lightNum)
-					radiance *= lightNum / illum;
+				//float illum = radiance.Illumination();
+				//if (illum > lightNum)
+				//	radiance *= lightNum / illum;
 
 				filmTile->AddSample(posf, radiance);
 			}

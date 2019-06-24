@@ -432,7 +432,7 @@ void Attribute::ComponentVisitor::Visit(Ptr<BSDF_Frostbite> bsdf) {
 	grid->AddEditVal("- Roughness Factor", bsdf->roughnessFactor, 0, 1, 100);
 	grid->AddEditImage("- Roughness Texture", bsdf->roughnessTexture);
 
-	grid->AddEditImage("- AO Texture", bsdf->albedoTexture);
+	grid->AddEditImage("- AO Texture", bsdf->aoTexture);
 
 	grid->AddEditImage("- Normal Texture", bsdf->normalTexture);
 }

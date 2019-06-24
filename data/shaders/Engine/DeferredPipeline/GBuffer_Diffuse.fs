@@ -8,9 +8,9 @@ layout (location = 3) out vec4 GBuffer3;
 // layout
 //      x   y   z   w
 // 0 [    pos   ]  ID
-// 1 [   norm   ]
-// 2 [  albedo  ]
-// 3 
+// 1 [   norm   ]   1
+// 2 [  albedo  ]   0
+// 3                1
 
 in VS_OUT {
     vec3 FragPos;
@@ -37,7 +37,7 @@ void main() {
 	
 	// pack GBuffer
 	GBuffer0 = vec4(fs_in.FragPos, ID);
-	GBuffer1 = vec4(normalize(fs_in.Normal), 0);
+	GBuffer1 = vec4(normalize(fs_in.Normal), 1);
 	GBuffer2 = vec4(albedo, 0);
-	GBuffer3 = vec4(0, 0, 0, 0);
+	GBuffer3 = vec4(0, 0, 0, 1);
 }

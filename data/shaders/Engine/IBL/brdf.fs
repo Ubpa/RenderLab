@@ -1,5 +1,5 @@
 #version 330 core
-out vec2 FragColor;
+out vec3 FragColor;
 in vec2 TexCoords;
 
 const float PI = 3.14159265359;
@@ -36,12 +36,31 @@ vec3 ImportanceSampleGGX(vec2 Xi, vec3 N, float roughness)
 	H.z = cosTheta;
 	
 	// from tangent-space H vector to world-space sample vector
-	vec3 up          = abs(N.z) < 0.999 ? vec3(0.0, 0.0, 1.0) : vec3(1.0, 0.0, 0.0);
+	vec3 up        = abs(N.z) < 0.999 ? vec3(0.0, 0.0, 1.0) : vec3(1.0, 0.0, 0.0);
 	vec3 tangent   = normalize(cross(up, N));
 	vec3 bitangent = cross(N, tangent);
 	
 	vec3 sampleVec = tangent * H.x + bitangent * H.y + N * H.z;
 	return normalize(sampleVec);
+}
+// ----------------------------------------------------------------------------
+vec3 ImportanceSampleCosDir(vec2 u, vec3 N)
+{
+	// Local referencial
+	vec3 upVector = abs(N.z) < 0.999 ? vec3(0, 0, 1) : vec3(1, 0, 0);
+	vec3 tangentX = normalize(cross(upVector, N));
+	vec3 tangentY = cross(N, tangentX);
+	
+	float u1 = u.x;
+	float u2 = u.y;
+	
+	float r = sqrt(u1);
+	float phi = u2 * PI * 2;
+	
+	vec3 L = vec3(r * cos(phi), r * sin(phi), sqrt(max(0.0f, 1.0f - u1)));
+	L = normalize(tangentX * L.y + tangentY * L.x + N * L.z);
+	
+	return L;
 }
 // ----------------------------------------------------------------------------
 float GeometrySchlickGGX(float NdotV, float roughness)
@@ -66,15 +85,35 @@ float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness)
     return ggx1 * ggx2;
 }
 // ----------------------------------------------------------------------------
-vec2 IntegrateBRDF(float NdotV, float roughness)
+float DisneyDiffuseFr(vec3 norm, vec3 wo, vec3 wi, float linearRoughness)
 {
+	vec3 h = normalize(wo + wi);
+	float HoWi = dot(h, wi);
+	float HoWi2 = HoWi * HoWi;
+	
+	float NoWo = dot(norm, wo);
+	float NoWi = dot(norm, wi);
+	
+	float energyBias = mix(0.f, 0.5f, linearRoughness);
+	float energyFactor = mix(1.f, 1.f / 1.51f, linearRoughness);
+	float fd90 = energyBias + 2.f * HoWi2 * linearRoughness;
+	float lightScatter = 1.f + fd90 * pow(1.f - NoWi * NoWi, 5);
+	float viewScatter = 1.f + fd90 * pow(1.f - NoWo * NoWo, 5);
+	
+	return lightScatter * viewScatter * energyFactor;
+}
+// ----------------------------------------------------------------------------
+vec3 IntegrateBRDF(float NdotV, float roughness)
+{
+	// 由于各向同性，随意取一个 V 即可
     vec3 V;
     V.x = sqrt(1.0 - NdotV*NdotV);
     V.y = 0.0;
     V.z = NdotV;
 
     float A = 0.0;
-    float B = 0.0; 
+    float B = 0.0;
+	float C = 0.0;
 
     vec3 N = vec3(0.0, 0.0, 1.0);
     
@@ -84,30 +123,44 @@ vec2 IntegrateBRDF(float NdotV, float roughness)
         // generates a sample vector that's biased towards the
         // preferred alignment direction (importance sampling).
         vec2 Xi = Hammersley(i, SAMPLE_COUNT);
-        vec3 H = ImportanceSampleGGX(Xi, N, roughness);
-        vec3 L = normalize(2.0 * dot(V, H) * H - V);
+		
+		{ // A and B
+			vec3 H = ImportanceSampleGGX(Xi, N, roughness);
+			vec3 L = normalize(2.0 * dot(V, H) * H - V);
 
-        float NdotL = max(L.z, 0.0);
-        float NdotH = max(H.z, 0.0);
-        float VdotH = max(dot(V, H), 0.0);
+			float NdotL = max(L.z, 0.0);
+			float NdotH = max(H.z, 0.0);
+			float VdotH = max(dot(V, H), 0.0);
 
-        if(NdotL > 0.0)
-        {
-            float G = GeometrySmith(N, V, L, roughness);
-            float G_Vis = (G * VdotH) / (NdotH * NdotV);
-            float Fc = pow(1.0 - VdotH, 5.0);
+			if(NdotL > 0.0)
+			{
+				float G = GeometrySmith(N, V, L, roughness);
+				float G_Vis = (G * VdotH) / (NdotH * NdotV);
+				float Fc = pow(1.0 - VdotH, 5.0);
 
-            A += (1.0 - Fc) * G_Vis;
-            B += Fc * G_Vis;
-        }
+				A += (1.0 - Fc) * G_Vis;
+				B += Fc * G_Vis;
+			}
+		}
+		
+		{// Disney Diffuse DFG
+			vec3 L = ImportanceSampleCosDir(Xi, N);
+			float NoL = dot(N, L);
+			if(NoL > 0){
+				float LdotH = clamp(dot(L, normalize (V + L)), 0, 1);
+				float NdotV = clamp(dot(N, V), 0, 1);
+				C += DisneyDiffuseFr(N, V, L, sqrt(roughness));
+			}
+		}
     }
     A /= float(SAMPLE_COUNT);
     B /= float(SAMPLE_COUNT);
-    return vec2(A, B);
+    C /= float(SAMPLE_COUNT);
+    return vec3(A, B, C);
 }
 // ----------------------------------------------------------------------------
 void main() 
 {
-    vec2 integratedBRDF = IntegrateBRDF(TexCoords.x, TexCoords.y);
+    vec3 integratedBRDF = IntegrateBRDF(TexCoords.x, TexCoords.y);
     FragColor = integratedBRDF;
 }

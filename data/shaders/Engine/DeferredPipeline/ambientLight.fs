@@ -3,6 +3,8 @@ out vec3 FragColor;
 
 in vec2 TexCoords;
 
+#define MAX_REFLECTION_LOD 4
+
 // 160
 layout (std140) uniform Camera {
 	mat4 view;			// 64	0	64
@@ -36,9 +38,22 @@ uniform sampler2D   brdfLUT;
 vec3 GetF0(vec3 albedo, float metallic);
 vec3 FrR(vec3 wo, vec3 norm, vec3 F0, float roughness);
 
+// We have a better approximation of the off specular peak
+// but due to the other approximations we found this one performs better.
+// N is the normal direction
+// R is the mirror vector
+// This approximation works fine for G smith correlated and uncorrelated
+vec3 getSpecularDominantDir(vec3 norm, vec3 R, float roughness);
+
+// N is the normal direction
+// V is the view vector
+// NdotV is the cosine angle between the view vector and the normal
+vec3 getDiffuseDominantDir(vec3 N, vec3 V, float roughness);
+
 vec3 EvaluateAmbient(int ID, vec3 wo, vec3 norm, vec3 albedo, float roughness, float metallic, float ao);
 vec3 EvaluateAmbient_MetalWorkflow(vec3 wo, vec3 norm, vec3 albedo, float roughness, float metallic, float ao);
 vec3 EvaluateAmbient_Diffuse(vec3 norm, vec3 albedo);
+vec3 EvaluateAmbient_Frostbite(vec3 wo, vec3 norm, vec3 albedo, float roughness, float metallic, float ao);
 
 void main() {
 	vec3 direct = texture(DirectLight, TexCoords).xyz;
@@ -79,12 +94,31 @@ vec3 FrR(vec3 wo, vec3 norm, vec3 F0, float roughness) {
     return F0 + (lambda - F0) * pow(1 - cosTheta, 5);
 }
 
-vec3 EvaluateAmbient(int ID, vec3 wo, vec3 norm, vec3 albedo, float roughness, float metallic, float ao){
-	if(ID == 0){
+vec3 getSpecularDominantDir(vec3 norm, vec3 R, float roughness) {
+    float smoothness = clamp(1 - roughness, 0, 1);
+    float lerpFactor = smoothness * (sqrt(smoothness) + roughness);
+    // The result is not normalized as we fetch in a cubemap
+    return mix(norm, R, lerpFactor);
+}
+
+vec3 getDiffuseDominantDir(vec3 N, vec3 V, float roughness) {
+	float NoV = dot(N, V);
+	float a = 1.02341f * roughness - 1.51174f;
+	float b = -0.511705f * roughness + 0.755868f;
+	float lerpFactor = clamp((NoV * a + b) * roughness, 0, 1);
+	// The result is not normalized as we fetch in a cubemap
+	return mix(N, V, lerpFactor);
+}
+
+vec3 EvaluateAmbient(int ID, vec3 wo, vec3 norm, vec3 albedo, float roughness, float metallic, float ao) {
+	if(ID == 0) {
 		return EvaluateAmbient_MetalWorkflow(wo, norm, albedo, roughness, metallic, ao);
 	}
-	else if(ID == 1){
+	else if(ID == 1) {
 		return EvaluateAmbient_Diffuse(norm, albedo);
+	}
+	else if(ID == 2) {
+		return EvaluateAmbient_Frostbite(wo, norm, albedo, roughness, metallic, ao);
 	}
 	else
 		return vec3(0); // not support ID
@@ -102,7 +136,6 @@ vec3 EvaluateAmbient_MetalWorkflow(vec3 wo, vec3 norm, vec3 albedo, float roughn
 	
 	// specular
 	vec3 R = reflect(-wo, norm);
-	const float MAX_REFLECTION_LOD = 4;
 	// 用 R 采样
 	vec3 prefilteredColor = haveSkybox ? textureLod(prefilterMap, R,  roughness * MAX_REFLECTION_LOD).rgb : vec3(1);
 	float cosTheta = clamp(dot(norm, wo), 0, 1);
@@ -115,4 +148,25 @@ vec3 EvaluateAmbient_MetalWorkflow(vec3 wo, vec3 norm, vec3 albedo, float roughn
 vec3 EvaluateAmbient_Diffuse(vec3 norm, vec3 albedo) {
 	vec3 irradiance = haveSkybox ? texture(irradianceMap, norm).rgb : vec3(1);
 	return irradiance * albedo * intensity * colorFactor;
+}
+
+vec3 EvaluateAmbient_Frostbite(vec3 wo, vec3 norm, vec3 albedo, float roughness, float metallic, float ao) {
+	float perpRoughness = roughness * roughness;
+	float cosTheta = clamp(dot(norm, wo), 0, 1);
+	vec3 envBRDF = texture(brdfLUT, vec2(cosTheta, perpRoughness)).rgb;
+	
+	// diffuse, need update to Disney Diffuse
+	vec3 dominantN = getDiffuseDominantDir(norm, wo, perpRoughness);
+	vec3 irradiance = haveSkybox ? texture(irradianceMap, dominantN).rgb : vec3(1);
+	vec3 diffuse = irradiance * envBRDF.z * albedo;
+	
+	// specular
+	vec3 R = reflect(-wo, norm);
+	vec3 dominantDir = getSpecularDominantDir(norm, R, perpRoughness);
+	// 用 dominantDir 采样
+	vec3 prefilteredColor = haveSkybox ? textureLod(prefilterMap, dominantDir,  perpRoughness * MAX_REFLECTION_LOD).rgb : vec3(1);
+	vec3 F0 = GetF0(albedo, metallic);
+	vec3 specular = prefilteredColor * (F0 * envBRDF.x + envBRDF.y);
+	
+	return ((1 - metallic) * diffuse + specular) * ao * intensity * colorFactor;
 }

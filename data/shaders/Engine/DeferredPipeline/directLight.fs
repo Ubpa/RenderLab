@@ -125,10 +125,12 @@ float SchlickGGX_G(vec3 norm, vec3 wo, vec3 wi, float roughness);
 vec3 GetF0(vec3 albedo, float metallic);
 vec3 SchlickFr(vec3 w, vec3 h, vec3 albedo, float metallic);
 vec3 SchlickFrR(vec3 wo, vec3 norm, vec3 F0, float roughness);
+float DisneyDiffuseFr(vec3 norm, vec3 wo, vec3 wi, float linearRoughness);
 
 vec3 BRDF(int ID, vec3 norm, vec3 wo, vec3 wi, vec3 albedo, float metallic, float roughness, float ao);
-vec3 BRDF_Diffuse(vec3 albedo);
 vec3 BRDF_MetalWorkflow(vec3 norm, vec3 wo, vec3 wi, vec3 albedo, float metallic, float roughness, float ao);
+vec3 BRDF_Diffuse(vec3 albedo);
+vec3 BRDF_Frostbite(vec3 norm, vec3 wo, vec3 wi, vec3 albedo, float metallic, float roughness, float ao);
 
 float PointLightVisibility(vec3 lightToFrag, int id);
 float PointLightVisibility(vec3 lightToFrag, samplerCube depthMap);
@@ -273,12 +275,32 @@ vec3 SchlickFrR(vec3 wo, vec3 norm, vec3 F0, float roughness) {
     return F0 + (max(vec3(1.0 - roughness), F0) - F0) * pow(1.0 - cosTheta, 5.0);
 }
 
+float DisneyDiffuseFr(vec3 norm, vec3 wo, vec3 wi, float linearRoughness) {
+	vec3 h = normalize(wo + wi);
+	float HoWi = dot(h, wi);
+	float HoWi2 = HoWi * HoWi;
+	
+	float NoWo = dot(norm, wo);
+	float NoWi = dot(norm, wi);
+	
+	float energyBias = mix(0.f, 0.5f, linearRoughness);
+	float energyFactor = mix(1.f, 1.f / 1.51f, linearRoughness);
+	float fd90 = energyBias + 2.f * HoWi2 * linearRoughness;
+	float lightScatter = 1.f + fd90 * pow(1.f - NoWi * NoWi, 5);
+	float viewScatter = 1.f + fd90 * pow(1.f - NoWo * NoWo, 5);
+	
+	return lightScatter * viewScatter * energyFactor;
+}
+
 vec3 BRDF(int ID, vec3 norm, vec3 wo, vec3 wi, vec3 albedo, float metallic, float roughness, float ao) {
 	if(ID == 0) {
 		return BRDF_MetalWorkflow(norm, wo, wi, albedo, metallic, roughness, ao);
 	}
 	else if(ID == 1) {
 		return BRDF_Diffuse(albedo);
+	}
+	else if(ID == 2) {
+		return BRDF_Frostbite(norm, wo, wi, albedo, metallic, roughness, ao);
 	}
 	else
 		return vec3(0);// not support ID
@@ -299,13 +321,28 @@ vec3 BRDF_MetalWorkflow(vec3 norm, vec3 wo, vec3 wi, vec3 albedo, float metallic
 	vec3 kD = (1-metallic) * (1 - kS);
 	
 	vec3 rst = kD * diffuse + specular;
-
-	//return ao * rst;
+	
 	return rst;
 }
 
 vec3 BRDF_Diffuse(vec3 albedo) {
 	return albedo / PI;
+}
+
+vec3 BRDF_Frostbite(vec3 norm, vec3 wo, vec3 wi, vec3 albedo, float metallic, float roughness, float ao) {
+	vec3 wh = normalize(wo + wi);
+	
+	float D = SchlickGGX_D(norm, wh, roughness);
+	float G = SchlickGGX_G(norm, wo, wi, roughness);
+	vec3 F = SchlickFr(wo, wh, albedo, metallic);
+	
+	vec3 specular = D * G * F / (4.0f * dot(wh, wo) * dot(wh, wi));
+	
+	vec3 diffuse = albedo * INV_PI * DisneyDiffuseFr(norm, wo, wi, roughness);
+	
+	vec3 rst = (1 - metallic) * diffuse + specular;
+	
+	return rst;
 }
 
 // ------------------------ Visibility ------------------------ 

@@ -28,6 +28,7 @@
 // support material
 #include <CppUtil/Engine/BSDF_MetalWorkflow.h>
 #include <CppUtil/Engine/BSDF_Diffuse.h>
+#include <CppUtil/Engine/BSDF_Frostbite.h>
 
 #include <CppUtil/OpenGL/CommonDefine.h>
 
@@ -61,10 +62,12 @@ DeferredRaster::DeferredRaster(RawAPI_OGLW * pOGLW, Ptr<Scene> scene, Ptr<Camera
 	// material
 	RegMemberFunc<BSDF_MetalWorkflow>(&DeferredRaster::Visit);
 	RegMemberFunc<BSDF_Diffuse>(&DeferredRaster::Visit);
+	RegMemberFunc<BSDF_Frostbite>(&DeferredRaster::Visit);
 
-	// regist id
+	// regist ID
 	mngrMID.Reg<BSDF_MetalWorkflow>(0);
 	mngrMID.Reg<BSDF_Diffuse>(1);
+	mngrMID.Reg<BSDF_Frostbite>(2);
 }
 
 void DeferredRaster::Init() {
@@ -87,6 +90,7 @@ void DeferredRaster::InitShaders() {
 void DeferredRaster::InitShader_GBuffer() {
 	InitShader_GBuffer_MetalWorkflow();
 	InitShader_GBuffer_Diffuse();
+	InitShader_GBuffer_Frostbite();
 }
 
 void DeferredRaster::InitShader_GBuffer_MetalWorkflow() {
@@ -111,6 +115,20 @@ void DeferredRaster::InitShader_GBuffer_Diffuse() {
 	diffuseShader.SetInt("ID", mngrMID.Get<BSDF_Diffuse>());
 	
 	BindUBO(diffuseShader);
+}
+
+void DeferredRaster::InitShader_GBuffer_Frostbite() {
+	frostbiteShader = Shader(rootPath + str_Basic_P3N3T2T3_vs, rootPath + "data/shaders/Engine/DeferredPipeline/GBuffer_Frostbite.fs");
+
+	frostbiteShader.SetInt("bsdf.albedoTexture", 0);
+	frostbiteShader.SetInt("bsdf.metallicTexture", 1);
+	frostbiteShader.SetInt("bsdf.roughnessTexture", 2);
+	frostbiteShader.SetInt("bsdf.aoTexture", 3);
+	frostbiteShader.SetInt("bsdf.normalTexture", 4);
+
+	frostbiteShader.SetInt("ID", mngrMID.Get<BSDF_Frostbite>());
+
+	BindUBO(frostbiteShader);
 }
 
 void DeferredRaster::InitShader_DirectLight() {
@@ -371,6 +389,29 @@ void DeferredRaster::Visit(Ptr<BSDF_Diffuse> diffuse) {
 		diffuseShader.SetBool(strBSDF + "haveAlbedoTexture", false);
 
 	curMaterialShader = diffuseShader;
+}
+
+void DeferredRaster::Visit(Ptr<BSDF_Frostbite> bsdf) {
+	string strBSDF = "bsdf.";
+	frostbiteShader.SetVec3f(strBSDF + "colorFactor", bsdf->colorFactor);
+	frostbiteShader.SetFloat(strBSDF + "metallicFactor", bsdf->metallicFactor);
+	frostbiteShader.SetFloat(strBSDF + "roughnessFactor", bsdf->roughnessFactor);
+
+	const int texNum = 5;
+	PtrC<Image> imgs[texNum] = { bsdf->albedoTexture, bsdf->metallicTexture, bsdf->roughnessTexture, bsdf->aoTexture, bsdf->normalTexture };
+	string names[texNum] = { "Albedo", "Metallic", "Roughness", "AO", "Normal" };
+
+	for (int i = 0; i < texNum; i++) {
+		string wholeName = strBSDF + "have" + names[i] + "Texture";
+		if (imgs[i] && imgs[i]->IsValid()) {
+			frostbiteShader.SetBool(wholeName, true);
+			pOGLW->GetTex(imgs[i]).Use(i);
+		}
+		else
+			frostbiteShader.SetBool(wholeName, false);
+	}
+
+	curMaterialShader = frostbiteShader;
 }
 
 void DeferredRaster::Visit(Ptr<Sphere> sphere) {

@@ -67,13 +67,15 @@ Ptr<PaintImgOpCreator::PaintImgOp> PaintImgOpCreator::GenScenePaintOp() {
 
 		//------------ Screen Shader
 		string screen_vs = rootPath + str_Screen_vs;
-		string screen_fs = rootPath + str_Gamma_fs;
+		string screen_fs = rootPath + str_PostProcess_fs;
 		Shader screenShader(screen_vs, screen_fs);
 		if (!screenShader.IsValid()) {
 			qDebug() << "ERROR: screenShader load fail";
 			return;
 		}
 		screenShader.SetInt("texture0", 0);
+		screenShader.SetBool("needGamma", true);
+		screenShader.SetBool("needTonemap", true);
 		pOGLW->Reg("screenShader", screenShader);
 	}, false);
 

@@ -23,14 +23,15 @@ const Vec3f BSDF_Frostbite::Fr_DisneyDiffuse(const Normalf & wo, const Normalf &
 	auto h = (wo + wi).Normalize();
 	float HoWi = h.Dot(wi);
 	float HoWi2 = HoWi * HoWi;
-	float HoWo = h.Dot(wo);
-	float HoWo2 = HoWo * HoWo;
+
+	float NoWo = SurfCoord::CosTheta(wo);
+	float NoWi = SurfCoord::CosTheta(wi);
 
 	float energyBias = Math::Lerp(0.f, 0.5f, linearRoughness);
 	float energyFactor = Math::Lerp(1.f, 1.f / 1.51f, linearRoughness);
 	float fd90 = energyBias + 2.f * HoWi2 * linearRoughness;
-	float lightScatter = 1.f + fd90 * pow(1.f - HoWi2, 5);
-	float viewScatter = 1.f + fd90 * pow(1.f - HoWo2, 5);
+	float lightScatter = 1.f + fd90 * pow(1.f - NoWi * NoWi, 5);
+	float viewScatter = 1.f + fd90 * pow(1.f - NoWo * NoWo, 5);
 
 	return lightScatter * viewScatter * energyFactor;
 }
@@ -39,9 +40,10 @@ const RGBf BSDF_Frostbite::F(const Normalf & wo, const Normalf & wi, const Point
 	auto albedo = GetAlbedo(texcoord);
 	auto metallic = GetMetallic(texcoord);
 	auto roughness = GetRoughness(texcoord);
+	float perpRoughness = roughness * roughness;
 	//auto ao = GetAO(texcoord);
 
-	ggx.SetAlpha(roughness);
+	ggx.SetAlpha(perpRoughness);
 
 	auto wh = (wo + wi).Normalize();
 
@@ -64,7 +66,8 @@ const RGBf BSDF_Frostbite::F(const Normalf & wo, const Normalf & wi, const Point
 // probability density function
 float BSDF_Frostbite::PDF(const Normalf & wo, const Normalf & wi, const Point2 & texcoord) {
 	auto roughness = GetRoughness(texcoord);
-	ggx.SetAlpha(roughness);
+	float perpRoughness = roughness * roughness;
+	ggx.SetAlpha(perpRoughness);
 
 	auto metallic = GetMetallic(texcoord);
 	auto pSpecular = 1 / (2 - metallic);
@@ -84,7 +87,8 @@ float BSDF_Frostbite::PDF(const Normalf & wo, const Normalf & wi, const Point2 &
 // return albedo
 const RGBf BSDF_Frostbite::Sample_f(const Normalf & wo, const Point2 & texcoord, Normalf & wi, float & PD) {
 	auto roughness = GetRoughness(texcoord);
-	ggx.SetAlpha(roughness);
+	float perpRoughness = roughness * roughness;
+	ggx.SetAlpha(perpRoughness);
 
 	// 根据 metallic 来分别采样
 	Normalf wh;
