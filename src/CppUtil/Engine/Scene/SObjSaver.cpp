@@ -192,8 +192,7 @@ void SObjSaver::Visit(Ptr<PointLight> pointLight) {
 	NewEle(str::PointLight::type, [=]() {
 		NewEle(str::PointLight::color, pointLight->color);
 		NewEle(str::PointLight::intensity, pointLight->intensity);
-		NewEle(str::PointLight::linear, pointLight->linear);
-		NewEle(str::PointLight::quadratic, pointLight->quadratic);
+		NewEle(str::PointLight::radius, pointLight->radius);
 	});
 }
 
@@ -208,8 +207,7 @@ void SObjSaver::Visit(Ptr<SpotLight> spotLight) {
 	NewEle(str::SpotLight::type, [=]() {
 		NewEle(str::SpotLight::color, spotLight->color);
 		NewEle(str::SpotLight::intensity, spotLight->intensity);
-		NewEle(str::SpotLight::linear, spotLight->linear);
-		NewEle(str::SpotLight::quadratic, spotLight->quadratic);
+		NewEle(str::SpotLight::radius, spotLight->radius);
 		NewEle(str::SpotLight::angle, spotLight->angle);
 		NewEle(str::SpotLight::fullRatio, spotLight->fullRatio);
 	});

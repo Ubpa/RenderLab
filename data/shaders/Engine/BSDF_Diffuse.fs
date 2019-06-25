@@ -37,12 +37,11 @@ struct BSDF_Diffuse {
     sampler2D albedoTexture;// 0
 };
 
-// 48
+// 32
 struct PointLight {
     vec3 position;	// 12	0
     vec3 L;			// 12	16
-    float linear;	// 4	28
-    float quadratic;// 4	32
+    float radius;	// 4	28
 };
 
 // 96
@@ -58,8 +57,7 @@ struct SpotLight{
 	vec3 dir;              // 12    16
     vec3 L;                // 12    32
 	mat4 ProjView;         // 64    48
-    float linear;	       // 4     112
-    float quadratic;       // 4     116
+    float radius;          // 4     116
 	float cosHalfAngle;    // 4     120
 	float cosFalloffAngle; // 4     124
 };
@@ -75,10 +73,10 @@ layout (std140) uniform Camera{
 	float ar;			// 4	156	160
 };
 
-// 400
+// 272
 layout (std140) uniform PointLights{
-	int numPointsLight;// 16
-	PointLight pointLights[MAX_POINT_LIGHTS];// 48 * MAX_POINT_LIGHTS = 48 * 8 = 384
+	int numPointLight;// 16
+	PointLight pointLights[MAX_POINT_LIGHTS];// 32 * MAX_POINT_LIGHTS = 32 * 8 = 256
 };
 
 // 784
@@ -126,6 +124,7 @@ uniform float lightNear;
 uniform float lightFar;
 
 // ----------------- 函数声明
+float Fwin(float d, float radius);
 
 float PointLightVisibility(vec3 lightToFrag, int id);
 float PointLightVisibility(vec3 lightToFrag, samplerCube depthMap);
@@ -135,7 +134,7 @@ float DirectionalLightVisibility(vec3 normPos, float cosTheta, sampler2D depthMa
 
 float SpotLightVisibility(vec3 normPos, float cosTheta, int id);
 float SpotLightVisibility(vec3 normPos, float cosTheta, sampler2D depthMap);
-float SpotLightFalloff(vec3 wi, int id);
+float SpotLightDirFalloff(vec3 wi, int id);
 float LinearizeDepth(float depth, float near, float far) {
     float z = depth * 2.0 - 1.0; // Back to NDC 
     return (2.0 * near * far) / (far + near - z * (far - near));
@@ -162,19 +161,23 @@ void main() {
 	vec3 result = vec3(0);
 	
 	// point light
-    for(int i = 0; i < numPointsLight; i++) {
+    for(int i = 0; i < numPointLight; i++) {
 		vec3 fragToLight = pointLights[i].position - fs_in.FragPos;
 		float dist2 = dot(fragToLight, fragToLight);
 		float dist = sqrt(dist2);
-		vec3 wi = fragToLight/dist;
+		
+		float falloff = Fwin(dist, pointLights[i].radius);
+		if(falloff < 0.000001)
+			continue;
 		
 		float visibility = PointLightVisibility(-fragToLight, i);
+		
+		float attenuation = max(0.0001, dist2);
 
+		vec3 wi = fragToLight/dist;
 		float cosTheta = max(dot(wi, normalize(fs_in.Normal)), 0);
 		
-		float attenuation = 1.0f + pointLights[i].linear * dist + pointLights[i].quadratic * dist2;
-		
-		result += visibility * cosTheta / attenuation * diffuse * pointLights[i].L;
+		result += visibility * cosTheta / attenuation * falloff * pointLights[i].L * diffuse;
 	}
 	
 	// directional light
@@ -196,20 +199,34 @@ void main() {
 		float dist2 = dot(fragToLight, fragToLight);
 		float dist = sqrt(dist2);
 		vec3 wi = fragToLight/dist;
+		
+		float distFalloff = Fwin(dist, spotLights[i].radius);
+		float dirFalloff = SpotLightDirFalloff(wi, i);
+		float falloff = dirFalloff * distFalloff;
+		if(falloff < 0.000001)
+			continue;
+		
+		float attenuation = max(0.0001, dist2);
 
 		float cosTheta = max(dot(wi, normalize(fs_in.Normal)), 0);
-		
-		float attenuation = 1.0f + spotLights[i].linear * dist + spotLights[i].quadratic * dist2;
 		
 		vec4 pos4 = spotLights[i].ProjView * vec4(fs_in.FragPos, 1);
 		vec3 normPos = ((pos4.xyz / pos4.w) + 1) / 2;
 		float visibility = SpotLightVisibility(normPos, cosTheta, i);
 		
-		result += visibility * SpotLightFalloff(wi, i) * cosTheta / attenuation * diffuse * spotLights[i].L;
+		result += visibility * cosTheta / attenuation * falloff * spotLights[i].L * diffuse;
 	}
 	
 	// gamma 校正
 	FragColor = vec4(sqrt(result), 1.0);
+}
+
+float Fwin(float d, float radius) {
+	float ratio = d / radius;
+	float ratio2 = ratio * ratio;
+	float ratio4 = ratio2 * ratio2;
+	float falloff = max(0, 1 - ratio4);
+	return falloff * falloff;
 }
 
 // ----------------- 函数定义
@@ -326,7 +343,7 @@ float SpotLightVisibility(vec3 normPos, float cosTheta, sampler2D depthMap){
 	return visibility;
 }
 
-float SpotLightFalloff(vec3 wi, int id){
+float SpotLightDirFalloff(vec3 wi, int id){
 	float cosTheta = -dot(wi, spotLights[id].dir);
 	if (cosTheta < spotLights[id].cosHalfAngle) return 0;
 	if (cosTheta > spotLights[id].cosFalloffAngle) return 1;

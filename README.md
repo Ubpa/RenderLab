@@ -80,14 +80,17 @@ Optix: 6.0
   - [x] 实时
 - [ ] 光照
   - [ ] 直接
-    - [ ] 点
-    - [ ] 聚光灯
-    - [ ] 面
-    - [ ] 胶囊
+    - [x] 点
+    - [x] 聚光灯
+    - [ ] sphere
+    - [ ] disk
+    - [ ] tube / line
+    - [ ] rectangle / frustum
   - [ ] 间接
     - [ ] distant light probe
-    - [ ] SSR
     - [ ] local light probe
+    - [ ] SSR
+    - [ ] planar reflection
 - [ ] 相机
 
 ### Impotant
@@ -154,4 +157,6 @@ Optix: 6.0
 - [ ] ...
 
 ### Bugs
+
+- [ ] 边缘黑斑
 

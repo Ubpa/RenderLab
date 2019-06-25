@@ -96,8 +96,7 @@ namespace str {
 
 		const char * const color = "color";
 		const char * const intensity = "intensity";
-		const char * const linear = "linear";
-		const char * const quadratic = "quadratic";
+		const char * const radius = "radius";
 	}
 
 	namespace DirectionalLight {
@@ -112,8 +111,7 @@ namespace str {
 
 		const char * const color = "color";
 		const char * const intensity = "intensity";
-		const char * const linear = "linear";
-		const char * const quadratic = "quadratic";
+		const char * const radius = "radius";
 		const char * const angle = "angle";
 		const char * const fullRatio = "fullRatio";
 	}

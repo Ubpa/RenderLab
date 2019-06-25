@@ -508,8 +508,7 @@ void Attribute::ComponentVisitor::Visit(Ptr<PointLight> light) {
 	auto grid = GetGrid(attr->componentType2item[typeid(CmptLight)]);
 	grid->AddEditColor("- Color", light->color);
 	grid->AddEditVal("- Intensity", light->intensity, 0, 20, 2000);
-	grid->AddEditVal("- Linear", light->linear, 0, 1.0, 100);
-	grid->AddEditVal("- Quadratic", light->quadratic, 0, 2.0, 200);
+	grid->AddEditVal("- Radius", light->radius, 0, 100.0, 1000);
 }
 
 void Attribute::ComponentVisitor::Visit(Ptr<DirectionalLight> light) {
@@ -522,8 +521,7 @@ void Attribute::ComponentVisitor::Visit(Ptr<SpotLight> light) {
 	auto grid = GetGrid(attr->componentType2item[typeid(CmptLight)]);
 	grid->AddEditColor("- Color", light->color);
 	grid->AddEditVal("- Intensity", light->intensity, 0, 20, 2000);
-	grid->AddEditVal("- Linear", light->linear, 0, 1.0, 100);
-	grid->AddEditVal("- Quadratic", light->quadratic, 0, 2.0, 200);
+	grid->AddEditVal("- Radius", light->radius, 0, 100.0, 1000);
 	grid->AddEditVal("- Angle", light->angle, 1.0, 179.0, 178);
 	grid->AddEditVal("- Full Ratio", light->fullRatio, 0.0, 1.0, 100);
 }

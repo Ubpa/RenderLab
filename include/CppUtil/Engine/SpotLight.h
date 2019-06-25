@@ -8,15 +8,15 @@ namespace CppUtil {
 		// 朝 -y 方向照射
 		class SpotLight : public Light {
 		public:
-			SpotLight(const RGBf &color = RGBf(1), float intensity = 1.0f, float linear = 0.7f, float quadratic = 1.8f,
+			SpotLight(const RGBf &color = RGBf(1), float intensity = 1.0f, float radius = 10.f,
 				float angle = 90.f, float fullRatio = 0.8f)
-				: color(color), intensity(intensity), linear(linear), quadratic(quadratic),
+				: color(color), intensity(intensity), radius(radius),
 				angle(angle), fullRatio(fullRatio) { }
 
 		public:
-			static const Basic::Ptr<SpotLight> New(const RGBf &color = RGBf(1), float intensity = 1.0f, float linear = 0.7f, float quadratic = 1.8f,
+			static const Basic::Ptr<SpotLight> New(const RGBf &color = RGBf(1), float intensity = 1.0f, float radius = 10.f,
 				float angle = 90.f, float fullRatio = 0.8f) {
-				return Basic::New<SpotLight>(color, intensity, linear, quadratic, angle, fullRatio);
+				return Basic::New<SpotLight>(color, intensity, radius, angle, fullRatio);
 			}
 
 		protected:
@@ -57,30 +57,13 @@ namespace CppUtil {
 			}
 
 		private:
+			static float Fwin(float d, float radius);
 			float Falloff(const Normalf & wi) const;
 
 		public:
 			RGBf color;
 			float intensity;
-
-			/*
-				距离		常数项	一次项	二次项
-				7		1.0		0.7		1.8
-				13		1.0		0.35	0.44
-				20		1.0		0.22	0.20
-				32		1.0		0.14	0.07
-				50		1.0		0.09	0.032
-				65		1.0		0.07	0.017
-				100		1.0		0.045	0.0075
-				160		1.0		0.027	0.0028
-				200		1.0		0.022	0.0019
-				325		1.0		0.014	0.0007
-				600		1.0		0.007	0.0002
-				3250	1.0		0.0014	0.000007
-			*/
-
-			float linear;
-			float quadratic;
+			float radius;
 
 			float angle; // [1 - 179]
 			float fullRatio; // [0 -- 1]

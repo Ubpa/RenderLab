@@ -83,10 +83,14 @@ namespace CppUtil {
 			void Permute(std::vector<T> data);
 
 			template<typename T>
-			T min(const std::vector<T> & val);
+			T Min(const std::vector<T> & val);
+			template<typename T>
+			T Min(T a, T b) { return a < b ? a : b; }
 
 			template<typename T>
-			T max(const std::vector<T> & val);
+			T Max(const std::vector<T> & val);
+			template<typename T>
+			T Max(T a, T b) { return a > b ? a : b; }
 
 			template<typename T, typename U, typename V>
 			T Clamp(T v, U minV, V maxV) {

@@ -271,8 +271,7 @@ static Ptr<PointLight> SObjLoader::Load(XMLElement * ele, Ptr<PointLight>*) {
 	FuncMap funcMap;
 	Reg_Text_val(funcMap, str::PointLight::color, pointLight->color);
 	Reg_Text_val(funcMap, str::PointLight::intensity, pointLight->intensity);
-	Reg_Text_val(funcMap, str::PointLight::linear, pointLight->linear);
-	Reg_Text_val(funcMap, str::PointLight::quadratic, pointLight->quadratic);
+	Reg_Text_val(funcMap, str::PointLight::radius, pointLight->radius);
 
 	LoadNode(ele, funcMap);
 
@@ -299,8 +298,7 @@ static Ptr<SpotLight> SObjLoader::Load(XMLElement * ele, Ptr<SpotLight>*) {
 	FuncMap funcMap;
 	Reg_Text_val(funcMap, str::SpotLight::color, spotLight->color);
 	Reg_Text_val(funcMap, str::SpotLight::intensity, spotLight->intensity);
-	Reg_Text_val(funcMap, str::SpotLight::linear, spotLight->linear);
-	Reg_Text_val(funcMap, str::SpotLight::quadratic, spotLight->quadratic);
+	Reg_Text_val(funcMap, str::SpotLight::radius, spotLight->radius);
 	Reg_Text_val(funcMap, str::SpotLight::angle, spotLight->angle);
 	Reg_Text_val(funcMap, str::SpotLight::fullRatio, spotLight->fullRatio);
 
