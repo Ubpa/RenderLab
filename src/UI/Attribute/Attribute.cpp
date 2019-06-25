@@ -11,12 +11,14 @@
 
 #include <CppUtil/Engine/AllBSDFs.h>
 #include <CppUtil/Engine/Gooch.h>
+#include <CppUtil/Engine/Emission.h>
 
 #include <CppUtil/Engine/AreaLight.h>
 #include <CppUtil/Engine/PointLight.h>
 #include <CppUtil/Engine/DirectionalLight.h>
 #include <CppUtil/Engine/SpotLight.h>
 #include <CppUtil/Engine/InfiniteAreaLight.h>
+#include <CppUtil/Engine/SphereLight.h>
 
 #include <CppUtil/OpenGL/Camera.h>
 
@@ -56,6 +58,7 @@ public:
 		RegMemberFunc<DirectionalLight>(&Attribute::ComponentVisitor::Visit);
 		RegMemberFunc<SpotLight>(&Attribute::ComponentVisitor::Visit);
 		RegMemberFunc<InfiniteAreaLight>(&Attribute::ComponentVisitor::Visit);
+		RegMemberFunc<SphereLight>(&Attribute::ComponentVisitor::Visit);
 
 		RegMemberFunc<CmptMaterial>(&Attribute::ComponentVisitor::Visit);
 		RegMemberFunc<BSDF_Diffuse>(&Attribute::ComponentVisitor::Visit);
@@ -67,6 +70,7 @@ public:
 		RegMemberFunc<BSDF_FrostedGlass>(&Attribute::ComponentVisitor::Visit);
 		RegMemberFunc<BSDF_Frostbite>(&Attribute::ComponentVisitor::Visit);
 		RegMemberFunc<Gooch>(&Attribute::ComponentVisitor::Visit);
+		RegMemberFunc<Emission>(&Attribute::ComponentVisitor::Visit);
 
 		RegMemberFunc<CmptTransform>(&Attribute::ComponentVisitor::Visit);
 	}
@@ -93,6 +97,8 @@ public:
 	void Visit(Ptr<DirectionalLight> light);
 	void Visit(Ptr<SpotLight> light);
 	void Visit(Ptr<InfiniteAreaLight> light);
+	void Visit(Ptr<SphereLight> light);
+	void Visit(Ptr<Emission> light);
 
 	void Visit(Ptr<CmptMaterial> cmpt);
 	void Visit(Ptr<BSDF_Diffuse> bsdf);
@@ -257,12 +263,9 @@ void Attribute::ComponentVisitor::Visit(Ptr<CmptGeometry> geo) {
 		Visit(plane);
 	};
 	(*pSlotMap)["TriMesh"] = [=]() {
-		if (geo->primitive) {
-			geo->primitive->Accept(getTypeStr);
-			combobox->setCurrentText(QString::fromStdString(typeStr));
-		}
-		else
-			combobox->setCurrentText("None");
+		grid->Clear();
+		grid->AddComboBox("Type", "None", wpSlotMap.lock());
+		geo->primitive = nullptr;
 	};
 
 	if (geo->primitive) {
@@ -308,8 +311,9 @@ void Attribute::ComponentVisitor::Visit(Ptr<CmptMaterial> cmpt) {
 	getTypeStr->Reg([&typeStr](Ptr<BSDF_FrostedGlass>) { typeStr = "BSDF_FrostedGlass"; });
 	getTypeStr->Reg([&typeStr](Ptr<Gooch>) { typeStr = "Gooch"; });
 	getTypeStr->Reg([&typeStr](Ptr<BSDF_Frostbite>) { typeStr = "BSDF_Frostbite"; });
+	getTypeStr->Reg([&typeStr](Ptr<Emission>) { typeStr = "Emission"; });
 
-	const int materialNum = 10;
+	const int materialNum = 11;
 	tuple<string, function<Ptr<Material>()>> bsdfArr[materialNum] = {
 		{"None", []()->Ptr<Material> { return nullptr; } },
 		{"BSDF_Diffuse", []()->Ptr<Material> { return BSDF_Diffuse::New(); } },
@@ -321,6 +325,7 @@ void Attribute::ComponentVisitor::Visit(Ptr<CmptMaterial> cmpt) {
 		{"BSDF_FrostedGlass", []()->Ptr<Material> { return BSDF_FrostedGlass::New(); } },
 		{"Gooch", []()->Ptr<Material> { return Gooch::New(); } },
 		{"BSDF_Frostbite", []()->Ptr<Material> { return BSDF_Frostbite::New(); } },
+		{"Emission", []()->Ptr<Material> { return Emission::New(); } },
 	};
 
 	Grid::pSlotMap pSlotMap(new Grid::SlotMap);
@@ -437,6 +442,13 @@ void Attribute::ComponentVisitor::Visit(Ptr<BSDF_Frostbite> bsdf) {
 	grid->AddEditImage("- Normal Texture", bsdf->normalTexture);
 }
 
+void Attribute::ComponentVisitor::Visit(Ptr<Emission> emission) {
+	auto grid = GetGrid(attr->componentType2item[typeid(CmptMaterial)]);
+
+	grid->AddEditColor("- Color", emission->color);
+	grid->AddEditVal("- intensity", emission->intensity, 0, 20, 2000);
+}
+
 // -------------- Light --------------
 
 void Attribute::ComponentVisitor::Visit(Ptr<CmptLight> cmpt) {
@@ -445,23 +457,14 @@ void Attribute::ComponentVisitor::Visit(Ptr<CmptLight> cmpt) {
 
 	auto getTypeStr = Visitor::New();
 	string typeStr;
-	getTypeStr->Reg([&typeStr](Ptr<AreaLight>) {
-		typeStr = "AreaLight";
-	});
-	getTypeStr->Reg([&typeStr](Ptr<PointLight>) {
-		typeStr = "PointLight";
-	});
-	getTypeStr->Reg([&typeStr](Ptr<DirectionalLight>) {
-		typeStr = "DirectionalLight";
-	});
-	getTypeStr->Reg([&typeStr](Ptr<SpotLight>) {
-		typeStr = "SpotLight";
-	});
-	getTypeStr->Reg([&typeStr](Ptr<InfiniteAreaLight>) {
-		typeStr = "InfiniteAreaLight";
-	});
+	getTypeStr->Reg([&typeStr](Ptr<AreaLight>) { typeStr = "AreaLight"; });
+	getTypeStr->Reg([&typeStr](Ptr<PointLight>) { typeStr = "PointLight"; });
+	getTypeStr->Reg([&typeStr](Ptr<DirectionalLight>) { typeStr = "DirectionalLight"; });
+	getTypeStr->Reg([&typeStr](Ptr<SpotLight>) { typeStr = "SpotLight"; });
+	getTypeStr->Reg([&typeStr](Ptr<InfiniteAreaLight>) { typeStr = "InfiniteAreaLight"; });
+	getTypeStr->Reg([&typeStr](Ptr<SphereLight>) { typeStr = "SphereLight"; });
 
-	const int lightNum = 6;
+	const int lightNum = 7;
 	tuple<string, function<Ptr<Light>()>> lightArr[lightNum] = {
 		{"None", []()->Ptr<Light> { return nullptr; } },
 		{"AreaLight", []()->Ptr<Light> { return AreaLight::New(); } },
@@ -469,6 +472,7 @@ void Attribute::ComponentVisitor::Visit(Ptr<CmptLight> cmpt) {
 		{"DirectionalLight", []()->Ptr<Light> { return DirectionalLight::New(); } },
 		{"SpotLight", []()->Ptr<Light> { return SpotLight::New(); } },
 		{"InfiniteAreaLight", []()->Ptr<Light> { return InfiniteAreaLight::New(nullptr); } },
+		{"SphereLight", []()->Ptr<Light> { return SphereLight::New(); } },
 	};
 
 	Grid::pSlotMap pSlotMap(new Grid::SlotMap);
@@ -533,6 +537,13 @@ void Attribute::ComponentVisitor::Visit(Ptr<InfiniteAreaLight> light) {
 	grid->AddEditImage("- Envirment Image", light->GetImg(), [light](Ptr<Image> img) {
 		light->SetImg(img);
 	});
+}
+
+void Attribute::ComponentVisitor::Visit(Ptr<SphereLight> light) {
+	auto grid = GetGrid(attr->componentType2item[typeid(CmptLight)]);
+	grid->AddEditVal("- Intensity", light->intensity, 0, 20, 2000);
+	grid->AddEditColor("- Color", light->color);
+	grid->AddEditVal("- Radius", light->radius, 0.0, 100.0, 1000);
 }
 
 // -------------- Attribute --------------

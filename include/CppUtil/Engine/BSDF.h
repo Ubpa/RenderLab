@@ -2,12 +2,6 @@
 #define _ENGINE_MATERIAL_BSDF_H_
 
 #include <CppUtil/Engine/Material.h>
-#include <CppUtil/Basic/UGM/Point2.h>
-#include <CppUtil/Basic/UGM/Vector.h>
-#include <CppUtil/Basic/UGM/Normal.h>
-#include <CppUtil/Basic/UGM/Point.h>
-#include <CppUtil/Basic/UGM/RGB.h>
-#include <CppUtil/Basic/Math.h>
 
 namespace CppUtil {
 	namespace Engine {
@@ -25,8 +19,6 @@ namespace CppUtil {
 			// PD is probability density
 			// return albedo
 			virtual const RGBf Sample_f(const Normalf & wo, const Point2 & texcoord, Normalf & wi, float & PD) = 0;
-
-			virtual const RGBf GetEmission() const { return RGBf(0.f); }
 
 			virtual bool IsDelta() const { return false; }
 

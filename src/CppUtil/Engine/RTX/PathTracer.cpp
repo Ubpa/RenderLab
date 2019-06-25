@@ -73,22 +73,16 @@ const RGBf PathTracer::Trace(ERay & ray, int depth, RGBf pathThroughput) {
 	for (size_t i = 0; i < lightNum; i++)
 		posInLightSpaceVec[i] = worldToLightVec[i](hitPos);
 
-	RGBf emitL(0.f);
-	auto cmptLight = closestRst.closestSObj->GetComponent<CmptLight>();
-	if (cmptLight) {
-		int idx = lightToIdx[cmptLight->light];
-		emitL = cmptLight->light->GetMaxL(worldToLightVec[idx](ray.o));
-	}
-
 	auto cmptMaterial = closestRst.closestSObj->GetComponent<CmptMaterial>();
-	if (cmptMaterial == nullptr)
-		return emitL;
+	if (!cmptMaterial || !cmptMaterial->material)
+		return RGBf(0);
+
+	RGBf emitL = depth == 0 ? cmptMaterial->material->GetEmission() : RGBf(0);
 
 	auto bsdf = dynamic_pointer_cast<BSDF>(cmptMaterial->material);
 	if (bsdf == nullptr)
 		return emitL;
 
-	emitL += bsdf->GetEmission();
 
 	bsdf->ChangeNormal(closestRst.texcoord, closestRst.tangent, closestRst.n);
 

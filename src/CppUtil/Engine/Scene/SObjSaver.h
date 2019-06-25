@@ -36,6 +36,7 @@ namespace CppUtil {
 		class DirectionalLight;
 		class SpotLight;
 		class InfiniteAreaLight;
+		class SphereLight;
 
 		class CmptMaterial;
 		class BSDF_CookTorrance;
@@ -47,6 +48,7 @@ namespace CppUtil {
 		class BSDF_FrostedGlass;
 		class Gooch;
 		class BSDF_Frostbite;
+		class Emission;
 
 		class CmptTransform;
 
@@ -79,6 +81,7 @@ namespace CppUtil {
 			void Visit(Basic::Ptr<DirectionalLight> directionalLight);
 			void Visit(Basic::Ptr<SpotLight> spotLight);
 			void Visit(Basic::Ptr<InfiniteAreaLight> infiniteAreaLight);
+			void Visit(Basic::Ptr<SphereLight> sphereLight);
 
 			void Visit(Basic::Ptr<CmptMaterial> meterial);
 			void Visit(Basic::Ptr<BSDF_CookTorrance> bsdf);
@@ -90,6 +93,7 @@ namespace CppUtil {
 			void Visit(Basic::Ptr<BSDF_FrostedGlass> bsdf);
 			void Visit(Basic::Ptr<Gooch> gooch);
 			void Visit(Basic::Ptr<BSDF_Frostbite> bsdf);
+			void Visit(Basic::Ptr<Emission> emission);
 
 			void Visit(Basic::Ptr<CmptTransform> transform);
 

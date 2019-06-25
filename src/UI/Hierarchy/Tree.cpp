@@ -8,6 +8,7 @@
 #include <CppUtil/Engine/TriMesh.h>
 #include <CppUtil/Engine/AllComponents.h>
 #include <CppUtil/Engine/AllBSDFs.h>
+#include <CppUtil/Engine/Material.h>
 #include <CppUtil/Engine/Sphere.h>
 #include <CppUtil/Engine/Plane.h>
 
@@ -16,6 +17,7 @@
 #include <CppUtil/Engine/SpotLight.h>
 #include <CppUtil/Engine/DirectionalLight.h>
 #include <CppUtil/Engine/InfiniteAreaLight.h>
+#include <CppUtil/Engine/SphereLight.h>
 
 #include <qmenu.h>
 #include <qdrag.h>
@@ -254,6 +256,13 @@ void Tree::contextMenuEvent(QContextMenuEvent *event) {
 	genLightMenu->addAction("Infinite Area Light", this, []() {
 		auto sobj = Hierarchy::GetInstance()->CreateSObj("Infinite Area Light");
 		CmptLight::New(sobj, InfiniteAreaLight::New(nullptr));
+		CmptTransform::New(sobj);
+	});
+
+	genLightMenu->addAction("Sphere Light", this, []() {
+		auto sobj = Hierarchy::GetInstance()->CreateSObj("Sphere Light");
+		CmptLight::New(sobj, SphereLight::New());
+		CmptTransform::New(sobj);
 	});
 
 	mainMenu.addMenu(genLightMenu);

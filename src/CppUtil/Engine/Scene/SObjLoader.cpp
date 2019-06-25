@@ -243,6 +243,7 @@ static Ptr<Light> SObjLoader::Load(XMLElement * ele, Ptr<Light>*) {
 	Reg_Load_val<Ptr<DirectionalLight>>(funcMap, str::DirectionalLight::type, light);
 	Reg_Load_val<Ptr<SpotLight>>(funcMap, str::SpotLight::type, light);
 	Reg_Load_val<Ptr<InfiniteAreaLight>>(funcMap, str::InfiniteAreaLight::type, light);
+	Reg_Load_val<Ptr<SphereLight>>(funcMap, str::SphereLight::type, light);
 
 	LoadNode(ele, funcMap);
 
@@ -321,6 +322,20 @@ static Ptr<InfiniteAreaLight> SObjLoader::Load(XMLElement * ele, Ptr<InfiniteAre
 	return infiniteAreaLight;
 }
 
+template<>
+static Ptr<SphereLight> SObjLoader::Load(XMLElement * ele, Ptr<SphereLight>*) {
+	auto sphereLight = SphereLight::New();
+
+	FuncMap funcMap;
+	Reg_Text_val(funcMap, str::SphereLight::color, sphereLight->color);
+	Reg_Text_val(funcMap, str::SphereLight::intensity, sphereLight->intensity);
+	Reg_Text_val(funcMap, str::SphereLight::radius, sphereLight->radius);
+
+	LoadNode(ele, funcMap);
+
+	return sphereLight;
+}
+
 // ------------ Material ----------------
 
 template<>
@@ -350,6 +365,7 @@ static Ptr<Material> SObjLoader::Load(XMLElement * ele, Ptr<Material>*) {
 	Reg_Load_val<Ptr<BSDF_FrostedGlass>>(funcMap, str::BSDF_FrostedGlass::type, material);
 	Reg_Load_val<Ptr<Gooch>>(funcMap, str::Gooch::type, material);
 	Reg_Load_val<Ptr<BSDF_Frostbite>>(funcMap, str::BSDF_Frostbite::type, material);
+	Reg_Load_val<Ptr<Emission>>(funcMap, str::Emission::type, material);
 
 	LoadNode(ele, funcMap);
 
@@ -499,6 +515,20 @@ static Ptr<BSDF_Frostbite> SObjLoader::Load(XMLElement * ele, Ptr<BSDF_Frostbite
 	LoadNode(ele, funcMap);
 
 	return bsdf;
+}
+
+template<>
+static Ptr<Emission> SObjLoader::Load(XMLElement * ele, Ptr<Emission>*) {
+	auto emission = Emission::New();
+
+	FuncMap funcMap;
+
+	Reg_Text_val(funcMap, str::Emission::color, emission->color);
+	Reg_Text_val(funcMap, str::Emission::intensity, emission->intensity);
+
+	LoadNode(ele, funcMap);
+
+	return emission;
 }
 
 // ------------ Transform ----------------

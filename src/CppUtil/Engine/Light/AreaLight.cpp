@@ -16,10 +16,10 @@ const RGBf AreaLight::Sample_L(const Point3 & p, Normalf & wi, float & distToLig
 
 	const auto d = posOnLight - p;
 	const float sqDist = d.Norm2();
-	const float dist = sqrt(sqDist);
 
-	wi = d / dist;
-	distToLight = dist;
+	distToLight = sqrt(sqDist);
+	wi = d / distToLight;
+
 	const float area = width * height;
 	// float cosTheta = wi.y;
 	PD = sqDist / (area * wi.y);
@@ -37,21 +37,6 @@ float AreaLight::PDF(const Point3 & p, const Normalf & wi) const {
 	const float cosTheta = d.y / dist;
 	const float area = width * height;
 	return sqDist / (area * cosTheta);
-}
-
-const RGBf AreaLight::GetL(const Point3 & p, const Vec3 & dirToLight, float & distToLight) {
-	Point3 posOnLight;
-	if (!Hit(p, dirToLight, posOnLight))
-		return RGBf(0);
-
-	const auto d = posOnLight - p;
-	distToLight = d.Norm();
-
-	return intensity * color;
-}
-
-const RGBf AreaLight::GetMaxL(const Point3 & p) const {
-	return p.y < 0 ? intensity * color : RGBf(0);
 }
 
 bool AreaLight::Hit(const Point3 & p, const Vec3 & dirToLight, Point3 & hitPos) const {

@@ -155,7 +155,8 @@ void Raster::UpdateUBO_SpotLights() {
 		auto lightL = spotLight->intensity * spotLight->color;
 		glBufferSubData(GL_UNIFORM_BUFFER, base, 12, pos.Data());
 		glBufferSubData(GL_UNIFORM_BUFFER, base + 16, 12, dir.Data());
-		glBufferSubData(GL_UNIFORM_BUFFER, base + 32, 12, spotLight->GetMaxL().Data());
+		RGBf luminance = spotLight->intensity * spotLight->color;
+		glBufferSubData(GL_UNIFORM_BUFFER, base + 32, 12, luminance.Data());
 		glBufferSubData(GL_UNIFORM_BUFFER, base + 48, 64, sldmGenerator->GetProjView(cmptLight).GetMatrix().Data());
 		glBufferSubData(GL_UNIFORM_BUFFER, base + 112, 4, &spotLight->radius);
 		auto cosHalfAngle = spotLight->CosHalfAngle();

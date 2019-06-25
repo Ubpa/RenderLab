@@ -23,6 +23,7 @@ SObjSaver::SObjSaver() {
 	RegMemberFunc<DirectionalLight>(&SObjSaver::Visit);
 	RegMemberFunc<SpotLight>(&SObjSaver::Visit);
 	RegMemberFunc<InfiniteAreaLight>(&SObjSaver::Visit);
+	RegMemberFunc<SphereLight>(&SObjSaver::Visit);
 
 	RegMemberFunc<CmptMaterial>(&SObjSaver::Visit);
 	RegMemberFunc<BSDF_CookTorrance>(&SObjSaver::Visit);
@@ -34,6 +35,7 @@ SObjSaver::SObjSaver() {
 	RegMemberFunc<BSDF_FrostedGlass>(&SObjSaver::Visit);
 	RegMemberFunc<Gooch>(&SObjSaver::Visit);
 	RegMemberFunc<BSDF_Frostbite>(&SObjSaver::Visit);
+	RegMemberFunc<Emission>(&SObjSaver::Visit);
 
 	RegMemberFunc<CmptTransform>(&SObjSaver::Visit);
 }
@@ -223,6 +225,14 @@ void SObjSaver::Visit(Ptr<InfiniteAreaLight> infiniteAreaLight) {
 	});
 }
 
+void SObjSaver::Visit(Ptr<SphereLight> sphereLight) {
+	NewEle(str::SphereLight::type, [=]() {
+		NewEle(str::SphereLight::color, sphereLight->color);
+		NewEle(str::SphereLight::intensity, sphereLight->intensity);
+		NewEle(str::SphereLight::radius, sphereLight->radius);
+	});
+}
+
 // ----------------- Material -----------------
 
 void SObjSaver::Visit(Ptr<CmptMaterial> cmpt) {
@@ -327,5 +337,12 @@ void SObjSaver::Visit(Ptr<BSDF_Frostbite> bsdf) {
 		NewEle(str::BSDF_Frostbite::aoTexture, bsdf->aoTexture);
 
 		NewEle(str::BSDF_Frostbite::normalTexture, bsdf->normalTexture);
+	});
+}
+
+void SObjSaver::Visit(Ptr<Emission> emission) {
+	NewEle(str::Emission::type, [=]() {
+		NewEle(str::Emission::color, emission->color);
+		NewEle(str::Emission::intensity, emission->intensity);
 	});
 }

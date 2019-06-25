@@ -83,6 +83,8 @@ Optix: 6.0
     - [x] 点
     - [x] 聚光灯
     - [ ] sphere
+      - [x] 离线
+      - [ ] 实时
     - [ ] disk
     - [ ] tube / line
     - [ ] rectangle / frustum

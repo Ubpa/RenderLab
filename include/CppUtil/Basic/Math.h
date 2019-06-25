@@ -56,6 +56,9 @@ namespace CppUtil {
 				return Equal(orig, static_cast<T>(0));
 			}
 
+			template<typename T>
+			T Abs(T v) { return v < 0 ? -v : v; }
+
 			// [-0x7FFFFFFFF, 0x7FFFFFFF]
 			int Rand_I();
 
