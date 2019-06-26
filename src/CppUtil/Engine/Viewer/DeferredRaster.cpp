@@ -29,6 +29,7 @@
 #include <CppUtil/Engine/BSDF_MetalWorkflow.h>
 #include <CppUtil/Engine/BSDF_Diffuse.h>
 #include <CppUtil/Engine/BSDF_Frostbite.h>
+#include <CppUtil/Engine/BSDF_Emission.h>
 
 #include <CppUtil/OpenGL/CommonDefine.h>
 
@@ -63,11 +64,13 @@ DeferredRaster::DeferredRaster(RawAPI_OGLW * pOGLW, Ptr<Scene> scene, Ptr<Camera
 	RegMemberFunc<BSDF_MetalWorkflow>(&DeferredRaster::Visit);
 	RegMemberFunc<BSDF_Diffuse>(&DeferredRaster::Visit);
 	RegMemberFunc<BSDF_Frostbite>(&DeferredRaster::Visit);
+	RegMemberFunc<BSDF_Emission>(&DeferredRaster::Visit);
 
 	// regist ID
 	mngrMID.Reg<BSDF_MetalWorkflow>(0);
 	mngrMID.Reg<BSDF_Diffuse>(1);
 	mngrMID.Reg<BSDF_Frostbite>(2);
+	mngrMID.Reg<BSDF_Emission>(3);
 }
 
 void DeferredRaster::Init() {
@@ -91,6 +94,7 @@ void DeferredRaster::InitShader_GBuffer() {
 	InitShader_GBuffer_MetalWorkflow();
 	InitShader_GBuffer_Diffuse();
 	InitShader_GBuffer_Frostbite();
+	InitShader_GBuffer_Emission();
 }
 
 void DeferredRaster::InitShader_GBuffer_MetalWorkflow() {
@@ -129,6 +133,13 @@ void DeferredRaster::InitShader_GBuffer_Frostbite() {
 	frostbiteShader.SetInt("ID", mngrMID.Get<BSDF_Frostbite>());
 
 	BindUBO(frostbiteShader);
+}
+
+void DeferredRaster::InitShader_GBuffer_Emission() {
+	emissionShader = Shader(rootPath + str_Basic_P3N3T2T3_vs, rootPath + "data/shaders/Engine/DeferredPipeline/GBuffer_Emission.fs");
+	emissionShader.SetInt("ID", mngrMID.Get<BSDF_Emission>());
+
+	BindUBO(emissionShader);
 }
 
 void DeferredRaster::InitShader_DirectLight() {
@@ -412,6 +423,12 @@ void DeferredRaster::Visit(Ptr<BSDF_Frostbite> bsdf) {
 	}
 
 	curMaterialShader = frostbiteShader;
+}
+
+void DeferredRaster::Visit(Ptr<BSDF_Emission> emission) {
+	emissionShader.SetVec3f("emission.L", emission->intensity * emission->color);
+
+	curMaterialShader = emissionShader;
 }
 
 void DeferredRaster::Visit(Ptr<Sphere> sphere) {

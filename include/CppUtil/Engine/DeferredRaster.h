@@ -22,6 +22,7 @@ namespace CppUtil{
 		class BSDF_MetalWorkflow;
 		class BSDF_Diffuse;
 		class BSDF_Frostbite;
+		class BSDF_Emission;
 
 		/*
 		—”≥Ÿπ‹œﬂ
@@ -47,6 +48,7 @@ namespace CppUtil{
 			void InitShader_GBuffer_MetalWorkflow();
 			void InitShader_GBuffer_Diffuse();
 			void InitShader_GBuffer_Frostbite();
+			void InitShader_GBuffer_Emission();
 			void InitShader_DirectLight();
 			void InitShader_AmbientLight();
 			void InitShader_Skybox();
@@ -58,6 +60,7 @@ namespace CppUtil{
 			virtual void Visit(Basic::Ptr<BSDF_MetalWorkflow> bsdf);
 			virtual void Visit(Basic::Ptr<BSDF_Diffuse> bsdf);
 			virtual void Visit(Basic::Ptr<BSDF_Frostbite> bsdf);
+			virtual void Visit(Basic::Ptr<BSDF_Emission> emission);
 
 			virtual void Visit(Basic::Ptr<Sphere> sphere);
 			virtual void Visit(Basic::Ptr<Plane> plane);
@@ -75,9 +78,12 @@ namespace CppUtil{
 			OpenGL::FBO windowFBO;
 
 			std::vector<Transform> modelVec;
+
 			OpenGL::Shader metalShader;
 			OpenGL::Shader diffuseShader;
 			OpenGL::Shader frostbiteShader;
+			OpenGL::Shader emissionShader;
+
 			OpenGL::Shader directLightShader;
 			OpenGL::Shader ambientLightShader;
 			OpenGL::Shader skyboxShader;

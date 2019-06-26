@@ -82,9 +82,9 @@ Optix: 6.0
   - [ ] 直接
     - [x] 点
     - [x] 聚光灯
-    - [ ] sphere
+    - [x] sphere
       - [x] 离线
-      - [ ] 实时
+      - [x] 实时
     - [ ] disk
     - [ ] tube / line
     - [ ] rectangle / frustum
@@ -160,5 +160,7 @@ Optix: 6.0
 
 ### Bugs
 
-- [ ] 边缘黑斑
+- [ ] 边缘黑斑（大概是因为 ambient light 中直接写 directlight 的纹理导致的
+
+
 

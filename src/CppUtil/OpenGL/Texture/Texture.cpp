@@ -204,17 +204,23 @@ bool Texture::SetImg(const Image & img) {
 	if (ID == 0)
 		glGenTextures(1, &ID);
 
-	GLenum format;
+	GLenum innerFormat, outerFormat;
 	int nrComponents = img.GetChannel();
-	if (nrComponents == 1)
-		format = GL_RED;
-	else if (nrComponents == 3)
-		format = GL_RGB;
-	else if (nrComponents == 4)
-		format = GL_RGBA;
+	if (nrComponents == 1) {
+		innerFormat = GL_R16F;
+		outerFormat = GL_RED;
+	}
+	else if (nrComponents == 3) {
+		innerFormat = GL_RGB16F;
+		outerFormat = GL_RGB;
+	}
+	else if (nrComponents == 4) {
+		innerFormat = GL_RGBA16F;
+		outerFormat = GL_RGBA;
+	}
 
 	glBindTexture(GL_TEXTURE_2D, ID);
-	glTexImage2D(GL_TEXTURE_2D, 0, format, img.GetWidth(), img.GetHeight(), 0, format, GL_FLOAT, img.GetData());
+	glTexImage2D(GL_TEXTURE_2D, 0, innerFormat, img.GetWidth(), img.GetHeight(), 0, outerFormat, GL_FLOAT, img.GetData());
 	glGenerateMipmap(GL_TEXTURE_2D);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

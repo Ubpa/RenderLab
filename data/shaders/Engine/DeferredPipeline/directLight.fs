@@ -11,6 +11,7 @@ in vec2 TexCoords;
 #define MAX_POINT_LIGHTS 8
 #define MAX_DIRECTIONAL_LIGHTS 8
 #define MAX_SPOT_LIGHTS 8
+#define MAX_SPHERE_LIGHTS 8
 const float PI = 3.14159265359;
 const float INV_PI = 0.31830988618;
 
@@ -50,6 +51,13 @@ struct SpotLight{
 	float cosFalloffAngle; // 4     124
 };
 
+// 32
+struct SphereLight {
+    vec3 position;  // 12    0
+    vec3 L;         // 12   16
+    float radius;   //  4   28
+};
+
 // 160
 layout (std140) uniform Camera{
 	mat4 view;			// 64	0	64
@@ -77,6 +85,12 @@ layout (std140) uniform DirectionalLights{
 layout (std140) uniform SpotLights{
 	int numSpotLight;// 16
 	SpotLight spotLights[MAX_SPOT_LIGHTS];// 128 * MAX_SPOT_LIGHTS = 128 * 8 = 1024
+};
+
+// 272
+layout (std140) uniform SphereLights{
+	int numSphereLight;// 16
+	SphereLight sphereLights[MAX_SPHERE_LIGHTS];// 32 * MAX_SPHERE_LIGHTS = 32 * 8 = 256
 };
 
 uniform sampler2D GBuffer0;
@@ -169,6 +183,13 @@ void main() {
 	
 	vec3 wo = normalize(viewPos - pos);
 	
+	if(ID == 3) { // emission
+		FragColor = albedo;
+		return;
+	}
+	
+	// for ID 0, 1, 2
+	
 	// 采样光源
 	
 	// point light
@@ -233,6 +254,38 @@ void main() {
 		vec3 f = BRDF(ID, norm, wo, wi, albedo, metallic, roughness, ao);
 		
 		result += visibility * cosTheta / attenuation * falloff * spotLights[i].L * f;
+	}
+	
+	// sphere light
+	for(int i=0; i < numSphereLight; i++) {
+		vec3 fragToLight = sphereLights[i].position - pos;
+		float dist2 = dot(fragToLight, fragToLight);
+		float dist = sqrt(dist2);
+
+		vec3 wi = fragToLight / dist;
+		float cosTheta = dot(wi, norm);
+		float ratio = dist / sphereLights[i].radius;
+		float ratio2 = ratio * ratio;
+		
+		float attenuation;
+		if(ratio * cosTheta > 1)
+			attenuation = cosTheta / ratio2;
+		else{
+			float sinTheta = sqrt(1 - cosTheta*cosTheta);
+			float cotTheta = cosTheta / sinTheta;
+			float x = sqrt(ratio2 - 1);
+			float y = -x * cotTheta;
+			
+			attenuation = (1 / ( PI * ratio2)) *
+				(cosTheta * acos(y) - x * sinTheta * sqrt(1 - y * y)) +
+				(1 / PI) * atan(sinTheta * sqrt(1 - y * y)/x);
+		}
+		attenuation *= PI;
+		attenuation = max(0.0, attenuation);
+
+		vec3 f = BRDF(ID, norm, wo, wi, albedo, metallic, roughness, ao);
+		
+		result += attenuation * sphereLights[i].L * f;
 	}
 	
     FragColor = result;

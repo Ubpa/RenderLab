@@ -77,12 +77,11 @@ const RGBf PathTracer::Trace(ERay & ray, int depth, RGBf pathThroughput) {
 	if (!cmptMaterial || !cmptMaterial->material)
 		return RGBf(0);
 
-	RGBf emitL = depth == 0 ? cmptMaterial->material->GetEmission() : RGBf(0);
-
 	auto bsdf = dynamic_pointer_cast<BSDF>(cmptMaterial->material);
 	if (bsdf == nullptr)
-		return emitL;
+		return Vec3f(0);
 
+	RGBf emitL = depth == 0 ? bsdf->GetEmission() : RGBf(0);
 
 	bsdf->ChangeNormal(closestRst.texcoord, closestRst.tangent, closestRst.n);
 

@@ -11,7 +11,6 @@
 
 #include <CppUtil/Engine/AllBSDFs.h>
 #include <CppUtil/Engine/Gooch.h>
-#include <CppUtil/Engine/Emission.h>
 
 #include <CppUtil/Engine/AreaLight.h>
 #include <CppUtil/Engine/PointLight.h>
@@ -70,7 +69,6 @@ public:
 		RegMemberFunc<BSDF_FrostedGlass>(&Attribute::ComponentVisitor::Visit);
 		RegMemberFunc<BSDF_Frostbite>(&Attribute::ComponentVisitor::Visit);
 		RegMemberFunc<Gooch>(&Attribute::ComponentVisitor::Visit);
-		RegMemberFunc<Emission>(&Attribute::ComponentVisitor::Visit);
 
 		RegMemberFunc<CmptTransform>(&Attribute::ComponentVisitor::Visit);
 	}
@@ -98,7 +96,6 @@ public:
 	void Visit(Ptr<SpotLight> light);
 	void Visit(Ptr<InfiniteAreaLight> light);
 	void Visit(Ptr<SphereLight> light);
-	void Visit(Ptr<Emission> light);
 
 	void Visit(Ptr<CmptMaterial> cmpt);
 	void Visit(Ptr<BSDF_Diffuse> bsdf);
@@ -311,9 +308,8 @@ void Attribute::ComponentVisitor::Visit(Ptr<CmptMaterial> cmpt) {
 	getTypeStr->Reg([&typeStr](Ptr<BSDF_FrostedGlass>) { typeStr = "BSDF_FrostedGlass"; });
 	getTypeStr->Reg([&typeStr](Ptr<Gooch>) { typeStr = "Gooch"; });
 	getTypeStr->Reg([&typeStr](Ptr<BSDF_Frostbite>) { typeStr = "BSDF_Frostbite"; });
-	getTypeStr->Reg([&typeStr](Ptr<Emission>) { typeStr = "Emission"; });
 
-	const int materialNum = 11;
+	const int materialNum = 10;
 	tuple<string, function<Ptr<Material>()>> bsdfArr[materialNum] = {
 		{"None", []()->Ptr<Material> { return nullptr; } },
 		{"BSDF_Diffuse", []()->Ptr<Material> { return BSDF_Diffuse::New(); } },
@@ -325,7 +321,6 @@ void Attribute::ComponentVisitor::Visit(Ptr<CmptMaterial> cmpt) {
 		{"BSDF_FrostedGlass", []()->Ptr<Material> { return BSDF_FrostedGlass::New(); } },
 		{"Gooch", []()->Ptr<Material> { return Gooch::New(); } },
 		{"BSDF_Frostbite", []()->Ptr<Material> { return BSDF_Frostbite::New(); } },
-		{"Emission", []()->Ptr<Material> { return Emission::New(); } },
 	};
 
 	Grid::pSlotMap pSlotMap(new Grid::SlotMap);
@@ -362,7 +357,7 @@ void Attribute::ComponentVisitor::Visit(Ptr<BSDF_Diffuse> bsdf) {
 void Attribute::ComponentVisitor::Visit(Ptr<BSDF_Emission> bsdf) {
 	auto grid = GetGrid(attr->componentType2item[typeid(CmptMaterial)]);
 	grid->AddEditColor("- Color", bsdf->color);
-	grid->AddEditVal("- Intensity", bsdf->intensity, 0, 10, 1000);
+	grid->AddEditVal("- Intensity", bsdf->intensity, 0, 20, 2000);
 }
 
 void Attribute::ComponentVisitor::Visit(Ptr<BSDF_Glass> bsdf) {
@@ -440,13 +435,6 @@ void Attribute::ComponentVisitor::Visit(Ptr<BSDF_Frostbite> bsdf) {
 	grid->AddEditImage("- AO Texture", bsdf->aoTexture);
 
 	grid->AddEditImage("- Normal Texture", bsdf->normalTexture);
-}
-
-void Attribute::ComponentVisitor::Visit(Ptr<Emission> emission) {
-	auto grid = GetGrid(attr->componentType2item[typeid(CmptMaterial)]);
-
-	grid->AddEditColor("- Color", emission->color);
-	grid->AddEditVal("- intensity", emission->intensity, 0, 20, 2000);
 }
 
 // -------------- Light --------------

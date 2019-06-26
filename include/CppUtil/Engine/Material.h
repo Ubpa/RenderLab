@@ -20,9 +20,6 @@ namespace CppUtil {
 		protected:
 			Material() = default;
 			virtual ~Material() = default;
-
-		public:
-			virtual const RGBf GetEmission() const { return RGBf(0.f); }
 		};
 	}
 }

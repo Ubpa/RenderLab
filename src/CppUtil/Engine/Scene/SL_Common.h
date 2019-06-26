@@ -18,7 +18,6 @@
 
 #include <CppUtil/Engine/AllBSDFs.h>
 #include <CppUtil/Engine/Gooch.h>
-#include <CppUtil/Engine/Emission.h>
 
 #include <CppUtil/Basic/Image.h>
 
@@ -236,13 +235,6 @@ namespace str {
 
 		const char * const colorFactor = "colorFactor";
 		const char * const colorTexture = "colorTexture";
-	}
-
-	namespace Emission {
-		const char * const type = "Emission";
-
-		const char * const color = "color";
-		const char * const intensity = "intensity";
 	}
 }
 

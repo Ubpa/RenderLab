@@ -13,6 +13,7 @@
 #include <CppUtil/Engine/DirectionalLight.h>
 #include <CppUtil/Engine/SpotLight.h>
 #include <CppUtil/Engine/InfiniteAreaLight.h>
+#include <CppUtil/Engine/SphereLight.h>
 
 #include <CppUtil/Qt/RawAPI_OGLW.h>
 #include <CppUtil/Qt/RawAPI_Define.h>
@@ -74,6 +75,12 @@ void Raster::Init() {
 	glBufferData(GL_UNIFORM_BUFFER, 32, NULL, GL_DYNAMIC_DRAW);
 	glBindBufferBase(GL_UNIFORM_BUFFER, 4, environmentUBO);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+	glGenBuffers(1, &sphereLightsUBO);
+	glBindBuffer(GL_UNIFORM_BUFFER, sphereLightsUBO);
+	glBufferData(GL_UNIFORM_BUFFER, 272, NULL, GL_DYNAMIC_DRAW);
+	glBindBufferBase(GL_UNIFORM_BUFFER, 5, sphereLightsUBO);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
 void Raster::UpdateUBO() {
@@ -81,6 +88,7 @@ void Raster::UpdateUBO() {
 	UpdateUBO_DirectionalLights();
 	UpdateUBO_SpotLights();
 	UpdateUBO_Environment();
+	UpdateUBO_SphereLights();
 }
 
 void Raster::UpdateUBO_PointLights() {
@@ -196,12 +204,39 @@ void Raster::UpdateUBO_Environment() {
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
+void Raster::UpdateUBO_SphereLights() {
+	sphereLight2idx.clear();
+
+	int sphereLightIdx = 0;
+	glBindBuffer(GL_UNIFORM_BUFFER, sphereLightsUBO);
+	for (auto cmptLight : scene->GetCmptLights()) {
+		auto sphereLight = CastTo<SphereLight>(cmptLight->light);
+		if (!sphereLight)
+			continue;
+
+		sphereLight2idx[sphereLight] = sphereLightIdx;
+
+		Point3 position = cmptLight->GetSObj()->GetWorldPos();
+
+		int base = 16 + 32 * sphereLightIdx;
+		glBufferSubData(GL_UNIFORM_BUFFER, base, 12, position.Data());
+		auto lightL = sphereLight->intensity * sphereLight->color;
+		glBufferSubData(GL_UNIFORM_BUFFER, base + 16, 12, lightL.Data());
+		glBufferSubData(GL_UNIFORM_BUFFER, base + 28, 4, &sphereLight->radius);
+
+		sphereLightIdx++;
+	}
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, 4, &sphereLightIdx); // 球光源个数即为 sphereLightIdx
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+}
+
 void Raster::BindUBO(Shader & shader) {
 	shader.UniformBlockBind("Camera", 0);
 	shader.UniformBlockBind("PointLights", 1);
 	shader.UniformBlockBind("DirectionalLights", 2);
 	shader.UniformBlockBind("SpotLights", 3);
 	shader.UniformBlockBind("Environment", 4);
+	shader.UniformBlockBind("SphereLights", 5);
 }
 
 /*

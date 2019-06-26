@@ -263,6 +263,8 @@ void Tree::contextMenuEvent(QContextMenuEvent *event) {
 		auto sobj = Hierarchy::GetInstance()->CreateSObj("Sphere Light");
 		CmptLight::New(sobj, SphereLight::New());
 		CmptTransform::New(sobj);
+		CmptGeometry::New(sobj, Sphere::New());
+		CmptMaterial::New(sobj, BSDF_Emission::New());
 	});
 
 	mainMenu.addMenu(genLightMenu);

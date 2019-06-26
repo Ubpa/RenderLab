@@ -24,6 +24,8 @@ namespace CppUtil {
 
 			virtual void ChangeNormal(const Point2 & texcoord, const Normalf & tangent, Normalf & normal) const { return; };
 
+			virtual const RGBf GetEmission() const { return RGBf(0.f); }
+
 		protected:
 			static const Normalf TangentSpaceNormalToWorld(const Normalf & worldTangent, const Normalf & worldNormal, const Normalf & tangentSpaceNormal);
 		};
