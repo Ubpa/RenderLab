@@ -1,13 +1,13 @@
-#ifndef _BASIC_SHAPE_SPHERE_H_
-#define _BASIC_SHAPE_SPHERE_H_
+#ifndef _CPPUTIL_BASIC_SHAPE_DISK_H_
+#define _CPPUTIL_BASIC_SHAPE_DISK_H_
 
 #include <CppUtil/Basic/Shape.h>
 
 namespace CppUtil {
 	namespace Basic {
-		class Sphere : public Shape {
+		class Disk : public Shape {
 		public:
-			Sphere(uint n);
+			Disk(uint n);
 			float * GetNormalArr();
 			float * GetTexCoordsArr();
 			uint * GetIndexArr();
@@ -25,4 +25,5 @@ namespace CppUtil {
 	}
 }
 
-#endif // !_BASIC_SHAPE_SPHERE_H_
+
+#endif // !_CPPUTIL_BASIC_SHAPE_DISK_H_

@@ -22,6 +22,7 @@ namespace CppUtil {
 		class Triangle;
 		class TriMesh;
 		class BVHAccel;
+		class Disk;
 
 		// 寻找最近的交点
 		class RayIntersector final : public Intersector {
@@ -65,6 +66,7 @@ namespace CppUtil {
 			void Visit(Basic::Ptr<Plane> plane);
 			void Visit(Basic::Ptr<Triangle> triangle);
 			void Visit(Basic::Ptr<TriMesh> mesh);
+			void Visit(Basic::Ptr<Disk> disk);
 
 		private:
 			bool Intersect(const BBoxf & bbox, const Val3f & invDir) const;

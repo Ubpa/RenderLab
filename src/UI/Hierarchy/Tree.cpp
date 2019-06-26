@@ -11,6 +11,7 @@
 #include <CppUtil/Engine/Material.h>
 #include <CppUtil/Engine/Sphere.h>
 #include <CppUtil/Engine/Plane.h>
+#include <CppUtil/Engine/Disk.h>
 
 #include <CppUtil/Engine/AreaLight.h>
 #include <CppUtil/Engine/PointLight.h>
@@ -205,21 +206,28 @@ void Tree::contextMenuEvent(QContextMenuEvent *event) {
 		auto sobj = Hierarchy::GetInstance()->CreateSObj("Cube");
 		CmptTransform::New(sobj);
 		CmptGeometry::New(sobj, TriMesh::GenCube());
-		CmptMaterial::New(sobj, BSDF_MetalWorkflow::New());
+		CmptMaterial::New(sobj, BSDF_Frostbite::New());
 	});
 
 	genObjMenu->addAction("Sphere", this, []() {
 		auto sobj = Hierarchy::GetInstance()->CreateSObj("Sphere");
 		CmptTransform::New(sobj);
 		CmptGeometry::New(sobj, Sphere::New());
-		CmptMaterial::New(sobj, BSDF_MetalWorkflow::New());
+		CmptMaterial::New(sobj, BSDF_Frostbite::New());
 	});
 
 	genObjMenu->addAction("Plane", this, []() {
 		auto sobj = Hierarchy::GetInstance()->CreateSObj("Plane");
 		CmptTransform::New(sobj);
 		CmptGeometry::New(sobj, Plane::New());
-		CmptMaterial::New(sobj, BSDF_MetalWorkflow::New());
+		CmptMaterial::New(sobj, BSDF_Frostbite::New());
+	});
+
+	genObjMenu->addAction("Disk", this, []() {
+		auto sobj = Hierarchy::GetInstance()->CreateSObj("Disk");
+		CmptTransform::New(sobj);
+		CmptGeometry::New(sobj, Disk::New());
+		CmptMaterial::New(sobj, BSDF_Frostbite::New());
 	});
 
 	mainMenu.addMenu(genObjMenu);

@@ -9,9 +9,9 @@ using namespace std;
 
 Sphere::Sphere(uint n)
 	: Shape((n + 1)*(n + 1), 2 * n*n) {
-	texCoordsArr = vector<array<float,2>>(vertexNum);
-	indexArr = vector<array<uint, 3>>(triNum);
-	tangentArr = vector<array<float, 3>>(vertexNum);
+	texCoordsArr = vector<Vec2f>(vertexNum);
+	indexArr = vector<uVec3i>(triNum);
+	tangentArr = vector<Vec3f>(vertexNum);
 
 	float inc = 1.0f / n;
 	for (uint i = 0; i <= n; i++) {
@@ -57,19 +57,19 @@ Sphere::Sphere(uint n)
 }
 
 float * Sphere::GetNormalArr() {
-	return normalArr.front().data();
+	return normalArr.front().Data();
 }
 
 float * Sphere::GetTexCoordsArr() {
-	return texCoordsArr.front().data();
+	return texCoordsArr.front().Data();
 }
 
 uint * Sphere::GetIndexArr() {
-	return indexArr.front().data();
+	return indexArr.front().Data();
 }
 
 float * Sphere::GetTangentArr() {
-	return tangentArr.front().data();
+	return tangentArr.front().Data();
 }
 
 uint Sphere::GetNormalArrSize() {

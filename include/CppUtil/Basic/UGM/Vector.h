@@ -15,14 +15,17 @@ namespace CppUtil {
 
 	using Vec2f = Vector<2, float>;
 	using Vec2i = Vector<2, int>;
+	using uVec2i = Vector<2, unsigned int>;
 	using Vec2 = Vec2f;
 
 	using Vec3f = Vector<3, float>;
 	using Vec3i = Vector<3, int>;
+	using uVec3i = Vector<3, unsigned int>;
 	using Vec3 = Vec3f;
 
 	using Vec4f = Vector<4, float>;
 	using Vec4i = Vector<4, int>;
+	using uVec4i = Vector<4, unsigned int>;
 	using Vec4 = Vec4f;
 }
 

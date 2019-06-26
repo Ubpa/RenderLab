@@ -17,6 +17,7 @@ namespace CppUtil{
 		class Sphere;
 		class Plane;
 		class TriMesh;
+		class Disk;
 
 		class Material;
 		class BSDF_MetalWorkflow;
@@ -65,6 +66,7 @@ namespace CppUtil{
 			virtual void Visit(Basic::Ptr<Sphere> sphere);
 			virtual void Visit(Basic::Ptr<Plane> plane);
 			virtual void Visit(Basic::Ptr<TriMesh> mesh);
+			virtual void Visit(Basic::Ptr<Disk> disk);
 
 		private:
 			void Pass_GBuffer();

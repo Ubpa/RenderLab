@@ -72,6 +72,7 @@ namespace str {
 			const char * const SPHERE = "sphere";
 			const char * const PLANE = "plane";
 			const char * const FILE = "file";
+			const char * const DISK = "disk";
 		}
 	}
 

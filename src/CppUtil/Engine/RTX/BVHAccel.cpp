@@ -5,6 +5,7 @@
 #include <CppUtil/Engine/Sphere.h>
 #include <CppUtil/Engine/Plane.h>
 #include <CppUtil/Engine/TriMesh.h>
+#include <CppUtil/Engine/Disk.h>
 
 #include <CppUtil/Engine/CmptGeometry.h>
 
@@ -28,6 +29,7 @@ public:
 		RegMemberFunc<Sphere>(&BVHAccel::BVHInitVisitor::Visit);
 		RegMemberFunc<Plane>(&BVHAccel::BVHInitVisitor::Visit);
 		RegMemberFunc<TriMesh>(&BVHAccel::BVHInitVisitor::Visit);
+		RegMemberFunc<Disk>(&BVHAccel::BVHInitVisitor::Visit);
 	}
 
 public:
@@ -72,6 +74,12 @@ public:
 			holder->shapes.push_back(triangle);
 			shape2wbbox[triangle] = l2w(triangle->GetBBox());
 		}
+	}
+
+	void Visit(Ptr<Disk> disk) {
+		const auto l2w = holder->GetShapeW2LMat(disk).Inverse();
+		holder->shapes.push_back(disk);
+		shape2wbbox[disk] = l2w(disk->GetBBox());
 	}
 
 private:

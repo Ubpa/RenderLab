@@ -2,7 +2,6 @@
 #define _ENGINE_PRIMITIVE_SPHERE_H_
 
 #include <CppUtil/Engine/Primitive.h>
-#include <CppUtil/Basic/UGM/BBox.h>
 #include <CppUtil/Basic/UGM/Point2.h>
 #include <CppUtil/Basic/UGM/Normal.h>
 

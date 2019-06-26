@@ -2,7 +2,6 @@
 #define _ENGINE_PRIMITIVE_PLANE_H_
 
 #include <CppUtil/Engine/Primitive.h>
-#include <CppUtil/Basic/UGM/BBox.h>
 
 namespace CppUtil {
 	namespace Engine {
@@ -18,7 +17,7 @@ namespace CppUtil {
 		public:
 			// primitive 局部坐标系内的 bbox
 			virtual const BBoxf GetBBox() const override {
-				return BBoxf(Point3(-0.5f, -0.000001f, -0.5f), Point3(0.5f, 0.000001f, 0.5f));
+				return BBoxf(Point3(-0.5f, -0.001f, -0.5f), Point3(0.5f, 0.001f, 0.5f));
 			}
 
 			virtual const Basic::Ptr<Primitive> GetPrimitive() override {

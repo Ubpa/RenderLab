@@ -8,6 +8,7 @@
 #include <CppUtil/Engine/Sphere.h>
 #include <CppUtil/Engine/Plane.h>
 #include <CppUtil/Engine/TriMesh.h>
+#include <CppUtil/Engine/Disk.h>
 
 #include <CppUtil/Engine/AllBSDFs.h>
 #include <CppUtil/Engine/Gooch.h>
@@ -50,6 +51,7 @@ public:
 		RegMemberFunc<Sphere>(&Attribute::ComponentVisitor::Visit);
 		RegMemberFunc<Plane>(&Attribute::ComponentVisitor::Visit);
 		RegMemberFunc<TriMesh>(&Attribute::ComponentVisitor::Visit);
+		RegMemberFunc<Disk>(&Attribute::ComponentVisitor::Visit);
 
 		RegMemberFunc<CmptLight>(&Attribute::ComponentVisitor::Visit);
 		RegMemberFunc<AreaLight>(&Attribute::ComponentVisitor::Visit);
@@ -88,6 +90,7 @@ public:
 	void Visit(Ptr<Sphere> sphere);
 	void Visit(Ptr<Plane> plane);
 	void Visit(Ptr<TriMesh> mesh);
+	void Visit(Ptr<Disk> disk);
 
 	void Visit(Ptr<CmptLight> cmpt);
 	void Visit(Ptr<AreaLight> light);
@@ -232,6 +235,7 @@ void Attribute::ComponentVisitor::Visit(Ptr<CmptGeometry> geo) {
 	getTypeStr->Reg([&typeStr](Ptr<Sphere>) { typeStr = "Sphere"; });
 	getTypeStr->Reg([&typeStr](Ptr<Plane>) { typeStr = "Plane"; });
 	getTypeStr->Reg([&typeStr](Ptr<TriMesh>) { typeStr = "TriMesh"; });
+	getTypeStr->Reg([&typeStr](Ptr<Disk>) { typeStr = "Disk"; });
 
 	Grid::pSlotMap pSlotMap(new Grid::SlotMap);
 	Grid::wpSlotMap wpSlotMap = pSlotMap;
@@ -260,9 +264,18 @@ void Attribute::ComponentVisitor::Visit(Ptr<CmptGeometry> geo) {
 		Visit(plane);
 	};
 	(*pSlotMap)["TriMesh"] = [=]() {
+		// not support now
 		grid->Clear();
 		grid->AddComboBox("Type", "None", wpSlotMap.lock());
 		geo->primitive = nullptr;
+	};
+	(*pSlotMap)["Disk"] = [=]() {
+		grid->Clear();
+		grid->AddComboBox("Type", "Disk", wpSlotMap.lock());
+
+		auto disk = Disk::New();
+		geo->primitive = disk;
+		Visit(disk);
 	};
 
 	if (geo->primitive) {
@@ -277,12 +290,17 @@ void Attribute::ComponentVisitor::Visit(Ptr<CmptGeometry> geo) {
 
 void Attribute::ComponentVisitor::Visit(Ptr<Sphere> sphere) {
 	auto grid = GetGrid(attr->componentType2item[typeid(CmptGeometry)]);
-	grid->AddText("empty");
+	//grid->AddText("empty");
 }
 
 void Attribute::ComponentVisitor::Visit(Ptr<Plane> plane) {
 	auto grid = GetGrid(attr->componentType2item[typeid(CmptGeometry)]);
-	grid->AddText("empty");
+	//grid->AddText("empty");
+}
+
+void Attribute::ComponentVisitor::Visit(Ptr<Disk> disk) {
+	auto grid = GetGrid(attr->componentType2item[typeid(CmptGeometry)]);
+	//grid->AddText("empty");
 }
 
 void Attribute::ComponentVisitor::Visit(Ptr<TriMesh> mesh) {

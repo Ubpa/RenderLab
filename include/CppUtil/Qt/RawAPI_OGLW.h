@@ -27,7 +27,7 @@ namespace CppUtil {
 
 	namespace QT {
 
-		BETTER_ENUM(ShapeType, int, Sphere, Plane, Cube, Screen);
+		BETTER_ENUM(ShapeType, int, Sphere, Plane, Cube, Screen, Disk);
 
 		class RawAPI_OGLW : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core {
 			Q_OBJECT
@@ -83,6 +83,7 @@ namespace CppUtil {
 			OpenGL::VAO VAO_P3N3T2T3_Sphere;
 			OpenGL::VAO VAO_P3N3T2T3_Plane;
 			OpenGL::VAO VAO_P3T2_Screen;
+			OpenGL::VAO VAO_P3N3T2T3_Disk;
 			std::map<Basic::WPtrC<Engine::TriMesh>, OpenGL::VAO> mesh2VAO;
 			std::map<Basic::WPtrC<Basic::Image>, OpenGL::Texture> img2tex;
 

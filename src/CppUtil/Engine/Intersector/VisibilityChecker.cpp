@@ -8,6 +8,7 @@
 #include <CppUtil/Engine/Plane.h>
 #include <CppUtil/Engine/Triangle.h>
 #include <CppUtil/Engine/TriMesh.h>
+#include <CppUtil/Engine/Disk.h>
 
 #include <stack>
 
@@ -21,6 +22,7 @@ VisibilityChecker::VisibilityChecker() {
 	RegMemberFunc<Sphere>(&VisibilityChecker::Visit);
 	RegMemberFunc<Plane>(&VisibilityChecker::Visit);
 	RegMemberFunc<Triangle>(&VisibilityChecker::Visit);
+	RegMemberFunc<Disk>(&VisibilityChecker::Visit);
 }
 
 void VisibilityChecker::Init(const ERay & ray, const float tMax) {
@@ -133,13 +135,8 @@ void VisibilityChecker::Visit(Ptr<Sphere> sphere) {
 }
 
 void VisibilityChecker::Visit(Ptr<Plane> plane) {
-	const auto & dir = ray.d;
-	const auto & origin = ray.o;
-	const float tMin = ray.tMin;
-	const float tMax = ray.tMax;
-
-	const float t = -origin.y / dir.y;
-	if (t<tMin || t>tMax) {
+	const float t = -ray.o.y / ray.d.y;
+	if (t<ray.tMin || t>ray.tMax) {
 		rst.isIntersect = false;
 		return;
 	}
@@ -201,6 +198,22 @@ void VisibilityChecker::Visit(Ptr<Triangle> triangle) {
 	const float t = r3 * inv_denominator;
 
 	if (t < ray.tMin || t > ray.tMax) {
+		rst.isIntersect = false;
+		return;
+	}
+
+	rst.isIntersect = true;
+}
+
+void VisibilityChecker::Visit(Ptr<Disk> disk) {
+	const float t = -ray.o.y / ray.d.y;
+	if (t<ray.tMin || t>ray.tMax) {
+		rst.isIntersect = false;
+		return;
+	}
+
+	const auto pos = ray(t);
+	if (Vec3f(pos).Norm2() >= 1.f) {
 		rst.isIntersect = false;
 		return;
 	}

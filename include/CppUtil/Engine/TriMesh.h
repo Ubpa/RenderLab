@@ -6,7 +6,6 @@
 
 #include <CppUtil/Basic/UGM/Normal.h>
 #include <CppUtil/Basic/UGM/Point2.h>
-#include <CppUtil/Basic/UGM/BBox.h>
 
 namespace CppUtil {
 	namespace Engine {
@@ -19,12 +18,14 @@ namespace CppUtil {
 				CUBE,
 				SPHERE,
 				PLANE,
+				DISK,
 			};
 		public:
 			TriMesh(const std::vector<uint> & indice,
 				const std::vector<Point3> & positions,
 				const std::vector<Normalf> & normals,
 				const std::vector<Point2> & texcoords,
+				const std::vector<Normalf> & tangents = std::vector<Normalf>(),
 				ENUM_TYPE type = ENUM_TYPE::CODE);
 
 			TriMesh(uint triNum, uint vertexNum,
@@ -32,6 +33,7 @@ namespace CppUtil {
 				const float * positions,
 				const float * normals,
 				const float * texcoords,
+				const float * tangents = nullptr,
 				ENUM_TYPE type = ENUM_TYPE::CODE);
 
 		public:
@@ -39,8 +41,9 @@ namespace CppUtil {
 				const std::vector<Point3> & positions,
 				const std::vector<Normalf> & normals,
 				const std::vector<Point2> & texcoords,
+				const std::vector<Normalf> & tangents = std::vector<Normalf>(),
 				ENUM_TYPE type = ENUM_TYPE::CODE) {
-				return Basic::New<TriMesh>(indice, positions, normals, texcoords, type);
+				return Basic::New<TriMesh>(indice, positions, normals, texcoords, tangents, type);
 			}
 
 			static const Basic::Ptr<TriMesh> New(uint triNum, uint vertexNum,
@@ -48,8 +51,9 @@ namespace CppUtil {
 				const float * positions,
 				const float * normals,
 				const float * texcoords,
+				const float * tangents = nullptr,
 				ENUM_TYPE type = ENUM_TYPE::CODE) {
-				return Basic::New<TriMesh>(triNum, vertexNum, indice, positions, normals, texcoords, type);
+				return Basic::New<TriMesh>(triNum, vertexNum, indice, positions, normals, texcoords, tangents, type);
 			}
 
 		private:
@@ -77,9 +81,10 @@ namespace CppUtil {
 			}
 
 		public:
-			static Basic::Ptr<TriMesh> GenCube();
-			static Basic::Ptr<TriMesh> GenSphere();
-			static Basic::Ptr<TriMesh> GenPlane();
+			static const Basic::Ptr<TriMesh> GenCube();
+			static const Basic::Ptr<TriMesh> GenSphere();
+			static const Basic::Ptr<TriMesh> GenPlane();
+			static const Basic::Ptr<TriMesh> GenDisk();
 
 		private:
 			void GenTangents();

@@ -80,6 +80,7 @@ void AssimpLoader::LoadMesh(Str2Img & str2img, const string & dir, aiMesh *mesh,
 	vector<Point2> texcoords;
 	vector<Normalf> normals;
 	vector<uint> indices;
+	vector<Normalf> tangents;
 	//vector<Mesh::TextureInfo> textureInfos;
 
 	// Walk through each of the mesh's vertices
@@ -112,10 +113,8 @@ void AssimpLoader::LoadMesh(Str2Img & str2img, const string & dir, aiMesh *mesh,
 		else
 			texcoords.push_back({ 0,0 });
 		// tangent
-		//vector.x = mesh->mTangents[i].x;
-		//vector.y = mesh->mTangents[i].y;
-		//vector.z = mesh->mTangents[i].z;
-		//vertex.Tangent = vector;
+		if (mesh->mTangents)
+			tangents.push_back({ mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z });
 		// bitangent
 		//vector.x = mesh->mBitangents[i].x;
 		//vector.y = mesh->mBitangents[i].y;
@@ -130,7 +129,7 @@ void AssimpLoader::LoadMesh(Str2Img & str2img, const string & dir, aiMesh *mesh,
 		for (uint j = 0; j < face.mNumIndices; j++)
 			indices.push_back(face.mIndices[j]);
 	}
-	auto triMesh = TriMesh::New(indices, poses, normals, texcoords);
+	auto triMesh = TriMesh::New(indices, poses, normals, texcoords, tangents);
 	CmptGeometry::New(sobj, triMesh);
 
 	auto bsdf = BSDF_MetalWorkflow::New();

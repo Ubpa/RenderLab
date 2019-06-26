@@ -210,6 +210,9 @@ static Ptr<TriMesh> SObjLoader::Load(XMLElement * ele, Ptr<TriMesh>*) {
 	funcMap[str::TriMesh::ENUM_TYPE::FILE] = [&](XMLElement * ele) {
 		triMesh = nullptr;//not supprt now
 	};
+	funcMap[str::TriMesh::ENUM_TYPE::DISK] = [&](XMLElement * ele) {
+		triMesh = TriMesh::GenDisk();
+	};
 
 	funcMap[str::TriMesh::ENUM_TYPE::INVALID] = [&](XMLElement * ele) {};
 

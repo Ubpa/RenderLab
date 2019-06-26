@@ -120,6 +120,16 @@ void RawAPI_OGLW::InitShapeVAOs() {
 
 	// screen
 	VAO_P3T2_Screen = VAO(Define::data_ScreenVertices, sizeof(Define::data_ScreenVertices), { 2,2 });
+
+	// disk
+	auto disk = TriMesh::GenDisk();
+	vector<VAO::VBO_DataPatch> P3_Disk_Vec_VBO_Data_Patch = {
+		{disk->GetPositions().data()->Data(), static_cast<uint>(disk->GetPositions().size() * 3 * sizeof(float)), 3},
+		{disk->GetNormals().data()->Data(), static_cast<uint>(disk->GetNormals().size() * 3 * sizeof(float)), 3},
+		{disk->GetTexcoords().data()->Data(), static_cast<uint>(disk->GetTexcoords().size() * 2 * sizeof(float)), 2},
+		{disk->GetTangents().data()->Data(), static_cast<uint>(disk->GetTangents().size() * 3 * sizeof(float)), 3},
+	};
+	VAO_P3N3T2T3_Disk = VAO(P3_Disk_Vec_VBO_Data_Patch, disk->GetIndice().data(), static_cast<uint>(disk->GetIndice().size() * sizeof(uint)));
 }
 
 const VAO RawAPI_OGLW::GetVAO(ShapeType shapeType){
@@ -133,6 +143,8 @@ const VAO RawAPI_OGLW::GetVAO(ShapeType shapeType){
 		return GetVAO(cube);
 	case ShapeType::Screen:
 		return VAO_P3T2_Screen;
+	case ShapeType::Disk:
+		return VAO_P3N3T2T3_Disk;
 	default:
 		printf("ERROR::MgrVAO::GetShapeVAO:\n"
 			"\t""not support shape(%s)\n", shapeType._to_string());

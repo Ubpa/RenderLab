@@ -14,6 +14,7 @@ namespace CppUtil {
 		class Plane;
 		class Triangle;
 		class BVHAccel;
+		class Disk;
 
 		class VisibilityChecker final : public Intersector {
 		public:
@@ -46,6 +47,7 @@ namespace CppUtil {
 			void Visit(Basic::Ptr<Sphere> sphere);
 			void Visit(Basic::Ptr<Plane> plane);
 			void Visit(Basic::Ptr<Triangle> triangle);
+			void Visit(Basic::Ptr<Disk> disk);
 
 		private:
 			bool Intersect(const BBoxf & bbox, const Val3f & invDir) const;

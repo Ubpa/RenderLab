@@ -12,6 +12,7 @@
 #include <CppUtil/Engine/Plane.h>
 #include <CppUtil/Engine/Triangle.h>
 #include <CppUtil/Engine/TriMesh.h>
+#include <CppUtil/Engine/Disk.h>
 
 #include <CppUtil/Basic/Math.h>
 #include <CppUtil/Basic/UGM/Transform.h>
@@ -30,6 +31,7 @@ RayIntersector::RayIntersector() {
 	RegMemberFunc<Plane>(&RayIntersector::Visit);
 	RegMemberFunc<Triangle>(&RayIntersector::Visit);
 	RegMemberFunc<TriMesh>(&RayIntersector::Visit);
+	RegMemberFunc<Disk>(&RayIntersector::Visit);
 }
 
 void RayIntersector::Init(ERay * ray) {
@@ -183,13 +185,8 @@ void RayIntersector::Visit(Ptr<Sphere> sphere) {
 }
 
 void RayIntersector::Visit(Ptr<Plane> plane) {
-	const auto & dir = ray->d;
-	const auto & origin = ray->o;
-	const float tMin = ray->tMin;
-	const float tMax = ray->tMax;
-
-	const float t = - origin.y / dir.y;
-	if (t<tMin || t>tMax) {
+	const float t = -ray->o.y / ray->d.y;
+	if (t<ray->tMin || t > ray->tMax) {
 		rst.isIntersect = false;
 		return;
 	}
@@ -202,7 +199,8 @@ void RayIntersector::Visit(Ptr<Plane> plane) {
 
 	rst.isIntersect = true;
 	ray->tMax = t;
-	rst.n = Normalf(0, 1, 0);
+	//rst.n = Normalf(0, 1, 0);
+	rst.n = Normalf(0, -Math::sgn(ray->d.y), 0);
 	rst.texcoord = Point2(pos.x + 0.5f, pos.z + 0.5f);
 	rst.tangent = Normalf(1, 0, 0);
 }
@@ -296,7 +294,7 @@ void RayIntersector::Visit(Ptr<Triangle> triangle) {
 	rst.tangent = (w * tg1 + u * tg2 + v * tg3).Normalize();
 }
 
-void RayIntersector::Visit(Basic::Ptr<TriMesh> mesh) {
+void RayIntersector::Visit(Ptr<TriMesh> mesh) {
 	const auto visitor = This();
 	for (auto triangle : mesh->GetTriangles()) {
 		triangle->Accept(visitor);
@@ -304,4 +302,24 @@ void RayIntersector::Visit(Basic::Ptr<TriMesh> mesh) {
 			return;
 		}
 	}
+}
+
+void RayIntersector::Visit(Ptr<Disk> disk) {
+	const float t = -ray->o.y / ray->d.y;
+	if (t < ray->tMin || t > ray->tMax) {
+		rst.isIntersect = false;
+		return;
+	}
+
+	const auto pos = ray->At(t);
+	if (Vec3f(pos).Norm2() >= 1.f) {
+		rst.isIntersect = false;
+		return;
+	}
+
+	rst.isIntersect = true;
+	ray->tMax = t;
+	rst.n = Normalf(0, -Math::sgn(ray->d.y), 0);
+	rst.texcoord = Point2((1+pos.x)/2, (1+pos.z)/2);
+	rst.tangent = Normalf(1, 0, 0);
 }

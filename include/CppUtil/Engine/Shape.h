@@ -2,14 +2,9 @@
 #define _CPPUTIL_ENGINE_PRIMITIVE_SHAPE_H_
 
 #include <CppUtil/Basic/Element.h>
+#include <CppUtil/Basic/UGM/BBox.h>
 
 namespace CppUtil {
-	namespace Basic {
-		template<typename T>
-		class BBox;
-	}
-	using BBoxf = Basic::BBox<float>;
-
 	namespace Engine {
 		class Primitive;
 

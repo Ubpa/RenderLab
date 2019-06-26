@@ -5,6 +5,7 @@
 #include <CppUtil/Basic/Cube.h>
 #include <CppUtil/Basic/Sphere.h>
 #include <CppUtil/Basic/Plane.h>
+#include <CppUtil/Basic/Disk.h>
 
 using namespace CppUtil;
 using namespace CppUtil::Engine;
@@ -15,17 +16,20 @@ TriMesh::TriMesh(const vector<uint> & indice,
 	const vector<Point3> & positions,
 	const vector<Normalf> & normals,
 	const vector<Point2> & texcoords,
+	const vector<Normalf> & tangents,
 	ENUM_TYPE type)
 :	indice(indice),
 	positions(positions),
 	normals(normals),
 	texcoords(texcoords),
+	tangents(tangents),
 	type(type)
 {
 	if (!(indice.size() > 0 && indice.size() % 3 == 0)
-		|| !(positions.size() > 0)
-		|| !(normals.size() == positions.size())
-		|| !(texcoords.size() == positions.size())) {
+		|| positions.size() <= 0
+		|| normals.size() != positions.size()
+		|| texcoords.size() != positions.size()
+		|| (tangents.size() != 0 && tangents.size() != positions.size())) {
 		type = ENUM_TYPE::INVALID;
 		printf("ERROR: TriMesh is invalid.\n");
 		return;
@@ -36,7 +40,8 @@ TriMesh::TriMesh(const vector<uint> & indice,
 	for (uint i = 0; i < indice.size(); i += 3)
 		triangles.push_back(Triangle::New(indice[i], indice[i+1], indice[i+2]));
 
-	GenTangents();
+	if(tangents.size() == 0)
+		GenTangents();
 }
 
 TriMesh::TriMesh(uint triNum, uint vertexNum,
@@ -44,6 +49,7 @@ TriMesh::TriMesh(uint triNum, uint vertexNum,
 	const float * positions,
 	const float * normals,
 	const float * texcoords,
+	const float * tangents,
 	ENUM_TYPE type)
 	: type(type)
 {
@@ -57,6 +63,8 @@ TriMesh::TriMesh(uint triNum, uint vertexNum,
 		this->positions.push_back(Point3(positions[3 * i], positions[3 * i + 1], positions[3 * i + 2]));
 		this->normals.push_back(Normalf(normals[3 * i], normals[3 * i + 1], normals[3 * i + 2]));
 		this->texcoords.push_back(Point2(texcoords[2 * i], texcoords[2 * i + 1]));
+		if(tangents)
+			this->tangents.push_back({ tangents[3 * i],tangents[3 * i + 1],tangents[3 * i + 2] });
 	}
 
 	// traingel 的 mesh 在 init 的时候设置
@@ -69,7 +77,8 @@ TriMesh::TriMesh(uint triNum, uint vertexNum,
 		triangles.push_back(Triangle::New(indice[3 * i], indice[3 * i + 1], indice[3 * i + 2]));
 	}
 
-	GenTangents();
+	if(!tangents)
+		GenTangents();
 }
 
 void TriMesh::Init_AfterGenPtr() {
@@ -145,23 +154,30 @@ void TriMesh::GenTangents() {
 	delete[] tan1;
 }
 
-Ptr<TriMesh> TriMesh::GenCube() {
+const Ptr<TriMesh> TriMesh::GenCube() {
 	Cube cube;
 	auto cubeMesh = TriMesh::New(cube.GetTriNum(), cube.GetVertexNum(),
-		cube.GetIndexArr(), cube.GetPosArr(), cube.GetNormalArr(), cube.GetTexCoordsArr(), ENUM_TYPE::CUBE);
+		cube.GetIndexArr(), cube.GetPosArr(), cube.GetNormalArr(), cube.GetTexCoordsArr(), nullptr, ENUM_TYPE::CUBE);
 	return cubeMesh;
 }
 
-Ptr<TriMesh> TriMesh::GenSphere() {
+const Ptr<TriMesh> TriMesh::GenSphere() {
 	Sphere sphere(50);
 	auto sphereMesh = TriMesh::New(sphere.GetTriNum(), sphere.GetVertexNum(),
-		sphere.GetIndexArr(), sphere.GetPosArr(), sphere.GetNormalArr(), sphere.GetTexCoordsArr(), ENUM_TYPE::SPHERE);
+		sphere.GetIndexArr(), sphere.GetPosArr(), sphere.GetNormalArr(), sphere.GetTexCoordsArr(), sphere.GetTangentArr(), ENUM_TYPE::SPHERE);
 	return sphereMesh;
 }
 
-Ptr<TriMesh> TriMesh::GenPlane() {
+const Ptr<TriMesh> TriMesh::GenPlane() {
 	Plane plane;
 	auto planeMesh = TriMesh::New(plane.GetTriNum(), plane.GetVertexNum(),
-		plane.GetIndexArr(), plane.GetPosArr(), plane.GetNormalArr(), plane.GetTexCoordsArr(), ENUM_TYPE::PLANE);
+		plane.GetIndexArr(), plane.GetPosArr(), plane.GetNormalArr(), plane.GetTexCoordsArr(), nullptr, ENUM_TYPE::PLANE);
 	return planeMesh;
+}
+
+const Ptr<TriMesh> TriMesh::GenDisk() {
+	Disk disk(50);
+	auto diskMesh = TriMesh::New(disk.GetTriNum(), disk.GetVertexNum(),
+		disk.GetIndexArr(), disk.GetPosArr(), disk.GetNormalArr(), disk.GetTexCoordsArr(), disk.GetTangentArr(), ENUM_TYPE::DISK);
+	return diskMesh;
 }

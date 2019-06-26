@@ -19,6 +19,7 @@
 #include <CppUtil/Engine/Sphere.h>
 #include <CppUtil/Engine/Plane.h>
 #include <CppUtil/Engine/TriMesh.h>
+#include <CppUtil/Engine/Disk.h>
 
 #include <CppUtil/Engine/PointLight.h>
 #include <CppUtil/Engine/DirectionalLight.h>
@@ -59,6 +60,7 @@ DeferredRaster::DeferredRaster(RawAPI_OGLW * pOGLW, Ptr<Scene> scene, Ptr<Camera
 	RegMemberFunc<Sphere>(&DeferredRaster::Visit);
 	RegMemberFunc<Plane>(&DeferredRaster::Visit);
 	RegMemberFunc<TriMesh>(&DeferredRaster::Visit);
+	RegMemberFunc<Disk>(&DeferredRaster::Visit);
 
 	// material
 	RegMemberFunc<BSDF_MetalWorkflow>(&DeferredRaster::Visit);
@@ -453,4 +455,12 @@ void DeferredRaster::Visit(Ptr<TriMesh> mesh) {
 
 	curMaterialShader.SetMat4f("model", modelVec.back());
 	pOGLW->GetVAO(mesh).Draw(curMaterialShader);
+}
+
+void DeferredRaster::Visit(Ptr<Disk> disk) {
+	if (!curMaterialShader.IsValid())
+		return;
+
+	curMaterialShader.SetMat4f("model", modelVec.back());
+	pOGLW->GetVAO(ShapeType::Disk).Draw(curMaterialShader);
 }
