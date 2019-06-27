@@ -137,13 +137,8 @@ namespace CppUtil {
 			const Transform operator*(const Transform & rhs) const { return Transform(m * rhs.m, rhs.mInv * mInv); }
 			Transform & operator*=(const Transform & rhs) {
 				m *= rhs.m;
-				rhs.mInv.MulTo(mInv);
+				mInv = rhs.mInv * mInv;
 				return *this;
-			}
-			Transform & MulTo(Transform & rhs) const {
-				m.MulTo(rhs.m);
-				rhs.mInv *= mInv;
-				return rhs;
 			}
 
 		private:

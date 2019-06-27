@@ -19,6 +19,7 @@
 #include <CppUtil/Engine/SpotLight.h>
 #include <CppUtil/Engine/InfiniteAreaLight.h>
 #include <CppUtil/Engine/SphereLight.h>
+#include <CppUtil/Engine/DiskLight.h>
 
 #include <CppUtil/OpenGL/Camera.h>
 
@@ -60,6 +61,7 @@ public:
 		RegMemberFunc<SpotLight>(&Attribute::ComponentVisitor::Visit);
 		RegMemberFunc<InfiniteAreaLight>(&Attribute::ComponentVisitor::Visit);
 		RegMemberFunc<SphereLight>(&Attribute::ComponentVisitor::Visit);
+		RegMemberFunc<DiskLight>(&Attribute::ComponentVisitor::Visit);
 
 		RegMemberFunc<CmptMaterial>(&Attribute::ComponentVisitor::Visit);
 		RegMemberFunc<BSDF_Diffuse>(&Attribute::ComponentVisitor::Visit);
@@ -99,6 +101,7 @@ public:
 	void Visit(Ptr<SpotLight> light);
 	void Visit(Ptr<InfiniteAreaLight> light);
 	void Visit(Ptr<SphereLight> light);
+	void Visit(Ptr<DiskLight> light);
 
 	void Visit(Ptr<CmptMaterial> cmpt);
 	void Visit(Ptr<BSDF_Diffuse> bsdf);
@@ -469,8 +472,9 @@ void Attribute::ComponentVisitor::Visit(Ptr<CmptLight> cmpt) {
 	getTypeStr->Reg([&typeStr](Ptr<SpotLight>) { typeStr = "SpotLight"; });
 	getTypeStr->Reg([&typeStr](Ptr<InfiniteAreaLight>) { typeStr = "InfiniteAreaLight"; });
 	getTypeStr->Reg([&typeStr](Ptr<SphereLight>) { typeStr = "SphereLight"; });
+	getTypeStr->Reg([&typeStr](Ptr<DiskLight>) { typeStr = "DiskLight"; });
 
-	const int lightNum = 7;
+	const int lightNum = 8;
 	tuple<string, function<Ptr<Light>()>> lightArr[lightNum] = {
 		{"None", []()->Ptr<Light> { return nullptr; } },
 		{"AreaLight", []()->Ptr<Light> { return AreaLight::New(); } },
@@ -479,6 +483,7 @@ void Attribute::ComponentVisitor::Visit(Ptr<CmptLight> cmpt) {
 		{"SpotLight", []()->Ptr<Light> { return SpotLight::New(); } },
 		{"InfiniteAreaLight", []()->Ptr<Light> { return InfiniteAreaLight::New(nullptr); } },
 		{"SphereLight", []()->Ptr<Light> { return SphereLight::New(); } },
+		{"DiskLight", []()->Ptr<Light> { return DiskLight::New(); } },
 	};
 
 	Grid::pSlotMap pSlotMap(new Grid::SlotMap);
@@ -550,6 +555,13 @@ void Attribute::ComponentVisitor::Visit(Ptr<SphereLight> light) {
 	grid->AddEditVal("- Intensity", light->intensity, 0, 20, 2000);
 	grid->AddEditColor("- Color", light->color);
 	grid->AddEditVal("- Radius", light->radius, 0.0, 100.0, 1000);
+}
+
+void Attribute::ComponentVisitor::Visit(Ptr<DiskLight> light) {
+	auto grid = GetGrid(attr->componentType2item[typeid(CmptLight)]);
+	grid->AddEditVal("- Intensity", light->intensity, 0, 20, 2000);
+	grid->AddEditColor("- Color", light->color);
+	grid->AddEditVal("- Radius", light->radius, 0, 100, 1000);
 }
 
 // -------------- Attribute --------------

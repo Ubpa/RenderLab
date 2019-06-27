@@ -21,8 +21,8 @@
 #ifdef NDEBUG
 #define THREAD_NUM omp_get_num_procs() - 1
 #else
-//#define THREAD_NUM 1
-#define THREAD_NUM omp_get_num_procs() - 1
+#define THREAD_NUM 1
+//#define THREAD_NUM omp_get_num_procs() - 1
 #endif //  NDEBUG
 
 using namespace CppUtil;

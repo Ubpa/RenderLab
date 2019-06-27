@@ -67,12 +67,6 @@ const RGBf PathTracer::Trace(ERay & ray, int depth, RGBf pathThroughput) {
 
 	const Point3 hitPos = ray.EndPos();
 
-	const size_t lightNum = lights.size();
-	vector<Point3> posInLightSpaceVec(lightNum);
-
-	for (size_t i = 0; i < lightNum; i++)
-		posInLightSpaceVec[i] = worldToLightVec[i](hitPos);
-
 	auto cmptMaterial = closestRst.closestSObj->GetComponent<CmptMaterial>();
 	if (!cmptMaterial || !cmptMaterial->material)
 		return RGBf(0);
@@ -93,9 +87,9 @@ const RGBf PathTracer::Trace(ERay & ray, int depth, RGBf pathThroughput) {
 
 	// SampleLightMode mode = depth > 0 ? SampleLightMode::RandomOne : SampleLightMode::ALL;
 	SampleLightMode mode = SampleLightMode::RandomOne;
-	const RGBf lightL = SampleLight(hitPos, posInLightSpaceVec, worldToSurface, bsdf, w_out, closestRst.texcoord, SampleLightMode::RandomOne);
+	const RGBf lightL = SampleLight(hitPos, worldToSurface, bsdf, w_out, closestRst.texcoord, SampleLightMode::RandomOne);
 
-	const RGBf matL = SampleBSDF(bsdf, mode, w_out, surfaceToWorld, closestRst.texcoord, posInLightSpaceVec, hitPos, depth, pathThroughput);
+	const RGBf matL = SampleBSDF(bsdf, mode, w_out, surfaceToWorld, closestRst.texcoord, hitPos, depth, pathThroughput);
 
 	return emitL + lightL + matL;
 }
@@ -108,7 +102,7 @@ const RGBf PathTracer::SampleLightImpl(
 	const Basic::Ptr<BSDF> bsdf,
 	const Normalf & w_out,
 	const Point2 & texcoord,
-	const float factorPD
+	float factorPD
 ) const
 {
 	auto const light = lights[lightID];
@@ -159,7 +153,6 @@ const RGBf PathTracer::SampleLightImpl(
 
 const RGBf PathTracer::SampleLight(
 	const Point3 & posInWorldSpace,
-	const std::vector<Point3> & posInLightSpaceVec,
 	const Mat3f & worldToSurface,
 	const Basic::Ptr<BSDF> bsdf,
 	const Normalf & w_out,
@@ -176,15 +169,16 @@ const RGBf PathTracer::SampleLight(
 	switch (mode)
 	{
 	case SampleLightMode::ALL: {
-		for (int i = 0; i < lightNum; i++)
-			rst += SampleLightImpl(i, posInWorldSpace, posInLightSpaceVec[i], worldToSurface, bsdf, w_out, texcoord, 1.f);
+		for (int i = 0; i < lightNum; i++) {
+			auto posInLightSpace = worldToLightVec[i](posInWorldSpace);
+			rst += SampleLightImpl(i, posInWorldSpace, posInLightSpace, worldToSurface, bsdf, w_out, texcoord, 1.f);
+		}
 
 		break;
 	}
 	case SampleLightMode::RandomOne: {
 		int lightID = Math::Rand_I() % lightNum;
-		auto const & posInLightSpace = posInLightSpaceVec[lightID];
-
+		auto posInLightSpace = worldToLightVec[lightID](posInWorldSpace);
 		rst = SampleLightImpl(lightID, posInWorldSpace, posInLightSpace, worldToSurface, bsdf, w_out, texcoord, 1.f / lightNum);
 		break;
 	}
@@ -199,7 +193,6 @@ const RGBf PathTracer::SampleBSDF(
 	const Normalf & w_out,
 	const Mat3f & surfaceToWorld,
 	const Point2 & texcoord,
-	const std::vector<Point3> & posInLightSpaceVec,
 	const Point3 & hitPos,
 	const int depth,
 	RGBf pathThroughput
@@ -235,8 +228,9 @@ const RGBf PathTracer::SampleBSDF(
 			if (lights[i]->IsDelta())
 				continue;
 
+			auto posInLightSpace = worldToLightVec[i](hitPos);
 			Normalf dirInLight = worldToLightVec[i](matRayDirInWorld);
-			sumPD += lights[i]->PDF(posInLightSpaceVec[i], dirInLight) * scaleFactor;
+			sumPD += lights[i]->PDF(posInLightSpace, dirInLight) * scaleFactor;
 		}
 	}
 

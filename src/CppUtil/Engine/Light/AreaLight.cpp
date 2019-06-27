@@ -6,7 +6,7 @@ using namespace CppUtil;
 using namespace CppUtil::Engine;
 
 const RGBf AreaLight::Sample_L(const Point3 & p, Normalf & wi, float & distToLight, float & PD) const {
-	if (p.y >= 0) {
+	if (p.y <= 0) {
 		PD = 0;
 		return RGBf(0);
 	}
@@ -21,8 +21,8 @@ const RGBf AreaLight::Sample_L(const Point3 & p, Normalf & wi, float & distToLig
 	wi = d / distToLight;
 
 	const float area = width * height;
-	// float cosTheta = wi.y;
-	PD = sqDist / (area * wi.y);
+	//float cosTheta = wi.y;
+	PD = sqDist / (area * (-wi.y));
 	return intensity * color;
 }
 
@@ -36,11 +36,11 @@ float AreaLight::PDF(const Point3 & p, const Normalf & wi) const {
 	const float dist = sqrt(sqDist);
 	const float cosTheta = d.y / dist;
 	const float area = width * height;
-	return sqDist / (area * cosTheta);
+	return sqDist / (area * (-cosTheta));
 }
 
 bool AreaLight::Hit(const Point3 & p, const Vec3 & dirToLight, Point3 & hitPos) const {
-	if (p.y >= 0 || dirToLight.y < 0)
+	if (p.y <= 0 || dirToLight.y > 0)
 		return false;
 
 	float t = - p.y / dirToLight.y;

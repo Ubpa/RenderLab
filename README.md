@@ -86,6 +86,8 @@ Optix: 6.0
       - [x] 离线
       - [x] 实时
     - [ ] disk
+      - [x] 离线
+      - [ ] 实时
     - [ ] tube / line
     - [ ] rectangle / frustum
   - [ ] 间接

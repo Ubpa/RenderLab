@@ -8,6 +8,7 @@
 
 using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
+using namespace std;
 
 Transform CmptLight::GetLightToWorldMatrixWithoutScale() const {
 	Transform tsfm(1.0f);
@@ -24,9 +25,7 @@ Transform CmptLight::GetLightToWorldMatrixWithoutScale() const {
 		auto pos = cmptTransform->GetPosition();
 		auto rotation = cmptTransform->GetRotation();
 		// tsfm = T * R * tsfm
-		auto curTsfm = Transform::Translate(pos);
-		curTsfm *= Transform::Rotate(rotation);
-		curTsfm.MulTo(tsfm);
+		tsfm = Transform::Translate(pos) * Transform::Rotate(rotation) * tsfm;
 	});
 	sobj->AscendAccept(visitor);
 

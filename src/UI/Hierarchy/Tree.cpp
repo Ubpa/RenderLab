@@ -19,6 +19,7 @@
 #include <CppUtil/Engine/DirectionalLight.h>
 #include <CppUtil/Engine/InfiniteAreaLight.h>
 #include <CppUtil/Engine/SphereLight.h>
+#include <CppUtil/Engine/DiskLight.h>
 
 #include <qmenu.h>
 #include <qdrag.h>
@@ -272,6 +273,14 @@ void Tree::contextMenuEvent(QContextMenuEvent *event) {
 		CmptLight::New(sobj, SphereLight::New());
 		CmptTransform::New(sobj);
 		CmptGeometry::New(sobj, Sphere::New());
+		CmptMaterial::New(sobj, BSDF_Emission::New());
+	});
+
+	genLightMenu->addAction("Disk Light", this, []() {
+		auto sobj = Hierarchy::GetInstance()->CreateSObj("Disk Light");
+		CmptLight::New(sobj, DiskLight::New());
+		CmptTransform::New(sobj);
+		CmptGeometry::New(sobj, Disk::New());
 		CmptMaterial::New(sobj, BSDF_Emission::New());
 	});
 
