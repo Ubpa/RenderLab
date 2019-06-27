@@ -2,6 +2,7 @@
 #define _ENGINE_MATERIAL_BSDF_H_
 
 #include <CppUtil/Engine/Material.h>
+#include <CppUtil/Engine/SurfCoord.h>
 
 namespace CppUtil {
 	namespace Engine {
@@ -24,7 +25,7 @@ namespace CppUtil {
 
 			virtual void ChangeNormal(const Point2 & texcoord, const Normalf & tangent, Normalf & normal) const { return; };
 
-			virtual const RGBf GetEmission() const { return RGBf(0.f); }
+			virtual const RGBf Emission(const Normalf & wo) const { return RGBf(0.f); }
 
 		protected:
 			static const Normalf TangentSpaceNormalToWorld(const Normalf & worldTangent, const Normalf & worldNormal, const Normalf & tangentSpaceNormal);

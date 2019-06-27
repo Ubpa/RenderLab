@@ -14,6 +14,7 @@
 #include <CppUtil/Engine/SpotLight.h>
 #include <CppUtil/Engine/InfiniteAreaLight.h>
 #include <CppUtil/Engine/SphereLight.h>
+#include <CppUtil/Engine/DiskLight.h>
 
 #include <CppUtil/Qt/RawAPI_OGLW.h>
 #include <CppUtil/Qt/RawAPI_Define.h>
@@ -81,6 +82,12 @@ void Raster::Init() {
 	glBufferData(GL_UNIFORM_BUFFER, 272, NULL, GL_DYNAMIC_DRAW);
 	glBindBufferBase(GL_UNIFORM_BUFFER, 5, sphereLightsUBO);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+	glGenBuffers(1, &diskLightsUBO);
+	glBindBuffer(GL_UNIFORM_BUFFER, diskLightsUBO);
+	glBufferData(GL_UNIFORM_BUFFER, 400, NULL, GL_DYNAMIC_DRAW);
+	glBindBufferBase(GL_UNIFORM_BUFFER, 6, diskLightsUBO);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
 void Raster::UpdateUBO() {
@@ -89,6 +96,7 @@ void Raster::UpdateUBO() {
 	UpdateUBO_SpotLights();
 	UpdateUBO_Environment();
 	UpdateUBO_SphereLights();
+	UpdateUBO_DiskLights();
 }
 
 void Raster::UpdateUBO_PointLights() {
@@ -230,6 +238,35 @@ void Raster::UpdateUBO_SphereLights() {
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
+void Raster::UpdateUBO_DiskLights() {
+	diskLight2idx.clear();
+
+	int diskLightIdx = 0;
+	glBindBuffer(GL_UNIFORM_BUFFER, diskLightsUBO);
+	for (auto cmptLight : scene->GetCmptLights()) {
+		auto diskLight = CastTo<DiskLight>(cmptLight->light);
+		if (!diskLight)
+			continue;
+
+		diskLight2idx[diskLight] = diskLightIdx;
+
+		const auto l2w = cmptLight->GetSObj()->GetLocalToWorldMatrix();
+		auto pos = l2w(Point3(0.f));
+		auto dir = l2w(Normalf(0, 1, 0));
+
+		int base = 16 + 48 * diskLightIdx;
+		glBufferSubData(GL_UNIFORM_BUFFER, base, 12, pos.Data());
+		glBufferSubData(GL_UNIFORM_BUFFER, base + 16, 12, dir.Data());
+		auto lightL = diskLight->intensity * diskLight->color;
+		glBufferSubData(GL_UNIFORM_BUFFER, base + 32, 12, lightL.Data());
+		glBufferSubData(GL_UNIFORM_BUFFER, base + 44, 4, &diskLight->radius);
+
+		diskLightIdx++;
+	}
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, 4, &diskLightIdx); // 圆盘光源个数即为 diskLightIdx
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+}
+
 void Raster::BindUBO(Shader & shader) {
 	shader.UniformBlockBind("Camera", 0);
 	shader.UniformBlockBind("PointLights", 1);
@@ -237,6 +274,7 @@ void Raster::BindUBO(Shader & shader) {
 	shader.UniformBlockBind("SpotLights", 3);
 	shader.UniformBlockBind("Environment", 4);
 	shader.UniformBlockBind("SphereLights", 5);
+	shader.UniformBlockBind("DiskLights", 6);
 }
 
 /*

@@ -7,8 +7,8 @@ layout (location = 3) out vec4 GBuffer3;
 
 // layout
 //      x   y   z   w
-// 0               ID
-// 1 
+// 0 [   pos    ]  ID
+// 1 [   norm   ]
 // 2 [    L     ]
 // 3 
 
@@ -28,8 +28,8 @@ uniform int ID;
 
 void main() {
 	// pack GBuffer
-	GBuffer0 = vec4(0, 0, 0, ID);
-	GBuffer1 = vec4(0);
+	GBuffer0 = vec4(fs_in.FragPos, ID);
+	GBuffer1 = vec4(normalize(fs_in.Normal), 0);
 	GBuffer2 = vec4(emission.L, 0);
 	GBuffer3 = vec4(0);
 }

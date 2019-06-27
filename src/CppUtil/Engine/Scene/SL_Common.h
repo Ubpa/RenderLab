@@ -15,6 +15,7 @@
 #include <CppUtil/Engine/SpotLight.h>
 #include <CppUtil/Engine/InfiniteAreaLight.h>
 #include <CppUtil/Engine/SphereLight.h>
+#include <CppUtil/Engine/DiskLight.h>
 
 #include <CppUtil/Engine/AllBSDFs.h>
 #include <CppUtil/Engine/Gooch.h>
@@ -128,6 +129,14 @@ namespace str {
 
 	namespace SphereLight {
 		const char * const type = "Sphere_Light";
+
+		const char * const color = "color";
+		const char * const intensity = "intensity";
+		const char * const radius = "radius";
+	}
+
+	namespace DiskLight {
+		const char * const type = "Disk_Light";
 
 		const char * const color = "color";
 		const char * const intensity = "intensity";

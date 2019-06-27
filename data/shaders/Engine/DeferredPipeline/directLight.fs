@@ -12,6 +12,7 @@ in vec2 TexCoords;
 #define MAX_DIRECTIONAL_LIGHTS 8
 #define MAX_SPOT_LIGHTS 8
 #define MAX_SPHERE_LIGHTS 8
+#define MAX_DISK_LIGHTS 8
 const float PI = 3.14159265359;
 const float INV_PI = 0.31830988618;
 
@@ -58,6 +59,14 @@ struct SphereLight {
     float radius;   //  4   28
 };
 
+// 48
+struct DiskLight {
+    vec3 position;  // 12    0
+    vec3 dir;       // 12   32
+    vec3 L;         // 12   16
+    float radius;   //  4   44
+};
+
 // 160
 layout (std140) uniform Camera{
 	mat4 view;			// 64	0	64
@@ -91,6 +100,12 @@ layout (std140) uniform SpotLights{
 layout (std140) uniform SphereLights{
 	int numSphereLight;// 16
 	SphereLight sphereLights[MAX_SPHERE_LIGHTS];// 32 * MAX_SPHERE_LIGHTS = 32 * 8 = 256
+};
+
+// 400
+layout (std140) uniform DiskLights{
+	int numDiskLight;// 16
+	DiskLight diskLights[MAX_DISK_LIGHTS];// 48 * MAX_DISK_LIGHTS = 48 * 8 = 384
 };
 
 uniform sampler2D GBuffer0;
@@ -184,7 +199,7 @@ void main() {
 	vec3 wo = normalize(viewPos - pos);
 	
 	if(ID == 3) { // emission
-		FragColor = albedo;
+		FragColor = dot(norm, wo) > 0 ? albedo : vec3(0);
 		return;
 	}
 	
@@ -286,6 +301,37 @@ void main() {
 		vec3 f = BRDF(ID, norm, wo, wi, albedo, metallic, roughness, ao);
 		
 		result += attenuation * sphereLights[i].L * f;
+	}
+	
+	// disk light
+	for(int i=0; i<numDiskLight; i++) {
+		vec3 fragToLight = diskLights[i].position - pos;
+		float dist2 = dot(fragToLight, fragToLight);
+		float dist = sqrt(dist2);
+
+		vec3 wi = fragToLight / dist;
+		float cosTheta = dot(wi, norm);
+		float sinTheta = sqrt(1 - cosTheta*cosTheta);
+		float cotTheta = cosTheta / sinTheta;
+		float ratio = dist / diskLights[i].radius;
+		float ratio2 = ratio * ratio;
+		
+		float attenuation;
+		if(cotTheta > 1 / ratio)
+			attenuation = cosTheta / (1 + ratio2);
+		else{
+			float x = sqrt(1 - ratio2 * cotTheta * cotTheta);
+			
+			attenuation = -ratio * x * sinTheta / ( PI * (1 + ratio2)) +
+				(1 / PI ) * atan(x * sinTheta / ratio) +
+				cosTheta * ( PI - acos(ratio * cotTheta)) / ( PI * (1 + ratio2));
+		}
+		attenuation *= PI * dot(diskLights[i].dir, -wi);
+		attenuation = max(0.0, attenuation);
+
+		vec3 f = BRDF(ID, norm, wo, wi, albedo, metallic, roughness, ao);
+		
+		result += attenuation * diskLights[i].L * f;
 	}
 	
     FragColor = result;

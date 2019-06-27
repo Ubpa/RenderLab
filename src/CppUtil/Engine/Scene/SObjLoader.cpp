@@ -247,6 +247,7 @@ static Ptr<Light> SObjLoader::Load(XMLElement * ele, Ptr<Light>*) {
 	Reg_Load_val<Ptr<SpotLight>>(funcMap, str::SpotLight::type, light);
 	Reg_Load_val<Ptr<InfiniteAreaLight>>(funcMap, str::InfiniteAreaLight::type, light);
 	Reg_Load_val<Ptr<SphereLight>>(funcMap, str::SphereLight::type, light);
+	Reg_Load_val<Ptr<DiskLight>>(funcMap, str::DiskLight::type, light);
 
 	LoadNode(ele, funcMap);
 
@@ -337,6 +338,20 @@ static Ptr<SphereLight> SObjLoader::Load(XMLElement * ele, Ptr<SphereLight>*) {
 	LoadNode(ele, funcMap);
 
 	return sphereLight;
+}
+
+template<>
+static Ptr<DiskLight> SObjLoader::Load(XMLElement * ele, Ptr<DiskLight>*) {
+	auto diskLight = DiskLight::New();
+
+	FuncMap funcMap;
+	Reg_Text_val(funcMap, str::SphereLight::color, diskLight->color);
+	Reg_Text_val(funcMap, str::SphereLight::intensity, diskLight->intensity);
+	Reg_Text_val(funcMap, str::SphereLight::radius, diskLight->radius);
+
+	LoadNode(ele, funcMap);
+
+	return diskLight;
 }
 
 // ------------ Material ----------------

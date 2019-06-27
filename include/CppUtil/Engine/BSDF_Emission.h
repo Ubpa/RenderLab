@@ -31,7 +31,7 @@ namespace CppUtil {
 				return RGBf(0.f);
 			}
 
-			virtual const RGBf GetEmission() const override { return intensity * color; }
+			virtual const RGBf Emission(const Normalf & wo) const override { return SurfCoord::CosTheta(wo) > 0 ? intensity * color : RGBf(0); }
 
 		public:
 			RGBf color;

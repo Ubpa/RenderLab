@@ -80,16 +80,20 @@ Optix: 6.0
   - [x] 实时
 - [ ] 光照
   - [ ] 直接
-    - [x] 点
-    - [x] 聚光灯
-    - [x] sphere
-      - [x] 离线
-      - [x] 实时
-    - [ ] disk
-      - [x] 离线
-      - [ ] 实时
-    - [ ] tube / line
-    - [ ] rectangle / frustum
+    - [ ] diffuse
+      - [x] 点
+      - [x] 聚光灯
+      - [x] sphere
+        - [x] 离线
+        - [x] 实时
+      - [x] disk
+        - [x] 离线
+        - [x] 实时
+      - [ ] rectangle / frustum
+        - [x] 离线
+        - [ ] 实时
+      - [ ] tube / line
+    - [ ] specular
   - [ ] 间接
     - [ ] distant light probe
     - [ ] local light probe

@@ -75,8 +75,6 @@ const RGBf PathTracer::Trace(ERay & ray, int depth, RGBf pathThroughput) {
 	if (bsdf == nullptr)
 		return Vec3f(0);
 
-	RGBf emitL = depth == 0 ? bsdf->GetEmission() : RGBf(0);
-
 	bsdf->ChangeNormal(closestRst.texcoord, closestRst.tangent, closestRst.n);
 
 	const auto surfaceToWorld = closestRst.n.GenCoordSpace();
@@ -84,6 +82,8 @@ const RGBf PathTracer::Trace(ERay & ray, int depth, RGBf pathThroughput) {
 
 	// w_out 处于表面坐标系，向外
 	const Normalf w_out = (worldToSurface * (-ray.d)).Normalize();
+
+	RGBf emitL = depth == 0 ? bsdf->Emission(w_out) : RGBf(0);
 
 	// SampleLightMode mode = depth > 0 ? SampleLightMode::RandomOne : SampleLightMode::ALL;
 	SampleLightMode mode = SampleLightMode::RandomOne;

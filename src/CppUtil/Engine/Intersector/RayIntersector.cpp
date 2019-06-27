@@ -199,8 +199,8 @@ void RayIntersector::Visit(Ptr<Plane> plane) {
 
 	rst.isIntersect = true;
 	ray->tMax = t;
-	//rst.n = Normalf(0, 1, 0);
-	rst.n = Normalf(0, -Math::sgn(ray->d.y), 0);
+	//rst.n = Normalf(0, -Math::sgn(ray->d.y), 0);
+	rst.n = Normalf(0, 1, 0);
 	rst.texcoord = Point2(pos.x + 0.5f, pos.z + 0.5f);
 	rst.tangent = Normalf(1, 0, 0);
 }
@@ -319,7 +319,8 @@ void RayIntersector::Visit(Ptr<Disk> disk) {
 
 	rst.isIntersect = true;
 	ray->tMax = t;
-	rst.n = Normalf(0, -Math::sgn(ray->d.y), 0);
+	//rst.n = Normalf(0, -Math::sgn(ray->d.y), 0);
+	rst.n = Normalf(0, 1, 0);
 	rst.texcoord = Point2((1+pos.x)/2, (1+pos.z)/2);
 	rst.tangent = Normalf(1, 0, 0);
 }

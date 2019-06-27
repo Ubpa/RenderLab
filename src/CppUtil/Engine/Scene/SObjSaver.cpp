@@ -24,6 +24,7 @@ SObjSaver::SObjSaver() {
 	RegMemberFunc<SpotLight>(&SObjSaver::Visit);
 	RegMemberFunc<InfiniteAreaLight>(&SObjSaver::Visit);
 	RegMemberFunc<SphereLight>(&SObjSaver::Visit);
+	RegMemberFunc<DiskLight>(&SObjSaver::Visit);
 
 	RegMemberFunc<CmptMaterial>(&SObjSaver::Visit);
 	RegMemberFunc<BSDF_CookTorrance>(&SObjSaver::Visit);
@@ -224,6 +225,14 @@ void SObjSaver::Visit(Ptr<InfiniteAreaLight> infiniteAreaLight) {
 		NewEle(str::InfiniteAreaLight::img, [=]() {
 			Visit(infiniteAreaLight->GetImg());
 		});
+	});
+}
+
+void SObjSaver::Visit(Ptr<DiskLight> diskLight) {
+	NewEle(str::DiskLight::type, [=]() {
+		NewEle(str::DiskLight::color, diskLight->color);
+		NewEle(str::DiskLight::intensity, diskLight->intensity);
+		NewEle(str::DiskLight::radius, diskLight->radius);
 	});
 }
 
