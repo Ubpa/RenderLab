@@ -15,6 +15,7 @@
 #include <CppUtil/Engine/InfiniteAreaLight.h>
 #include <CppUtil/Engine/SphereLight.h>
 #include <CppUtil/Engine/DiskLight.h>
+#include <CppUtil/Engine/AreaLight.h>
 
 #include <CppUtil/Qt/RawAPI_OGLW.h>
 #include <CppUtil/Qt/RawAPI_Define.h>
@@ -88,6 +89,12 @@ void Raster::Init() {
 	glBufferData(GL_UNIFORM_BUFFER, 400, NULL, GL_DYNAMIC_DRAW);
 	glBindBufferBase(GL_UNIFORM_BUFFER, 6, diskLightsUBO);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+	glGenBuffers(1, &areaLightsUBO);
+	glBindBuffer(GL_UNIFORM_BUFFER, areaLightsUBO);
+	glBufferData(GL_UNIFORM_BUFFER, 528, NULL, GL_DYNAMIC_DRAW);
+	glBindBufferBase(GL_UNIFORM_BUFFER, 7, areaLightsUBO);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
 void Raster::UpdateUBO() {
@@ -97,6 +104,7 @@ void Raster::UpdateUBO() {
 	UpdateUBO_Environment();
 	UpdateUBO_SphereLights();
 	UpdateUBO_DiskLights();
+	UpdateUBO_AreaLights();
 }
 
 void Raster::UpdateUBO_PointLights() {
@@ -137,7 +145,7 @@ void Raster::UpdateUBO_DirectionalLights() {
 
 		directionalLight2idx[directionalLight] = directionalLightIdx;
 
-		Vec3f dir = cmptLight->GetSObj()->GetLocalToWorldMatrix()(Normalf(0, -1, 0));
+		Vec3f dir = cmptLight->GetSObj()->GetLocalToWorldMatrix()(Normalf(0, -1, 0)).Normalize();
 
 		int base = 16 + 128 * directionalLightIdx;
 		auto lightL = directionalLight->intensity * directionalLight->color;
@@ -165,7 +173,7 @@ void Raster::UpdateUBO_SpotLights() {
 
 		const auto l2w = cmptLight->GetSObj()->GetLocalToWorldMatrix();
 		Point3 pos = l2w(Point3(0.f));
-		Vec3f dir = l2w(Normalf(0, -1, 0));
+		Vec3f dir = l2w(Normalf(0, -1, 0)).Normalize();
 
 		int base = 16 + 64 * spotLightIdx;
 		auto lightL = spotLight->intensity * spotLight->color;
@@ -267,6 +275,38 @@ void Raster::UpdateUBO_DiskLights() {
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
+void Raster::UpdateUBO_AreaLights() {
+	areaLight2idx.clear();
+
+	int areaLightIdx = 0;
+	glBindBuffer(GL_UNIFORM_BUFFER, areaLightsUBO);
+	for (auto cmptLight : scene->GetCmptLights()) {
+		auto areaLight = CastTo<AreaLight>(cmptLight->light);
+		if (!areaLight)
+			continue;
+
+		areaLight2idx[areaLight] = areaLightIdx;
+
+		const auto l2w = cmptLight->GetSObj()->GetLocalToWorldMatrix();
+		auto pos = l2w(Point3(0.f));
+		auto dir = l2w(Normalf(0, 1, 0)).Normalize();
+		auto horizontal = l2w(Normalf(1, 0, 0)).Normalize();
+
+		int base = 16 + 64 * areaLightIdx;
+		glBufferSubData(GL_UNIFORM_BUFFER, base, 12, pos.Data());
+		glBufferSubData(GL_UNIFORM_BUFFER, base + 12, 4, &areaLight->width);
+		glBufferSubData(GL_UNIFORM_BUFFER, base + 16, 12, dir.Data());
+		glBufferSubData(GL_UNIFORM_BUFFER, base + 28, 4, &areaLight->height);
+		glBufferSubData(GL_UNIFORM_BUFFER, base + 32, 12, horizontal.Data());
+		auto lightL = areaLight->intensity * areaLight->color;
+		glBufferSubData(GL_UNIFORM_BUFFER, base + 48, 12, lightL.Data());
+
+		areaLightIdx++;
+	}
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, 4, &areaLightIdx); // 面光源个数即为 areaLightIdx
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+}
+
 void Raster::BindUBO(Shader & shader) {
 	shader.UniformBlockBind("Camera", 0);
 	shader.UniformBlockBind("PointLights", 1);
@@ -275,6 +315,7 @@ void Raster::BindUBO(Shader & shader) {
 	shader.UniformBlockBind("Environment", 4);
 	shader.UniformBlockBind("SphereLights", 5);
 	shader.UniformBlockBind("DiskLights", 6);
+	shader.UniformBlockBind("AreaLights", 7);
 }
 
 /*

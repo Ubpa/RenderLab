@@ -29,6 +29,7 @@ namespace CppUtil {
 		class SpotLight;
 		class SphereLight;
 		class DiskLight;
+		class AreaLight;
 
 		/*
 		¹âÕ¤Æ÷
@@ -63,6 +64,7 @@ namespace CppUtil {
 			void UpdateUBO_Environment();
 			void UpdateUBO_SphereLights();
 			void UpdateUBO_DiskLights();
+			void UpdateUBO_AreaLights();
 
 		protected:
 			static const float lightNear;// 0.01
@@ -82,6 +84,7 @@ namespace CppUtil {
 			std::map<Basic::WPtrC<SpotLight>, int> spotLight2idx;
 			std::map<Basic::WPtrC<SphereLight>, int> sphereLight2idx;
 			std::map<Basic::WPtrC<DiskLight>, int> diskLight2idx;
+			std::map<Basic::WPtrC<AreaLight>, int> areaLight2idx;
 
 		private:
 			unsigned int pointLightsUBO;
@@ -90,6 +93,7 @@ namespace CppUtil {
 			unsigned int environmentUBO;
 			unsigned int sphereLightsUBO;
 			unsigned int diskLightsUBO;
+			unsigned int areaLightsUBO;
 		};
 	}
 }

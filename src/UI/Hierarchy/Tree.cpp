@@ -242,6 +242,7 @@ void Tree::contextMenuEvent(QContextMenuEvent *event) {
 		CmptLight::New(sobj, AreaLight::New());
 		CmptTransform::New(sobj);
 		CmptGeometry::New(sobj, Plane::New());
+		CmptMaterial::New(sobj, BSDF_Emission::New());
 	});
 
 	genLightMenu->addAction("Point Light", this, []() {

@@ -13,6 +13,7 @@ in vec2 TexCoords;
 #define MAX_SPOT_LIGHTS 8
 #define MAX_SPHERE_LIGHTS 8
 #define MAX_DISK_LIGHTS 8
+#define MAX_AREA_LIGHTS 8
 const float PI = 3.14159265359;
 const float INV_PI = 0.31830988618;
 
@@ -67,6 +68,16 @@ struct DiskLight {
     float radius;   //  4   44
 };
 
+// 64
+struct AreaLight {
+    vec3 position;  // 12    0
+	float width;    // 12   12
+    vec3 dir;       // 12   16
+	float height;   //  4   28
+	vec3 horizontal;// 12   32
+    vec3 L;         // 12   48
+};
+
 // 160
 layout (std140) uniform Camera{
 	mat4 view;			// 64	0	64
@@ -106,6 +117,12 @@ layout (std140) uniform SphereLights{
 layout (std140) uniform DiskLights{
 	int numDiskLight;// 16
 	DiskLight diskLights[MAX_DISK_LIGHTS];// 48 * MAX_DISK_LIGHTS = 48 * 8 = 384
+};
+
+// 528
+layout (std140) uniform AreaLights{
+	int numAreaLight;// 16
+	AreaLight areaLights[MAX_AREA_LIGHTS];// 64 * MAX_AREA_LIGHTS = 64 * 8 = 512
 };
 
 uniform sampler2D GBuffer0;
@@ -206,9 +223,9 @@ void main() {
 	// for ID 0, 1, 2
 	
 	// 采样光源
+	vec3 result = vec3(0);
 	
 	// point light
-	vec3 result = vec3(0);
     for(int i = 0; i < numPointLight; i++) {
 		vec3 fragToLight = pointLights[i].position - pos;
 		float dist2 = dot(fragToLight, fragToLight);
@@ -322,9 +339,9 @@ void main() {
 		else{
 			float x = sqrt(1 - ratio2 * cotTheta * cotTheta);
 			
-			attenuation = -ratio * x * sinTheta / ( PI * (1 + ratio2)) +
-				(1 / PI ) * atan(x * sinTheta / ratio) +
-				cosTheta * ( PI - acos(ratio * cotTheta)) / ( PI * (1 + ratio2));
+			attenuation = -ratio * x * sinTheta / (PI * (1 + ratio2)) +
+				(1 / PI) * atan(x * sinTheta / ratio) +
+				cosTheta * (PI - acos(ratio * cotTheta)) / (PI * (1 + ratio2));
 		}
 		attenuation *= PI * dot(diskLights[i].dir, -wi);
 		attenuation = max(0.0, attenuation);
@@ -332,6 +349,42 @@ void main() {
 		vec3 f = BRDF(ID, norm, wo, wi, albedo, metallic, roughness, ao);
 		
 		result += attenuation * diskLights[i].L * f;
+	}
+	
+	// area light
+	for(int i=0; i<numAreaLight; i++) {
+		vec3 fragToLight = areaLights[i].position - pos;
+		if(dot(-fragToLight, areaLights[i].dir) <= 0)
+			continue;
+		
+		float dist2 = dot(fragToLight, fragToLight);
+		float dist = sqrt(dist2);
+		vec3 wi = fragToLight/dist;
+		
+		// rightPyramidSolidAngle
+		float a = areaLights[i].width * 0.5;
+		float b = areaLights[i].height * 0.5;
+		float solidAngle = 4 * asin(a*b / sqrt((a*a + dist2) * (b*b + dist2)));
+		
+		vec3 verticle = cross(areaLights[i].dir, areaLights[i].horizontal);
+		vec3 halfWidthVec = areaLights[i].horizontal * a;
+		vec3 halfHeightVec = verticle * b;
+		
+		vec3 p0 = areaLights[i].position - halfWidthVec - halfHeightVec;
+		vec3 p1 = areaLights[i].position - halfWidthVec + halfHeightVec;
+		vec3 p2 = areaLights[i].position + halfWidthVec - halfHeightVec;
+		vec3 p3 = areaLights[i].position + halfWidthVec + halfHeightVec;
+		
+		float illuminanceFactor = solidAngle * 0.2 * (
+			max(0, dot(normalize(p0 - pos), norm)) +
+			max(0, dot(normalize(p1 - pos), norm)) +
+			max(0, dot(normalize(p2 - pos), norm)) +
+			max(0, dot(normalize(p3 - pos), norm)) +
+			max(0, dot(wi, norm)) );
+		
+		vec3 f = BRDF(ID, norm, wo, wi, albedo, metallic, roughness, ao);
+		
+		result += illuminanceFactor * areaLights[i].L * f;
 	}
 	
     FragColor = result;
