@@ -19,10 +19,6 @@ namespace CppUtil {
 			virtual const BBoxf GetBBox() const override {
 				return BBoxf(Point3(-0.5f, -0.001f, -0.5f), Point3(0.5f, 0.001f, 0.5f));
 			}
-
-			virtual const Basic::Ptr<Primitive> GetPrimitive() override {
-				return This<Primitive>();
-			}
 		};
 	}
 }

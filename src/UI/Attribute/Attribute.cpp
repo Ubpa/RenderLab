@@ -9,6 +9,7 @@
 #include <CppUtil/Engine/Plane.h>
 #include <CppUtil/Engine/TriMesh.h>
 #include <CppUtil/Engine/Disk.h>
+#include <CppUtil/Engine/Capsule.h>
 
 #include <CppUtil/Engine/AllBSDFs.h>
 #include <CppUtil/Engine/Gooch.h>
@@ -62,6 +63,7 @@ public:
 		RegMemberFunc<InfiniteAreaLight>(&Attribute::ComponentVisitor::Visit);
 		RegMemberFunc<SphereLight>(&Attribute::ComponentVisitor::Visit);
 		RegMemberFunc<DiskLight>(&Attribute::ComponentVisitor::Visit);
+		RegMemberFunc<Capsule>(&Attribute::ComponentVisitor::Visit);
 
 		RegMemberFunc<CmptMaterial>(&Attribute::ComponentVisitor::Visit);
 		RegMemberFunc<BSDF_Diffuse>(&Attribute::ComponentVisitor::Visit);
@@ -102,6 +104,7 @@ public:
 	void Visit(Ptr<InfiniteAreaLight> light);
 	void Visit(Ptr<SphereLight> light);
 	void Visit(Ptr<DiskLight> light);
+	void Visit(Ptr<Capsule> light);
 
 	void Visit(Ptr<CmptMaterial> cmpt);
 	void Visit(Ptr<BSDF_Diffuse> bsdf);
@@ -239,6 +242,7 @@ void Attribute::ComponentVisitor::Visit(Ptr<CmptGeometry> geo) {
 	getTypeStr->Reg([&typeStr](Ptr<Plane>) { typeStr = "Plane"; });
 	getTypeStr->Reg([&typeStr](Ptr<TriMesh>) { typeStr = "TriMesh"; });
 	getTypeStr->Reg([&typeStr](Ptr<Disk>) { typeStr = "Disk"; });
+	getTypeStr->Reg([&typeStr](Ptr<Capsule>) { typeStr = "Capsule"; });
 
 	Grid::pSlotMap pSlotMap(new Grid::SlotMap);
 	Grid::wpSlotMap wpSlotMap = pSlotMap;
@@ -280,6 +284,14 @@ void Attribute::ComponentVisitor::Visit(Ptr<CmptGeometry> geo) {
 		geo->primitive = disk;
 		Visit(disk);
 	};
+	(*pSlotMap)["Capsule"] = [=]() {
+		grid->Clear();
+		grid->AddComboBox("Type", "Capsule", wpSlotMap.lock());
+
+		auto capsule = Capsule::New();
+		geo->primitive = capsule;
+		Visit(capsule);
+	};
 
 	if (geo->primitive) {
 		geo->primitive->Accept(getTypeStr);
@@ -310,6 +322,11 @@ void Attribute::ComponentVisitor::Visit(Ptr<TriMesh> mesh) {
 	auto grid = GetGrid(attr->componentType2item[typeid(CmptGeometry)]);
 	grid->AddText("- Triangle", mesh->GetIndice().size() / 3);
 	grid->AddText("- Vertex", mesh->GetPositions().size());
+}
+
+void Attribute::ComponentVisitor::Visit(Ptr<Capsule> capsule) {
+	auto grid = GetGrid(attr->componentType2item[typeid(CmptGeometry)]);
+	grid->AddEditVal("- Height", capsule->height, 0.f, 100.f, 1000);
 }
 
 // -------------- Material --------------

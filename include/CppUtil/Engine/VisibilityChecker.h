@@ -8,14 +8,6 @@
 
 namespace CppUtil {
 	namespace Engine {
-		class SObj;
-		class Ray;
-		class Sphere;
-		class Plane;
-		class Triangle;
-		class BVHAccel;
-		class Disk;
-
 		class VisibilityChecker final : public Intersector {
 		public:
 			struct Rst {
@@ -48,6 +40,7 @@ namespace CppUtil {
 			void Visit(Basic::Ptr<Plane> plane);
 			void Visit(Basic::Ptr<Triangle> triangle);
 			void Visit(Basic::Ptr<Disk> disk);
+			void Visit(Basic::Ptr<Capsule> capsule);
 
 		private:
 			bool Intersect(const BBoxf & bbox, const Val3f & invDir) const;

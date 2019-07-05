@@ -12,6 +12,7 @@
 #include <CppUtil/Engine/Sphere.h>
 #include <CppUtil/Engine/Plane.h>
 #include <CppUtil/Engine/Disk.h>
+#include <CppUtil/Engine/Capsule.h>
 
 #include <CppUtil/Engine/AreaLight.h>
 #include <CppUtil/Engine/PointLight.h>
@@ -228,6 +229,13 @@ void Tree::contextMenuEvent(QContextMenuEvent *event) {
 		auto sobj = Hierarchy::GetInstance()->CreateSObj("Disk");
 		CmptTransform::New(sobj);
 		CmptGeometry::New(sobj, Disk::New());
+		CmptMaterial::New(sobj, BSDF_Frostbite::New());
+	});
+
+	genObjMenu->addAction("Capsule", this, []() {
+		auto sobj = Hierarchy::GetInstance()->CreateSObj("Capsule");
+		CmptTransform::New(sobj);
+		CmptGeometry::New(sobj, Capsule::New());
 		CmptMaterial::New(sobj, BSDF_Frostbite::New());
 	});
 

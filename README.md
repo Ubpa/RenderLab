@@ -75,7 +75,7 @@ Optix: 6.0
 
 [MovingFrostbiteToPBR](https://github.com/Ubpa/Note/tree/master/CG/courses/MovingFrostbiteToPBR) 
 
-- [x] 材质（HC-GGX + Disney Diffuse）
+- [x] 材质（HC-GGX + Disney Diffuse） 
   - [x] 离线
   - [x] 实时
 - [ ] 光照
@@ -93,6 +93,10 @@ Optix: 6.0
         - [x] 离线
         - [x] 实时
       - [ ] tube / line
+        - [ ] 离线
+          - [x] 形状
+          - [ ] 光源
+        - [ ] 实时
     - [ ] specular
   - [ ] 间接
     - [ ] distant light probe

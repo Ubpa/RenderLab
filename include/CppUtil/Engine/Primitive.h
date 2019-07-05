@@ -9,6 +9,11 @@ namespace CppUtil {
 		protected:
 			Primitive() = default;
 			virtual ~Primitive() = default;
+
+		public:
+			virtual const Basic::Ptr<Primitive> GetPrimitive() override {
+				return This<Primitive>();
+			}
 		};
 	}
 }

@@ -15,6 +15,7 @@ set(STR_TARGET_SOURCES "${STR_TARGET_SOURCES} ${CMAKE_SOURCE_DIR}/include/CppUti
 set(STR_TARGET_SOURCES "${STR_TARGET_SOURCES} ${CMAKE_SOURCE_DIR}/include/CppUtil/Basic/Sphere.h")
 set(STR_TARGET_SOURCES "${STR_TARGET_SOURCES} ${CMAKE_SOURCE_DIR}/include/CppUtil/Basic/Plane.h")
 set(STR_TARGET_SOURCES "${STR_TARGET_SOURCES} ${CMAKE_SOURCE_DIR}/include/CppUtil/Basic/Disk.h")
+set(STR_TARGET_SOURCES "${STR_TARGET_SOURCES} ${CMAKE_SOURCE_DIR}/include/CppUtil/Basic/Capsule.h")
 
 #多个库文件用 [空格] 分隔，如果为空，就输入[一个空格]
 #如：set(STR_TARGET_LIBS "lib1.lib lib2.lib")

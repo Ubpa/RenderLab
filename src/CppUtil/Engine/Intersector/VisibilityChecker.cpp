@@ -9,6 +9,7 @@
 #include <CppUtil/Engine/Triangle.h>
 #include <CppUtil/Engine/TriMesh.h>
 #include <CppUtil/Engine/Disk.h>
+#include <CppUtil/Engine/Capsule.h>
 
 #include <stack>
 
@@ -23,6 +24,7 @@ VisibilityChecker::VisibilityChecker() {
 	RegMemberFunc<Plane>(&VisibilityChecker::Visit);
 	RegMemberFunc<Triangle>(&VisibilityChecker::Visit);
 	RegMemberFunc<Disk>(&VisibilityChecker::Visit);
+	RegMemberFunc<Capsule>(&VisibilityChecker::Visit);
 }
 
 void VisibilityChecker::Init(const ERay & ray, const float tMax) {
@@ -219,4 +221,95 @@ void VisibilityChecker::Visit(Ptr<Disk> disk) {
 	}
 
 	rst.isIntersect = true;
+}
+
+void VisibilityChecker::Visit(Ptr<Capsule> capsule) {
+	const auto & o = ray.o;
+	const auto & d = ray.d;
+	const float tMin = ray.tMin;
+	const float tMax = ray.tMax;
+
+	float halfH = capsule->height / 2;
+
+	do { // ‘≤÷˘
+		float a = d.x * d.x + d.z * d.z;
+		float b = d.x * o.x + d.z * o.z;
+		float c = o.x * o.x + o.z * o.z - 1;
+
+		float discriminant = b * b - a * c;
+		if (discriminant <= 0) {
+			rst.isIntersect = false;
+			return;
+		}
+
+		float sqrtDiscriminant = sqrt(discriminant);
+		float t = -(b + sqrtDiscriminant) / a;
+		if (t < tMin || t > tMax) {
+			t = (sqrtDiscriminant - b) / a;
+			if (t < tMin || t > tMax) {
+				rst.isIntersect = false;
+				break;
+			}
+		}
+
+		auto pos = ray.At(t);
+		if (pos.y <= -halfH || pos.y >= halfH)
+			break;
+
+		rst.isIntersect = true;
+		return;
+	} while (false);
+
+	float a = d.Dot(d);
+
+	do {// …œ∞Î«Ú
+		Point3 center(0, halfH, 0);
+		auto oc = o - center;
+		float b = d.Dot(oc);
+		float c = oc.Norm2() - 1;
+
+		float discriminant = b * b - a * c;
+		if (discriminant <= 0)
+			break;
+
+		float sqrtDiscriminant = sqrt(discriminant);
+		float t = -(b + sqrtDiscriminant) / a;
+		auto pos = ray.At(t);
+		if (t < tMin || t > tMax || pos.y <= halfH) {
+			t = (sqrtDiscriminant - b) / a;
+			pos = ray.At(t);
+			if (t < tMin || t > tMax || pos.y <= halfH)
+				break;
+		}
+
+		rst.isIntersect = true;
+		return;
+	} while (false);
+
+	do {// œ¬∞Î«Ú
+		Point3 center(0, -halfH, 0);
+		auto oc = o - center;
+		float b = d.Dot(oc);
+		float c = oc.Norm2() - 1;
+
+		float discriminant = b * b - a * c;
+		if (discriminant <= 0)
+			break;
+
+		float sqrtDiscriminant = sqrt(discriminant);
+		float t = -(b + sqrtDiscriminant) / a;
+		auto pos = ray.At(t);
+		if (t < tMin || t > tMax || pos.y >= -halfH) {
+			t = (sqrtDiscriminant - b) / a;
+			pos = ray.At(t);
+			if (t < tMin || t > tMax || pos.y >= -halfH)
+				break;
+		}
+
+		rst.isIntersect = true;
+		return;
+	} while (false);
+
+	rst.isIntersect = false;
+	return;
 }

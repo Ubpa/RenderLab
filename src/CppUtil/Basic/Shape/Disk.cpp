@@ -10,6 +10,11 @@ using namespace std;
 Disk::Disk(uint n)
 	: Shape(n+1, n)
 {
+	normalArr = vector<Vec3f>(n + 1);
+	texCoordsArr = vector<Vec2f>(n + 1);
+	tangentArr = vector<Vec3f>(n + 1);
+	indexArr = vector<uVec3i>(n);
+
 	float deltaTheta = 2 * Math::PI / n;
 	float y = 0;
 	for (uint i = 0; i < n; i++) {
@@ -17,19 +22,19 @@ Disk::Disk(uint n)
 		float z = cosf(theta);
 		float x = sinf(theta);
 		posArr[i] = Vec3f(x, y, z);
-		texCoordsArr.push_back({ (1 + x) / 2,(1 + z) / 2 });
+		texCoordsArr[i] = Vec2f((1 + x) / 2, (1 + z) / 2);
 	}
 	posArr[n] = Vec3f(0,0,0);
-	texCoordsArr.push_back({ 0.5,0.5 });
+	texCoordsArr[n] = Vec2f(0.5, 0.5);
 
 	for (uint i = 0; i < n + 1; i++) {
-		normalArr.push_back({ 0,1,0 });
-		tangentArr.push_back({ 1,0,0 });
+		normalArr[i] = Vec3f(0,1,0);
+		tangentArr[i] = Vec3(1,0,0);
 	}
 
 	for (uint i = 0; i < n; i++) {
 		int next = (i + 1) % n;
-		indexArr.push_back({ i,next,n });
+		indexArr[i] = uVec3i(i,next,n);
 	}
 }
 

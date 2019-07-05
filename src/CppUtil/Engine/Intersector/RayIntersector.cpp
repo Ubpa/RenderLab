@@ -13,6 +13,7 @@
 #include <CppUtil/Engine/Triangle.h>
 #include <CppUtil/Engine/TriMesh.h>
 #include <CppUtil/Engine/Disk.h>
+#include <CppUtil/Engine/Capsule.h>
 
 #include <CppUtil/Basic/Math.h>
 #include <CppUtil/Basic/UGM/Transform.h>
@@ -32,6 +33,7 @@ RayIntersector::RayIntersector() {
 	RegMemberFunc<Triangle>(&RayIntersector::Visit);
 	RegMemberFunc<TriMesh>(&RayIntersector::Visit);
 	RegMemberFunc<Disk>(&RayIntersector::Visit);
+	RegMemberFunc<Capsule>(&RayIntersector::Visit);
 }
 
 void RayIntersector::Init(ERay * ray) {
@@ -323,4 +325,102 @@ void RayIntersector::Visit(Ptr<Disk> disk) {
 	rst.n = Normalf(0, 1, 0);
 	rst.texcoord = Point2((1+pos.x)/2, (1+pos.z)/2);
 	rst.tangent = Normalf(1, 0, 0);
+}
+
+void RayIntersector::Visit(Ptr<Capsule> capsule) {
+	const auto & o = ray->o;
+	const auto & d = ray->d;
+
+	float halfH = capsule->height / 2;
+
+	do{ // ‘≤÷˘
+		float a = d.x * d.x + d.z * d.z;
+		float b = d.x * o.x + d.z * o.z;
+		float c = o.x * o.x + o.z * o.z - 1;
+
+		float discriminant = b * b - a * c;
+		if (discriminant <= 0) {
+			rst.isIntersect = false;
+			return;
+		}
+
+		float sqrtDiscriminant = sqrt(discriminant);
+		float t = -(b + sqrtDiscriminant) / a;
+		if (t < ray->tMin || t > ray->tMax) {
+			t = (sqrtDiscriminant - b) / a;
+			if (t < ray->tMin || t > ray->tMax) {
+				rst.isIntersect = false;
+				break;
+			}
+		}
+
+		auto pos = ray->At(t);
+		if (pos.y <= -halfH || pos.y >= halfH)
+			break;
+
+		rst.isIntersect = true;
+		rst.n = Normalf(pos.x, 0, pos.z);
+		rst.texcoord = Sphere::TexcoordOf(Vec3f(pos));
+		rst.tangent = Sphere::TangentOf(Vec3f(pos));
+		return;
+	} while (false);
+
+	float a = d.Dot(d);
+
+	do{// …œ∞Î«Ú
+		Point3 center(0, halfH, 0);
+		auto oc = o - center;
+		float b = d.Dot(oc);
+		float c = oc.Norm2() - 1;
+
+		float discriminant = b * b - a * c;
+		if (discriminant <= 0)
+			break;
+
+		float sqrtDiscriminant = sqrt(discriminant);
+		float t = -(b + sqrtDiscriminant) / a;
+		auto pos = ray->At(t);
+		if (t < ray->tMin || t > ray->tMax || pos.y <= halfH) {
+			t = (sqrtDiscriminant - b) / a;
+			pos = ray->At(t);
+			if (t < ray->tMin || t > ray->tMax || pos.y <= halfH)
+				break;
+		}
+		
+		rst.isIntersect = true;
+		rst.n = pos - center;
+		rst.texcoord = Sphere::TexcoordOf(Vec3f(pos));
+		rst.tangent = Sphere::TangentOf(Vec3f(pos));
+		return;
+	} while (false);
+
+	do {// œ¬∞Î«Ú
+		Point3 center(0, -halfH, 0);
+		auto oc = o - center;
+		float b = d.Dot(oc);
+		float c = oc.Norm2() - 1;
+
+		float discriminant = b * b - a * c;
+		if (discriminant <= 0)
+			break;
+
+		float sqrtDiscriminant = sqrt(discriminant);
+		float t = -(b + sqrtDiscriminant) / a;
+		auto pos = ray->At(t);
+		if (t < ray->tMin || t > ray->tMax || pos.y >= -halfH) {
+			t = (sqrtDiscriminant - b) / a;
+			pos = ray->At(t);
+			if (t < ray->tMin || t > ray->tMax || pos.y >= -halfH)
+				break;
+		}
+
+		rst.isIntersect = true;
+		rst.n = pos - center;
+		rst.texcoord = Sphere::TexcoordOf(Vec3f(pos));
+		rst.tangent = Sphere::TangentOf(Vec3f(pos));
+		return;
+	} while (false);
+
+	rst.isIntersect = false;
+	return;
 }

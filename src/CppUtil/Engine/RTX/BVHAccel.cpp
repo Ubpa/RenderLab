@@ -6,6 +6,7 @@
 #include <CppUtil/Engine/Plane.h>
 #include <CppUtil/Engine/TriMesh.h>
 #include <CppUtil/Engine/Disk.h>
+#include <CppUtil/Engine/Capsule.h>
 
 #include <CppUtil/Engine/CmptGeometry.h>
 
@@ -30,6 +31,7 @@ public:
 		RegMemberFunc<Plane>(&BVHAccel::BVHInitVisitor::Visit);
 		RegMemberFunc<TriMesh>(&BVHAccel::BVHInitVisitor::Visit);
 		RegMemberFunc<Disk>(&BVHAccel::BVHInitVisitor::Visit);
+		RegMemberFunc<Capsule>(&BVHAccel::BVHInitVisitor::Visit);
 	}
 
 public:
@@ -80,6 +82,12 @@ public:
 		const auto l2w = holder->GetShapeW2LMat(disk).Inverse();
 		holder->shapes.push_back(disk);
 		shape2wbbox[disk] = l2w(disk->GetBBox());
+	}
+
+	void Visit(Ptr<Capsule> capsule) {
+		const auto l2w = holder->GetShapeW2LMat(capsule).Inverse();
+		holder->shapes.push_back(capsule);
+		shape2wbbox[capsule] = l2w(capsule->GetBBox());
 	}
 
 private:

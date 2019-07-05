@@ -15,15 +15,6 @@ namespace CppUtil {
 	}
 
 	namespace Engine {
-		class SObj;
-
-		class Sphere;
-		class Plane;
-		class Triangle;
-		class TriMesh;
-		class BVHAccel;
-		class Disk;
-
 		// 寻找最近的交点
 		class RayIntersector final : public Intersector {
 		public:
@@ -67,6 +58,7 @@ namespace CppUtil {
 			void Visit(Basic::Ptr<Triangle> triangle);
 			void Visit(Basic::Ptr<TriMesh> mesh);
 			void Visit(Basic::Ptr<Disk> disk);
+			void Visit(Basic::Ptr<Capsule> capsule);
 
 		private:
 			bool Intersect(const BBoxf & bbox, const Val3f & invDir) const;

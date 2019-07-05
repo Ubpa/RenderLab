@@ -21,10 +21,6 @@ namespace CppUtil {
 				return BBoxf(Point3(-1.f), Point3(1.f));
 			}
 
-			virtual const Basic::Ptr<Primitive> GetPrimitive() override {
-				return This<Primitive>();
-			}
-
 		public:
 			struct SphereCoord {
 				SphereCoord(float theta, float phi) : theta(theta), phi(phi) {}

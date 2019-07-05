@@ -76,9 +76,6 @@ namespace CppUtil {
 			virtual const BBoxf GetBBox() const override {
 				return box;
 			}
-			virtual const Basic::Ptr<Primitive> GetPrimitive() override {
-				return This<Primitive>();
-			}
 
 		public:
 			static const Basic::Ptr<TriMesh> GenCube();
