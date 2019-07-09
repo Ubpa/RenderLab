@@ -8,6 +8,8 @@
 
 #include <CppUtil/Basic/Sphere.h>
 #include <CppUtil/Basic/Plane.h>
+#include <CppUtil/Basic/Capsule.h>
+
 #include <CppUtil/Basic/GStorage.h>
 #include <CppUtil/Basic/EventManager.h>
 #include <CppUtil/Basic/OpQueue.h>
@@ -130,6 +132,16 @@ void RawAPI_OGLW::InitShapeVAOs() {
 		{disk->GetTangents().data()->Data(), static_cast<uint>(disk->GetTangents().size() * 3 * sizeof(float)), 3},
 	};
 	VAO_P3N3T2T3_Disk = VAO(P3_Disk_Vec_VBO_Data_Patch, disk->GetIndice().data(), static_cast<uint>(disk->GetIndice().size() * sizeof(uint)));
+
+	// capsule
+	Capsule capsule(50);
+	vector<VAO::VBO_DataPatch> P3_Capsule_Vec_VBO_Data_Patch = {
+		{capsule.GetPosArr(), capsule.GetPosArrSize(), 3},
+		{capsule.GetNormalArr(), capsule.GetNormalArrSize(), 3},
+		{capsule.GetTexCoordsArr(), capsule.GetTexCoordsArrSize(), 2},
+		{capsule.GetTangentArr(), capsule.GetTangentArrSize(), 3},
+	};
+	VAO_P3N3T2T3_Capsule = VAO(P3_Capsule_Vec_VBO_Data_Patch, capsule.GetIndexArr(), capsule.GetIndexArrSize());
 }
 
 const VAO RawAPI_OGLW::GetVAO(ShapeType shapeType){
@@ -145,6 +157,8 @@ const VAO RawAPI_OGLW::GetVAO(ShapeType shapeType){
 		return VAO_P3T2_Screen;
 	case ShapeType::Disk:
 		return VAO_P3N3T2T3_Disk;
+	case ShapeType::Capsule:
+		return VAO_P3N3T2T3_Capsule;
 	default:
 		printf("ERROR::MgrVAO::GetShapeVAO:\n"
 			"\t""not support shape(%s)\n", shapeType._to_string());

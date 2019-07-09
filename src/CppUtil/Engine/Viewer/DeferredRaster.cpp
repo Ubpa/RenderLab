@@ -20,6 +20,7 @@
 #include <CppUtil/Engine/Plane.h>
 #include <CppUtil/Engine/TriMesh.h>
 #include <CppUtil/Engine/Disk.h>
+#include <CppUtil/Engine/Capsule.h>
 
 #include <CppUtil/Engine/PointLight.h>
 #include <CppUtil/Engine/DirectionalLight.h>
@@ -61,6 +62,7 @@ DeferredRaster::DeferredRaster(RawAPI_OGLW * pOGLW, Ptr<Scene> scene, Ptr<Camera
 	RegMemberFunc<Plane>(&DeferredRaster::Visit);
 	RegMemberFunc<TriMesh>(&DeferredRaster::Visit);
 	RegMemberFunc<Disk>(&DeferredRaster::Visit);
+	RegMemberFunc<Capsule>(&DeferredRaster::Visit);
 
 	// material
 	RegMemberFunc<BSDF_MetalWorkflow>(&DeferredRaster::Visit);
@@ -100,7 +102,7 @@ void DeferredRaster::InitShader_GBuffer() {
 }
 
 void DeferredRaster::InitShader_GBuffer_MetalWorkflow() {
-	metalShader = Shader(rootPath + str_Basic_P3N3T2T3_vs, rootPath + "data/shaders/Engine/DeferredPipeline/GBuffer_MetalWorkflow.fs");
+	metalShader = Shader(rootPath + str_Basic_P3N3T2T3_offset_vs, rootPath + "data/shaders/Engine/DeferredPipeline/GBuffer_MetalWorkflow.fs");
 
 	metalShader.SetInt("metal.albedoTexture", 0);
 	metalShader.SetInt("metal.metallicTexture", 1);
@@ -114,7 +116,7 @@ void DeferredRaster::InitShader_GBuffer_MetalWorkflow() {
 }
 
 void DeferredRaster::InitShader_GBuffer_Diffuse() {
-	diffuseShader = Shader(rootPath + str_Basic_P3N3T2T3_vs, rootPath + "data/shaders/Engine/DeferredPipeline/GBuffer_Diffuse.fs");
+	diffuseShader = Shader(rootPath + str_Basic_P3N3T2T3_offset_vs, rootPath + "data/shaders/Engine/DeferredPipeline/GBuffer_Diffuse.fs");
 
 	diffuseShader.SetInt("diffuse.albedoTexture", 0);
 
@@ -124,7 +126,7 @@ void DeferredRaster::InitShader_GBuffer_Diffuse() {
 }
 
 void DeferredRaster::InitShader_GBuffer_Frostbite() {
-	frostbiteShader = Shader(rootPath + str_Basic_P3N3T2T3_vs, rootPath + "data/shaders/Engine/DeferredPipeline/GBuffer_Frostbite.fs");
+	frostbiteShader = Shader(rootPath + str_Basic_P3N3T2T3_offset_vs, rootPath + "data/shaders/Engine/DeferredPipeline/GBuffer_Frostbite.fs");
 
 	frostbiteShader.SetInt("bsdf.albedoTexture", 0);
 	frostbiteShader.SetInt("bsdf.metallicTexture", 1);
@@ -138,7 +140,7 @@ void DeferredRaster::InitShader_GBuffer_Frostbite() {
 }
 
 void DeferredRaster::InitShader_GBuffer_Emission() {
-	emissionShader = Shader(rootPath + str_Basic_P3N3T2T3_vs, rootPath + "data/shaders/Engine/DeferredPipeline/GBuffer_Emission.fs");
+	emissionShader = Shader(rootPath + str_Basic_P3N3T2T3_offset_vs, rootPath + "data/shaders/Engine/DeferredPipeline/GBuffer_Emission.fs");
 	emissionShader.SetInt("ID", mngrMID.Get<BSDF_Emission>());
 
 	BindUBO(emissionShader);
@@ -438,6 +440,7 @@ void DeferredRaster::Visit(Ptr<Sphere> sphere) {
 		return;
 
 	curMaterialShader.SetMat4f("model", modelVec.back());
+	curMaterialShader.SetBool("isOffset", false);
 	pOGLW->GetVAO(ShapeType::Sphere).Draw(curMaterialShader);
 }
 
@@ -446,6 +449,7 @@ void DeferredRaster::Visit(Ptr<Plane> plane) {
 		return;
 
 	curMaterialShader.SetMat4f("model", modelVec.back());
+	curMaterialShader.SetBool("isOffset", false);
 	pOGLW->GetVAO(ShapeType::Plane).Draw(curMaterialShader);
 }
 
@@ -454,6 +458,7 @@ void DeferredRaster::Visit(Ptr<TriMesh> mesh) {
 		return;
 
 	curMaterialShader.SetMat4f("model", modelVec.back());
+	curMaterialShader.SetBool("isOffset", false);
 	pOGLW->GetVAO(mesh).Draw(curMaterialShader);
 }
 
@@ -462,5 +467,16 @@ void DeferredRaster::Visit(Ptr<Disk> disk) {
 		return;
 
 	curMaterialShader.SetMat4f("model", modelVec.back());
+	curMaterialShader.SetBool("isOffset", false);
 	pOGLW->GetVAO(ShapeType::Disk).Draw(curMaterialShader);
+}
+
+void DeferredRaster::Visit(Ptr<Capsule> capsule) {
+	if (!curMaterialShader.IsValid())
+		return;
+
+	curMaterialShader.SetMat4f("model", modelVec.back());
+	curMaterialShader.SetBool("isOffset", true);
+	curMaterialShader.SetFloat("offset", capsule->height / 2 - 1);
+	pOGLW->GetVAO(ShapeType::Capsule).Draw(curMaterialShader);
 }

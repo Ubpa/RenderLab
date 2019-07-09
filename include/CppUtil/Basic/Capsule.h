@@ -11,9 +11,11 @@ namespace CppUtil {
 			float * GetNormalArr();
 			float * GetTexCoordsArr();
 			uint * GetIndexArr();
+			float * GetTangentArr();
 			uint GetNormalArrSize();
 			uint GetTexCoordsArrSize();
 			uint GetIndexArrSize();
+			uint GetTangentArrSize();
 
 			float GetHeight() const { return height; }
 
@@ -21,6 +23,7 @@ namespace CppUtil {
 			std::vector<Vec3f> normalArr;
 			std::vector<Vec2f> texCoordsArr;
 			std::vector<uVec3i> indexArr;
+			std::vector<Vec3f> tangentArr;
 
 		private:
 			float height;

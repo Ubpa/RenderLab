@@ -10,9 +10,15 @@ using namespace std;
 Capsule::Capsule(uint n, float height)
 	: Shape((2*n+1)*(2 * n +2), 4 * n * (2 * n +1)), height(height)
 {
+	// 纵向 2n+1 格，2n+2 个点
+	// 横向 2n 格，2n+1 个点
+	// (2n+2)(2n+1) 个点
+	// 2(2n)(2n+1) == 8n^2 + 4n 个三角形
+
 	normalArr = vector<Vec3f>(vertexNum);
 	texCoordsArr = vector<Vec2f>(vertexNum);
 	indexArr = vector<uVec3i>(triNum);
+	tangentArr = vector<Vec3f>(vertexNum);
 
 	float halfH = height / 2;
 
@@ -54,22 +60,23 @@ Capsule::Capsule(uint n, float height)
 		auto v = theta / Math::PI;
 		
 		texCoordsArr[i] = Vec2f(u, v);
+		tangentArr[i] = Vec3f(cos(phi), 0, -sin(phi));
 	}
 
-	for (uint i = 0; i < 2*n; i++) {
-		for (uint j = 0; j < 2*n+1; j++) {
+	for (uint i = 0; i < 2 * n; i++) {
+		for (uint j = 0; j < 2 * n + 1; j++) {
 			// 1 2
 			// 3 4
 
 			// 2 1 4
-			indexArr[2 * (i + j * (2 * n + 1))][0] = (i + 1) + (j) * (2 * n + 1); // 2
-			indexArr[2 * (i + j * (2 * n + 1))][1] = (i) + (j) * (2 * n + 1); // 1
-			indexArr[2 * (i + j * (2 * n + 1))][2] = (i) + (j + 1) * (2 * n + 1); // 4
+			indexArr[2 * (i + (j * 2 * n))][0] = (i + 1) + (j + 0) * (2 * n + 1); // 2
+			indexArr[2 * (i + (j * 2 * n))][1] = (i + 0) + (j + 0) * (2 * n + 1); // 1
+			indexArr[2 * (i + (j * 2 * n))][2] = (i + 1) + (j + 1) * (2 * n + 1); // 4
 
 			// 3 4 1
-			indexArr[2 * (i + j * (2 * n + 1)) + 1][0] = (i) + (j + 1) * (2 * n + 1); // 3
-			indexArr[2 * (i + j * (2 * n + 1)) + 1][1] = (i + 1) + (j + 1) * (2 * n + 1); // 4
-			indexArr[2 * (i + j * (2 * n + 1)) + 1][2] = (i) + (j) * (2 * n + 1); // 1
+			indexArr[2 * (i + (j * 2 * n)) + 1][0] = (i + 0) + (j + 1) * (2 * n + 1); // 3
+			indexArr[2 * (i + (j * 2 * n)) + 1][1] = (i + 1) + (j + 1) * (2 * n + 1); // 4
+			indexArr[2 * (i + (j * 2 * n)) + 1][2] = (i + 0) + (j + 0) * (2 * n + 1); // 1
 		}
 	}
 }
@@ -86,6 +93,10 @@ uint * Capsule::GetIndexArr() {
 	return indexArr.front().Data();
 }
 
+float * Capsule::GetTangentArr() {
+	return tangentArr.front().Data();
+}
+
 uint Capsule::GetNormalArrSize() {
 	return static_cast<uint>(normalArr.size() * 3 * sizeof(float));
 }
@@ -96,4 +107,8 @@ uint Capsule::GetTexCoordsArrSize() {
 
 uint Capsule::GetIndexArrSize() {
 	return static_cast<uint>(indexArr.size() * 3 * sizeof(uint));
+}
+
+uint Capsule::GetTangentArrSize() {
+	return static_cast<uint>(tangentArr.size() * 3 * sizeof(float));
 }

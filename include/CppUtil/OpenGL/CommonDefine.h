@@ -30,6 +30,7 @@ namespace Define{
 	const std::string str_FsPostfix = ".fs";
 
 	const std::string str_Basic_P3N3T2T3_vs = str_ShadersCommon_Prefix + "basic_P3N3T2T3" + str_VsPostfix;
+	const std::string str_Basic_P3N3T2T3_offset_vs = str_ShadersCommon_Prefix + "basic_P3N3T2T3_offset" + str_VsPostfix;
 	const std::string str_Basic_P3N3T2_invN_vs = str_ShadersCommon_Prefix + "basic_P3N3T2_invN" + str_VsPostfix;
 	const std::string str_Basic_P3N3T2_vs = str_ShadersCommon_Prefix + "basic_P3N3T2" + str_VsPostfix;
 	const std::string str_Basic_P3N3_invN_vs = str_ShadersCommon_Prefix + "basic_P3N3_invN" + str_VsPostfix;

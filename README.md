@@ -97,6 +97,8 @@ Optix: 6.0
           - [x] 形状
           - [ ] 光源
         - [ ] 实时
+          - [x] 形状
+          - [ ] 光源
     - [ ] specular
   - [ ] 间接
     - [ ] distant light probe
