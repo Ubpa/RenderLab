@@ -200,11 +200,6 @@ float & Image::At(int x, int y, int channel) {
 	return data[(y*width + x)*this->channel + channel];
 }
 
-float Image::At(int x, int y, int channel) const {
-	assert(channel < this->channel);
-	return data[(y*width + x)*this->channel + channel];
-}
-
 void Image::SetPixel(int x, int y, float r, float g, float b) {
 	assert(channel == 3);
 	At(x, y, 0) = r;

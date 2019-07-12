@@ -112,7 +112,7 @@ void SObjSampler::InitRaster() {
 	auto eulerAngle = transform->GetRotationEuler();
 	roamer->GetCamera()->SetPose(transform->GetPosition(), - eulerAngle.y - 90, eulerAngle.x);
 
-	ui.OGLW_Raster->SetInitOp(LambdaOp_New([=]() {
+	ui.OGLW_Raster->AddInitOp(LambdaOp_New([=]() {
 		roamer->Init();
 		sampleRaster->Init();
 	}));
@@ -133,7 +133,7 @@ void SObjSampler::InitRaster() {
 		initDataMap = true;
 	}, false));
 
-	ui.OGLW_Raster->SetPaintOp(paintOp);
+	ui.OGLW_Raster->AddPaintOp(paintOp);
 }
 
 void SObjSampler::InitRTX() {

@@ -45,6 +45,7 @@ namespace CppUtil {
 			int GetWidth() const { return width; }
 			int GetHeight() const { return height; }
 			int GetChannel() const { return channel; }
+			int GetPixelNum() const { return width * height; }
 			int GetValNum() const { return width * height*channel; }
 			const std::string & GetPath() const { return path; }
 
@@ -57,18 +58,15 @@ namespace CppUtil {
 
 		public:
 			const RGBAf GetPixel(int x, int y) const;
-			const RGBAf GetPixel(const Point2i & xy) const {
-				return GetPixel(xy.x, xy.y);
-			}
+			const RGBAf GetPixel(const Point2i & xy) const { return GetPixel(xy.x, xy.y); }
+			const RGBAf GetPixel(int idx) const { return GetPixel(idx2xy(idx)); }
 
 			float & At(int x, int y, int channel);
-			float & At(const Point2i & xy, int channel) {
-				return At(xy.x, xy.y, channel);
-			}
-			float At(int x, int y, int channel) const;
-			float At(const Point2i & xy, int channel) const {
-				return At(xy.x, xy.y, channel);
-			}
+			const float & At(int x, int y, int channel) const { return const_cast<Image *>(this)->At(x, y, channel); }
+			float & At(const Point2i & xy, int channel) { return At(xy.x, xy.y, channel); }
+			const float & At(const Point2i & xy, int channel) const { return const_cast<Image *>(this)->At(xy, channel); }
+			float & At(int idx, int channel) { return At(idx2xy(idx), channel); }
+			const float & At(int idx, int channel) const { return const_cast<Image *>(this)->At(idx, channel); }
 
 			void SetPixel(int x, int y, float r, float g, float b);
 			void SetPixel(int x, int y, const RGBf & rgb) {

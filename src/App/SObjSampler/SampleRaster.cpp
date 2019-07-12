@@ -41,9 +41,10 @@ void SampleRaster::InitShaders() {
 }
 
 void SampleRaster::InitShaderScreen() {
-	shader_screen = Shader(ROOT_PATH + str_Screen_vs, ROOT_PATH + str_Gamma_fs);
+	shader_screen = Shader(ROOT_PATH + str_Screen_vs, ROOT_PATH + str_PostProcess_fs);
 
 	shader_screen.SetInt("texture0", 0);
+	shader_screen.SetBool("needGamma", true);
 }
 
 void SampleRaster::InitShaderSampleFrostedGlass() {
