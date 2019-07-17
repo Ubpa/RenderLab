@@ -16,6 +16,7 @@ SObjSaver::SObjSaver() {
 	RegMemberFunc<Sphere>(&SObjSaver::Visit);
 	RegMemberFunc<Plane>(&SObjSaver::Visit);
 	RegMemberFunc<TriMesh>(&SObjSaver::Visit);
+	RegMemberFunc<Capsule>(&SObjSaver::Visit);
 
 	RegMemberFunc<CmptLight>(&SObjSaver::Visit);
 	RegMemberFunc<AreaLight>(&SObjSaver::Visit);
@@ -25,6 +26,7 @@ SObjSaver::SObjSaver() {
 	RegMemberFunc<InfiniteAreaLight>(&SObjSaver::Visit);
 	RegMemberFunc<SphereLight>(&SObjSaver::Visit);
 	RegMemberFunc<DiskLight>(&SObjSaver::Visit);
+	RegMemberFunc<CapsuleLight>(&SObjSaver::Visit);
 
 	RegMemberFunc<CmptMaterial>(&SObjSaver::Visit);
 	RegMemberFunc<BSDF_CookTorrance>(&SObjSaver::Visit);
@@ -173,6 +175,12 @@ void SObjSaver::Visit(Ptr<TriMesh> mesh) {
 	});
 }
 
+void SObjSaver::Visit(Ptr<Capsule> capsule) {
+	NewEle(str::Capsule::type, [=]() {
+		NewEle(str::Capsule::height, capsule->height);
+	});
+}
+
 // ----------------- Light -----------------
 
 void SObjSaver::Visit(Ptr<CmptLight> cmpt) {
@@ -241,6 +249,15 @@ void SObjSaver::Visit(Ptr<SphereLight> sphereLight) {
 		NewEle(str::SphereLight::color, sphereLight->color);
 		NewEle(str::SphereLight::intensity, sphereLight->intensity);
 		NewEle(str::SphereLight::radius, sphereLight->radius);
+	});
+}
+
+void SObjSaver::Visit(Ptr<CapsuleLight> capsuleLight) {
+	NewEle(str::CapsuleLight::type, [=]() {
+		NewEle(str::CapsuleLight::color, capsuleLight->color);
+		NewEle(str::CapsuleLight::intensity, capsuleLight->intensity);
+		NewEle(str::CapsuleLight::radius, capsuleLight->radius);
+		NewEle(str::CapsuleLight::height, capsuleLight->height);
 	});
 }
 

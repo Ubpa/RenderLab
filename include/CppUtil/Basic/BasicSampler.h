@@ -15,6 +15,8 @@ namespace CppUtil {
 			// Concentric
 			const Point2 UniformInDisk();
 
+			const Point2 UniformOnDisk();
+
 			//const Point3 UniformInSphere();
 
 			const Vec3 UniformOnSphere();

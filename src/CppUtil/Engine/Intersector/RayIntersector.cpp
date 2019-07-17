@@ -348,10 +348,8 @@ void RayIntersector::Visit(Ptr<Capsule> capsule) {
 		float t = -(b + sqrtDiscriminant) / a;
 		if (t < ray->tMin || t > ray->tMax) {
 			t = (sqrtDiscriminant - b) / a;
-			if (t < ray->tMin || t > ray->tMax) {
-				rst.isIntersect = false;
+			if (t < ray->tMin || t > ray->tMax)
 				break;
-			}
 		}
 
 		auto pos = ray->At(t);
@@ -359,6 +357,7 @@ void RayIntersector::Visit(Ptr<Capsule> capsule) {
 			break;
 
 		rst.isIntersect = true;
+		ray->tMax = t;
 		rst.n = Normalf(pos.x, 0, pos.z);
 		rst.texcoord = Sphere::TexcoordOf(Vec3f(pos));
 		rst.tangent = Sphere::TangentOf(Vec3f(pos));
@@ -388,6 +387,7 @@ void RayIntersector::Visit(Ptr<Capsule> capsule) {
 		}
 		
 		rst.isIntersect = true;
+		ray->tMax = t;
 		rst.n = pos - center;
 		rst.texcoord = Sphere::TexcoordOf(Vec3f(pos));
 		rst.tangent = Sphere::TangentOf(Vec3f(pos));
@@ -415,6 +415,7 @@ void RayIntersector::Visit(Ptr<Capsule> capsule) {
 		}
 
 		rst.isIntersect = true;
+		ray->tMax = t;
 		rst.n = pos - center;
 		rst.texcoord = Sphere::TexcoordOf(Vec3f(pos));
 		rst.tangent = Sphere::TangentOf(Vec3f(pos));

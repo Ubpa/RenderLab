@@ -246,10 +246,8 @@ void VisibilityChecker::Visit(Ptr<Capsule> capsule) {
 		float t = -(b + sqrtDiscriminant) / a;
 		if (t < tMin || t > tMax) {
 			t = (sqrtDiscriminant - b) / a;
-			if (t < tMin || t > tMax) {
-				rst.isIntersect = false;
+			if (t < tMin || t > tMax)
 				break;
-			}
 		}
 
 		auto pos = ray.At(t);

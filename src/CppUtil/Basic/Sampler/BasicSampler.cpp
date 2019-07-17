@@ -32,6 +32,11 @@ const Point2 BasicSampler::UniformInDisk() {
 	return Point2f(r * std::cos(theta), r * std::sin(theta));
 }
 
+const Point2 BasicSampler::UniformOnDisk() {
+	float theta = Math::Rand_F() * 2 * Math::PI;
+	return { cos(theta), sin(theta) };
+}
+
 const Vec3 BasicSampler::UniformOnSphere() {
 	auto Xi1 = Math::Rand_F();
 	auto Xi2 = Math::Rand_F();

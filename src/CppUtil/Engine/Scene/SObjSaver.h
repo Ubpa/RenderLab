@@ -29,6 +29,7 @@ namespace CppUtil {
 		class Sphere;
 		class Plane;
 		class TriMesh;
+		class Capsule;
 
 		class CmptLight;
 		class AreaLight;
@@ -38,6 +39,7 @@ namespace CppUtil {
 		class InfiniteAreaLight;
 		class SphereLight;
 		class DiskLight;
+		class CapsuleLight;
 
 		class CmptMaterial;
 		class BSDF_CookTorrance;
@@ -74,6 +76,7 @@ namespace CppUtil {
 			void Visit(Basic::Ptr<Sphere> sphere);
 			void Visit(Basic::Ptr<Plane> plane);
 			void Visit(Basic::Ptr<TriMesh> mesh);
+			void Visit(Basic::Ptr<Capsule> capsule);
 
 			void Visit(Basic::Ptr<CmptLight> light);
 			void Visit(Basic::Ptr<AreaLight> areaLight);
@@ -83,6 +86,7 @@ namespace CppUtil {
 			void Visit(Basic::Ptr<InfiniteAreaLight> infiniteAreaLight);
 			void Visit(Basic::Ptr<SphereLight> sphereLight);
 			void Visit(Basic::Ptr<DiskLight> diskLight);
+			void Visit(Basic::Ptr<CapsuleLight> diskLight);
 
 			void Visit(Basic::Ptr<CmptMaterial> meterial);
 			void Visit(Basic::Ptr<BSDF_CookTorrance> bsdf);

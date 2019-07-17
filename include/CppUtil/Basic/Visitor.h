@@ -11,6 +11,7 @@
 
 namespace CppUtil {
 	namespace Basic {
+		class Element;
 		class Visitor : public HeapObj {
 		public:
 			static const Ptr<Visitor> New() { return Basic::New<Visitor>(); }

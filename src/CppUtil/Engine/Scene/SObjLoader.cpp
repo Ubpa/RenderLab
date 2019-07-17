@@ -172,6 +172,7 @@ static Ptr<Primitive> SObjLoader::Load(XMLElement * ele, Ptr<Primitive>*) {
 	Reg_Load_val<Ptr<Sphere>>(funcMap, str::Sphere::type, primitive);
 	Reg_Load_val<Ptr<Plane>>(funcMap, str::Plane::type, primitive);
 	Reg_Load_val<Ptr<TriMesh>>(funcMap, str::TriMesh::type, primitive);
+	Reg_Load_val<Ptr<Capsule>>(funcMap, str::Capsule::type, primitive);
 
 	LoadNode(ele, funcMap);
 
@@ -221,6 +222,18 @@ static Ptr<TriMesh> SObjLoader::Load(XMLElement * ele, Ptr<TriMesh>*) {
 	return triMesh;
 }
 
+template<>
+static Ptr<Capsule> SObjLoader::Load(XMLElement * ele, Ptr<Capsule>*) {
+	auto capsule = Capsule::New();
+
+	FuncMap funcMap;
+	Reg_Text_val(funcMap, str::Capsule::height, capsule->height);
+
+	LoadNode(ele, funcMap);
+
+	return capsule;
+}
+
 // ------------ Light ----------------
 
 template<>
@@ -248,6 +261,7 @@ static Ptr<Light> SObjLoader::Load(XMLElement * ele, Ptr<Light>*) {
 	Reg_Load_val<Ptr<InfiniteAreaLight>>(funcMap, str::InfiniteAreaLight::type, light);
 	Reg_Load_val<Ptr<SphereLight>>(funcMap, str::SphereLight::type, light);
 	Reg_Load_val<Ptr<DiskLight>>(funcMap, str::DiskLight::type, light);
+	Reg_Load_val<Ptr<CapsuleLight>>(funcMap, str::CapsuleLight::type, light);
 
 	LoadNode(ele, funcMap);
 
@@ -352,6 +366,21 @@ static Ptr<DiskLight> SObjLoader::Load(XMLElement * ele, Ptr<DiskLight>*) {
 	LoadNode(ele, funcMap);
 
 	return diskLight;
+}
+
+template<>
+static Ptr<CapsuleLight> SObjLoader::Load(XMLElement * ele, Ptr<CapsuleLight>*) {
+	auto capsuleLight = CapsuleLight::New();
+
+	FuncMap funcMap;
+	Reg_Text_val(funcMap, str::CapsuleLight::color, capsuleLight->color);
+	Reg_Text_val(funcMap, str::CapsuleLight::intensity, capsuleLight->intensity);
+	Reg_Text_val(funcMap, str::CapsuleLight::radius, capsuleLight->radius);
+	Reg_Text_val(funcMap, str::CapsuleLight::height, capsuleLight->height);
+
+	LoadNode(ele, funcMap);
+
+	return capsuleLight;
 }
 
 // ------------ Material ----------------

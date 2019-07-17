@@ -8,6 +8,7 @@
 #include <CppUtil/Engine/Sphere.h>
 #include <CppUtil/Engine/Plane.h>
 #include <CppUtil/Engine/TriMesh.h>
+#include <CppUtil/Engine/Capsule.h>
 
 #include <CppUtil/Engine/AreaLight.h>
 #include <CppUtil/Engine/PointLight.h>
@@ -16,6 +17,7 @@
 #include <CppUtil/Engine/InfiniteAreaLight.h>
 #include <CppUtil/Engine/SphereLight.h>
 #include <CppUtil/Engine/DiskLight.h>
+#include <CppUtil/Engine/CapsuleLight.h>
 
 #include <CppUtil/Engine/AllBSDFs.h>
 #include <CppUtil/Engine/Gooch.h>
@@ -75,6 +77,12 @@ namespace str {
 			const char * const FILE = "file";
 			const char * const DISK = "disk";
 		}
+	}
+
+	namespace Capsule {
+		const char * const type = "Capsule";
+
+		const char * const height = "height";
 	}
 
 	// ------------- Light
@@ -141,6 +149,15 @@ namespace str {
 		const char * const color = "color";
 		const char * const intensity = "intensity";
 		const char * const radius = "radius";
+	}
+
+	namespace CapsuleLight {
+		const char * const type = "Capsule_Light";
+
+		const char * const color = "color";
+		const char * const intensity = "intensity";
+		const char * const radius = "radius";
+		const char * const height = "height";
 	}
 
 	// ------------- Material

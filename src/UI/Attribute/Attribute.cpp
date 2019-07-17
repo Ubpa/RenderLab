@@ -21,6 +21,7 @@
 #include <CppUtil/Engine/InfiniteAreaLight.h>
 #include <CppUtil/Engine/SphereLight.h>
 #include <CppUtil/Engine/DiskLight.h>
+#include <CppUtil/Engine/CapsuleLight.h>
 
 #include <CppUtil/OpenGL/Camera.h>
 
@@ -54,6 +55,7 @@ public:
 		RegMemberFunc<Plane>(&Attribute::ComponentVisitor::Visit);
 		RegMemberFunc<TriMesh>(&Attribute::ComponentVisitor::Visit);
 		RegMemberFunc<Disk>(&Attribute::ComponentVisitor::Visit);
+		RegMemberFunc<Capsule>(&Attribute::ComponentVisitor::Visit);
 
 		RegMemberFunc<CmptLight>(&Attribute::ComponentVisitor::Visit);
 		RegMemberFunc<AreaLight>(&Attribute::ComponentVisitor::Visit);
@@ -63,7 +65,7 @@ public:
 		RegMemberFunc<InfiniteAreaLight>(&Attribute::ComponentVisitor::Visit);
 		RegMemberFunc<SphereLight>(&Attribute::ComponentVisitor::Visit);
 		RegMemberFunc<DiskLight>(&Attribute::ComponentVisitor::Visit);
-		RegMemberFunc<Capsule>(&Attribute::ComponentVisitor::Visit);
+		RegMemberFunc<CapsuleLight>(&Attribute::ComponentVisitor::Visit);
 
 		RegMemberFunc<CmptMaterial>(&Attribute::ComponentVisitor::Visit);
 		RegMemberFunc<BSDF_Diffuse>(&Attribute::ComponentVisitor::Visit);
@@ -95,6 +97,7 @@ public:
 	void Visit(Ptr<Plane> plane);
 	void Visit(Ptr<TriMesh> mesh);
 	void Visit(Ptr<Disk> disk);
+	void Visit(Ptr<Capsule> capsule);
 
 	void Visit(Ptr<CmptLight> cmpt);
 	void Visit(Ptr<AreaLight> light);
@@ -104,7 +107,7 @@ public:
 	void Visit(Ptr<InfiniteAreaLight> light);
 	void Visit(Ptr<SphereLight> light);
 	void Visit(Ptr<DiskLight> light);
-	void Visit(Ptr<Capsule> light);
+	void Visit(Ptr<CapsuleLight> light);
 
 	void Visit(Ptr<CmptMaterial> cmpt);
 	void Visit(Ptr<BSDF_Diffuse> bsdf);
@@ -260,7 +263,7 @@ void Attribute::ComponentVisitor::Visit(Ptr<CmptGeometry> geo) {
 
 		auto sphere = Sphere::New();
 		geo->primitive = sphere;
-		Visit(sphere);
+		geo->primitive->Accept(This());
 	};
 	(*pSlotMap)["Plane"] = [=]() {
 		grid->Clear();
@@ -268,7 +271,7 @@ void Attribute::ComponentVisitor::Visit(Ptr<CmptGeometry> geo) {
 
 		auto plane = Plane::New();
 		geo->primitive = plane;
-		Visit(plane);
+		geo->primitive->Accept(This());
 	};
 	(*pSlotMap)["TriMesh"] = [=]() {
 		// not support now
@@ -282,7 +285,7 @@ void Attribute::ComponentVisitor::Visit(Ptr<CmptGeometry> geo) {
 
 		auto disk = Disk::New();
 		geo->primitive = disk;
-		Visit(disk);
+		geo->primitive->Accept(This());
 	};
 	(*pSlotMap)["Capsule"] = [=]() {
 		grid->Clear();
@@ -290,7 +293,7 @@ void Attribute::ComponentVisitor::Visit(Ptr<CmptGeometry> geo) {
 
 		auto capsule = Capsule::New();
 		geo->primitive = capsule;
-		Visit(capsule);
+		geo->primitive->Accept(This());
 	};
 
 	if (geo->primitive) {
@@ -490,8 +493,9 @@ void Attribute::ComponentVisitor::Visit(Ptr<CmptLight> cmpt) {
 	getTypeStr->Reg([&typeStr](Ptr<InfiniteAreaLight>) { typeStr = "InfiniteAreaLight"; });
 	getTypeStr->Reg([&typeStr](Ptr<SphereLight>) { typeStr = "SphereLight"; });
 	getTypeStr->Reg([&typeStr](Ptr<DiskLight>) { typeStr = "DiskLight"; });
+	getTypeStr->Reg([&typeStr](Ptr<CapsuleLight>) { typeStr = "CapsuleLight"; });
 
-	const int lightNum = 8;
+	const int lightNum = 9;
 	tuple<string, function<Ptr<Light>()>> lightArr[lightNum] = {
 		{"None", []()->Ptr<Light> { return nullptr; } },
 		{"AreaLight", []()->Ptr<Light> { return AreaLight::New(); } },
@@ -501,6 +505,7 @@ void Attribute::ComponentVisitor::Visit(Ptr<CmptLight> cmpt) {
 		{"InfiniteAreaLight", []()->Ptr<Light> { return InfiniteAreaLight::New(nullptr); } },
 		{"SphereLight", []()->Ptr<Light> { return SphereLight::New(); } },
 		{"DiskLight", []()->Ptr<Light> { return DiskLight::New(); } },
+		{"CapsuleLight", []()->Ptr<Light> { return CapsuleLight::New(); } },
 	};
 
 	Grid::pSlotMap pSlotMap(new Grid::SlotMap);
@@ -579,6 +584,14 @@ void Attribute::ComponentVisitor::Visit(Ptr<DiskLight> light) {
 	grid->AddEditVal("- Intensity", light->intensity, 0, 20, 2000);
 	grid->AddEditColor("- Color", light->color);
 	grid->AddEditVal("- Radius", light->radius, 0, 100, 1000);
+}
+
+void Attribute::ComponentVisitor::Visit(Ptr<CapsuleLight> light) {
+	auto grid = GetGrid(attr->componentType2item[typeid(CmptLight)]);
+	grid->AddEditVal("- Intensity", light->intensity, 0, 20, 2000);
+	grid->AddEditColor("- Color", light->color);
+	grid->AddEditVal("- Radius", light->radius, 0, 100, 1000);
+	grid->AddEditVal("- Height", light->height, 0, 100, 1000);
 }
 
 // -------------- Attribute --------------
