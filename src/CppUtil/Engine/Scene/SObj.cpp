@@ -20,9 +20,9 @@ using namespace std;
 void SObj::AttachComponent(Ptr<Component> component) {
 	auto target = components.find(typeid(*component));
 	if (target != components.end())
-		target->second->SetSObj(nullptr);
+		target->second->wSObj.reset();
 
-	component->SetSObj(This<SObj>());
+	component->wSObj = This<SObj>();
 	components[typeid(*component)] = component;
 }
 
@@ -72,4 +72,18 @@ const Ptr<SObj> SObj::Load(const string & path) {
 		return SObjLoader::Load(path);
 
 	return AssimpLoader::Load(path);
+}
+
+bool SObj::DetachComponent(Ptr<Component> component) {
+	auto target = components.find(typeid(*component));
+	if (target == components.end())
+		return false;
+
+	if (target->second != component)
+		return false;
+
+	target->second->wSObj.reset();
+
+	components.erase(target);
+	return true;
 }

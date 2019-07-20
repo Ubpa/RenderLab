@@ -17,9 +17,9 @@ namespace CppUtil {
 
 		public:
 			const Basic::Ptr<SObj> GetSObj() const { return wSObj.lock(); }
-			void SetSObj(Basic::Ptr<SObj> sobj) { wSObj = sobj; }
 
 		private:
+			friend SObj;
 			Basic::WPtr<SObj> wSObj;
 		};
 	}

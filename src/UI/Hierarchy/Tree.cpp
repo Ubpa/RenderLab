@@ -198,7 +198,7 @@ void Tree::contextMenuEvent(QContextMenuEvent *event) {
 
 	mainMenu.addAction("Create Empty", this, []() {
 		auto sobj = Hierarchy::GetInstance()->CreateSObj("SObj");
-		CmptTransform::New(sobj);
+		sobj->AddComponent<CmptTransform>();
 	});
 
 	// gen obj
@@ -207,37 +207,37 @@ void Tree::contextMenuEvent(QContextMenuEvent *event) {
 
 	genObjMenu->addAction("Cube", this, []() {
 		auto sobj = Hierarchy::GetInstance()->CreateSObj("Cube");
-		CmptTransform::New(sobj);
-		CmptGeometry::New(sobj, TriMesh::GenCube());
-		CmptMaterial::New(sobj, BSDF_Frostbite::New());
+		sobj->AddComponent<CmptTransform>();
+		sobj->AddComponent<CmptGeometry>(TriMesh::GenCube());
+		sobj->AddComponent<CmptMaterial>(BSDF_Frostbite::New());
 	});
 
 	genObjMenu->addAction("Sphere", this, []() {
 		auto sobj = Hierarchy::GetInstance()->CreateSObj("Sphere");
-		CmptTransform::New(sobj);
-		CmptGeometry::New(sobj, Sphere::New());
-		CmptMaterial::New(sobj, BSDF_Frostbite::New());
+		sobj->AddComponent<CmptTransform>();
+		sobj->AddComponent<CmptGeometry>(Sphere::New());
+		sobj->AddComponent<CmptMaterial>(BSDF_Frostbite::New());
 	});
 
 	genObjMenu->addAction("Plane", this, []() {
 		auto sobj = Hierarchy::GetInstance()->CreateSObj("Plane");
-		CmptTransform::New(sobj);
-		CmptGeometry::New(sobj, Plane::New());
-		CmptMaterial::New(sobj, BSDF_Frostbite::New());
+		sobj->AddComponent<CmptTransform>();
+		sobj->AddComponent<CmptGeometry>(Plane::New());
+		sobj->AddComponent<CmptMaterial>(BSDF_Frostbite::New());
 	});
 
 	genObjMenu->addAction("Disk", this, []() {
 		auto sobj = Hierarchy::GetInstance()->CreateSObj("Disk");
-		CmptTransform::New(sobj);
-		CmptGeometry::New(sobj, Disk::New());
-		CmptMaterial::New(sobj, BSDF_Frostbite::New());
+		sobj->AddComponent<CmptTransform>();
+		sobj->AddComponent<CmptGeometry>(Disk::New());
+		sobj->AddComponent<CmptMaterial>(BSDF_Frostbite::New());
 	});
 
 	genObjMenu->addAction("Capsule", this, []() {
 		auto sobj = Hierarchy::GetInstance()->CreateSObj("Capsule");
-		CmptTransform::New(sobj);
-		CmptGeometry::New(sobj, Capsule::New());
-		CmptMaterial::New(sobj, BSDF_Frostbite::New());
+		sobj->AddComponent<CmptTransform>();
+		sobj->AddComponent<CmptGeometry>(Capsule::New());
+		sobj->AddComponent<CmptMaterial>(BSDF_Frostbite::New());
 	});
 
 	mainMenu.addMenu(genObjMenu);
@@ -248,66 +248,66 @@ void Tree::contextMenuEvent(QContextMenuEvent *event) {
 
 	genLightMenu->addAction("Area Light", this, []() {
 		auto sobj = Hierarchy::GetInstance()->CreateSObj("Area Light");
-		CmptLight::New(sobj, AreaLight::New());
-		CmptTransform::New(sobj);
-		CmptGeometry::New(sobj, Plane::New());
-		CmptMaterial::New(sobj, BSDF_Emission::New());
+		sobj->AddComponent<CmptTransform>();
+		sobj->AddComponent<CmptLight>(AreaLight::New());
+		sobj->AddComponent<CmptGeometry>(Plane::New());
+		sobj->AddComponent<CmptMaterial>(BSDF_Emission::New());
 	});
 
 	genLightMenu->addAction("Point Light", this, []() {
 		auto sobj = Hierarchy::GetInstance()->CreateSObj("Point Light");
-		CmptLight::New(sobj, PointLight::New());
-		CmptTransform::New(sobj);
+		sobj->AddComponent<CmptTransform>();
+		sobj->AddComponent<CmptLight>(PointLight::New());
 	});
 
 	genLightMenu->addAction("Directional Light", this, []() {
 		auto sobj = Hierarchy::GetInstance()->CreateSObj("Directional Light");
-		CmptLight::New(sobj, DirectionalLight::New());
-		CmptTransform::New(sobj);
+		sobj->AddComponent<CmptTransform>();
+		sobj->AddComponent<CmptLight>(DirectionalLight::New());
 	});
 
 	genLightMenu->addAction("Spot Light", this, []() {
 		auto sobj = Hierarchy::GetInstance()->CreateSObj("Spot Light");
-		CmptLight::New(sobj, SpotLight::New());
-		CmptTransform::New(sobj);
+		sobj->AddComponent<CmptTransform>();
+		sobj->AddComponent<CmptLight>(SpotLight::New());
 	});
 
 	genLightMenu->addAction("Infinite Area Light", this, []() {
 		auto sobj = Hierarchy::GetInstance()->CreateSObj("Infinite Area Light");
-		CmptLight::New(sobj, InfiniteAreaLight::New(nullptr));
-		CmptTransform::New(sobj);
+		sobj->AddComponent<CmptTransform>();
+		sobj->AddComponent<CmptLight>(InfiniteAreaLight::New(nullptr));
 	});
 
 	genLightMenu->addAction("Sphere Light", this, []() {
 		auto sobj = Hierarchy::GetInstance()->CreateSObj("Sphere Light");
-		CmptLight::New(sobj, SphereLight::New());
-		CmptTransform::New(sobj);
-		CmptGeometry::New(sobj, Sphere::New());
-		CmptMaterial::New(sobj, BSDF_Emission::New());
+		sobj->AddComponent<CmptTransform>();
+		sobj->AddComponent<CmptLight>(SphereLight::New());
+		sobj->AddComponent<CmptGeometry>(Sphere::New());
+		sobj->AddComponent<CmptMaterial>(BSDF_Emission::New());
 	});
 
 	genLightMenu->addAction("Disk Light", this, []() {
 		auto sobj = Hierarchy::GetInstance()->CreateSObj("Disk Light");
-		CmptLight::New(sobj, DiskLight::New());
-		CmptTransform::New(sobj);
-		CmptGeometry::New(sobj, Disk::New());
-		CmptMaterial::New(sobj, BSDF_Emission::New());
+		sobj->AddComponent<CmptTransform>();
+		sobj->AddComponent<CmptLight>(DiskLight::New());
+		sobj->AddComponent<CmptGeometry>(Disk::New());
+		sobj->AddComponent<CmptMaterial>(BSDF_Emission::New());
 	});
 
 	genLightMenu->addAction("Capsule Light", this, []() {
 		auto sobj = Hierarchy::GetInstance()->CreateSObj("Capsule Light");
-		CmptLight::New(sobj, CapsuleLight::New());
-		CmptTransform::New(sobj);
-		CmptGeometry::New(sobj, Capsule::New());
-		CmptMaterial::New(sobj, BSDF_Emission::New());
+		sobj->AddComponent<CmptTransform>();
+		sobj->AddComponent<CmptLight>(CapsuleLight::New());
+		sobj->AddComponent<CmptGeometry>(Capsule::New());
+		sobj->AddComponent<CmptMaterial>(BSDF_Emission::New());
 	});
 
 	mainMenu.addMenu(genLightMenu);
 
 	mainMenu.addAction("Create Camera", this, []() {
 		auto sobj = Hierarchy::GetInstance()->CreateSObj("Camera");
-		CmptTransform::New(sobj);
-		CmptCamera::New(sobj);
+		sobj->AddComponent<CmptTransform>();
+		sobj->AddComponent<CmptCamera>();
 	});
 
 	auto spitLine1 = new QAction;

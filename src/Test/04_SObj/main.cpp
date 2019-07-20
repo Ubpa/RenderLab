@@ -1,4 +1,5 @@
 #include <CppUtil/Engine/CmptCamera.h>
+#include <CppUtil/Engine/CmptTransform.h>
 #include <CppUtil/Engine/SObj.h>
 
 #include <CppUtil/Basic/Math.h>
@@ -6,6 +7,7 @@
 #include <iostream>
 #include <string>
 
+using namespace CppUtil;
 using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
 using namespace std;
@@ -52,6 +54,13 @@ int main() {
 
 	// 因为 camera2 没有 sobj2 的所有权指针，所以在离开范围时 sobj2 会析构，从而解除与 camera2 的绑定
 	cout << "camera2 have " << (camera2->GetSObj() ? "" : "not ") << "sobj." << endl;
+
+	auto cam = sobj1->AddComponent<CmptCamera>();
+	sobj1->AddComponent<CmptTransform>(Vec3f(0, 1, 0));
+
+	sobj1->GetComponent<CmptCamera>();
+	// error
+	//sobj1->GetComponent<float>();
 
 	return 0;
 }

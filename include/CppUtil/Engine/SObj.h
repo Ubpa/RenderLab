@@ -16,6 +16,10 @@ namespace CppUtil {
 
 		// 组件式编程，不要再派生子类了，用 component 来表达语义
 		class SObj final : public Basic::Node<SObj> {
+		private:
+			template<typename T>
+			using enable_if_is_component_t = std::enable_if_t<std::is_base_of_v<Component, T>>;
+
 		public:
 			SObj(Basic::Ptr<SObj> parent = nullptr, const std::string & name = "SObj")
 				: Node(parent), name(name) { }
@@ -33,25 +37,29 @@ namespace CppUtil {
 			virtual ~SObj() = default;
 
 		public:
-			template<typename T>
-			const Basic::Ptr<T> GetComponent(T * useless_parameter = nullptr) const;
+			template<typename T, typename = enable_if_is_component_t<T>>
+			const Basic::Ptr<T> GetComponent() const;
 
+			template<typename T, typename = enable_if_is_component_t<T>>
+			bool HaveComponent() const { return components.find(typeid(T)) != components.cend(); }
 			bool HaveComponentSameTypeWith(Basic::Ptr<Component> ptr) const;
 
 			const std::vector<Basic::Ptr<Component>> GetAllComponents() const;
 
+			template<typename T, typename ...Args, typename = enable_if_is_component_t<T>>
+			const Basic::Ptr<T> AddComponent(Args && ... args);
+
 			void AttachComponent(Basic::Ptr<Component> component);
 
-			template<typename T>
-			void DetachComponent(T * useless_parameter = nullptr);
+			template<typename T, typename = enable_if_is_component_t<T>>
+			bool DetachComponent();
 
-			template<typename T>
-			void DetachComponent(Basic::Ptr<T> component);
+			bool DetachComponent(Basic::Ptr<Component> component);
 
-			template<typename T>
+			template<typename T, typename = enable_if_is_component_t<T>>
 			const Basic::Ptr<T> GetComponentInChildren();
 
-			template<typename T>
+			template<typename T, typename = enable_if_is_component_t<T>>
 			const std::vector<Basic::Ptr<T>> GetComponentsInChildren();
 
 		public:
@@ -66,10 +74,6 @@ namespace CppUtil {
 
 		public:
 			std::string name;
-
-		private:
-			template<typename T, bool T_is_base_of_Component>
-			struct Wrapper;
 
 		private:
 			Basic::TypeMap<Basic::Ptr<Component>> components;
