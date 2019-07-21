@@ -1,9 +1,10 @@
 #include <CppUtil/OpenGL/Camera.h>
 
-#include <glm/gtc/matrix_transform.hpp>
+#include <CppUtil/Basic/Math.h>
 
 using namespace CppUtil;
 using namespace CppUtil::OpenGL;
+using namespace CppUtil::Basic;
 using namespace std;
 
 const float Camera::RATIO_WH = 1.0f;
@@ -96,9 +97,9 @@ const vector<Point3> Camera::Corners() const {
 // Calculates the front vector from the Camera's (updated) Euler Angles
 void Camera::updateCameraVectors() {
 	// Calculate the new Front vector
-	front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-	front.y = sin(glm::radians(pitch));
-	front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+	front.x = cos(Math::Radians(yaw)) * cos(Math::Radians(pitch));
+	front.y = sin(Math::Radians(pitch));
+	front.z = sin(Math::Radians(yaw)) * cos(Math::Radians(pitch));
 	front.NormalizeSelf();
 	// Also re-calculate the Right and Up vector
 	right = front.Cross(worldUp).Normalize();  // Normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.

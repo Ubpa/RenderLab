@@ -5,8 +5,8 @@
 #include <CppUtil/Basic/UGM/Normal.h>
 
 #include <CppUtil/Basic/Timer.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
+//#include <glm/glm.hpp>
+//#include <glm/gtc/matrix_transform.hpp>
 
 #include <sstream>
 
@@ -75,10 +75,7 @@ int main() {
 		cout << n1.Cross(n2) << endl;
 	}
 
-	{
-		
-	}
-
+	/*
 	{// ÐÔÄÜ²âÊÔ
 		{// Cross
 			stringstream ss;
@@ -166,5 +163,6 @@ int main() {
 			cout << ss.str() << endl;
 		}
 	}
+	*/
 	return 0;
 }
