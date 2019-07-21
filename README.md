@@ -27,24 +27,23 @@
     - 漫反射 Diffuse
     - 金属工作流 Metal Workflow
     - 毛玻璃 Frosted Glass
+    - 寒霜 Frostbite
+    - Gooch
   - 几何体 Geometry
     - 球 Sphere
     - 平面 Plane
     - 三角网格 TriMesh
+    - 圆盘 Disk
+    - 胶囊 Capsule
   - 光源 Light
-    - 面光源 AreaLight（不支持实时）
     - 点光源 PointLight
+    - 面光源 AreaLight
     - 方向光 DirectionalLight
     - 聚光灯 SpotLight
     - 无限远光源 InfiniteAreaLight
-- 查看器 Viewer
-  - 拣选器 Picker
-  - 直接光照光栅器 DirectIllumRaster
-  - 延迟管线 DeferredPipeline
-  - 漫游器 Roamer
-- 相交器 Intersector
-  - 最近 RayIntersector
-  - 可见性 VisibilityChecker
+    - 球光源 SphereLight
+    - 胶囊光源 CapsuleLight
+    - 圆盘光源 DiskLight
 - 离线渲染
   - 路径追踪 PathTracing
 - 其他功能
@@ -80,7 +79,7 @@ Optix: 6.0
   - [x] 实时
 - [ ] 光照
   - [ ] 直接
-    - [ ] diffuse
+    - [x] diffuse
       - [x] 点
       - [x] 聚光灯
       - [x] sphere
@@ -92,13 +91,13 @@ Optix: 6.0
       - [x] rectangle / frustum
         - [x] 离线
         - [x] 实时
-      - [ ] tube / line
+      - [x] tube / line
         - [x] 离线
           - [x] 形状
           - [x] 光源
-        - [ ] 实时
+        - [x] 实时
           - [x] 形状
-          - [ ] 光源
+          - [x] 光源
     - [ ] specular
   - [ ] 间接
     - [ ] distant light probe

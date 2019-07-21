@@ -16,6 +16,7 @@
 #include <CppUtil/Engine/SphereLight.h>
 #include <CppUtil/Engine/DiskLight.h>
 #include <CppUtil/Engine/AreaLight.h>
+#include <CppUtil/Engine/CapsuleLight.h>
 
 #include <CppUtil/Qt/RawAPI_OGLW.h>
 #include <CppUtil/Qt/RawAPI_Define.h>
@@ -95,6 +96,12 @@ void Raster::Init() {
 	glBufferData(GL_UNIFORM_BUFFER, 528, NULL, GL_DYNAMIC_DRAW);
 	glBindBufferBase(GL_UNIFORM_BUFFER, 7, areaLightsUBO);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+	glGenBuffers(1, &capsuleLightsUBO);
+	glBindBuffer(GL_UNIFORM_BUFFER, capsuleLightsUBO);
+	glBufferData(GL_UNIFORM_BUFFER, 400, NULL, GL_DYNAMIC_DRAW);
+	glBindBufferBase(GL_UNIFORM_BUFFER, 8, capsuleLightsUBO);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
 void Raster::UpdateUBO() {
@@ -105,6 +112,7 @@ void Raster::UpdateUBO() {
 	UpdateUBO_SphereLights();
 	UpdateUBO_DiskLights();
 	UpdateUBO_AreaLights();
+	UpdateUBO_CapsuleLights();
 }
 
 void Raster::UpdateUBO_PointLights() {
@@ -307,6 +315,37 @@ void Raster::UpdateUBO_AreaLights() {
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
+void Raster::UpdateUBO_CapsuleLights() {
+	capsuleLight2idx.clear();
+
+	int capsuleLightIdx = 0;
+	glBindBuffer(GL_UNIFORM_BUFFER, capsuleLightsUBO);
+	for (auto cmptLight : scene->GetCmptLights()) {
+		auto capsuleLight = CastTo<CapsuleLight>(cmptLight->light);
+		if (!capsuleLight)
+			continue;
+
+		capsuleLight2idx[capsuleLight] = capsuleLightIdx;
+
+		const auto l2w = cmptLight->GetSObj()->GetLocalToWorldMatrix();
+		auto midPos = l2w(Point3(0.f));
+		auto up = l2w(Normalf(0, 1, 0)).Normalize();
+		auto p0 = midPos + 0.5f * capsuleLight->height * Vec3f(up);
+		auto p1 = midPos - 0.5f * capsuleLight->height * Vec3f(up);
+
+		int base = 16 + 48 * capsuleLightIdx;
+		glBufferSubData(GL_UNIFORM_BUFFER, base +  0, 12, p0.Data());
+		glBufferSubData(GL_UNIFORM_BUFFER, base + 12,  4, &capsuleLight->radius);
+		glBufferSubData(GL_UNIFORM_BUFFER, base + 16, 12, p1.Data());
+		auto lightL = capsuleLight->intensity * capsuleLight->color;
+		glBufferSubData(GL_UNIFORM_BUFFER, base + 32, 12, lightL.Data());
+
+		capsuleLightIdx++;
+	}
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, 4, &capsuleLightIdx); // 胶囊光源个数即为 capsuleLightIdx
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+}
+
 void Raster::BindUBO(Shader & shader) {
 	shader.UniformBlockBind("Camera", 0);
 	shader.UniformBlockBind("PointLights", 1);
@@ -316,6 +355,7 @@ void Raster::BindUBO(Shader & shader) {
 	shader.UniformBlockBind("SphereLights", 5);
 	shader.UniformBlockBind("DiskLights", 6);
 	shader.UniformBlockBind("AreaLights", 7);
+	shader.UniformBlockBind("CapsuleLights", 8);
 }
 
 /*

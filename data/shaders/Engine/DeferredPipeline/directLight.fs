@@ -14,6 +14,7 @@ in vec2 TexCoords;
 #define MAX_SPHERE_LIGHTS 8
 #define MAX_DISK_LIGHTS 8
 #define MAX_AREA_LIGHTS 8
+#define MAX_CAPSULE_LIGHTS 8
 const float PI = 3.14159265359;
 const float INV_PI = 0.31830988618;
 
@@ -78,8 +79,16 @@ struct AreaLight {
     vec3 L;         // 12   48
 };
 
+// 48
+struct CapsuleLight {
+	vec3 p0;        // 12    0
+	float radius;   //  4   12
+	vec3 p1;        // 12   16
+    vec3 L;         // 12   32
+};
+
 // 160
-layout (std140) uniform Camera{
+layout (std140) uniform Camera {
 	mat4 view;			// 64	0	64
 	mat4 projection;	// 64	64	64
 	vec3 viewPos;		// 12	128	144
@@ -90,39 +99,45 @@ layout (std140) uniform Camera{
 };
 
 // 272
-layout (std140) uniform PointLights{ 
+layout (std140) uniform PointLights { 
 	int numPointLight;// 16
 	PointLight pointLights[MAX_POINT_LIGHTS];// 32 * MAX_POINT_LIGHTS = 32 * 8 = 256
 };
 
 // 784
-layout (std140) uniform DirectionalLights{
+layout (std140) uniform DirectionalLights {
 	int numDirectionalLight;// 16
 	DirectionalLight directionaLights[MAX_DIRECTIONAL_LIGHTS];// 96 * MAX_DIRECTIONAL_LIGHTS = 96 * 8 = 768
 };
 
 // 1040
-layout (std140) uniform SpotLights{
+layout (std140) uniform SpotLights {
 	int numSpotLight;// 16
 	SpotLight spotLights[MAX_SPOT_LIGHTS];// 128 * MAX_SPOT_LIGHTS = 128 * 8 = 1024
 };
 
 // 272
-layout (std140) uniform SphereLights{
+layout (std140) uniform SphereLights {
 	int numSphereLight;// 16
 	SphereLight sphereLights[MAX_SPHERE_LIGHTS];// 32 * MAX_SPHERE_LIGHTS = 32 * 8 = 256
 };
 
 // 400
-layout (std140) uniform DiskLights{
+layout (std140) uniform DiskLights {
 	int numDiskLight;// 16
 	DiskLight diskLights[MAX_DISK_LIGHTS];// 48 * MAX_DISK_LIGHTS = 48 * 8 = 384
 };
 
 // 528
-layout (std140) uniform AreaLights{
+layout (std140) uniform AreaLights {
 	int numAreaLight;// 16
 	AreaLight areaLights[MAX_AREA_LIGHTS];// 64 * MAX_AREA_LIGHTS = 64 * 8 = 512
+};
+
+// 400
+layout (std140) uniform CapsuleLights {
+	int numCapsuleLight;// 16
+	CapsuleLight capsuleLights[MAX_CAPSULE_LIGHTS];// 48 * MAX_CAPSULE_LIGHTS = 48 * 8 = 256
 };
 
 uniform sampler2D GBuffer0;
@@ -192,6 +207,26 @@ float LinearizeDepth(float depth, float near, float far) {
 float PerpDepth(float linearDepth, float near, float far) {
 	float z = (near + far - 2.0 * near * far / linearDepth) / (far-near);
 	return (z + 1.0) / 2.0;
+}
+
+float SphereIlluminanceFactor(vec3 vertex, vec3 norm, vec3 center, float radius);
+
+float AreaIlluminanceFactor(vec3 vertex, vec3 norm, vec3 lightPos, float width, float height, vec3 forward, vec3 horizontal);
+
+// Return the closest point on the line ( without limit )
+vec3 closestPointOnLine ( vec3 a, vec3 b, vec3 c)
+{
+    vec3 ab = b - a;
+    float t = dot(c - a, ab) / dot (ab , ab);
+    return a + t * ab;
+}
+
+// Return the closest point on the segment ( with limit )
+vec3 closestPointOnSegment ( vec3 a, vec3 b, vec3 c)
+{
+    vec3 ab = b - a;
+    float t = dot(c - a, ab) / dot(ab , ab);
+    return a + clamp(t, 0, 1) * ab;
 }
 
 vec3 pos;
@@ -293,31 +328,13 @@ void main() {
 		vec3 fragToLight = sphereLights[i].position - pos;
 		float dist2 = dot(fragToLight, fragToLight);
 		float dist = sqrt(dist2);
-
-		vec3 wi = fragToLight / dist;
-		float cosTheta = dot(wi, norm);
-		float ratio = dist / sphereLights[i].radius;
-		float ratio2 = ratio * ratio;
 		
-		float attenuation;
-		if(ratio * cosTheta > 1)
-			attenuation = cosTheta / ratio2;
-		else{
-			float sinTheta = sqrt(1 - cosTheta*cosTheta);
-			float cotTheta = cosTheta / sinTheta;
-			float x = sqrt(ratio2 - 1);
-			float y = -x * cotTheta;
-			
-			attenuation = (1 / ( PI * ratio2)) *
-				(cosTheta * acos(y) - x * sinTheta * sqrt(1 - y * y)) +
-				(1 / PI) * atan(sinTheta * sqrt(1 - y * y)/x);
-		}
-		attenuation *= PI;
-		attenuation = max(0.0, attenuation);
-
+		float illuminanceFactor = SphereIlluminanceFactor(pos, norm, sphereLights[i].position, sphereLights[i].radius);
+		
+		vec3 wi = fragToLight / dist;
 		vec3 f = BRDF(ID, norm, wo, wi, albedo, metallic, roughness, ao);
 		
-		result += attenuation * sphereLights[i].L * f;
+		result += illuminanceFactor * sphereLights[i].L * f;
 	}
 	
 	// disk light
@@ -353,38 +370,36 @@ void main() {
 	
 	// area light
 	for(int i=0; i<numAreaLight; i++) {
-		vec3 fragToLight = areaLights[i].position - pos;
-		if(dot(-fragToLight, areaLights[i].dir) <= 0)
-			continue;
+		float illuminanceFactor = AreaIlluminanceFactor(pos, norm,
+			areaLights[i].position, areaLights[i].width, areaLights[i].height, areaLights[i].dir, areaLights[i].horizontal);
 		
-		float dist2 = dot(fragToLight, fragToLight);
-		float dist = sqrt(dist2);
-		vec3 wi = fragToLight/dist;
-		
-		// rightPyramidSolidAngle
-		float a = areaLights[i].width * 0.5;
-		float b = areaLights[i].height * 0.5;
-		float solidAngle = 4 * asin(a*b / sqrt((a*a + dist2) * (b*b + dist2)));
-		
-		vec3 verticle = cross(areaLights[i].dir, areaLights[i].horizontal);
-		vec3 halfWidthVec = areaLights[i].horizontal * a;
-		vec3 halfHeightVec = verticle * b;
-		
-		vec3 p0 = areaLights[i].position - halfWidthVec - halfHeightVec;
-		vec3 p1 = areaLights[i].position - halfWidthVec + halfHeightVec;
-		vec3 p2 = areaLights[i].position + halfWidthVec - halfHeightVec;
-		vec3 p3 = areaLights[i].position + halfWidthVec + halfHeightVec;
-		
-		float illuminanceFactor = solidAngle * 0.2 * (
-			max(0, dot(normalize(p0 - pos), norm)) +
-			max(0, dot(normalize(p1 - pos), norm)) +
-			max(0, dot(normalize(p2 - pos), norm)) +
-			max(0, dot(normalize(p3 - pos), norm)) +
-			max(0, dot(wi, norm)) );
-		
+		vec3 wi = normalize(areaLights[i].position - pos);
 		vec3 f = BRDF(ID, norm, wo, wi, albedo, metallic, roughness, ao);
 		
 		result += illuminanceFactor * areaLights[i].L * f;
+	}
+	
+	// capsule light
+	for(int i=0; i<numCapsuleLight; i++) {
+		// area light part
+		vec3 forward = normalize(closestPointOnLine(capsuleLights[i].p0, capsuleLights[i].p1, pos) - pos);
+		vec3 areaCenter = (capsuleLights[i].p0 + capsuleLights[i].p1) / 2;
+		vec3 left = capsuleLights[i].p0 - capsuleLights[i].p1;
+		float height = length(left);
+		vec3 nLeft = left / height;
+		
+		float areaPart = AreaIlluminanceFactor(pos, norm,
+			areaCenter, 2 * capsuleLights[i].radius, height, forward, nLeft);
+		
+		vec3 sphereCenter = closestPointOnSegment(capsuleLights[i].p0, capsuleLights[i].p1 , pos);
+		float spherePart = SphereIlluminanceFactor(pos, norm, sphereCenter, capsuleLights[i].radius);
+		
+		float illuminanceFactor = areaPart + spherePart;
+
+		vec3 wi = normalize(areaCenter - pos);
+		vec3 f = BRDF(ID, norm, wo, wi, albedo, metallic, roughness, ao);
+		
+		result += illuminanceFactor * capsuleLights[i].L * f;
 	}
 	
     FragColor = result;
@@ -509,6 +524,66 @@ float Fwin(float d, float radius) {
 	float ratio4 = ratio2 * ratio2;
 	float falloff = max(0, 1 - ratio4);
 	return falloff * falloff;
+}
+
+float SphereIlluminanceFactor(vec3 vertex, vec3 norm, vec3 center, float radius) {
+	vec3 diff = center - vertex;
+	float dist = length(diff);
+	vec3 wi = diff / dist;
+	float cosTheta = dot(wi, norm);
+	
+	float ratio = dist / radius;
+	float ratio2 = ratio * ratio;
+	
+	float illuminanceFactor;
+	if(ratio * cosTheta > 1)
+		illuminanceFactor = cosTheta / ratio2;
+	else{
+		float sinTheta = sqrt(1 - cosTheta*cosTheta);
+		float cotTheta = cosTheta / sinTheta;
+		float x = sqrt(ratio2 - 1);
+		float y = -x * cotTheta;
+			
+		illuminanceFactor = (1 / ( PI * ratio2)) *
+			(cosTheta * acos(y) - x * sinTheta * sqrt(1 - y * y)) +
+			(1 / PI) * atan(sinTheta * sqrt(1 - y * y)/x);
+	}
+	illuminanceFactor *= PI;
+	illuminanceFactor = max(0.0, illuminanceFactor);
+	return illuminanceFactor;
+}
+
+float AreaIlluminanceFactor(vec3 vertex, vec3 norm, vec3 lightPos, float width, float height, vec3 forward, vec3 horizontal) {
+	vec3 fragToLight = lightPos - vertex;
+	if(dot(-fragToLight, forward) <= 0)
+		return 0;
+		
+	float dist2 = dot(fragToLight, fragToLight);
+	float dist = sqrt(dist2);
+	vec3 wi = fragToLight/dist;
+	
+	// rightPyramidSolidAngle
+	float a = width * 0.5;
+	float b = height * 0.5;
+	float solidAngle = 4 * asin(a*b / sqrt((a*a + dist2) * (b*b + dist2)));
+	
+	vec3 verticle = cross(forward, horizontal);
+	vec3 halfWidthVec = horizontal * a;
+	vec3 halfHeightVec = verticle * b;
+	
+	vec3 p0 = lightPos - halfWidthVec - halfHeightVec;
+	vec3 p1 = lightPos - halfWidthVec + halfHeightVec;
+	vec3 p2 = lightPos + halfWidthVec - halfHeightVec;
+	vec3 p3 = lightPos + halfWidthVec + halfHeightVec;
+	
+	float illuminanceFactor = solidAngle * 0.2 * (
+		max(0, dot(normalize(p0 - vertex), norm)) +
+		max(0, dot(normalize(p1 - vertex), norm)) +
+		max(0, dot(normalize(p2 - vertex), norm)) +
+		max(0, dot(normalize(p3 - vertex), norm)) +
+		max(0, dot(wi, norm)) );
+	
+	return illuminanceFactor;
 }
 
 // ------------------------ Visibility ------------------------ 
