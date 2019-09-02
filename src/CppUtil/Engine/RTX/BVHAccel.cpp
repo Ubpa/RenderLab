@@ -51,7 +51,7 @@ public:
 		if (!primitive)
 			return;
 
-		const auto w2l = geo->GetSObj()->GetWorldToLocalMatrix();
+		const auto w2l = geo->GetSObj()->GetLocalToWorldMatrix().Inverse();
 		holder->worldToLocalMatrixes[primitive] = w2l;
 
 		holder->primitive2sobj[geo->primitive] = geo->GetSObj();

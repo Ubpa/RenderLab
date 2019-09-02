@@ -142,7 +142,7 @@ void Hierarchy::Move(QTreeWidgetItem * item, QTreeWidgetItem * parent) {
 	parent->addChild(item);
 
 	auto sobjL2W = sobj->GetLocalToWorldMatrix();
-	auto parentW2L = parentSObj->GetWorldToLocalMatrix();
+	auto parentW2L = parentSObj->GetLocalToWorldMatrix().Inverse();
 
 	auto cmptTransform = sobj->GetComponent<CmptTransform>();
 	if (!cmptTransform)

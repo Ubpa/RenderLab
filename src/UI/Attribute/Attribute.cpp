@@ -227,7 +227,7 @@ void Attribute::ComponentVisitor::Visit(Ptr<CmptCamera> camera) {
 		auto front = roamerCam->GetFront();
 		auto pos = roamerCam->GetPos();
 		auto lookAt = Transform::LookAt(pos, pos + front);
-		auto w2parent = camera->GetSObj()->GetWorldToLocalMatrix() * transformCmpt->GetTransform();
+		auto w2parent = camera->GetSObj()->GetLocalToWorldMatrix().Inverse() * transformCmpt->GetTransform();
 		transformCmpt->SetTransform(lookAt.Inverse() *  w2parent);
 
 	});

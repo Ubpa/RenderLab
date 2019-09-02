@@ -65,12 +65,7 @@ namespace CppUtil {
 		public:
 			// º¥ ±º∆À„
 			const Basic::Transform GetLocalToWorldMatrix();
-			const Basic::Transform GetWorldToLocalMatrix() {
-				return GetLocalToWorldMatrix().Inverse();
-			}
-			const Point3 GetWorldPos() {
-				return GetLocalToWorldMatrix()(Point3(0));
-			}
+			const Point3 GetWorldPos() { return GetLocalToWorldMatrix()(Point3(0)); }
 
 		public:
 			std::string name;

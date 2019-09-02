@@ -153,6 +153,7 @@ Optix: 6.0
   - [x] 优化
 - [x] Gooch
 - [ ] Frostbite
+- [ ] GLSL include
 - [ ] 拷贝粘贴，模型、图像等复用
 - [ ] CSM
 - [ ] 封装 UBO，改进 FBO
@@ -171,7 +172,7 @@ Optix: 6.0
 
 ### Bugs
 
-- [ ] 边缘黑斑（大概是因为 ambient light 中直接写 directlight 的纹理导致的
+- [x] 边缘黑斑（大概是因为 ambient light 中直接写 directlight 的纹理导致的
 
 
 

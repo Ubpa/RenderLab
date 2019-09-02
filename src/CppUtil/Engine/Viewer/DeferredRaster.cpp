@@ -174,8 +174,6 @@ void DeferredRaster::InitShader_AmbientLight() {
 
 	int idx = 0;
 
-	ambientLightShader.SetInt("DirectLight", idx++);
-
 	ambientLightShader.SetInt("GBuffer0", idx++);
 	ambientLightShader.SetInt("GBuffer1", idx++);
 	ambientLightShader.SetInt("GBuffer2", idx++);
@@ -291,17 +289,20 @@ void DeferredRaster::Pass_DirectLight() {
 void DeferredRaster::Pass_AmbientLight() {
 	windowFBO.Use();
 
-	windowFBO.GetColorTexture(0).Use(0);
+	int idx = 0;
+	//windowFBO.GetColorTexture(0).Use(idx++);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_ONE, GL_ONE);
 
 	// set gbuffer
-	gbufferFBO.GetColorTexture(0).Use(1);
-	gbufferFBO.GetColorTexture(1).Use(2);
-	gbufferFBO.GetColorTexture(2).Use(3);
-	gbufferFBO.GetColorTexture(3).Use(4);
+	gbufferFBO.GetColorTexture(0).Use(idx++);
+	gbufferFBO.GetColorTexture(1).Use(idx++);
+	gbufferFBO.GetColorTexture(2).Use(idx++);
+	gbufferFBO.GetColorTexture(3).Use(idx++);
 
 	// set environment
 	auto environment = scene->GetInfiniteAreaLight();
-	const int environmentBase = 5;
+	const int environmentBase = idx;
 	if (environment) {
 		if (environment->GetImg()) {
 			auto irradianceMap = envGenerator->GetIrradianceMap(environment->GetImg());
@@ -315,6 +316,8 @@ void DeferredRaster::Pass_AmbientLight() {
 	}
 
 	pOGLW->GetVAO(ShapeType::Screen).Draw(ambientLightShader);
+
+	glDisable(GL_BLEND);
 }
 
 void DeferredRaster::Pass_Skybox() {

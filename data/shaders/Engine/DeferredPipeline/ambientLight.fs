@@ -24,8 +24,6 @@ layout (std140) uniform Environment {
 	bool haveEnvironment; //  4    20
 };
 
-uniform sampler2D DirectLight;
-
 uniform sampler2D GBuffer0;
 uniform sampler2D GBuffer1;
 uniform sampler2D GBuffer2;
@@ -56,10 +54,8 @@ vec3 EvaluateAmbient_Diffuse(vec3 norm, vec3 albedo);
 vec3 EvaluateAmbient_Frostbite(vec3 wo, vec3 norm, vec3 albedo, float roughness, float metallic, float ao);
 
 void main() {
-	vec3 direct = texture(DirectLight, TexCoords).xyz;
-	
 	if( !haveEnvironment ) {
-		FragColor = direct;
+		FragColor = vec3(0, 0, 0);
 		return;
 	}
 	
@@ -81,7 +77,7 @@ void main() {
 	
 	vec3 ambient = EvaluateAmbient(ID, wo, norm, albedo, roughness, metallic, ao);
 	
-	FragColor = direct + ambient;
+	FragColor = ambient;
 }
 
 vec3 GetF0(vec3 albedo, float metallic) {
