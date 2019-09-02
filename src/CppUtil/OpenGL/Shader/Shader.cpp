@@ -217,7 +217,9 @@ const string Shader::Process(const string & path) {
 					"\t""#include is empty or fail\n"
 					"\t""code: %s"
 					"\t""path: %s\n", line.c_str(), incPath.c_str());
+				continue;
 			}
+
 			rst += inc;
 		}else
 			rst += line;

@@ -319,6 +319,13 @@ void main() {
 	// sphere light
 	for(int i=0; i < numSphereLight; i++) {
 		vec3 fragToLight = sphereLights[i].position - pos;
+		
+		vec3 R = reflect(-wo, norm);
+		if(ID == 2)
+			R = Frostbite_SpecularDominantDir(norm, R, roughness);
+		vec3 LtoR = dot(fragToLight, R) * R -  fragToLight;
+		fragToLight += saturate(sphereLights[i].radius / length(LtoR)) * LtoR;
+		
 		float dist2 = dot(fragToLight, fragToLight);
 		float dist = sqrt(dist2);
 		
@@ -329,7 +336,9 @@ void main() {
 		vec3 fd, fs;
 		BRDF(fd, fs, ID, norm, wo, wi, albedo, metallic, roughness);
 		
-		result += illuminanceFactor * sphereLights[i].L * fd;
+		float attenuation = 1.0 / max(0.0001, dist2);
+		
+		result += (illuminanceFactor * fd + attenuation * fs) * sphereLights[i].L;
 	}
 	
 	// disk light

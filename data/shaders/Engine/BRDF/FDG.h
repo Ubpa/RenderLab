@@ -20,9 +20,7 @@ float DisneyDiffuseFr(vec3 norm, vec3 wo, vec3 wi, float linearRoughness);
 // ------------------------------ 实现 ------------------------------
 
 float SchlickGGX_D(vec3 norm, vec3 h, float roughness){
-	float NoH = dot(norm, h);
-	if(NoH < 0)
-		return 0;
+	float NoH = saturate(dot(norm, h));
 	
 	float alpha = roughness * roughness;
 	

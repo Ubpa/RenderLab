@@ -78,7 +78,7 @@ Optix: 6.0
   - [x] 离线
   - [x] 实时
 - [ ] 光照
-  - [ ] 直接
+  - [x] 直接
     - [x] diffuse
       - [x] 点
       - [x] 聚光灯
@@ -99,6 +99,10 @@ Optix: 6.0
           - [x] 形状
           - [x] 光源
     - [ ] specular
+      - [x] Sphere
+      - [ ] disk
+      - [ ] rectangle / frustum
+      - [ ] tube / line
   - [ ] 间接
     - [ ] distant light probe
     - [ ] local light probe

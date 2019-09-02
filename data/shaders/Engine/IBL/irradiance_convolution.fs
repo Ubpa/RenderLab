@@ -44,7 +44,7 @@ vec3 ImportanceSampleCosDir(vec2 u, vec3 N)
 }
 // ----------------------------------------------------------------------------
 void main()
-{		
+{
 	// The world vector acts as the normal of a tangent surface
     // from the origin, aligned to WorldPos. Given this normal, calculate all
     // incoming radiance of the environment. The result of this radiance
