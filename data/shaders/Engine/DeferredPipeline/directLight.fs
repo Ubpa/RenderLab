@@ -1,5 +1,9 @@
 #version 330 core
 
+#include "../BRDF/MetalWorkflow.h"
+#include "../BRDF/Frostbite.h"
+#include "../BRDF/Diffuse.h"
+
 // ----------------- 输入输出
 
 out vec3 FragColor;
@@ -15,8 +19,6 @@ in vec2 TexCoords;
 #define MAX_DISK_LIGHTS 8
 #define MAX_AREA_LIGHTS 8
 #define MAX_CAPSULE_LIGHTS 8
-const float PI = 3.14159265359;
-const float INV_PI = 0.31830988618;
 
 // array of offset direction for sampling
 const vec3 gridSamplingDisk[20] = vec3[]
@@ -177,18 +179,7 @@ uniform float lightFar;
 
 // ----------------- 函数声明
 
-float SchlickGGX_D(vec3 norm, vec3 h, float roughness);
-float SchlickGGX_G1(vec3 norm, vec3 w, float roughness);
-float SchlickGGX_G(vec3 norm, vec3 wo, vec3 wi, float roughness);
-vec3 GetF0(vec3 albedo, float metallic);
-vec3 SchlickFr(vec3 w, vec3 h, vec3 albedo, float metallic);
-vec3 SchlickFrR(vec3 wo, vec3 norm, vec3 F0, float roughness);
-float DisneyDiffuseFr(vec3 norm, vec3 wo, vec3 wi, float linearRoughness);
-
 void BRDF(out vec3 diffuse, out vec3 spec, int ID, vec3 norm, vec3 wo, vec3 wi, vec3 albedo, float metallic, float roughness);
-void BRDF_MetalWorkflow(out vec3 diffuse, out vec3 spec, vec3 norm, vec3 wo, vec3 wi, vec3 albedo, float metallic, float roughness);
-void BRDF_Diffuse(out vec3 diffuse, out vec3 spec, vec3 albedo);
-void BRDF_Frostbite(out vec3 diffuse, out vec3 spec, vec3 norm, vec3 wo, vec3 wi, vec3 albedo, float metallic, float roughness);
 
 float Fwin(float d, float radius);
 float PointLightVisibility(vec3 lightToFrag, int id);
@@ -416,64 +407,6 @@ void main() {
 
 // ----------------- 函数定义
 
-float SchlickGGX_D(vec3 norm, vec3 h, float roughness){
-	float NoH = dot(norm, h);
-	if(NoH < 0)
-		return 0;
-	
-	float alpha = roughness * roughness;
-	
-	float alpha2 = alpha * alpha;
-	float cos2Theta = NoH * NoH;
-	
-	float t = (alpha2 - 1) * cos2Theta + 1;
-	
-	return alpha2 / (PI * t * t);
-}
-
-float SchlickGGX_G1(vec3 norm, vec3 w, float roughness) {
-	float k = (roughness+1) * (roughness+1) / 8;
-	
-	float NoW = max(0.f, dot(norm, w));
-	return NoW / (NoW * (1 - k) + k);
-}
-
-float SchlickGGX_G(vec3 norm, vec3 wo, vec3 wi, float roughness){
-	return SchlickGGX_G1(norm, wo, roughness) * SchlickGGX_G1(norm, wi, roughness);
-}
-
-vec3 GetF0(vec3 albedo, float metallic) {
-    return mix(vec3(0.04), albedo, metallic);
-}
-
-vec3 SchlickFr(vec3 w, vec3 h, vec3 albedo, float metallic) {
-	vec3 F0 = GetF0(albedo, metallic);
-	float HoW = dot(h, w);
-	return F0 + exp2((-5.55473f * HoW - 6.98316f) * HoW) * (vec3(1.0f) - F0);
-}
-
-vec3 SchlickFrR(vec3 wo, vec3 norm, vec3 F0, float roughness) {
-	float cosTheta = max(dot(wo, norm), 0);
-    return F0 + (max(vec3(1.0 - roughness), F0) - F0) * pow(1.0 - cosTheta, 5.0);
-}
-
-float DisneyDiffuseFr(vec3 norm, vec3 wo, vec3 wi, float linearRoughness) {
-	vec3 h = normalize(wo + wi);
-	float HoWi = dot(h, wi);
-	float HoWi2 = HoWi * HoWi;
-	
-	float NoWo = dot(norm, wo);
-	float NoWi = dot(norm, wi);
-	
-	float energyBias = mix(0.f, 0.5f, linearRoughness);
-	float energyFactor = mix(1.f, 1.f / 1.51f, linearRoughness);
-	float fd90 = energyBias + 2.f * HoWi2 * linearRoughness;
-	float lightScatter = 1.f + fd90 * pow(1.f - NoWi * NoWi, 5);
-	float viewScatter = 1.f + fd90 * pow(1.f - NoWo * NoWo, 5);
-	
-	return lightScatter * viewScatter * energyFactor;
-}
-
 void BRDF(out vec3 fd, out vec3 fs, int ID, vec3 norm, vec3 wo, vec3 wi, vec3 albedo, float metallic, float roughness) {
 	if(ID == 0) {
 		BRDF_MetalWorkflow(fd, fs, norm, wo, wi, albedo, metallic, roughness);
@@ -488,36 +421,6 @@ void BRDF(out vec3 fd, out vec3 fs, int ID, vec3 norm, vec3 wo, vec3 wi, vec3 al
 		fd = vec3(0);
 		fs = vec3(0);
 	}
-}
-
-void BRDF_MetalWorkflow(out vec3 fd, out vec3 fs, vec3 norm, vec3 wo, vec3 wi, vec3 albedo, float metallic, float roughness) {
-	vec3 wh = normalize(wo + wi);
-	
-	float D = SchlickGGX_D(norm, wh, roughness);
-	float G = SchlickGGX_G(norm, wo, wi, roughness);
-	vec3 F = SchlickFr(wo, wh, albedo, metallic);
-	
-	vec3 kS = F;
-	vec3 kD = (1-metallic) * (1 - kS);
-	
-	fd = kD * albedo * INV_PI;
-	fs = D * G * F / (4.0f * dot(wh, wo) * dot(wh, wi));
-}
-
-void BRDF_Diffuse(out vec3 fd, out vec3 fs, vec3 albedo) {
-	fd = albedo / PI;
-	fs = vec3(0);
-}
-
-void BRDF_Frostbite(out vec3 fd, out vec3 fs, vec3 norm, vec3 wo, vec3 wi, vec3 albedo, float metallic, float roughness) {
-	vec3 wh = normalize(wo + wi);
-	
-	float D = SchlickGGX_D(norm, wh, roughness);
-	float G = SchlickGGX_G(norm, wo, wi, roughness);
-	vec3 F = SchlickFr(wo, wh, albedo, metallic);
-	
-	fd = (1 - metallic) * albedo * INV_PI * DisneyDiffuseFr(norm, wo, wi, roughness);
-	fs = D * G * F / (4.0f * dot(wh, wo) * dot(wh, wi));
 }
 
 float Fwin(float d, float radius) {
