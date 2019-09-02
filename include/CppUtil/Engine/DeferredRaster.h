@@ -26,10 +26,6 @@ namespace CppUtil{
 		class BSDF_Frostbite;
 		class BSDF_Emission;
 
-		/*
-		延迟管线
-		暂时只用于金属工作流，当需求来的时候，再来搞一个公共的基类
-		*/
 		class DeferredRaster : public Raster {
 		public:
 			DeferredRaster(QT::RawAPI_OGLW * pOGLW, Basic::Ptr<Scene> scene, Basic::Ptr<OpenGL::Camera> camera);

@@ -185,10 +185,15 @@ vec3 SchlickFr(vec3 w, vec3 h, vec3 albedo, float metallic);
 vec3 SchlickFrR(vec3 wo, vec3 norm, vec3 F0, float roughness);
 float DisneyDiffuseFr(vec3 norm, vec3 wo, vec3 wi, float linearRoughness);
 
-vec3 BRDF(int ID, vec3 norm, vec3 wo, vec3 wi, vec3 albedo, float metallic, float roughness, float ao);
-vec3 BRDF_MetalWorkflow(vec3 norm, vec3 wo, vec3 wi, vec3 albedo, float metallic, float roughness, float ao);
+vec3 BRDFd(int ID, vec3 norm, vec3 wo, vec3 wi, vec3 albedo, float metallic, float roughness);
+vec3 BRDFd_MetalWorkflow(vec3 wo, vec3 wi, vec3 albedo, float metallic, float roughness);
+vec3 BRDFd_Diffuse(vec3 albedo);
+vec3 BRDFd_Frostbite(vec3 norm, vec3 wo, vec3 wi, vec3 albedo, float metallic, float roughness);
+
+vec3 BRDF(int ID, vec3 norm, vec3 wo, vec3 wi, vec3 albedo, float metallic, float roughness);
+vec3 BRDF_MetalWorkflow(vec3 norm, vec3 wo, vec3 wi, vec3 albedo, float metallic, float roughness);
 vec3 BRDF_Diffuse(vec3 albedo);
-vec3 BRDF_Frostbite(vec3 norm, vec3 wo, vec3 wi, vec3 albedo, float metallic, float roughness, float ao);
+vec3 BRDF_Frostbite(vec3 norm, vec3 wo, vec3 wi, vec3 albedo, float metallic, float roughness);
 
 float Fwin(float d, float radius);
 float PointLightVisibility(vec3 lightToFrag, int id);
@@ -267,26 +272,24 @@ void main() {
 		float dist = sqrt(dist2);
 		
 		float falloff = Fwin(dist, pointLights[i].radius);
-		if(falloff < 0.000001)
-			continue;
 		
 		float visibility = PointLightVisibility(-fragToLight, i);
 		
-		float attenuation = max(0.0001, dist2);
+		float attenuation = 1.0 / max(0.0001, dist2);
 
 		vec3 wi = fragToLight / dist;
 		float cosTheta = max(dot(wi, norm), 0);
 
-		vec3 f = BRDF(ID, norm, wo, wi, albedo, metallic, roughness, ao);
+		vec3 f = BRDF(ID, norm, wo, wi, albedo, metallic, roughness);
 		
-		result += visibility * cosTheta / attenuation * falloff * pointLights[i].L * f;
+		result += visibility * cosTheta * attenuation * falloff * pointLights[i].L * f;
 	}
 	
 	// directional light
 	for(int i=0; i < numDirectionalLight; i++) {
-		vec3 wi = -normalize(directionaLights[i].dir);
+		vec3 wi = directionaLights[i].dir;
 
-		vec3 f = BRDF(ID, norm, wo, wi, albedo, metallic, roughness, ao);
+		vec3 f = BRDF(ID, norm, wo, wi, albedo, metallic, roughness);
 
 		float cosTheta = max(dot(wi, norm), 0);
 		
@@ -307,10 +310,8 @@ void main() {
 		float distFalloff = Fwin(dist, spotLights[i].radius);
 		float dirFalloff = SpotLightDirFalloff(wi, i);
 		float falloff = dirFalloff * distFalloff;
-		if(falloff < 0.000001)
-			continue;
 		
-		float attenuation = max(0.0001, dist2);
+		float attenuation = 1.0 / max(0.0001, dist2);
 
 		float cosTheta = max(dot(wi, norm), 0);
 		
@@ -318,9 +319,9 @@ void main() {
 		vec3 normPos = ((pos4.xyz / pos4.w) + 1) / 2;
 		float visibility = SpotLightVisibility(normPos, cosTheta, i);
 
-		vec3 f = BRDF(ID, norm, wo, wi, albedo, metallic, roughness, ao);
+		vec3 f = BRDF(ID, norm, wo, wi, albedo, metallic, roughness);
 		
-		result += visibility * cosTheta / attenuation * falloff * spotLights[i].L * f;
+		result += visibility * cosTheta * attenuation * falloff * spotLights[i].L * f;
 	}
 	
 	// sphere light
@@ -332,9 +333,9 @@ void main() {
 		float illuminanceFactor = SphereIlluminanceFactor(pos, norm, sphereLights[i].position, sphereLights[i].radius);
 		
 		vec3 wi = fragToLight / dist;
-		vec3 f = BRDF(ID, norm, wo, wi, albedo, metallic, roughness, ao);
+		vec3 fd = BRDFd(ID, norm, wo, wi, albedo, metallic, roughness);
 		
-		result += illuminanceFactor * sphereLights[i].L * f;
+		result += illuminanceFactor * sphereLights[i].L * fd;
 	}
 	
 	// disk light
@@ -350,22 +351,22 @@ void main() {
 		float ratio = dist / diskLights[i].radius;
 		float ratio2 = ratio * ratio;
 		
-		float attenuation;
+		float illuminanceFactor;
 		if(cotTheta > 1 / ratio)
-			attenuation = cosTheta / (1 + ratio2);
+			illuminanceFactor = cosTheta / (1 + ratio2);
 		else{
 			float x = sqrt(1 - ratio2 * cotTheta * cotTheta);
 			
-			attenuation = -ratio * x * sinTheta / (PI * (1 + ratio2)) +
+			illuminanceFactor = -ratio * x * sinTheta / (PI * (1 + ratio2)) +
 				(1 / PI) * atan(x * sinTheta / ratio) +
 				cosTheta * (PI - acos(ratio * cotTheta)) / (PI * (1 + ratio2));
 		}
-		attenuation *= PI * dot(diskLights[i].dir, -wi);
-		attenuation = max(0.0, attenuation);
+		illuminanceFactor *= PI * dot(diskLights[i].dir, -wi);
+		illuminanceFactor = max(0.0, illuminanceFactor);
 
-		vec3 f = BRDF(ID, norm, wo, wi, albedo, metallic, roughness, ao);
+		vec3 fd = BRDFd(ID, norm, wo, wi, albedo, metallic, roughness);
 		
-		result += attenuation * diskLights[i].L * f;
+		result += illuminanceFactor * diskLights[i].L * fd;
 	}
 	
 	// area light
@@ -374,9 +375,9 @@ void main() {
 			areaLights[i].position, areaLights[i].width, areaLights[i].height, areaLights[i].dir, areaLights[i].horizontal);
 		
 		vec3 wi = normalize(areaLights[i].position - pos);
-		vec3 f = BRDF(ID, norm, wo, wi, albedo, metallic, roughness, ao);
+		vec3 fd = BRDFd(ID, norm, wo, wi, albedo, metallic, roughness);
 		
-		result += illuminanceFactor * areaLights[i].L * f;
+		result += illuminanceFactor * areaLights[i].L * fd;
 	}
 	
 	// capsule light
@@ -397,9 +398,9 @@ void main() {
 		float illuminanceFactor = areaPart + spherePart;
 
 		vec3 wi = normalize(areaCenter - pos);
-		vec3 f = BRDF(ID, norm, wo, wi, albedo, metallic, roughness, ao);
+		vec3 fd = BRDFd(ID, norm, wo, wi, albedo, metallic, roughness);
 		
-		result += illuminanceFactor * capsuleLights[i].L * f;
+		result += illuminanceFactor * capsuleLights[i].L * fd;
 	}
 	
     FragColor = result;
@@ -465,21 +466,64 @@ float DisneyDiffuseFr(vec3 norm, vec3 wo, vec3 wi, float linearRoughness) {
 	return lightScatter * viewScatter * energyFactor;
 }
 
-vec3 BRDF(int ID, vec3 norm, vec3 wo, vec3 wi, vec3 albedo, float metallic, float roughness, float ao) {
+vec3 BRDFd(int ID, vec3 norm, vec3 wo, vec3 wi, vec3 albedo, float metallic, float roughness) {
 	if(ID == 0) {
-		return BRDF_MetalWorkflow(norm, wo, wi, albedo, metallic, roughness, ao);
+		return BRDFd_MetalWorkflow(wo, wi, albedo, metallic, roughness);
 	}
 	else if(ID == 1) {
-		return BRDF_Diffuse(albedo);
+		return BRDFd_Diffuse(albedo);
 	}
 	else if(ID == 2) {
-		return BRDF_Frostbite(norm, wo, wi, albedo, metallic, roughness, ao);
+		return BRDFd_Frostbite(norm, wo, wi, albedo, metallic, roughness);
 	}
 	else
 		return vec3(0);// not support ID
 }
 
-vec3 BRDF_MetalWorkflow(vec3 norm, vec3 wo, vec3 wi, vec3 albedo, float metallic, float roughness, float ao) {
+vec3 BRDFd_MetalWorkflow(vec3 wo, vec3 wi, vec3 albedo, float metallic, float roughness) {
+	vec3 wh = normalize(wo + wi);
+	
+	vec3 F = SchlickFr(wo, wh, albedo, metallic);
+	
+	vec3 diffuse = albedo * INV_PI;
+	
+	vec3 kS = F;
+	vec3 kD = (1 - metallic) * (1 - kS);
+	
+	vec3 rst = kD * diffuse;
+	
+	return rst;
+}
+
+vec3 BRDFd_Diffuse(vec3 albedo) {
+	return albedo / PI;
+}
+
+vec3 BRDFd_Frostbite(vec3 norm, vec3 wo, vec3 wi, vec3 albedo, float metallic, float roughness) {
+	vec3 wh = normalize(wo + wi);
+	
+	vec3 F = SchlickFr(wo, wh, albedo, metallic);
+	
+	vec3 diffuse = albedo * INV_PI * DisneyDiffuseFr(norm, wo, wi, roughness);
+	
+	return (1 - metallic) * diffuse;
+}
+
+vec3 BRDF(int ID, vec3 norm, vec3 wo, vec3 wi, vec3 albedo, float metallic, float roughness) {
+	if(ID == 0) {
+		return BRDF_MetalWorkflow(norm, wo, wi, albedo, metallic, roughness);
+	}
+	else if(ID == 1) {
+		return BRDF_Diffuse(albedo);
+	}
+	else if(ID == 2) {
+		return BRDF_Frostbite(norm, wo, wi, albedo, metallic, roughness);
+	}
+	else
+		return vec3(0);// not support ID
+}
+
+vec3 BRDF_MetalWorkflow(vec3 norm, vec3 wo, vec3 wi, vec3 albedo, float metallic, float roughness) {
 	vec3 wh = normalize(wo + wi);
 	
 	float D = SchlickGGX_D(norm, wh, roughness);
@@ -502,7 +546,7 @@ vec3 BRDF_Diffuse(vec3 albedo) {
 	return albedo / PI;
 }
 
-vec3 BRDF_Frostbite(vec3 norm, vec3 wo, vec3 wi, vec3 albedo, float metallic, float roughness, float ao) {
+vec3 BRDF_Frostbite(vec3 norm, vec3 wo, vec3 wi, vec3 albedo, float metallic, float roughness) {
 	vec3 wh = normalize(wo + wi);
 	
 	float D = SchlickGGX_D(norm, wh, roughness);

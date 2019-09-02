@@ -153,7 +153,8 @@ void Raster::UpdateUBO_DirectionalLights() {
 
 		directionalLight2idx[directionalLight] = directionalLightIdx;
 
-		Vec3f dir = cmptLight->GetSObj()->GetLocalToWorldMatrix()(Normalf(0, -1, 0)).Normalize();
+		// normalized, point to light
+		Vec3f dir = -cmptLight->GetSObj()->GetLocalToWorldMatrix()(Normalf(0, -1, 0)).Normalize();
 
 		int base = 16 + 128 * directionalLightIdx;
 		auto lightL = directionalLight->intensity * directionalLight->color;
