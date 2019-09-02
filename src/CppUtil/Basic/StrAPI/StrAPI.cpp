@@ -70,3 +70,15 @@ const std::string StrAPI::DelTailAfter(const std::string & str, char c) {
 
 	return str;
 }
+
+const string StrAPI::Between(const string & str, char left, char right) {
+	auto start = str.find_first_of(left, 0);
+	if (start == string::npos)
+		return "";
+
+	auto end = str.find_last_of(right);
+	if (end == string::npos || end == start)
+		return "";
+
+	return str.substr(start + 1, end - (start + 1));
+}

@@ -153,7 +153,8 @@ Optix: 6.0
   - [x] 优化
 - [x] Gooch
 - [ ] Frostbite
-- [ ] GLSL include
+- [x] GLSL include
+- [ ] GLSL 库函数
 - [ ] 拷贝粘贴，模型、图像等复用
 - [ ] CSM
 - [ ] 封装 UBO，改进 FBO

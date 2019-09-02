@@ -63,6 +63,10 @@ namespace CppUtil {
 			static const Shader InValid;
 
 		private:
+			// include
+			static const std::string Process(const std::string &  path);
+
+		private:
 			// utility function for checking shader compilation/linking errors.
 			int CheckCompileErrors(uint shader, CompileType type);
 			//------------

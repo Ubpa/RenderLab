@@ -2,6 +2,7 @@
 #define _BASIC_FILE_FILE_H_
 
 #include <string>
+#include <vector>
 
 namespace CppUtil {
 	namespace Basic {
@@ -25,6 +26,7 @@ namespace CppUtil {
 			std::string ReadLine() const;
 
 			std::string ReadAll() const;
+			std::vector<std::string> ReadAllLines() const;
 
 			bool IsEnd() const;
 

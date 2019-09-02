@@ -2,6 +2,8 @@
 
 #include <CppUtil/Basic/File.h>
 
+#include <CppUtil/Basic/StrAPI.h>
+
 // Choose OpenGL API
 #if USE_QT_OPENGL_API
 #include <CppUtil/Qt/RawAPI_Define.h>
@@ -25,8 +27,8 @@ Shader::Shader(const string & vertexPath, const string & fragmentPath, const str
 	File fsF(fragmentPath, File::Mode::READ);
 	bool hasGS = geometryPath.size() > 0;
 
-	string vsStr = vsF.ReadAll();
-	string fsStr = fsF.ReadAll();
+	string vsStr = Process(vertexPath);
+	string fsStr = Process(fragmentPath);
 	if (vsStr.size() == 0 || fsStr.size() == 0) {
 		cout << vertexPath << " or " << fragmentPath << " read failed.\n";
 		valid = false;
@@ -58,8 +60,7 @@ Shader::Shader(const string & vertexPath, const string & fragmentPath, const str
 	// geometry Sahder
 	uint glgs = 0;
 	if (hasGS) {
-		File gsF(geometryPath, File::Mode::READ);
-		string gsStr = gsF.ReadAll();
+		string gsStr = Process(geometryPath);
 		if (gsStr.size() == 0) {
 			cout << geometryPath << " read failed.\n";
 			valid = false;
@@ -200,4 +201,26 @@ int Shader::CheckCompileErrors(uint shader, CompileType type){
 	}
 
 	return success;
+}
+
+const string Shader::Process(const string & path) {
+	File shaderFile(path, File::Mode::READ);
+	vector<string> contents = shaderFile.ReadAllLines();
+	string rst;
+	string root = StrAPI::DelTailAfter(path, '/') + "/";
+	for (const auto & line : contents) {
+		if (StrAPI::IsBeginWith(line, "#include")) {
+			string incPath = StrAPI::Between(line, '"', '"');
+			string inc = Process(root + incPath);
+			if (inc.empty()) {
+				printf("[WARNING] Shader::Process:\n"
+					"\t""#include is empty or fail\n"
+					"\t""code: %s"
+					"\t""path: %s\n", line.c_str(), incPath.c_str());
+			}
+			rst += inc;
+		}else
+			rst += line;
+	}
+	return rst;
 }

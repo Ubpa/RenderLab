@@ -80,6 +80,20 @@ string File::ReadAll() const {
 	return rst;
 }
 
+vector<string> File::ReadAllLines() const {
+	vector<string> rst;
+
+	if (!Check(READ)) {
+		fprintf(stderr, "%s can't not read\n", fileName.c_str());
+		return rst;
+	}
+
+	while (!IsEnd())
+		rst.push_back(ReadLine());
+
+	return rst;
+}
+
 bool File::IsEnd() const {
 	return feof(pF);
 }

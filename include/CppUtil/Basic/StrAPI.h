@@ -22,6 +22,8 @@ namespace CppUtil {
 
 			// inclusive
 			const std::string DelTailAfter(const std::string & str, char c);
+
+			const std::string Between(const std::string & str, char left, char right);
 		}
 	}
 }
