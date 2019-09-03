@@ -100,7 +100,7 @@ Optix: 6.0
           - [x] 光源
     - [ ] specular
       - [x] Sphere
-      - [ ] disk
+      - [x] disk
       - [ ] rectangle / frustum
       - [ ] tube / line
   - [ ] 间接
@@ -158,6 +158,7 @@ Optix: 6.0
 - [x] Gooch
 - [ ] Frostbite
 - [x] GLSL include
+- [ ] 光源与其他 Component 统一
 - [ ] GLSL 库函数
 - [ ] 拷贝粘贴，模型、图像等复用
 - [ ] CSM

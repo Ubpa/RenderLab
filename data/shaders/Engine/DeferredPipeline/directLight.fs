@@ -240,6 +240,7 @@ void main() {
 	float ao = data3.w;
 	
 	vec3 wo = normalize(viewPos - pos);
+	vec3 R = reflect(-wo, norm);
 	
 	if(ID == 3) { // emission
 		FragColor = dot(norm, wo) > 0 ? albedo : vec3(0);
@@ -320,9 +321,6 @@ void main() {
 	for(int i=0; i < numSphereLight; i++) {
 		vec3 fragToLight = sphereLights[i].position - pos;
 		
-		vec3 R = reflect(-wo, norm);
-		if(ID == 2)
-			R = Frostbite_SpecularDominantDir(norm, R, roughness);
 		vec3 LtoR = dot(fragToLight, R) * R -  fragToLight;
 		fragToLight += saturate(sphereLights[i].radius / length(LtoR)) * LtoR;
 		
@@ -337,13 +335,41 @@ void main() {
 		BRDF(fd, fs, ID, norm, wo, wi, albedo, metallic, roughness);
 		
 		float attenuation = 1.0 / max(0.0001, dist2);
-		
-		result += (illuminanceFactor * fd + attenuation * fs) * sphereLights[i].L;
+		float area = 4 * PI * sphereLights[i].radius * sphereLights[i].radius;
+		result += (illuminanceFactor * fd + attenuation * fs / (area * PI)) * sphereLights[i].L;
 	}
 	
 	// disk light
 	for(int i=0; i<numDiskLight; i++) {
 		vec3 fragToLight = diskLights[i].position - pos;
+		
+		float r2 = diskLights[i].radius * diskLights[i].radius;
+		// closest point
+		// d0 : light dir
+		// d1 : wi
+		// d2 : R
+		// d3 : a*d1 + b*d2
+		// dot(d3, d0) = 0 --> b = - dot(d1, d0) * a / dot(d2, d0) = k * a
+		//                 --> d3 = a * (d1 + k*d2)
+		// dot(d3, d3) = r2 --> a2 = r2 / (d1 + k*d2)^2
+		// P : pos + t * d2
+		// d4 : light to P
+		// dot(d4, d0) = 0 --> dot(pos + t * d2 - L, d0) = 0
+		//                 --> t * dot(d2, d0) + dot(pos - L, d0) = 0
+		vec3 d0 = diskLights[i].dir;
+		vec3 d1 = -normalize(fragToLight);
+		vec3 d2 = R;
+		float t = dot(fragToLight, d0) / dot(d2, d0);
+		vec3 offset = pos + t * d2 - diskLights[i].position;
+		float curR2 = saturate(dot(offset, offset) / r2) * r2;
+		float k = - dot(d1, d0) / dot(d2, d0);
+		vec3 d1kd2 = d1 + k * d2;
+		float a2 = curR2 / dot(d1kd2, d1kd2);
+		float a = sqrt(a2);
+		float b = k * a;
+		vec3 d3 = a * d1kd2;
+		fragToLight += d3;
+		
 		float dist2 = dot(fragToLight, fragToLight);
 		float dist = sqrt(dist2);
 
@@ -370,7 +396,9 @@ void main() {
 		vec3 fd, fs;
 		BRDF(fd, fs, ID, norm, wo, wi, albedo, metallic, roughness);
 		
-		result += illuminanceFactor * diskLights[i].L * fd;
+		float attenuation = 1.0 / max(0.00001, dist2);
+		float area = PI * r2;
+		result += step(0, dot(-wi, diskLights[i].dir)) * (illuminanceFactor * fd + attenuation * fs / (area * PI)) * diskLights[i].L;
 	}
 	
 	// area light
