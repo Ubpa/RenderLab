@@ -9,6 +9,8 @@ namespace CppUtil {
 		namespace StrAPI {
 			const std::string Head(const std::string & str, int n);
 			const std::string Tail(const std::string & str, int n);
+			// exclusive
+			const std::string TailAfter(const std::string & str, char c);
 
 			bool IsBeginWith(const std::string & str, const std::string & suffix);
 			bool IsEndWith(const std::string & str, const std::string & postfix);

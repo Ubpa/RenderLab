@@ -98,11 +98,11 @@ Optix: 6.0
         - [x] 实时
           - [x] 形状
           - [x] 光源
-    - [ ] specular
+    - [x] specular
       - [x] Sphere
       - [x] disk
-      - [ ] rectangle / frustum
-      - [ ] tube / line
+      - [x] rectangle / frustum
+      - [x] tube / line
   - [ ] 间接
     - [ ] distant light probe
     - [ ] local light probe

@@ -16,6 +16,14 @@ const string StrAPI::Tail(const string & str, int n) {
 	return str.substr(str.size() - n, n);
 }
 
+const string StrAPI::TailAfter(const string & str, char c) {
+	auto idx = str.find_last_of(c);
+	if (idx == string::npos)
+		return "";
+
+	return str.substr(idx + 1);
+}
+
 bool StrAPI::IsBeginWith(const string & str, const string & suffix) {
 	return Head(str, static_cast<int>(suffix.size())) == suffix;
 }

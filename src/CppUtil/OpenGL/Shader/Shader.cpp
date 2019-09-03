@@ -206,8 +206,13 @@ int Shader::CheckCompileErrors(uint shader, CompileType type){
 const string Shader::Process(const string & path) {
 	File shaderFile(path, File::Mode::READ);
 	vector<string> contents = shaderFile.ReadAllLines();
-	string rst;
+
 	string root = StrAPI::DelTailAfter(path, '/') + "/";
+	string name = StrAPI::TailAfter(path, '/');
+
+
+	string rst;
+
 	for (const auto & line : contents) {
 		if (StrAPI::IsBeginWith(line, "#include")) {
 			string incPath = StrAPI::Between(line, '"', '"');
@@ -224,5 +229,10 @@ const string Shader::Process(const string & path) {
 		}else
 			rst += line;
 	}
+
+	File debugShaderFile(root + "_DEBUG_" + name, File::Mode::WRITE);
+	debugShaderFile.Printf("%s", rst.c_str());
+	debugShaderFile.Close();
+
 	return rst;
 }

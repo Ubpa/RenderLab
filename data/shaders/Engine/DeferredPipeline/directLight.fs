@@ -3,6 +3,11 @@
 #include "../BRDF/MetalWorkflow.h"
 #include "../BRDF/Frostbite.h"
 #include "../BRDF/Diffuse.h"
+#include "../../Math/intersect.h"
+
+#include "../Light/AreaLight.h"
+#include "../Light/SphereLight.h"
+#include "../Light/CapsuleLight.h"
 
 // ----------------- 输入输出
 
@@ -56,37 +61,12 @@ struct SpotLight{
 	float cosFalloffAngle; // 4     124
 };
 
-// 32
-struct SphereLight {
-    vec3 position;  // 12    0
-    vec3 L;         // 12   16
-    float radius;   //  4   28
-};
-
 // 48
 struct DiskLight {
     vec3 position;  // 12    0
     vec3 dir;       // 12   32
     vec3 L;         // 12   16
     float radius;   //  4   44
-};
-
-// 64
-struct AreaLight {
-    vec3 position;  // 12    0
-	float width;    // 12   12
-    vec3 dir;       // 12   16
-	float height;   //  4   28
-	vec3 horizontal;// 12   32
-    vec3 L;         // 12   48
-};
-
-// 48
-struct CapsuleLight {
-	vec3 p0;        // 12    0
-	float radius;   //  4   12
-	vec3 p1;        // 12   16
-    vec3 L;         // 12   32
 };
 
 // 160
@@ -182,8 +162,8 @@ uniform float lightFar;
 void BRDF(out vec3 diffuse, out vec3 spec, int ID, vec3 norm, vec3 wo, vec3 wi, vec3 albedo, float metallic, float roughness);
 
 float Fwin(float d, float radius);
-float PointLightVisibility(vec3 lightToFrag, int id);
-float PointLightVisibility(vec3 lightToFrag, samplerCube depthMap);
+float PointLightVisibility(vec3 pos, vec3 lightToFrag, int id);
+float PointLightVisibility(vec3 pos, vec3 lightToFrag, samplerCube depthMap);
 
 float DirectionalLightVisibility(vec3 normPos, float cosTheta, int id);
 float DirectionalLightVisibility(vec3 normPos, float cosTheta, sampler2D depthMap);
@@ -200,9 +180,7 @@ float PerpDepth(float linearDepth, float near, float far) {
 	return (z + 1.0) / 2.0;
 }
 
-float SphereIlluminanceFactor(vec3 vertex, vec3 norm, vec3 center, float radius);
-
-float AreaIlluminanceFactor(vec3 vertex, vec3 norm, vec3 lightPos, float width, float height, vec3 forward, vec3 horizontal);
+float DiskIlluminanceFactor(vec3 wi, vec3 norm, float dist, float radius, vec3 forward);
 
 // Return the closest point on the line ( without limit )
 vec3 closestPointOnLine ( vec3 a, vec3 b, vec3 c)
@@ -217,10 +195,8 @@ vec3 closestPointOnSegment ( vec3 a, vec3 b, vec3 c)
 {
     vec3 ab = b - a;
     float t = dot(c - a, ab) / dot(ab , ab);
-    return a + clamp(t, 0, 1) * ab;
+    return a + saturate(t) * ab;
 }
-
-vec3 pos;
 
 // ----------------- 主函数
 
@@ -260,7 +236,7 @@ void main() {
 		
 		float falloff = Fwin(dist, pointLights[i].radius);
 		
-		float visibility = PointLightVisibility(-fragToLight, i);
+		float visibility = PointLightVisibility(pos, -fragToLight, i);
 		
 		float attenuation = 1.0 / max(0.0001, dist2);
 
@@ -319,22 +295,18 @@ void main() {
 	
 	// sphere light
 	for(int i=0; i < numSphereLight; i++) {
-		vec3 fragToLight = sphereLights[i].position - pos;
-		
-		vec3 LtoR = dot(fragToLight, R) * R -  fragToLight;
-		fragToLight += saturate(sphereLights[i].radius / length(LtoR)) * LtoR;
-		
+		float illuminanceFactor = SphereLight_IlluminanceFactor(sphereLights[i], pos, norm);
+
+		vec3 MRP = SphereLight_MRP(sphereLights[i], pos, R);
+		vec3 fragToLight = MRP - pos;
 		float dist2 = dot(fragToLight, fragToLight);
+		float attenuation = 1.0 / max(0.0001, dist2);
 		float dist = sqrt(dist2);
-		
-		float illuminanceFactor = SphereIlluminanceFactor(pos, norm, sphereLights[i].position, sphereLights[i].radius);
-		
 		vec3 wi = fragToLight / dist;
 		
 		vec3 fd, fs;
 		BRDF(fd, fs, ID, norm, wo, wi, albedo, metallic, roughness);
 		
-		float attenuation = 1.0 / max(0.0001, dist2);
 		float area = 4 * PI * sphereLights[i].radius * sphereLights[i].radius;
 		result += (illuminanceFactor * fd + attenuation * fs / (area * PI)) * sphereLights[i].L;
 	}
@@ -343,7 +315,6 @@ void main() {
 	for(int i=0; i<numDiskLight; i++) {
 		vec3 fragToLight = diskLights[i].position - pos;
 		
-		float r2 = diskLights[i].radius * diskLights[i].radius;
 		// closest point
 		// d0 : light dir
 		// d1 : wi
@@ -352,21 +323,20 @@ void main() {
 		// dot(d3, d0) = 0 --> b = - dot(d1, d0) * a / dot(d2, d0) = k * a
 		//                 --> d3 = a * (d1 + k*d2)
 		// dot(d3, d3) = r2 --> a2 = r2 / (d1 + k*d2)^2
-		// P : pos + t * d2
-		// d4 : light to P
-		// dot(d4, d0) = 0 --> dot(pos + t * d2 - L, d0) = 0
-		//                 --> t * dot(d2, d0) + dot(pos - L, d0) = 0
+		Line lineR = Line(pos, R);
+		Plane planeDisk = Plane(diskLights[i].position, diskLights[i].dir);
+		vec3 intersectP = Intersect(lineR, planeDisk);
+
 		vec3 d0 = diskLights[i].dir;
 		vec3 d1 = -normalize(fragToLight);
 		vec3 d2 = R;
-		float t = dot(fragToLight, d0) / dot(d2, d0);
-		vec3 offset = pos + t * d2 - diskLights[i].position;
+		vec3 offset = intersectP - diskLights[i].position;
+		float r2 = diskLights[i].radius * diskLights[i].radius;
 		float curR2 = saturate(dot(offset, offset) / r2) * r2;
 		float k = - dot(d1, d0) / dot(d2, d0);
 		vec3 d1kd2 = d1 + k * d2;
 		float a2 = curR2 / dot(d1kd2, d1kd2);
 		float a = sqrt(a2);
-		float b = k * a;
 		vec3 d3 = a * d1kd2;
 		fragToLight += d3;
 		
@@ -374,69 +344,91 @@ void main() {
 		float dist = sqrt(dist2);
 
 		vec3 wi = fragToLight / dist;
-		float cosTheta = dot(wi, norm);
-		float sinTheta = sqrt(1 - cosTheta*cosTheta);
-		float cotTheta = cosTheta / sinTheta;
-		float ratio = dist / diskLights[i].radius;
-		float ratio2 = ratio * ratio;
-		
-		float illuminanceFactor;
-		if(cotTheta > 1 / ratio)
-			illuminanceFactor = cosTheta / (1 + ratio2);
-		else{
-			float x = sqrt(1 - ratio2 * cotTheta * cotTheta);
-			
-			illuminanceFactor = -ratio * x * sinTheta / (PI * (1 + ratio2)) +
-				(1 / PI) * atan(x * sinTheta / ratio) +
-				cosTheta * (PI - acos(ratio * cotTheta)) / (PI * (1 + ratio2));
-		}
-		illuminanceFactor *= PI * dot(diskLights[i].dir, -wi);
-		illuminanceFactor = max(0.0, illuminanceFactor);
+		float illuminanceFactor = DiskIlluminanceFactor(wi, norm, dist, diskLights[i].radius, diskLights[i].dir);
 
 		vec3 fd, fs;
 		BRDF(fd, fs, ID, norm, wo, wi, albedo, metallic, roughness);
 		
-		float attenuation = 1.0 / max(0.00001, dist2);
+		float attenuation = step(0, dot(-wi, diskLights[i].dir)) / max(0.00001, dist2);
 		float area = PI * r2;
-		result += step(0, dot(-wi, diskLights[i].dir)) * (illuminanceFactor * fd + attenuation * fs / (area * PI)) * diskLights[i].L;
+		result += (illuminanceFactor * fd + attenuation * fs / (area * PI)) * diskLights[i].L;
 	}
 	
 	// area light
 	for(int i=0; i<numAreaLight; i++) {
-		float illuminanceFactor = AreaIlluminanceFactor(pos, norm,
-			areaLights[i].position, areaLights[i].width, areaLights[i].height, areaLights[i].dir, areaLights[i].horizontal);
+		float illuminanceFactor = AreaLight_IlluminanceFactor(areaLights[i], pos, norm);
 		
-		vec3 wi = normalize(areaLights[i].position - pos);
+		vec3 MRP = AreaLight_MRP(areaLights[i], pos, R);
+		vec3 fragToLight = MRP - pos;
+		float dist2 = dot(fragToLight, fragToLight);
+		float dist = sqrt(dist2);
+		vec3 wi = fragToLight / dist;
+		float attenuation = step(0, dot(-wi, areaLights[i].dir)) / max(0.0001, dist2);
 		
 		vec3 fd, fs;
 		BRDF(fd, fs, ID, norm, wo, wi, albedo, metallic, roughness);
 		
-		result += illuminanceFactor * areaLights[i].L * fd;
+		float area = areaLights[i].width * areaLights[i].height;
+		result += (illuminanceFactor * fd + attenuation * fs / (area * PI))* areaLights[i].L;
 	}
 	
 	// capsule light
 	for(int i=0; i<numCapsuleLight; i++) {
-		// area light part
-		vec3 forward = normalize(closestPointOnLine(capsuleLights[i].p0, capsuleLights[i].p1, pos) - pos);
-		vec3 areaCenter = (capsuleLights[i].p0 + capsuleLights[i].p1) / 2;
-		vec3 left = capsuleLights[i].p0 - capsuleLights[i].p1;
-		float height = length(left);
-		vec3 nLeft = left / height;
-		
-		float areaPart = AreaIlluminanceFactor(pos, norm,
-			areaCenter, 2 * capsuleLights[i].radius, height, forward, nLeft);
-		
-		vec3 sphereCenter = closestPointOnSegment(capsuleLights[i].p0, capsuleLights[i].p1 , pos);
-		float spherePart = SphereIlluminanceFactor(pos, norm, sphereCenter, capsuleLights[i].radius);
-		
-		float illuminanceFactor = areaPart + spherePart;
+		{// diffuse
+			{// area
+				vec3 forward = normalize(closestPointOnLine(capsuleLights[i].p0, capsuleLights[i].p1, pos) - pos);
+				vec3 areaCenter = (capsuleLights[i].p0 + capsuleLights[i].p1) / 2;
+				vec3 left = capsuleLights[i].p0 - capsuleLights[i].p1;
+				float height = length(left);
+				vec3 nLeft = left / height;
+				AreaLight areaLight = AreaLight(areaCenter, 2 * capsuleLights[i].radius, forward, height, nLeft, capsuleLights[i].L);
 
-		vec3 wi = normalize(areaCenter - pos);
-		
-		vec3 fd, fs;
-		BRDF(fd, fs, ID, norm, wo, wi, albedo, metallic, roughness);
-		
-		result += illuminanceFactor * capsuleLights[i].L * fd;
+				float illumFactor = AreaLight_IlluminanceFactor(areaLight, pos, norm);
+
+				vec3 fragToLight = areaCenter - pos;
+				float dist2 = dot(fragToLight, fragToLight);
+				float dist = sqrt(dist2);
+				vec3 wi = fragToLight / dist;
+
+				vec3 fd, fs;
+				BRDF(fd, fs, ID, norm, wo, wi, albedo, metallic, roughness);
+
+				result += illumFactor * fd * areaLight.L;
+			}
+			{// sphere
+				vec3 sphereCenter = closestPointOnSegment(capsuleLights[i].p0, capsuleLights[i].p1, pos);
+				SphereLight sphereLight = SphereLight(sphereCenter, capsuleLights[i].L, capsuleLights[i].radius);
+
+				float illumFactor = SphereLight_IlluminanceFactor(sphereLight, pos, norm);
+
+				vec3 fragToLight = sphereCenter - pos;
+				float dist2 = dot(fragToLight, fragToLight);
+				float dist = sqrt(dist2);
+				vec3 wi = fragToLight / dist;
+
+				vec3 fd, fs;
+				BRDF(fd, fs, ID, norm, wo, wi, albedo, metallic, roughness);
+
+				result += illumFactor * fd * sphereLight.L;
+			}
+		}
+		{// specular
+			vec3 MRP = CapsuleLight_MRP(capsuleLights[i], pos, R);
+			vec3 fragToLight = MRP - pos;
+			float dist2 = dot(fragToLight, fragToLight);
+			float attenuation = 1.0 / max(0.0001, dist2);
+			float dist = sqrt(dist2);
+			vec3 wi = fragToLight / dist;
+
+			vec3 fd, fs;
+			BRDF(fd, fs, ID, norm, wo, wi, albedo, metallic, roughness);
+
+			float r2 = capsuleLights[i].radius * capsuleLights[i].radius;
+			vec3 axis = capsuleLights[i].p1 - capsuleLights[i].p0;
+			float height = sqrt(dot(axis, axis));
+			float area = PI * r2 + height * capsuleLights[i].radius;
+			result += attenuation * fs / (area * PI) * capsuleLights[i].L;
+		}
 	}
 	
     FragColor = result;
@@ -468,90 +460,53 @@ float Fwin(float d, float radius) {
 	return falloff * falloff;
 }
 
-float SphereIlluminanceFactor(vec3 vertex, vec3 norm, vec3 center, float radius) {
-	vec3 diff = center - vertex;
-	float dist = length(diff);
-	vec3 wi = diff / dist;
+float DiskIlluminanceFactor(vec3 wi, vec3 norm, float dist, float radius, vec3 forward) {
 	float cosTheta = dot(wi, norm);
-	
+	float sinTheta = sqrt(1 - cosTheta * cosTheta);
+	float cotTheta = cosTheta / sinTheta;
 	float ratio = dist / radius;
 	float ratio2 = ratio * ratio;
-	
-	float illuminanceFactor;
-	if(ratio * cosTheta > 1)
-		illuminanceFactor = cosTheta / ratio2;
-	else{
-		float sinTheta = sqrt(1 - cosTheta*cosTheta);
-		float cotTheta = cosTheta / sinTheta;
-		float x = sqrt(ratio2 - 1);
-		float y = -x * cotTheta;
-			
-		illuminanceFactor = (1 / ( PI * ratio2)) *
-			(cosTheta * acos(y) - x * sinTheta * sqrt(1 - y * y)) +
-			(1 / PI) * atan(sinTheta * sqrt(1 - y * y)/x);
-	}
-	illuminanceFactor *= PI;
-	illuminanceFactor = max(0.0, illuminanceFactor);
-	return illuminanceFactor;
-}
 
-float AreaIlluminanceFactor(vec3 vertex, vec3 norm, vec3 lightPos, float width, float height, vec3 forward, vec3 horizontal) {
-	vec3 fragToLight = lightPos - vertex;
-	if(dot(-fragToLight, forward) <= 0)
-		return 0;
-		
-	float dist2 = dot(fragToLight, fragToLight);
-	float dist = sqrt(dist2);
-	vec3 wi = fragToLight/dist;
-	
-	// rightPyramidSolidAngle
-	float a = width * 0.5;
-	float b = height * 0.5;
-	float solidAngle = 4 * asin(a*b / sqrt((a*a + dist2) * (b*b + dist2)));
-	
-	vec3 verticle = cross(forward, horizontal);
-	vec3 halfWidthVec = horizontal * a;
-	vec3 halfHeightVec = verticle * b;
-	
-	vec3 p0 = lightPos - halfWidthVec - halfHeightVec;
-	vec3 p1 = lightPos - halfWidthVec + halfHeightVec;
-	vec3 p2 = lightPos + halfWidthVec - halfHeightVec;
-	vec3 p3 = lightPos + halfWidthVec + halfHeightVec;
-	
-	float illuminanceFactor = solidAngle * 0.2 * (
-		max(0, dot(normalize(p0 - vertex), norm)) +
-		max(0, dot(normalize(p1 - vertex), norm)) +
-		max(0, dot(normalize(p2 - vertex), norm)) +
-		max(0, dot(normalize(p3 - vertex), norm)) +
-		max(0, dot(wi, norm)) );
-	
+	float illuminanceFactor;
+	if (cotTheta > 1 / ratio)
+		illuminanceFactor = cosTheta / (1 + ratio2);
+	else {
+		float x = sqrt(1 - ratio2 * cotTheta * cotTheta);
+
+		illuminanceFactor = -ratio * x * sinTheta / (PI * (1 + ratio2)) +
+			(1 / PI) * atan(x * sinTheta / ratio) +
+			cosTheta * (PI - acos(ratio * cotTheta)) / (PI * (1 + ratio2));
+	}
+	illuminanceFactor *= PI * dot(forward, -wi);
+	illuminanceFactor = max(0.0, illuminanceFactor);
+
 	return illuminanceFactor;
 }
 
 // ------------------------ Visibility ------------------------ 
 
-float PointLightVisibility(vec3 lightToFrag, int id) {
+float PointLightVisibility(vec3 pos, vec3 lightToFrag, int id) {
 	if(id == 0) {
-		return PointLightVisibility(lightToFrag, pointLightDepthMap0);
+		return PointLightVisibility(pos, lightToFrag, pointLightDepthMap0);
 	} else if(id == 1) {
-		return PointLightVisibility(lightToFrag, pointLightDepthMap1);
+		return PointLightVisibility(pos, lightToFrag, pointLightDepthMap1);
 	} else if(id == 2) {
-		return PointLightVisibility(lightToFrag, pointLightDepthMap2);
+		return PointLightVisibility(pos, lightToFrag, pointLightDepthMap2);
 	} else if(id == 3) {
-		return PointLightVisibility(lightToFrag, pointLightDepthMap3);
+		return PointLightVisibility(pos, lightToFrag, pointLightDepthMap3);
 	} else if(id == 4) {
-		return PointLightVisibility(lightToFrag, pointLightDepthMap4);
+		return PointLightVisibility(pos, lightToFrag, pointLightDepthMap4);
 	} else if(id == 5) {
-		return PointLightVisibility(lightToFrag, pointLightDepthMap5);
+		return PointLightVisibility(pos, lightToFrag, pointLightDepthMap5);
 	} else if(id == 6) {
-		return PointLightVisibility(lightToFrag, pointLightDepthMap6);
+		return PointLightVisibility(pos, lightToFrag, pointLightDepthMap6);
 	} else if(id == 7) {
-		return PointLightVisibility(lightToFrag, pointLightDepthMap7);
+		return PointLightVisibility(pos, lightToFrag, pointLightDepthMap7);
 	}else 
 		return 1;// not support id
 }
 
-float PointLightVisibility(vec3 lightToFrag, samplerCube depthMap) {
+float PointLightVisibility(vec3 pos, vec3 lightToFrag, samplerCube depthMap) {
 	float currentDepth = length(lightToFrag);
 	float bias = 0.08;
 	int samples = 20;
