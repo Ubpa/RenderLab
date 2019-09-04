@@ -18,7 +18,7 @@ void main()
 
     vec3 irradiance = vec3(0.0);
     
-    const uint SAMPLE_NUM = 1024u;
+    const uint SAMPLE_NUM = 4096u;
 	for(uint i=0u;i<SAMPLE_NUM;i++) {
 		vec2 Xi = Hammersley(i, SAMPLE_NUM);
 		vec3 L = CosOnHalfSphere(Xi, N);

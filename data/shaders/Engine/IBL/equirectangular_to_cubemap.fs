@@ -1,8 +1,9 @@
 #version 330 core
+
+#include "../../Math/basic.h"
+
 out vec4 FragColor;
 in vec3 WorldPos;
-
-#define PI 3.14159265359
 
 uniform sampler2D equirectangularMap;
 
@@ -28,14 +29,14 @@ float atan2(float y, float x) {
             return atan(y/x) - PI;
     }
     else // x == 0
-        return sign(y) * PI / 2;
+        return sign(y) * HALF_PI;
 }
 
 vec2 TexcoordOf(vec3 dir) {
 	float phi = atan2(-dir.x, -dir.z) + PI;
 	float theta = acos(dir.y);
 
-	float u = phi / (2.f * PI);
-	float v = theta / PI;
+	float u = phi * INV_TWO_PI;
+	float v = theta * INV_PI;
 	return vec2(u,v);
 }

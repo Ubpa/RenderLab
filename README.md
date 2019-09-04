@@ -163,7 +163,7 @@ Optix: 6.0
 - [ ] 拷贝粘贴，模型、图像等复用
 - [ ] CSM
 - [ ] 封装 UBO，改进 FBO
-- [ ] 解析 Shader
+- [ ] 解析 Shader（uniform）
 - [ ] 实时渲染——面光源
 - [ ] 旋转拖动缩放物体
 - [ ] 重新架构 Raster
@@ -180,8 +180,4 @@ Optix: 6.0
 
 - [x] 边缘黑斑（大概是因为 ambient light 中直接写 directlight 的纹理导致的
 - [ ] 切换 Raster 发生内存泄露
-
-
-
-
 

@@ -2,6 +2,7 @@
 
 #include "../../Math/sample.h"
 #include "../BRDF/FDG.h"
+#include "../../Math/quat.h"
 
 out vec3 FragColor;
 in vec2 TexCoords;
@@ -22,12 +23,8 @@ vec3 ImportanceSampleGGX(vec2 Xi, vec3 N, float roughness)
 	H.z = cosTheta;
 	
 	// from tangent-space H vector to world-space sample vector
-	vec3 up        = abs(N.z) < 0.999 ? vec3(0.0, 0.0, 1.0) : vec3(1.0, 0.0, 0.0);
-	vec3 tangent   = normalize(cross(up, N));
-	vec3 bitangent = cross(N, tangent);
-	
-	vec3 sampleVec = tangent * H.x + bitangent * H.y + N * H.z;
-	return normalize(sampleVec);
+	vec4 rot = Quat_ZTo(N);
+	return Quat_Rotate(rot, H);
 }
 // ----------------------------------------------------------------------------
 vec3 IntegrateBRDF(float NdotV, float roughness)
