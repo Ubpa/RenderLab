@@ -179,6 +179,9 @@ Optix: 6.0
 ### Bugs
 
 - [x] 边缘黑斑（大概是因为 ambient light 中直接写 directlight 的纹理导致的
+- [ ] 切换 Raster 发生内存泄露
+
+
 
 
 

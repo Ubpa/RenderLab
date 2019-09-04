@@ -1,31 +1,17 @@
 #version 330 core
+
+#include "../../Math/sample.h"
+#include "../BRDF/FDG.h"
+
 out vec3 FragColor;
 in vec2 TexCoords;
 
-const float PI = 3.14159265359;
-// ----------------------------------------------------------------------------
-// http://holger.dammertz.org/stuff/notes_HammersleyOnHemisphere.html
-// efficient VanDerCorpus calculation.
-float RadicalInverse_VdC(uint bits) 
-{
-     bits = (bits << 16u) | (bits >> 16u);
-     bits = ((bits & 0x55555555u) << 1u) | ((bits & 0xAAAAAAAAu) >> 1u);
-     bits = ((bits & 0x33333333u) << 2u) | ((bits & 0xCCCCCCCCu) >> 2u);
-     bits = ((bits & 0x0F0F0F0Fu) << 4u) | ((bits & 0xF0F0F0F0u) >> 4u);
-     bits = ((bits & 0x00FF00FFu) << 8u) | ((bits & 0xFF00FF00u) >> 8u);
-     return float(bits) * 2.3283064365386963e-10; // / 0x100000000
-}
-// ----------------------------------------------------------------------------
-vec2 Hammersley(uint i, uint N)
-{
-	return vec2(float(i)/float(N), RadicalInverse_VdC(i));
-}
 // ----------------------------------------------------------------------------
 vec3 ImportanceSampleGGX(vec2 Xi, vec3 N, float roughness)
 {
 	float a = roughness*roughness;
 	
-	float phi = 2.0 * PI * Xi.x;
+	float phi = TWO_PI * Xi.x;
 	float cosTheta = sqrt((1.0 - Xi.y) / (1.0 + (a*a - 1.0) * Xi.y));
 	float sinTheta = sqrt(1.0 - cosTheta*cosTheta);
 	
@@ -42,65 +28,6 @@ vec3 ImportanceSampleGGX(vec2 Xi, vec3 N, float roughness)
 	
 	vec3 sampleVec = tangent * H.x + bitangent * H.y + N * H.z;
 	return normalize(sampleVec);
-}
-// ----------------------------------------------------------------------------
-vec3 ImportanceSampleCosDir(vec2 u, vec3 N)
-{
-	// Local referencial
-	vec3 upVector = abs(N.z) < 0.999 ? vec3(0, 0, 1) : vec3(1, 0, 0);
-	vec3 tangentX = normalize(cross(upVector, N));
-	vec3 tangentY = cross(N, tangentX);
-	
-	float u1 = u.x;
-	float u2 = u.y;
-	
-	float r = sqrt(u1);
-	float phi = u2 * PI * 2;
-	
-	vec3 L = vec3(r * cos(phi), r * sin(phi), sqrt(max(0.0f, 1.0f - u1)));
-	L = normalize(tangentX * L.y + tangentY * L.x + N * L.z);
-	
-	return L;
-}
-// ----------------------------------------------------------------------------
-float GeometrySchlickGGX(float NdotV, float roughness)
-{
-    // note that we use a different k for IBL
-    float a = roughness;
-    float k = (a * a) / 2.0;
-
-    float nom   = NdotV;
-    float denom = NdotV * (1.0 - k) + k;
-
-    return nom / denom;
-}
-// ----------------------------------------------------------------------------
-float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness)
-{
-    float NdotV = max(dot(N, V), 0.0);
-    float NdotL = max(dot(N, L), 0.0);
-    float ggx2 = GeometrySchlickGGX(NdotV, roughness);
-    float ggx1 = GeometrySchlickGGX(NdotL, roughness);
-
-    return ggx1 * ggx2;
-}
-// ----------------------------------------------------------------------------
-float DisneyDiffuseFr(vec3 norm, vec3 wo, vec3 wi, float linearRoughness)
-{
-	vec3 h = normalize(wo + wi);
-	float HoWi = dot(h, wi);
-	float HoWi2 = HoWi * HoWi;
-	
-	float NoWo = dot(norm, wo);
-	float NoWi = dot(norm, wi);
-	
-	float energyBias = mix(0.f, 0.5f, linearRoughness);
-	float energyFactor = mix(1.f, 1.f / 1.51f, linearRoughness);
-	float fd90 = energyBias + 2.f * HoWi2 * linearRoughness;
-	float lightScatter = 1.f + fd90 * pow(1.f - NoWi * NoWi, 5);
-	float viewScatter = 1.f + fd90 * pow(1.f - NoWo * NoWo, 5);
-	
-	return lightScatter * viewScatter * energyFactor;
 }
 // ----------------------------------------------------------------------------
 vec3 IntegrateBRDF(float NdotV, float roughness)
@@ -134,7 +61,7 @@ vec3 IntegrateBRDF(float NdotV, float roughness)
 
 			if(NdotL > 0.0)
 			{
-				float G = GeometrySmith(N, V, L, roughness);
+				float G = SchlickGGX_SmithG(N, V, L, roughness);
 				float G_Vis = (G * VdotH) / (NdotH * NdotV);
 				float Fc = pow(1.0 - VdotH, 5.0);
 
@@ -144,7 +71,7 @@ vec3 IntegrateBRDF(float NdotV, float roughness)
 		}
 		
 		{// Disney Diffuse DFG
-			vec3 L = ImportanceSampleCosDir(Xi, N);
+			vec3 L = CosOnHalfSphere(Xi, N);
 			float NoL = dot(N, L);
 			if(NoL > 0){
 				float LdotH = clamp(dot(L, normalize (V + L)), 0, 1);
