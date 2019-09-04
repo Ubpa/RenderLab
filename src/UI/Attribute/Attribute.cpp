@@ -120,7 +120,6 @@ public:
 	void Visit(Ptr<Gooch> gooch);
 	void Visit(Ptr<BSDF_Frostbite> bsdf);
 
-
 	void Visit(Ptr<CmptTransform> cmpt);
 
 private:
@@ -308,17 +307,14 @@ void Attribute::ComponentVisitor::Visit(Ptr<CmptGeometry> geo) {
 
 void Attribute::ComponentVisitor::Visit(Ptr<Sphere> sphere) {
 	auto grid = GetGrid(attr->componentType2item[typeid(CmptGeometry)]);
-	//grid->AddText("empty");
 }
 
 void Attribute::ComponentVisitor::Visit(Ptr<Plane> plane) {
 	auto grid = GetGrid(attr->componentType2item[typeid(CmptGeometry)]);
-	//grid->AddText("empty");
 }
 
 void Attribute::ComponentVisitor::Visit(Ptr<Disk> disk) {
 	auto grid = GetGrid(attr->componentType2item[typeid(CmptGeometry)]);
-	//grid->AddText("empty");
 }
 
 void Attribute::ComponentVisitor::Visit(Ptr<TriMesh> mesh) {
@@ -536,9 +532,40 @@ void Attribute::ComponentVisitor::Visit(Ptr<CmptLight> cmpt) {
 void Attribute::ComponentVisitor::Visit(Ptr<AreaLight> light) {
 	auto grid = GetGrid(attr->componentType2item[typeid(CmptLight)]);
 	grid->AddEditColor("- Color", light->color);
-	grid->AddEditVal("- Intensity", light->intensity, 0.1);
+	grid->AddEditVal("- Intensity", light->intensity, 0, 20, 2000);
 	grid->AddEditVal("- Width", light->width, 0.1);
 	grid->AddEditVal("- Height", light->height, 0.1);
+	grid->AddButton("- Autocorrection", [this, light]() {
+		auto curSObj = attr->GetCurSObj();
+		if (!curSObj)
+			return;
+
+		// geo
+		auto geoCmpt = curSObj->GetComponent<CmptGeometry>();
+		if (!geoCmpt)
+			geoCmpt = CmptGeometry::New(curSObj, Plane::New());
+		if (!CastTo<Plane>(geoCmpt->primitive))
+			geoCmpt->primitive = Plane::New();
+
+		// transform
+		auto tsfmCmpt = curSObj->GetComponent<CmptTransform>();
+		if (!tsfmCmpt)
+			tsfmCmpt = CmptTransform::New(curSObj);
+		tsfmCmpt->SetScale({light->width, 1.f, light->height});
+
+		// material
+		auto matCmpt = curSObj->GetComponent<CmptMaterial>();
+		if (!matCmpt)
+			matCmpt = CmptMaterial::New(curSObj, BSDF_Emission::New());
+		auto emission = CastTo<BSDF_Emission>(matCmpt->material);
+		if (!emission)
+			matCmpt->material = emission = BSDF_Emission::New();
+		emission->color = light->color;
+		emission->intensity = light->intensity;
+
+		attr->SetSObj(curSObj);
+		attr->SetCurCmpt<CmptLight>();
+	});
 }
 
 void Attribute::ComponentVisitor::Visit(Ptr<PointLight> light) {
@@ -608,6 +635,8 @@ void Attribute::Init(QToolBox * tbox) {
 void Attribute::SetSObj(Ptr<SObj> sobj) {
 	if (!tbox)
 		return;
+	
+	curSObj = sobj;
 
 	// clear
 	componentType2item.clear();

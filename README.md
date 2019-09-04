@@ -104,7 +104,7 @@ Optix: 6.0
       - [x] rectangle / frustum
       - [x] tube / line
   - [ ] 间接
-    - [ ] distant light probe
+    - [x] distant light probe
     - [ ] local light probe
     - [ ] SSR
     - [ ] planar reflection
@@ -159,6 +159,10 @@ Optix: 6.0
 - [ ] Frostbite
 - [x] GLSL include
 - [ ] 光源与其他 Component 统一
+  - [x] area light
+  - [ ] disk light
+  - [ ] capsule light
+  - [ ] sphere light
 - [ ] GLSL 库函数
 - [ ] 拷贝粘贴，模型、图像等复用
 - [ ] CSM
@@ -167,6 +171,7 @@ Optix: 6.0
 - [ ] 实时渲染——面光源
 - [ ] 旋转拖动缩放物体
 - [ ] 重新架构 Raster
+- [ ] 重构序列化
 - [ ] ...
 
 ### Unimportant
@@ -174,10 +179,12 @@ Optix: 6.0
 - [ ] 添加注释
 - [ ] 保存 Code 模式的 Trimesh
 - [ ] 优化 intersector
-- [ ] ...
 
 ### Bugs
 
 - [x] 边缘黑斑（大概是因为 ambient light 中直接写 directlight 的纹理导致的
 - [ ] 切换 Raster 发生内存泄露
+- [ ] 胶囊体的 uv
+- [ ] 胶囊体光源出问题
+- [ ] disk 序列化
 

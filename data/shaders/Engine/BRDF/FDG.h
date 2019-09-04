@@ -1,7 +1,7 @@
 #ifndef BRDF_FDG_H
 #define BRDF_FDG_H
 
-#include "../../Math/basic.h"
+#include "../../Math/quat.h"
 
 #define DEFAULT_REFLECTANCE 0.04
 
@@ -10,6 +10,7 @@
 float SchlickGGX_D(vec3 norm, vec3 h, float roughness);
 float SchlickGGX_G1(vec3 norm, vec3 w, float roughness);
 float SchlickGGX_SmithG(vec3 norm, vec3 wo, vec3 wi, float roughness);
+vec3 SchlickGGX_Sample(vec2 Xi, vec3 norm, float roughness);
 
 vec3 MetalWorkflowF0(vec3 albedo, float metallic);
 vec3 MetalWorkflowF0(vec3 reflectance, vec3 albedo, float metallic);
@@ -41,6 +42,24 @@ float SchlickGGX_G1(vec3 norm, vec3 w, float roughness) {
 
 float SchlickGGX_SmithG(vec3 norm, vec3 wo, vec3 wi, float roughness){
 	return SchlickGGX_G1(norm, wo, roughness) * SchlickGGX_G1(norm, wi, roughness);
+}
+
+vec3 SchlickGGX_Sample(vec2 Xi, vec3 norm, float roughness) {
+	float a = roughness * roughness;
+
+	float phi = TWO_PI * Xi.x;
+	float cosTheta = sqrt((1.0 - Xi.y) / (1.0 + (a*a - 1.0) * Xi.y));
+	float sinTheta = sqrt(1.0 - cosTheta * cosTheta);
+
+	// from spherical coordinates to cartesian coordinates - halfway vector
+	vec3 H;
+	H.x = cos(phi) * sinTheta;
+	H.y = sin(phi) * sinTheta;
+	H.z = cosTheta;
+
+	// from tangent-space H vector to world-space sample vector
+	vec4 rot = Quat_ZTo(norm);
+	return Quat_Rotate(rot, H);
 }
 
 vec3 MetalWorkflowF0(vec3 reflectance, vec3 albedo, float metallic) {

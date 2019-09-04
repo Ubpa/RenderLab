@@ -8,25 +8,6 @@ out vec3 FragColor;
 in vec2 TexCoords;
 
 // ----------------------------------------------------------------------------
-vec3 ImportanceSampleGGX(vec2 Xi, vec3 N, float roughness)
-{
-	float a = roughness*roughness;
-	
-	float phi = TWO_PI * Xi.x;
-	float cosTheta = sqrt((1.0 - Xi.y) / (1.0 + (a*a - 1.0) * Xi.y));
-	float sinTheta = sqrt(1.0 - cosTheta*cosTheta);
-	
-	// from spherical coordinates to cartesian coordinates - halfway vector
-	vec3 H;
-	H.x = cos(phi) * sinTheta;
-	H.y = sin(phi) * sinTheta;
-	H.z = cosTheta;
-	
-	// from tangent-space H vector to world-space sample vector
-	vec4 rot = Quat_ZTo(N);
-	return Quat_Rotate(rot, H);
-}
-// ----------------------------------------------------------------------------
 vec3 IntegrateBRDF(float NdotV, float roughness)
 {
 	// 由于各向同性，随意取一个 V 即可
@@ -49,7 +30,7 @@ vec3 IntegrateBRDF(float NdotV, float roughness)
         vec2 Xi = Hammersley(i, SAMPLE_COUNT);
 		
 		{ // A and B
-			vec3 H = ImportanceSampleGGX(Xi, N, roughness);
+			vec3 H = SchlickGGX_Sample(Xi, N, roughness);
 			vec3 L = normalize(2.0 * dot(V, H) * H - V);
 
 			float NdotL = max(L.z, 0.0);
@@ -70,21 +51,16 @@ vec3 IntegrateBRDF(float NdotV, float roughness)
 		{// Disney Diffuse DFG
 			vec3 L = CosOnHalfSphere(Xi, N);
 			float NoL = dot(N, L);
-			if(NoL > 0){
-				float LdotH = clamp(dot(L, normalize (V + L)), 0, 1);
-				float NdotV = clamp(dot(N, V), 0, 1);
+			if(NoL > 0) {
 				C += DisneyDiffuseFr(N, V, L, sqrt(roughness));
 			}
 		}
     }
-    A /= float(SAMPLE_COUNT);
-    B /= float(SAMPLE_COUNT);
-    C /= float(SAMPLE_COUNT);
-    return vec3(A, B, C);
+
+    return vec3(A, B, C) / float(SAMPLE_COUNT);
 }
 // ----------------------------------------------------------------------------
 void main() 
 {
-    vec3 integratedBRDF = IntegrateBRDF(TexCoords.x, TexCoords.y);
-    FragColor = integratedBRDF;
+	FragColor = IntegrateBRDF(TexCoords.x, TexCoords.y);
 }

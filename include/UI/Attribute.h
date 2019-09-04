@@ -34,6 +34,15 @@ namespace Ui {
 	public:
 		void Init(QToolBox * tbox);
 		void SetSObj(CppUtil::Basic::Ptr<CppUtil::Engine::SObj> sobj);
+		const CppUtil::Basic::Ptr<CppUtil::Engine::SObj> GetCurSObj() const { return curSObj.lock(); }
+		template<typename T, typename = std::enable_if_t<std::is_base_of_v<CppUtil::Engine::Component, T>>>
+		void SetCurCmpt() {
+			auto target = componentType2item.find(typeid(T));
+			if (target == componentType2item.end())
+				return;
+
+			tbox->setCurrentWidget(target->second);
+		}
 
 	private:
 		void AddController(CppUtil::Basic::Ptr<CppUtil::Engine::SObj> sobj);
@@ -48,6 +57,8 @@ namespace Ui {
 		std::map<QWidget *, CppUtil::Basic::Ptr<Grid>> item2grid;
 
 		CppUtil::Basic::Ptr<ComponentVisitor> visitor;
+
+		CppUtil::Basic::WPtr<CppUtil::Engine::SObj> curSObj;
 	};
 }
 
