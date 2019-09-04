@@ -158,11 +158,7 @@ Optix: 6.0
 - [x] Gooch
 - [ ] Frostbite
 - [x] GLSL include
-- [ ] 光源与其他 Component 统一
-  - [x] area light
-  - [ ] disk light
-  - [ ] capsule light
-  - [ ] sphere light
+- [x] 光源与其他 Component 统一
 - [ ] GLSL 库函数
 - [ ] 拷贝粘贴，模型、图像等复用
 - [ ] CSM
@@ -172,19 +168,20 @@ Optix: 6.0
 - [ ] 旋转拖动缩放物体
 - [ ] 重新架构 Raster
 - [ ] 重构序列化
-- [ ] ...
+- [ ] Bloom
 
 ### Unimportant
 
 - [ ] 添加注释
 - [ ] 保存 Code 模式的 Trimesh
 - [ ] 优化 intersector
+- [ ] 清除 useless 参数
 
 ### Bugs
 
 - [x] 边缘黑斑（大概是因为 ambient light 中直接写 directlight 的纹理导致的
 - [ ] 切换 Raster 发生内存泄露
 - [ ] 胶囊体的 uv
-- [ ] 胶囊体光源出问题
-- [ ] disk 序列化
+- [ ] 胶囊体光源离线有问题
+- [x] disk 序列化
 

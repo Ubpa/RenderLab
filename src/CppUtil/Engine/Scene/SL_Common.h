@@ -9,6 +9,7 @@
 #include <CppUtil/Engine/Plane.h>
 #include <CppUtil/Engine/TriMesh.h>
 #include <CppUtil/Engine/Capsule.h>
+#include <CppUtil/Engine/Disk.h>
 
 #include <CppUtil/Engine/AreaLight.h>
 #include <CppUtil/Engine/PointLight.h>
@@ -83,6 +84,10 @@ namespace str {
 		const char * const type = "Capsule";
 
 		const char * const height = "height";
+	}
+
+	namespace Disk {
+		const char * const type = "Disk";
 	}
 
 	// ------------- Light

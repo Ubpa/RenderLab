@@ -30,6 +30,7 @@ namespace CppUtil {
 		class Plane;
 		class TriMesh;
 		class Capsule;
+		class Disk;
 
 		class CmptLight;
 		class AreaLight;
@@ -77,6 +78,7 @@ namespace CppUtil {
 			void Visit(Basic::Ptr<Plane> plane);
 			void Visit(Basic::Ptr<TriMesh> mesh);
 			void Visit(Basic::Ptr<Capsule> capsule);
+			void Visit(Basic::Ptr<Disk> disk);
 
 			void Visit(Basic::Ptr<CmptLight> light);
 			void Visit(Basic::Ptr<AreaLight> areaLight);

@@ -604,6 +604,38 @@ void Attribute::ComponentVisitor::Visit(Ptr<SphereLight> light) {
 	grid->AddEditVal("- Intensity", light->intensity, 0, 20, 2000);
 	grid->AddEditColor("- Color", light->color);
 	grid->AddEditVal("- Radius", light->radius, 0.0, 100.0, 1000);
+
+	grid->AddButton("- Autocorrection", [this, light]() {
+		auto curSObj = attr->GetCurSObj();
+		if (!curSObj)
+			return;
+
+		// geo
+		auto geoCmpt = curSObj->GetComponent<CmptGeometry>();
+		if (!geoCmpt)
+			geoCmpt = CmptGeometry::New(curSObj, Sphere::New());
+		if (!CastTo<Plane>(geoCmpt->primitive))
+			geoCmpt->primitive = Sphere::New();
+
+		// transform
+		auto tsfmCmpt = curSObj->GetComponent<CmptTransform>();
+		if (!tsfmCmpt)
+			tsfmCmpt = CmptTransform::New(curSObj);
+		tsfmCmpt->SetScale(light->radius);
+
+		// material
+		auto matCmpt = curSObj->GetComponent<CmptMaterial>();
+		if (!matCmpt)
+			matCmpt = CmptMaterial::New(curSObj, BSDF_Emission::New());
+		auto emission = CastTo<BSDF_Emission>(matCmpt->material);
+		if (!emission)
+			matCmpt->material = emission = BSDF_Emission::New();
+		emission->color = light->color;
+		emission->intensity = light->intensity;
+
+		attr->SetSObj(curSObj);
+		attr->SetCurCmpt<CmptLight>();
+	});
 }
 
 void Attribute::ComponentVisitor::Visit(Ptr<DiskLight> light) {
@@ -611,6 +643,38 @@ void Attribute::ComponentVisitor::Visit(Ptr<DiskLight> light) {
 	grid->AddEditVal("- Intensity", light->intensity, 0, 20, 2000);
 	grid->AddEditColor("- Color", light->color);
 	grid->AddEditVal("- Radius", light->radius, 0, 100, 1000);
+
+	grid->AddButton("- Autocorrection", [this, light]() {
+		auto curSObj = attr->GetCurSObj();
+		if (!curSObj)
+			return;
+
+		// geo
+		auto geoCmpt = curSObj->GetComponent<CmptGeometry>();
+		if (!geoCmpt)
+			geoCmpt = CmptGeometry::New(curSObj, Disk::New());
+		if (!CastTo<Plane>(geoCmpt->primitive))
+			geoCmpt->primitive = Disk::New();
+
+		// transform
+		auto tsfmCmpt = curSObj->GetComponent<CmptTransform>();
+		if (!tsfmCmpt)
+			tsfmCmpt = CmptTransform::New(curSObj);
+		tsfmCmpt->SetScale({ light->radius, 1.0f, light->radius});
+
+		// material
+		auto matCmpt = curSObj->GetComponent<CmptMaterial>();
+		if (!matCmpt)
+			matCmpt = CmptMaterial::New(curSObj, BSDF_Emission::New());
+		auto emission = CastTo<BSDF_Emission>(matCmpt->material);
+		if (!emission)
+			matCmpt->material = emission = BSDF_Emission::New();
+		emission->color = light->color;
+		emission->intensity = light->intensity;
+
+		attr->SetSObj(curSObj);
+		attr->SetCurCmpt<CmptLight>();
+	});
 }
 
 void Attribute::ComponentVisitor::Visit(Ptr<CapsuleLight> light) {
@@ -619,6 +683,40 @@ void Attribute::ComponentVisitor::Visit(Ptr<CapsuleLight> light) {
 	grid->AddEditColor("- Color", light->color);
 	grid->AddEditVal("- Radius", light->radius, 0, 100, 1000);
 	grid->AddEditVal("- Height", light->height, 0, 100, 1000);
+
+	grid->AddButton("- Autocorrection", [this, light]() {
+		auto curSObj = attr->GetCurSObj();
+		if (!curSObj)
+			return;
+
+		// geo
+		auto geoCmpt = curSObj->GetComponent<CmptGeometry>();
+		if (!geoCmpt)
+			geoCmpt = CmptGeometry::New(curSObj, Capsule::New());
+		auto capsule = CastTo<Capsule>(geoCmpt->primitive);
+		if (!capsule)
+			geoCmpt->primitive = capsule = Capsule::New();
+		capsule->height = light->height / light->radius;
+
+		// transform
+		auto tsfmCmpt = curSObj->GetComponent<CmptTransform>();
+		if (!tsfmCmpt)
+			tsfmCmpt = CmptTransform::New(curSObj);
+		tsfmCmpt->SetScale(light->radius);
+
+		// material
+		auto matCmpt = curSObj->GetComponent<CmptMaterial>();
+		if (!matCmpt)
+			matCmpt = CmptMaterial::New(curSObj, BSDF_Emission::New());
+		auto emission = CastTo<BSDF_Emission>(matCmpt->material);
+		if (!emission)
+			matCmpt->material = emission = BSDF_Emission::New();
+		emission->color = light->color;
+		emission->intensity = light->intensity;
+
+		attr->SetSObj(curSObj);
+		attr->SetCurCmpt<CmptLight>();
+	});
 }
 
 // -------------- Attribute --------------

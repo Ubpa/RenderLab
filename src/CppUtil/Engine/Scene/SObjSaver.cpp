@@ -17,6 +17,7 @@ SObjSaver::SObjSaver() {
 	RegMemberFunc<Plane>(&SObjSaver::Visit);
 	RegMemberFunc<TriMesh>(&SObjSaver::Visit);
 	RegMemberFunc<Capsule>(&SObjSaver::Visit);
+	RegMemberFunc<Disk>(&SObjSaver::Visit);
 
 	RegMemberFunc<CmptLight>(&SObjSaver::Visit);
 	RegMemberFunc<AreaLight>(&SObjSaver::Visit);
@@ -179,6 +180,10 @@ void SObjSaver::Visit(Ptr<Capsule> capsule) {
 	NewEle(str::Capsule::type, [=]() {
 		NewEle(str::Capsule::height, capsule->height);
 	});
+}
+
+void SObjSaver::Visit(Ptr<Disk> disk) {
+	NewEle(str::Disk::type);
 }
 
 // ----------------- Light -----------------

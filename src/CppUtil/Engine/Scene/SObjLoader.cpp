@@ -173,6 +173,7 @@ static Ptr<Primitive> SObjLoader::Load(XMLElement * ele, Ptr<Primitive>*) {
 	Reg_Load_val<Ptr<Plane>>(funcMap, str::Plane::type, primitive);
 	Reg_Load_val<Ptr<TriMesh>>(funcMap, str::TriMesh::type, primitive);
 	Reg_Load_val<Ptr<Capsule>>(funcMap, str::Capsule::type, primitive);
+	Reg_Load_val<Ptr<Disk>>(funcMap, str::Disk::type, primitive);
 
 	LoadNode(ele, funcMap);
 
@@ -232,6 +233,11 @@ static Ptr<Capsule> SObjLoader::Load(XMLElement * ele, Ptr<Capsule>*) {
 	LoadNode(ele, funcMap);
 
 	return capsule;
+}
+
+template<>
+static Ptr<Disk> SObjLoader::Load(XMLElement * ele, Ptr<Disk>*) {
+	return Disk::New();
 }
 
 // ------------ Light ----------------
