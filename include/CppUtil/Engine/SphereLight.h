@@ -16,6 +16,11 @@ namespace CppUtil {
 			virtual ~SphereLight() = default;
 
 		public:
+			float Area() const { return 4 * Basic::Math::PI * radius * radius; }
+			const RGBf LuminancePower() const { return intensity * color; }
+			const RGBf Luminance() const { return LuminancePower() / (Area() * Basic::Math::PI); }
+
+		public:
 			// 采样 L 函数
 			// !!! p，wi 处于光源的坐标空间中
 			// @arg0  in，以 p 点来计算 distToLight 和 PD

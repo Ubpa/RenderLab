@@ -24,7 +24,7 @@ const RGBf DiskLight::Sample_L(const Point3 & p, Normalf & wi, float & distToLig
 	float area = Math::PI * radius * radius;
 	//float cosTheta = wi.y;
 	PD = sqDist / (area * (-wi.y));
-	return intensity * color;
+	return Luminance();
 }
 
 float DiskLight::PDF(const Point3 & p, const Normalf & wi) const {

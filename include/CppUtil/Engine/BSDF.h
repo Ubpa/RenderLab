@@ -25,6 +25,7 @@ namespace CppUtil {
 
 			virtual void ChangeNormal(const Point2 & texcoord, const Normalf & tangent, Normalf & normal) const { return; };
 
+			// Luminance
 			virtual const RGBf Emission(const Normalf & wo) const { return RGBf(0.f); }
 
 		protected:

@@ -13,7 +13,7 @@ struct AreaLight {
 	vec3 dir;       // 12   16
 	float height;   //  4   28
 	vec3 horizontal;// 12   32
-	vec3 L;         // 12   48
+	vec3 luminance; // 12   48
 };
 
 float AreaLight_IlluminanceFactor(AreaLight light, vec3 vertex, vec3 norm);

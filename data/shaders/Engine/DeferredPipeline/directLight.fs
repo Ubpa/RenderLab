@@ -220,7 +220,7 @@ void main() {
 		float visibility = PointLightVisibility(pos, -PtoL, i);
 
 		vec3 wi = normalize(PtoL);
-		float cosTheta = max(dot(wi, norm), 0);
+		float cosTheta = max(0, dot(wi, norm));
 
 		vec3 f, fd, fs;
 		BRDF(fd, fs, ID, norm, wo, wi, albedo, metallic, roughness);
@@ -270,20 +270,20 @@ void main() {
 	
 	// sphere light
 	for(int i=0; i < numSphereLight; i++) {
-		float illuminanceFactor = SphereLight_IlluminanceFactor(sphereLights[i], pos, norm);
+		vec3 illuminanceD = SphereLight_Illuminance(sphereLights[i], pos, norm);
 
 		vec3 MRP = SphereLight_MRP(sphereLights[i], pos, R);
 		vec3 PtoL = MRP - pos;
 		float dist2 = dot(PtoL, PtoL);
-		float attenuation = 1.0 / max(0.0001, dist2);
 		float dist = sqrt(dist2);
 		vec3 wi = PtoL / dist;
 		
 		vec3 fd, fs;
 		BRDF(fd, fs, ID, norm, wo, wi, albedo, metallic, roughness);
 		
-		float area = 4 * PI * sphereLights[i].radius * sphereLights[i].radius;
-		result += (illuminanceFactor * fd + attenuation * fs / (area * PI)) * sphereLights[i].L;
+		vec3 illuminanceS = sphereLights[i].luminance / max(0.0001, dist2);
+		float cosTheta = max(0, dot(wi, norm));
+		result += illuminanceD * fd + cosTheta * illuminanceS * fs;
 	}
 	
 	// disk light
@@ -325,8 +325,8 @@ void main() {
 		BRDF(fd, fs, ID, norm, wo, wi, albedo, metallic, roughness);
 		
 		float attenuation = step(0, dot(-wi, diskLights[i].dir)) / max(0.00001, dist2);
-		float area = PI * r2;
-		result += (illuminanceFactor * fd + attenuation * fs / (area * PI)) * diskLights[i].L;
+		float cosTheta = max(0, dot(wi, norm));
+		result += (illuminanceFactor * fd + cosTheta * attenuation * fs) * diskLights[i].L;
 	}
 	
 	// area light
@@ -338,13 +338,13 @@ void main() {
 		float dist2 = dot(PtoL, PtoL);
 		float dist = sqrt(dist2);
 		vec3 wi = PtoL / dist;
-		float attenuation = step(0, dot(-wi, areaLights[i].dir)) / max(0.0001, dist2);
 		
 		vec3 fd, fs;
 		BRDF(fd, fs, ID, norm, wo, wi, albedo, metallic, roughness);
-		
-		float area = areaLights[i].width * areaLights[i].height;
-		result += (illuminanceFactor * fd + attenuation * fs / (area * PI))* areaLights[i].L;
+
+		float attenuation = step(0, dot(-wi, areaLights[i].dir)) / max(0.0001, dist2);
+		float cosTheta = max(0, dot(wi, norm));
+		result += (illuminanceFactor * fd + cosTheta * attenuation * fs)* areaLights[i].luminance;
 	}
 	
 	// capsule light
@@ -368,13 +368,13 @@ void main() {
 				vec3 fd, fs;
 				BRDF(fd, fs, ID, norm, wo, wi, albedo, metallic, roughness);
 
-				result += illumFactor * fd * areaLight.L;
+				result += illumFactor * fd * areaLight.luminance;
 			}
 			{// sphere
 				vec3 sphereCenter = closestPointOnSegment(capsuleLights[i].p0, capsuleLights[i].p1, pos);
 				SphereLight sphereLight = SphereLight(sphereCenter, capsuleLights[i].L, capsuleLights[i].radius);
 
-				float illumFactor = SphereLight_IlluminanceFactor(sphereLight, pos, norm);
+				vec3 illuminance = SphereLight_Illuminance(sphereLight, pos, norm);
 
 				vec3 PtoL = sphereCenter - pos;
 				float dist2 = dot(PtoL, PtoL);
@@ -384,7 +384,7 @@ void main() {
 				vec3 fd, fs;
 				BRDF(fd, fs, ID, norm, wo, wi, albedo, metallic, roughness);
 
-				result += illumFactor * fd * sphereLight.L;
+				result += illuminance * fd;
 			}
 		}
 		{// specular
@@ -400,9 +400,8 @@ void main() {
 
 			float r2 = capsuleLights[i].radius * capsuleLights[i].radius;
 			vec3 axis = capsuleLights[i].p1 - capsuleLights[i].p0;
-			float height = sqrt(dot(axis, axis));
-			float area = PI * r2 + height * capsuleLights[i].radius;
-			result += attenuation * fs / (area * PI) * capsuleLights[i].L;
+			float cosTheta = max(0, dot(wi, norm));
+			result += cosTheta * attenuation * fs * capsuleLights[i].L;
 		}
 	}
 	

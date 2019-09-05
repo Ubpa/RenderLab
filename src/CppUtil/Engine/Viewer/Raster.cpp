@@ -242,8 +242,7 @@ void Raster::UpdateUBO_SphereLights() {
 
 		int base = 16 + 32 * sphereLightIdx;
 		glBufferSubData(GL_UNIFORM_BUFFER, base, 12, position.Data());
-		auto lightL = sphereLight->intensity * sphereLight->color;
-		glBufferSubData(GL_UNIFORM_BUFFER, base + 16, 12, lightL.Data());
+		glBufferSubData(GL_UNIFORM_BUFFER, base + 16, 12, sphereLight->Luminance().Data());
 		glBufferSubData(GL_UNIFORM_BUFFER, base + 28, 4, &sphereLight->radius);
 
 		sphereLightIdx++;
@@ -271,8 +270,7 @@ void Raster::UpdateUBO_DiskLights() {
 		int base = 16 + 48 * diskLightIdx;
 		glBufferSubData(GL_UNIFORM_BUFFER, base, 12, pos.Data());
 		glBufferSubData(GL_UNIFORM_BUFFER, base + 16, 12, dir.Data());
-		auto lightL = diskLight->intensity * diskLight->color;
-		glBufferSubData(GL_UNIFORM_BUFFER, base + 32, 12, lightL.Data());
+		glBufferSubData(GL_UNIFORM_BUFFER, base + 32, 12, diskLight->Luminance().Data());
 		glBufferSubData(GL_UNIFORM_BUFFER, base + 44, 4, &diskLight->radius);
 
 		diskLightIdx++;
@@ -304,8 +302,7 @@ void Raster::UpdateUBO_AreaLights() {
 		glBufferSubData(GL_UNIFORM_BUFFER, base + 16, 12, dir.Data());
 		glBufferSubData(GL_UNIFORM_BUFFER, base + 28, 4, &areaLight->height);
 		glBufferSubData(GL_UNIFORM_BUFFER, base + 32, 12, horizontal.Data());
-		auto lightL = areaLight->intensity * areaLight->color;
-		glBufferSubData(GL_UNIFORM_BUFFER, base + 48, 12, lightL.Data());
+		glBufferSubData(GL_UNIFORM_BUFFER, base + 48, 12, areaLight->Luminance().Data());
 
 		areaLightIdx++;
 	}
@@ -335,8 +332,7 @@ void Raster::UpdateUBO_CapsuleLights() {
 		glBufferSubData(GL_UNIFORM_BUFFER, base +  0, 12, p0.Data());
 		glBufferSubData(GL_UNIFORM_BUFFER, base + 12,  4, &capsuleLight->radius);
 		glBufferSubData(GL_UNIFORM_BUFFER, base + 16, 12, p1.Data());
-		auto lightL = capsuleLight->intensity * capsuleLight->color;
-		glBufferSubData(GL_UNIFORM_BUFFER, base + 32, 12, lightL.Data());
+		glBufferSubData(GL_UNIFORM_BUFFER, base + 32, 12, capsuleLight->Luminance().Data());
 
 		capsuleLightIdx++;
 	}

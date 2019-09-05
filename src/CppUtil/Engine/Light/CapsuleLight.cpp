@@ -40,7 +40,7 @@ const RGBf CapsuleLight::Sample_L(const Point3 & p, Normalf & wi, float & distTo
 	float cosTheta = (-wi).Dot(normal);
 	PD = dist2 / (wholeArea * Math::Abs(cosTheta));
 
-	return cosTheta < 0 ? RGBf(0) : intensity * color;
+	return cosTheta < 0 ? RGBf(0) : Luminance();
 }
 
 float CapsuleLight::PDF(const Point3 & p, const Normalf & wi) const {

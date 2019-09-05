@@ -28,7 +28,7 @@ const RGBf SphereLight::Sample_L(const Point3 & p, Normalf & wi, float & distToL
 	float area = 4.f * Math::PI * radius * radius;
 	PD = dist2 / (area * Math::Abs(cosTheta));
 
-	return cosTheta < 0 ? RGBf(0) : intensity * color;
+	return cosTheta < 0 ? RGBf(0) : Luminance();
 }
 
 float SphereLight::PDF(const Point3 & p, const Normalf & wi) const {

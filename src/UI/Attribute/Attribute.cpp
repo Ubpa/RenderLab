@@ -561,7 +561,7 @@ void Attribute::ComponentVisitor::Visit(Ptr<AreaLight> light) {
 		if (!emission)
 			matCmpt->material = emission = BSDF_Emission::New();
 		emission->color = light->color;
-		emission->intensity = light->intensity;
+		emission->intensity = light->Luminance().Illumination() / light->color.Illumination();
 
 		attr->SetSObj(curSObj);
 		attr->SetCurCmpt<CmptLight>();
@@ -601,9 +601,9 @@ void Attribute::ComponentVisitor::Visit(Ptr<InfiniteAreaLight> light) {
 
 void Attribute::ComponentVisitor::Visit(Ptr<SphereLight> light) {
 	auto grid = GetGrid(attr->componentType2item[typeid(CmptLight)]);
-	grid->AddEditVal("- Intensity", light->intensity, 0, 20, 2000);
+	grid->AddEditVal("- Intensity", light->intensity, 0, 100, 1000);
 	grid->AddEditColor("- Color", light->color);
-	grid->AddEditVal("- Radius", light->radius, 0.0, 100.0, 1000);
+	grid->AddEditVal("- Radius", light->radius, 0.01, 100.0, 1000);
 
 	grid->AddButton("- Autocorrection", [this, light]() {
 		auto curSObj = attr->GetCurSObj();
@@ -631,7 +631,7 @@ void Attribute::ComponentVisitor::Visit(Ptr<SphereLight> light) {
 		if (!emission)
 			matCmpt->material = emission = BSDF_Emission::New();
 		emission->color = light->color;
-		emission->intensity = light->intensity;
+		emission->intensity = light->Luminance().Illumination() / light->color.Illumination();
 
 		attr->SetSObj(curSObj);
 		attr->SetCurCmpt<CmptLight>();
@@ -640,7 +640,7 @@ void Attribute::ComponentVisitor::Visit(Ptr<SphereLight> light) {
 
 void Attribute::ComponentVisitor::Visit(Ptr<DiskLight> light) {
 	auto grid = GetGrid(attr->componentType2item[typeid(CmptLight)]);
-	grid->AddEditVal("- Intensity", light->intensity, 0, 20, 2000);
+	grid->AddEditVal("- Intensity", light->intensity, 0, 100, 1000);
 	grid->AddEditColor("- Color", light->color);
 	grid->AddEditVal("- Radius", light->radius, 0, 100, 1000);
 
@@ -670,7 +670,7 @@ void Attribute::ComponentVisitor::Visit(Ptr<DiskLight> light) {
 		if (!emission)
 			matCmpt->material = emission = BSDF_Emission::New();
 		emission->color = light->color;
-		emission->intensity = light->intensity;
+		emission->intensity = light->Luminance().Illumination() / light->color.Illumination();
 
 		attr->SetSObj(curSObj);
 		attr->SetCurCmpt<CmptLight>();
@@ -679,7 +679,7 @@ void Attribute::ComponentVisitor::Visit(Ptr<DiskLight> light) {
 
 void Attribute::ComponentVisitor::Visit(Ptr<CapsuleLight> light) {
 	auto grid = GetGrid(attr->componentType2item[typeid(CmptLight)]);
-	grid->AddEditVal("- Intensity", light->intensity, 0, 20, 2000);
+	grid->AddEditVal("- Intensity", light->intensity, 0, 100, 1000);
 	grid->AddEditColor("- Color", light->color);
 	grid->AddEditVal("- Radius", light->radius, 0, 100, 1000);
 	grid->AddEditVal("- Height", light->height, 0, 100, 1000);
@@ -712,7 +712,7 @@ void Attribute::ComponentVisitor::Visit(Ptr<CapsuleLight> light) {
 		if (!emission)
 			matCmpt->material = emission = BSDF_Emission::New();
 		emission->color = light->color;
-		emission->intensity = light->intensity;
+		emission->intensity = light->Luminance().Illumination() / light->color.Illumination();
 
 		attr->SetSObj(curSObj);
 		attr->SetCurCmpt<CmptLight>();

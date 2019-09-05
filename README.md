@@ -170,6 +170,7 @@ Optix: 6.0
 - [ ] 重新架构 Raster
 - [ ] 重构序列化
 - [ ] Bloom
+- [ ] 重构 MicrofacetDistribution
 
 ### Unimportant
 

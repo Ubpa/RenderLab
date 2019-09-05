@@ -23,7 +23,7 @@ const RGBf AreaLight::Sample_L(const Point3 & p, Normalf & wi, float & distToLig
 	const float area = width * height;
 	//float cosTheta = wi.y;
 	PD = sqDist / (area * (-wi.y));
-	return intensity * color;
+	return Luminance();
 }
 
 float AreaLight::PDF(const Point3 & p, const Normalf & wi) const {

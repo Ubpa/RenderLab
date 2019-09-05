@@ -6,16 +6,17 @@
 // 32
 struct SphereLight {
 	vec3 position;  // 12    0
-	vec3 L;         // 12   16
+	vec3 luminance; // 12   16
 	float radius;   //  4   28
 };
 
-float SphereLight_IlluminanceFactor(SphereLight light, vec3 vertex, vec3 norm);
+vec3 SphereLight_Illuminance(SphereLight light, vec3 vertex, vec3 norm);
+vec3 SphereLight_LuminancePower(SphereLight light);
 vec3 SphereLight_MRP(SphereLight light, vec3 vertex, vec3 R);
 
 // ------------------------------ й╣ож ------------------------------
 
-float SphereLight_IlluminanceFactor(SphereLight light, vec3 vertex, vec3 norm) {
+vec3 SphereLight_Illuminance(SphereLight light, vec3 vertex, vec3 norm) {
 	vec3 diff = light.position - vertex;
 	float dist = length(diff);
 	vec3 wi = diff / dist;
@@ -39,7 +40,11 @@ float SphereLight_IlluminanceFactor(SphereLight light, vec3 vertex, vec3 norm) {
 	}
 	illuminanceFactor *= PI;
 	illuminanceFactor = max(0.0, illuminanceFactor);
-	return illuminanceFactor;
+	return illuminanceFactor * light.luminance;
+}
+
+vec3 SphereLight_LuminancePower(SphereLight light) {
+	return FOUR_PI2 * light.radius * light.radius * light.luminance;
 }
 
 vec3 SphereLight_MRP(SphereLight light, vec3 vertex, vec3 R) {
