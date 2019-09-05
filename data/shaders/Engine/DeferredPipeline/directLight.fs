@@ -4,12 +4,14 @@
 #include "../BRDF/Frostbite.h"
 #include "../BRDF/Diffuse.h"
 #include "../../Math/intersect.h"
+#include "../../Math/Segment.h"
 
 #include "../Light/AreaLight.h"
 #include "../Light/SphereLight.h"
 #include "../Light/CapsuleLight.h"
 #include "../Light/PointLight.h"
 #include "../Light/SpotLight.h"
+#include "../Light/DiskLight.h"
 
 // ----------------- 输入输出
 
@@ -44,14 +46,6 @@ struct DirectionalLight{
 	vec3 L;         // 12   0
 	vec3 dir;       // 12   16
 	mat4 ProjView;  // 64   32
-};
-
-// 48
-struct DiskLight {
-    vec3 position;  // 12    0
-    vec3 dir;       // 12   32
-    vec3 L;         // 12   16
-    float radius;   //  4   44
 };
 
 // 160
@@ -167,22 +161,6 @@ float PerpDepth(float linearDepth, float near, float far) {
 
 float DiskIlluminanceFactor(vec3 wi, vec3 norm, float dist, float radius, vec3 forward);
 
-// Return the closest point on the line ( without limit )
-vec3 closestPointOnLine ( vec3 a, vec3 b, vec3 c)
-{
-    vec3 ab = b - a;
-    float t = dot(c - a, ab) / dot (ab , ab);
-    return a + t * ab;
-}
-
-// Return the closest point on the segment ( with limit )
-vec3 closestPointOnSegment ( vec3 a, vec3 b, vec3 c)
-{
-    vec3 ab = b - a;
-    float t = dot(c - a, ab) / dot(ab , ab);
-    return a + saturate(t) * ab;
-}
-
 // ----------------- 主函数
 
 void main() {
@@ -288,38 +266,13 @@ void main() {
 	
 	// disk light
 	for(int i=0; i<numDiskLight; i++) {
-		vec3 PtoL = diskLights[i].position - pos;
-		
-		// closest point
-		// d0 : light dir
-		// d1 : wi
-		// d2 : R
-		// d3 : a*d1 + b*d2
-		// dot(d3, d0) = 0 --> b = - dot(d1, d0) * a / dot(d2, d0) = k * a
-		//                 --> d3 = a * (d1 + k*d2)
-		// dot(d3, d3) = r2 --> a2 = r2 / (d1 + k*d2)^2
-		Line lineR = Line(pos, R);
-		Plane planeDisk = Plane(diskLights[i].position, diskLights[i].dir);
-		vec3 intersectP = Intersect(lineR, planeDisk);
+		float illuminanceFactor = DiskLight_IlluminanceFactor(diskLights[i], pos, norm);
 
-		vec3 d0 = diskLights[i].dir;
-		vec3 d1 = -normalize(PtoL);
-		vec3 d2 = R;
-		vec3 offset = intersectP - diskLights[i].position;
-		float r2 = diskLights[i].radius * diskLights[i].radius;
-		float curR2 = saturate(dot(offset, offset) / r2) * r2;
-		float k = - dot(d1, d0) / dot(d2, d0);
-		vec3 d1kd2 = d1 + k * d2;
-		float a2 = curR2 / dot(d1kd2, d1kd2);
-		float a = sqrt(a2);
-		vec3 d3 = a * d1kd2;
-		PtoL += d3;
-		
+		vec3 MRP = DiskLight_MRP(diskLights[i], pos, R);
+		vec3 PtoL = MRP - pos;
 		float dist2 = dot(PtoL, PtoL);
 		float dist = sqrt(dist2);
-
 		vec3 wi = PtoL / dist;
-		float illuminanceFactor = DiskIlluminanceFactor(wi, norm, dist, diskLights[i].radius, diskLights[i].dir);
 
 		vec3 fd, fs;
 		BRDF(fd, fs, ID, norm, wo, wi, albedo, metallic, roughness);
@@ -351,7 +304,7 @@ void main() {
 	for(int i=0; i<numCapsuleLight; i++) {
 		{// diffuse
 			{// area
-				vec3 forward = normalize(closestPointOnLine(capsuleLights[i].p0, capsuleLights[i].p1, pos) - pos);
+				vec3 forward = normalize(Line_ClosestPoint(Line_2P(capsuleLights[i].p0, capsuleLights[i].p1), pos) - pos);
 				vec3 areaCenter = (capsuleLights[i].p0 + capsuleLights[i].p1) / 2;
 				vec3 left = capsuleLights[i].p0 - capsuleLights[i].p1;
 				float height = length(left);
@@ -371,7 +324,7 @@ void main() {
 				result += illumFactor * fd * areaLight.luminance;
 			}
 			{// sphere
-				vec3 sphereCenter = closestPointOnSegment(capsuleLights[i].p0, capsuleLights[i].p1, pos);
+				vec3 sphereCenter = Segment_ClosestPoint(Segment(capsuleLights[i].p0, capsuleLights[i].p1), pos);
 				SphereLight sphereLight = SphereLight(sphereCenter, capsuleLights[i].L, capsuleLights[i].radius);
 
 				vec3 illuminance = SphereLight_Illuminance(sphereLight, pos, norm);
