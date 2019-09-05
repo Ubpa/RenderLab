@@ -10,6 +10,8 @@
 float SchlickGGX_D(vec3 norm, vec3 h, float roughness);
 float SchlickGGX_G1(vec3 norm, vec3 w, float roughness);
 float SchlickGGX_SmithG(vec3 norm, vec3 wo, vec3 wi, float roughness);
+// Disney : reduce "hotness" for analytic light sources
+float SchlickGGX_SmithG_Analytic(vec3 norm, vec3 wo, vec3 wi, float roughness);
 vec3 SchlickGGX_Sample(vec2 Xi, vec3 norm, float roughness);
 
 vec3 MetalWorkflowF0(vec3 albedo, float metallic);
@@ -34,14 +36,20 @@ float SchlickGGX_D(vec3 norm, vec3 h, float roughness){
 }
 
 float SchlickGGX_G1(vec3 norm, vec3 w, float roughness) {
-	float k = (roughness+1) * (roughness+1) / 8;
+	float alpha = roughness * roughness;
+	float k = alpha / 2; // fix smith model ggx
 	
-	float NoW = max(0.f, dot(norm, w));
+	float NoW = max(0, dot(norm, w));
 	return NoW / (NoW * (1 - k) + k);
 }
 
 float SchlickGGX_SmithG(vec3 norm, vec3 wo, vec3 wi, float roughness){
 	return SchlickGGX_G1(norm, wo, roughness) * SchlickGGX_G1(norm, wi, roughness);
+}
+
+float SchlickGGX_SmithG_Analytic(vec3 norm, vec3 wo, vec3 wi, float roughness) {
+	float remappedRoughness = (roughness + 1) * 0.5;
+	return SchlickGGX_SmithG(norm, wo, wi, remappedRoughness);
 }
 
 vec3 SchlickGGX_Sample(vec2 Xi, vec3 norm, float roughness) {

@@ -14,7 +14,7 @@ void BRDF_MetalWorkflow(out vec3 fd, out vec3 fs, vec3 norm, vec3 wo, vec3 wi, v
 	vec3 wh = normalize(wo + wi);
 	
 	float D = SchlickGGX_D(norm, wh, roughness);
-	float G = SchlickGGX_SmithG(norm, wo, wi, roughness);
+	float G = SchlickGGX_SmithG_Analytic(norm, wo, wi, roughness);
 	vec3 F = SchlickFr(wo, wh, albedo, metallic);
 	
 	vec3 kS = F;

@@ -26,7 +26,7 @@ void BRDF_Frostbite(out vec3 fd, out vec3 fs, vec3 norm, vec3 wo, vec3 wi, vec3 
 	vec3 wh = normalize(wo + wi);
 	
 	float D = SchlickGGX_D(norm, wh, roughness);
-	float G = SchlickGGX_SmithG(norm, wo, wi, roughness);
+	float G = SchlickGGX_SmithG_Analytic(norm, wo, wi, roughness);
 	vec3 F = SchlickFr(wo, wh, albedo, metallic);
 	
 	fd = (1 - metallic) * albedo * INV_PI * DisneyDiffuseFr(norm, wo, wi, roughness);

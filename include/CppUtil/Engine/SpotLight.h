@@ -23,6 +23,9 @@ namespace CppUtil {
 			virtual ~SpotLight() = default;
 
 		public:
+			const RGBf IlluminancePower() const { return intensity * color; }
+
+		public:
 			// 采样 L 函数
 			// !!! p，wi 处于光源的坐标空间中
 			// @arg0  in，以 p 点来计算 distToLight 和 PD

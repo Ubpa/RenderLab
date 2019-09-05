@@ -105,7 +105,7 @@ bool Shader::IsValid() const { return valid; }
 bool Shader::Use() const{
 	if (!valid) {
 		printf("ERROR::Shader::Use:\n"
-			"\t""use a invalid shader\n");
+			"\t""use an invalid shader\n");
 		return false;
 	}
 	

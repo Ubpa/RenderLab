@@ -14,10 +14,21 @@
 
 float saturate(float x);
 
+// 0->R, 1->0
+float Fwin(float x, float R);
+
 // ------------------------------ й╣ож ------------------------------
 
 float saturate(float x) {
 	return clamp(x, 0, 1);
+}
+
+float Fwin(float d, float radius) {
+	float ratio = d / radius;
+	float ratio2 = ratio * ratio;
+	float ratio4 = ratio2 * ratio2;
+	float falloff = max(0, 1 - ratio4);
+	return falloff * falloff;
 }
 
 #endif // !MATH_BASIC_H

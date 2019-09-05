@@ -21,6 +21,8 @@ namespace CppUtil {
 		class Sphere;
 		class Plane;
 		class TriMesh;
+		class Disk;
+		class Capsule;
 
 		class CmptLight;
 
@@ -52,6 +54,8 @@ namespace CppUtil {
 			void Visit(Basic::Ptr<Sphere> sphere);
 			void Visit(Basic::Ptr<Plane> plane);
 			void Visit(Basic::Ptr<TriMesh> mesh);
+			void Visit(Basic::Ptr<Disk> disk);
+			void Visit(Basic::Ptr<Capsule> capsule);
 
 		private:
 			QT::RawAPI_OGLW * pOGLW;

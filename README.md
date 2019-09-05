@@ -160,6 +160,7 @@ Optix: 6.0
 - [x] GLSL include
 - [x] 光源与其他 Component 统一
 - [ ] GLSL 库函数
+- [ ] 重构 OpenGL 库（资源管理）
 - [ ] 拷贝粘贴，模型、图像等复用
 - [ ] CSM
 - [ ] 封装 UBO，改进 FBO

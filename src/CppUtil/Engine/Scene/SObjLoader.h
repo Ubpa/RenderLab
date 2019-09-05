@@ -33,12 +33,12 @@ namespace CppUtil {
 
 		private:
 			template<typename T>
-			static const T To(const Key & key, T * useless_arg = nullptr) {
+			static const T To(const Key & key) {
 				return static_cast<T>(To<T::valNum, typename T::valType>(key));
 			}
 
 			template<int N, typename T>
-			static const Val<N, T> To(const Key & key, Val<N, T> * useless_arg = nullptr) {
+			static const Val<N, T> To(const Key & key) {
 				assert(N == 2 || N == 3 || N == 4);
 				T arr[N];
 				size_t begin = 0;
@@ -64,7 +64,7 @@ namespace CppUtil {
 
 			// 将 ele 视为 ValImplType 载入
 			template<typename T>
-			static T Load(EleP ele, T * useless = nullptr);
+			static T Load(EleP ele);
 
 		private:
 			// 将 ele 的孩子交由 FuncMap 解析
@@ -84,7 +84,7 @@ namespace CppUtil {
 			template<typename T>
 			static void Reg_Text_Func(FuncMap & funcMap, Key key, const Func<const T &> & func) {
 				Reg_Lambda(funcMap, key, [=](EleP ele) {
-					const auto rst = To<T>(ele->GetText(), (T*)(nullptr));
+					const auto rst = To<T>(ele->GetText());
 					func(rst);
 				});
 			}
@@ -134,7 +134,7 @@ namespace CppUtil {
 
 			// 将 name == key 的 ele 传给 Load<ImplT>，结果复制给 ptrT
 			template<typename ImplT, typename T>
-			static void Reg_Load_val(FuncMap & funcMap, Key key, T & val, ImplT * useless_arg = nullptr) {
+			static void Reg_Load_val(FuncMap & funcMap, Key key, T & val) {
 				Reg_Load_Lambda(funcMap, key, [&](const ImplT & valFormLoad) {
 					val = valFormLoad;
 				});
@@ -142,7 +142,7 @@ namespace CppUtil {
 
 			// 将 ele 视为 ValImpl 载入，并调用一个设置函数
 			template<typename ValImplType, typename ValBaseType, typename ObjType, typename RetType>
-			static void Reg_Load_setVal(FuncMap & funcMap, Key key, Basic::Ptr<ObjType> obj, RetType(ObjType::*setVal)(Basic::Ptr<ValBaseType>), ValImplType * useless = nullptr) {
+			static void Reg_Load_setVal(FuncMap & funcMap, Key key, Basic::Ptr<ObjType> obj, RetType(ObjType::*setVal)(Basic::Ptr<ValBaseType>)) {
 				Reg_Load_Lambda(funcMap, key, [=](const Basic::Ptr<ValImplType> & ptr) {
 					((*obj).*setVal)(ptr);
 				});

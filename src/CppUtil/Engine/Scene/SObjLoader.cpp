@@ -11,22 +11,22 @@ using namespace tinyxml2;
 using namespace std;
 
 template<>
-const float SObjLoader::To(const Key & key, float *) {
+const float SObjLoader::To(const Key & key) {
 	return static_cast<float>(atof(key.c_str()));
 }
 
 template<>
-const int SObjLoader::To(const Key & key, int *) {
+const int SObjLoader::To(const Key & key) {
 	return atoi(key.c_str());
 }
 
 template<>
-const string SObjLoader::To(const Key & key, string *) {
+const string SObjLoader::To(const Key & key) {
 	return key;
 }
 
 template<>
-const Ptr<Image> SObjLoader::To(const Key & key, Ptr<Image> *) {
+const Ptr<Image> SObjLoader::To(const Key & key) {
 	return Image::New(key);
 }
 
@@ -41,7 +41,7 @@ void SObjLoader::LoadNode(EleP ele, const FuncMap & funcMap) {
 }
 
 template<>
-static Ptr<Image> SObjLoader::Load(EleP ele, Ptr<Image>*) {
+static Ptr<Image> SObjLoader::Load(EleP ele) {
 	FuncMap funcMap;
 
 	Ptr<Image> img = nullptr;
@@ -56,7 +56,7 @@ static Ptr<Image> SObjLoader::Load(EleP ele, Ptr<Image>*) {
 // ------------ SObj ----------------
 
 template<>
-static Ptr<SObj> SObjLoader::Load(XMLElement * ele, Ptr<SObj>*) {
+static Ptr<SObj> SObjLoader::Load(XMLElement * ele) {
 	if (ele == nullptr)
 		return nullptr;
 
@@ -91,7 +91,7 @@ Ptr<SObj> SObjLoader::Load(const string & path) {
 }
 
 template<>
-static vector<Ptr<Component>> SObjLoader::Load(XMLElement * ele, vector<Ptr<Component>>*) {
+static vector<Ptr<Component>> SObjLoader::Load(XMLElement * ele) {
 	FuncMap funcMap;
 
 	vector<Ptr<Component>> cmpts;
@@ -118,7 +118,7 @@ static vector<Ptr<Component>> SObjLoader::Load(XMLElement * ele, vector<Ptr<Comp
 }
 
 template<>
-static vector<Ptr<SObj>> SObjLoader::Load(XMLElement * ele, vector<Ptr<SObj>>*) {
+static vector<Ptr<SObj>> SObjLoader::Load(XMLElement * ele) {
 	vector<Ptr<SObj>> children;
 
 	FuncMap funcMap;
@@ -135,7 +135,7 @@ static vector<Ptr<SObj>> SObjLoader::Load(XMLElement * ele, vector<Ptr<SObj>>*) 
 // ------------ Camera ----------------
 
 template<>
-static Ptr<CmptCamera> SObjLoader::Load(XMLElement * ele, Ptr<CmptCamera>*){
+static Ptr<CmptCamera> SObjLoader::Load(XMLElement * ele){
 	auto cmpt = CmptCamera::New(nullptr);
 
 	FuncMap funcMap;
@@ -152,7 +152,7 @@ static Ptr<CmptCamera> SObjLoader::Load(XMLElement * ele, Ptr<CmptCamera>*){
 // ------------ Geometry ----------------
 
 template<>
-static Ptr<CmptGeometry> SObjLoader::Load(XMLElement * ele, Ptr<CmptGeometry>*){
+static Ptr<CmptGeometry> SObjLoader::Load(XMLElement * ele){
 	auto geometry = CmptGeometry::New(nullptr, nullptr);
 
 	FuncMap funcMap;
@@ -164,7 +164,7 @@ static Ptr<CmptGeometry> SObjLoader::Load(XMLElement * ele, Ptr<CmptGeometry>*){
 }
 
 template<>
-static Ptr<Primitive> SObjLoader::Load(XMLElement * ele, Ptr<Primitive>*) {
+static Ptr<Primitive> SObjLoader::Load(XMLElement * ele) {
 	Ptr<Primitive> primitive = nullptr;
 
 	FuncMap funcMap;
@@ -181,17 +181,17 @@ static Ptr<Primitive> SObjLoader::Load(XMLElement * ele, Ptr<Primitive>*) {
 }
 
 template<>
-static Ptr<Sphere> SObjLoader::Load(XMLElement * ele, Ptr<Sphere> *) {
+static Ptr<Sphere> SObjLoader::Load(XMLElement * ele) {
 	return Sphere::New();
 }
 
 template<>
-static Ptr<Plane> SObjLoader::Load(XMLElement * ele, Ptr<Plane>*) {
+static Ptr<Plane> SObjLoader::Load(XMLElement * ele) {
 	return Plane::New();
 }
 
 template<>
-static Ptr<TriMesh> SObjLoader::Load(XMLElement * ele, Ptr<TriMesh>*) {
+static Ptr<TriMesh> SObjLoader::Load(XMLElement * ele) {
 	Ptr<TriMesh> triMesh;
 	FuncMap funcMap;
 	funcMap[str::TriMesh::ENUM_TYPE::INVALID] = [&](XMLElement * ele) {
@@ -224,7 +224,7 @@ static Ptr<TriMesh> SObjLoader::Load(XMLElement * ele, Ptr<TriMesh>*) {
 }
 
 template<>
-static Ptr<Capsule> SObjLoader::Load(XMLElement * ele, Ptr<Capsule>*) {
+static Ptr<Capsule> SObjLoader::Load(XMLElement * ele) {
 	auto capsule = Capsule::New();
 
 	FuncMap funcMap;
@@ -236,14 +236,14 @@ static Ptr<Capsule> SObjLoader::Load(XMLElement * ele, Ptr<Capsule>*) {
 }
 
 template<>
-static Ptr<Disk> SObjLoader::Load(XMLElement * ele, Ptr<Disk>*) {
+static Ptr<Disk> SObjLoader::Load(XMLElement * ele) {
 	return Disk::New();
 }
 
 // ------------ Light ----------------
 
 template<>
-static Ptr<CmptLight> SObjLoader::Load(XMLElement * ele, Ptr<CmptLight>*){
+static Ptr<CmptLight> SObjLoader::Load(XMLElement * ele){
 	auto cmpt = CmptLight::New(nullptr, nullptr);
 
 	FuncMap funcMap;
@@ -255,7 +255,7 @@ static Ptr<CmptLight> SObjLoader::Load(XMLElement * ele, Ptr<CmptLight>*){
 }
 
 template<>
-static Ptr<Light> SObjLoader::Load(XMLElement * ele, Ptr<Light>*) {
+static Ptr<Light> SObjLoader::Load(XMLElement * ele) {
 	Ptr<Light> light = nullptr;
 
 	FuncMap funcMap;
@@ -275,7 +275,7 @@ static Ptr<Light> SObjLoader::Load(XMLElement * ele, Ptr<Light>*) {
 }
 
 template<>
-static Ptr<AreaLight> SObjLoader::Load(XMLElement * ele, Ptr<AreaLight>*) {
+static Ptr<AreaLight> SObjLoader::Load(XMLElement * ele) {
 	auto areaLight = AreaLight::New();
 
 	FuncMap funcMap;
@@ -290,7 +290,7 @@ static Ptr<AreaLight> SObjLoader::Load(XMLElement * ele, Ptr<AreaLight>*) {
 }
 
 template<>
-static Ptr<PointLight> SObjLoader::Load(XMLElement * ele, Ptr<PointLight>*) {
+static Ptr<PointLight> SObjLoader::Load(XMLElement * ele) {
 	auto pointLight = PointLight::New();
 
 	FuncMap funcMap;
@@ -304,7 +304,7 @@ static Ptr<PointLight> SObjLoader::Load(XMLElement * ele, Ptr<PointLight>*) {
 }
 
 template<>
-static Ptr<DirectionalLight> SObjLoader::Load(XMLElement * ele, Ptr<DirectionalLight>*) {
+static Ptr<DirectionalLight> SObjLoader::Load(XMLElement * ele) {
 	auto directionalLight = DirectionalLight::New();
 
 	FuncMap funcMap;
@@ -317,7 +317,7 @@ static Ptr<DirectionalLight> SObjLoader::Load(XMLElement * ele, Ptr<DirectionalL
 }
 
 template<>
-static Ptr<SpotLight> SObjLoader::Load(XMLElement * ele, Ptr<SpotLight>*) {
+static Ptr<SpotLight> SObjLoader::Load(XMLElement * ele) {
 	auto spotLight = SpotLight::New();
 
 	FuncMap funcMap;
@@ -333,7 +333,7 @@ static Ptr<SpotLight> SObjLoader::Load(XMLElement * ele, Ptr<SpotLight>*) {
 }
 
 template<>
-static Ptr<InfiniteAreaLight> SObjLoader::Load(XMLElement * ele, Ptr<InfiniteAreaLight>*) {
+static Ptr<InfiniteAreaLight> SObjLoader::Load(XMLElement * ele) {
 	auto infiniteAreaLight = InfiniteAreaLight::New(nullptr);
 
 	FuncMap funcMap;
@@ -347,7 +347,7 @@ static Ptr<InfiniteAreaLight> SObjLoader::Load(XMLElement * ele, Ptr<InfiniteAre
 }
 
 template<>
-static Ptr<SphereLight> SObjLoader::Load(XMLElement * ele, Ptr<SphereLight>*) {
+static Ptr<SphereLight> SObjLoader::Load(XMLElement * ele) {
 	auto sphereLight = SphereLight::New();
 
 	FuncMap funcMap;
@@ -361,7 +361,7 @@ static Ptr<SphereLight> SObjLoader::Load(XMLElement * ele, Ptr<SphereLight>*) {
 }
 
 template<>
-static Ptr<DiskLight> SObjLoader::Load(XMLElement * ele, Ptr<DiskLight>*) {
+static Ptr<DiskLight> SObjLoader::Load(XMLElement * ele) {
 	auto diskLight = DiskLight::New();
 
 	FuncMap funcMap;
@@ -375,7 +375,7 @@ static Ptr<DiskLight> SObjLoader::Load(XMLElement * ele, Ptr<DiskLight>*) {
 }
 
 template<>
-static Ptr<CapsuleLight> SObjLoader::Load(XMLElement * ele, Ptr<CapsuleLight>*) {
+static Ptr<CapsuleLight> SObjLoader::Load(XMLElement * ele) {
 	auto capsuleLight = CapsuleLight::New();
 
 	FuncMap funcMap;
@@ -392,7 +392,7 @@ static Ptr<CapsuleLight> SObjLoader::Load(XMLElement * ele, Ptr<CapsuleLight>*) 
 // ------------ Material ----------------
 
 template<>
-static Ptr<CmptMaterial> SObjLoader::Load(XMLElement * ele, Ptr<CmptMaterial>*){
+static Ptr<CmptMaterial> SObjLoader::Load(XMLElement * ele){
 	auto cmpt = CmptMaterial::New(nullptr, nullptr);
 
 	FuncMap funcMap;
@@ -404,7 +404,7 @@ static Ptr<CmptMaterial> SObjLoader::Load(XMLElement * ele, Ptr<CmptMaterial>*){
 }
 
 template<>
-static Ptr<Material> SObjLoader::Load(XMLElement * ele, Ptr<Material>*) {
+static Ptr<Material> SObjLoader::Load(XMLElement * ele) {
 	Ptr<Material> material = nullptr;
 
 	FuncMap funcMap;
@@ -425,7 +425,7 @@ static Ptr<Material> SObjLoader::Load(XMLElement * ele, Ptr<Material>*) {
 }
 
 template<>
-static Ptr<BSDF_CookTorrance> SObjLoader::Load(XMLElement * ele, Ptr<BSDF_CookTorrance>*) {
+static Ptr<BSDF_CookTorrance> SObjLoader::Load(XMLElement * ele) {
 	auto bsdf = BSDF_CookTorrance::New();
 
 	FuncMap funcMap;
@@ -441,7 +441,7 @@ static Ptr<BSDF_CookTorrance> SObjLoader::Load(XMLElement * ele, Ptr<BSDF_CookTo
 }
 
 template<>
-static Ptr<BSDF_Diffuse> SObjLoader::Load(XMLElement * ele, Ptr<BSDF_Diffuse>*){
+static Ptr<BSDF_Diffuse> SObjLoader::Load(XMLElement * ele){
 	auto bsdf = BSDF_Diffuse::New();
 
 	FuncMap funcMap;
@@ -455,7 +455,7 @@ static Ptr<BSDF_Diffuse> SObjLoader::Load(XMLElement * ele, Ptr<BSDF_Diffuse>*){
 }
 
 template<>
-static Ptr<BSDF_Emission> SObjLoader::Load(XMLElement * ele, Ptr<BSDF_Emission>*) {
+static Ptr<BSDF_Emission> SObjLoader::Load(XMLElement * ele) {
 	auto bsdf = BSDF_Emission::New();
 
 	FuncMap funcMap;
@@ -469,7 +469,7 @@ static Ptr<BSDF_Emission> SObjLoader::Load(XMLElement * ele, Ptr<BSDF_Emission>*
 }
 
 template<>
-static Ptr<BSDF_Glass> SObjLoader::Load(XMLElement * ele, Ptr<BSDF_Glass>*) {
+static Ptr<BSDF_Glass> SObjLoader::Load(XMLElement * ele) {
 	auto bsdf = BSDF_Glass::New();
 
 	FuncMap funcMap;
@@ -484,7 +484,7 @@ static Ptr<BSDF_Glass> SObjLoader::Load(XMLElement * ele, Ptr<BSDF_Glass>*) {
 }
 
 template<>
-static Ptr<BSDF_MetalWorkflow> SObjLoader::Load(XMLElement * ele, Ptr<BSDF_MetalWorkflow>*) {
+static Ptr<BSDF_MetalWorkflow> SObjLoader::Load(XMLElement * ele) {
 	auto bsdf = BSDF_MetalWorkflow::New();
 
 	FuncMap funcMap;
@@ -504,7 +504,7 @@ static Ptr<BSDF_MetalWorkflow> SObjLoader::Load(XMLElement * ele, Ptr<BSDF_Metal
 }
 
 template<>
-static Ptr<BSDF_Mirror> SObjLoader::Load(XMLElement * ele, Ptr<BSDF_Mirror>*) {
+static Ptr<BSDF_Mirror> SObjLoader::Load(XMLElement * ele) {
 	auto bsdf = BSDF_Mirror::New();
 
 	FuncMap funcMap;
@@ -517,7 +517,7 @@ static Ptr<BSDF_Mirror> SObjLoader::Load(XMLElement * ele, Ptr<BSDF_Mirror>*) {
 }
 
 template<>
-static Ptr<BSDF_FrostedGlass> SObjLoader::Load(XMLElement * ele, Ptr<BSDF_FrostedGlass>*) {
+static Ptr<BSDF_FrostedGlass> SObjLoader::Load(XMLElement * ele) {
 	auto bsdf = BSDF_FrostedGlass::New();
 
 	FuncMap funcMap;
@@ -536,7 +536,7 @@ static Ptr<BSDF_FrostedGlass> SObjLoader::Load(XMLElement * ele, Ptr<BSDF_Froste
 }
 
 template<>
-static Ptr<Gooch> SObjLoader::Load(XMLElement * ele, Ptr<Gooch>*) {
+static Ptr<Gooch> SObjLoader::Load(XMLElement * ele) {
 	auto gooch = Gooch::New();
 
 	FuncMap funcMap;
@@ -550,7 +550,7 @@ static Ptr<Gooch> SObjLoader::Load(XMLElement * ele, Ptr<Gooch>*) {
 }
 
 template<>
-static Ptr<BSDF_Frostbite> SObjLoader::Load(XMLElement * ele, Ptr<BSDF_Frostbite>*) {
+static Ptr<BSDF_Frostbite> SObjLoader::Load(XMLElement * ele) {
 	auto bsdf = BSDF_Frostbite::New();
 
 	FuncMap funcMap;
@@ -572,7 +572,7 @@ static Ptr<BSDF_Frostbite> SObjLoader::Load(XMLElement * ele, Ptr<BSDF_Frostbite
 // ------------ Transform ----------------
 
 template<>
-static Ptr<CmptTransform> SObjLoader::Load(XMLElement * ele, Ptr<CmptTransform>*){
+static Ptr<CmptTransform> SObjLoader::Load(XMLElement * ele){
 	auto cmpt = CmptTransform::New(nullptr);
 
 	FuncMap funcMap;

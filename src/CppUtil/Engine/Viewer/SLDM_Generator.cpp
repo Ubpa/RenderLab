@@ -15,6 +15,8 @@
 #include <CppUtil/Engine/Sphere.h>
 #include <CppUtil/Engine/Plane.h>
 #include <CppUtil/Engine/TriMesh.h>
+#include <CppUtil/Engine/Disk.h>
+#include <CppUtil/Engine/Capsule.h>
 
 #include <CppUtil/OpenGL/CommonDefine.h>
 #include <CppUtil/OpenGL/Camera.h>
@@ -50,6 +52,8 @@ SLDM_Generator::SLDM_Generator(QT::RawAPI_OGLW * pOGLW, Ptr<Camera> camera, floa
 	RegMemberFunc<Sphere>(&SLDM_Generator::Visit);
 	RegMemberFunc<Plane>(&SLDM_Generator::Visit);
 	RegMemberFunc<TriMesh>(&SLDM_Generator::Visit);
+	RegMemberFunc<Disk>(&SLDM_Generator::Visit);
+	RegMemberFunc<Capsule>(&SLDM_Generator::Visit);
 }
 
 void SLDM_Generator::Init() {
@@ -151,17 +155,33 @@ void SLDM_Generator::Visit(Ptr<SObj> sobj) {
 
 void SLDM_Generator::Visit(Ptr<Sphere> sphere) {
 	shader_genDepth.SetMat4f("model", modelVec.back());
+	shader_genDepth.SetBool("isOffset", false);
 	pOGLW->GetVAO(ShapeType::Sphere).Draw(shader_genDepth);
 }
 
 void SLDM_Generator::Visit(Ptr<Plane> plane) {
 	shader_genDepth.SetMat4f("model", modelVec.back());
+	shader_genDepth.SetBool("isOffset", false);
 	pOGLW->GetVAO(ShapeType::Plane).Draw(shader_genDepth);
 }
 
 void SLDM_Generator::Visit(Ptr<TriMesh> mesh) {
 	shader_genDepth.SetMat4f("model", modelVec.back());
+	shader_genDepth.SetBool("isOffset", false);
 	pOGLW->GetVAO(mesh).Draw(shader_genDepth);
+}
+
+void SLDM_Generator::Visit(Ptr<Disk> disk) {
+	shader_genDepth.SetMat4f("model", modelVec.back());
+	shader_genDepth.SetBool("isOffset", false);
+	pOGLW->GetVAO(ShapeType::Disk).Draw(shader_genDepth);
+}
+
+void SLDM_Generator::Visit(Ptr<Capsule> capsule) {
+	shader_genDepth.SetMat4f("model", modelVec.back());
+	shader_genDepth.SetBool("isOffset", true);
+	shader_genDepth.SetFloat("offset", capsule->height / 2 - 1);
+	pOGLW->GetVAO(ShapeType::Capsule).Draw(shader_genDepth);
 }
 
 const Texture SLDM_Generator::GetDepthMap(PtrC<CmptLight> light) const {

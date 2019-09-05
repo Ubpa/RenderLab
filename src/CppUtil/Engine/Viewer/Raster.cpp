@@ -69,7 +69,7 @@ void Raster::Init() {
 
 	glGenBuffers(1, &spotLightsUBO);
 	glBindBuffer(GL_UNIFORM_BUFFER, spotLightsUBO);
-	glBufferData(GL_UNIFORM_BUFFER, 1040, NULL, GL_DYNAMIC_DRAW);
+	glBufferData(GL_UNIFORM_BUFFER, 912, NULL, GL_DYNAMIC_DRAW);
 	glBindBufferBase(GL_UNIFORM_BUFFER, 3, spotLightsUBO);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
@@ -130,10 +130,9 @@ void Raster::UpdateUBO_PointLights() {
 		Point3 position = cmptLight->GetSObj()->GetWorldPos();
 
 		int base = 16 + 32 * pointLightIdx;
-		glBufferSubData(GL_UNIFORM_BUFFER, base, 12, position.Data());
-		auto lightL = pointLight->intensity * pointLight->color;
-		glBufferSubData(GL_UNIFORM_BUFFER, base + 16, 12, lightL.Data());
-		glBufferSubData(GL_UNIFORM_BUFFER, base + 28, 4, &pointLight->radius);
+		glBufferSubData(GL_UNIFORM_BUFFER, base +  0, 12, position.Data());
+		glBufferSubData(GL_UNIFORM_BUFFER, base + 12,  4, &pointLight->radius);
+		glBufferSubData(GL_UNIFORM_BUFFER, base + 16, 12, pointLight->IlluminancePower().Data());
 
 		pointLightIdx++;
 	}
@@ -183,19 +182,17 @@ void Raster::UpdateUBO_SpotLights() {
 		const auto l2w = cmptLight->GetSObj()->GetLocalToWorldMatrix();
 		Point3 pos = l2w(Point3(0.f));
 		Vec3f dir = l2w(Normalf(0, -1, 0)).Normalize();
-
-		int base = 16 + 64 * spotLightIdx;
-		auto lightL = spotLight->intensity * spotLight->color;
-		glBufferSubData(GL_UNIFORM_BUFFER, base, 12, pos.Data());
-		glBufferSubData(GL_UNIFORM_BUFFER, base + 16, 12, dir.Data());
-		RGBf luminance = spotLight->intensity * spotLight->color;
-		glBufferSubData(GL_UNIFORM_BUFFER, base + 32, 12, luminance.Data());
-		glBufferSubData(GL_UNIFORM_BUFFER, base + 48, 64, sldmGenerator->GetProjView(cmptLight).GetMatrix().Data());
-		glBufferSubData(GL_UNIFORM_BUFFER, base + 112, 4, &spotLight->radius);
 		auto cosHalfAngle = spotLight->CosHalfAngle();
 		auto cosFalloffAngle = spotLight->CosFalloffAngle();
-		glBufferSubData(GL_UNIFORM_BUFFER, base + 116, 4, &cosHalfAngle);
-		glBufferSubData(GL_UNIFORM_BUFFER, base + 120, 4, &cosFalloffAngle);
+
+		int base = 16 + 112 * spotLightIdx;
+		glBufferSubData(GL_UNIFORM_BUFFER, base +  0, 12, pos.Data());
+		glBufferSubData(GL_UNIFORM_BUFFER, base + 12,  4, &spotLight->radius);
+		glBufferSubData(GL_UNIFORM_BUFFER, base + 16, 12, dir.Data());
+		glBufferSubData(GL_UNIFORM_BUFFER, base + 28,  4, &cosHalfAngle);
+		glBufferSubData(GL_UNIFORM_BUFFER, base + 32, 12, spotLight->IlluminancePower().Data());
+		glBufferSubData(GL_UNIFORM_BUFFER, base + 44,  4, &cosFalloffAngle);
+		glBufferSubData(GL_UNIFORM_BUFFER, base + 48, 64, sldmGenerator->GetProjView(cmptLight).GetMatrix().Data());
 
 		spotLightIdx++;
 	}

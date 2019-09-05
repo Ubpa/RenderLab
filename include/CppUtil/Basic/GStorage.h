@@ -107,7 +107,7 @@ namespace CppUtil {
 			}
 
 			template<typename T, typename ID_Type>
-			static bool UnReg(const ID_Type & uniqueID, T * uselessArg = nullptr) {
+			static bool UnReg(const ID_Type & uniqueID) {
 				return WWrapper<ID_Type, T>::UnReg(uniqueID);
 			}
 		};
