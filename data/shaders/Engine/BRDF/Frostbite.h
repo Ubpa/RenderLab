@@ -8,6 +8,11 @@
 void BRDF_Frostbite(out vec3 fd, out vec3 fs, vec3 norm, vec3 wo, vec3 wi, vec3 albedo, float metallic, float roughness);
 vec3 BRDF_Frostbite(vec3 norm, vec3 wo, vec3 wi, vec3 albedo, float metallic, float roughness);
 
+// diffuse
+vec3 BRDFd_Frostbite(vec3 norm, vec3 wo, vec3 wi, vec3 albedo, float metallic, float roughness);
+// specular
+vec3 BRDFs_Frostbite(vec3 norm, vec3 wo, vec3 wi, vec3 albedo, float metallic, float roughness);
+
 // We have a better approximation of the off specular peak
 // but due to the other approximations we found this one performs better.
 // N is the normal direction
@@ -23,20 +28,27 @@ vec3 Frostbite_DiffuseDominantDir(vec3 N, vec3 V, float roughness);
 // ------------------------------ 实现 ------------------------------
 
 void BRDF_Frostbite(out vec3 fd, out vec3 fs, vec3 norm, vec3 wo, vec3 wi, vec3 albedo, float metallic, float roughness){
-	vec3 wh = normalize(wo + wi);
-	
-	float D = SchlickGGX_D(norm, wh, roughness);
-	float G = SchlickGGX_SmithG_Analytic(norm, wo, wi, roughness);
-	vec3 F = SchlickFr(wo, wh, albedo, metallic);
-	
-	fd = (1 - metallic) * albedo * INV_PI * DisneyDiffuseFr(norm, wo, wi, roughness);
-	fs = D * G * F / (4.0f * dot(wh, wo) * dot(wh, wi));
+	fd = BRDFd_Frostbite(norm, wo, wi, albedo, metallic, roughness);
+	fs = BRDFs_Frostbite(norm, wo, wi, albedo, metallic, roughness);
 }
 
 vec3 BRDF_Frostbite(vec3 norm, vec3 wo, vec3 wi, vec3 albedo, float metallic, float roughness) {
-	vec3 fd, fs;
-	BRDF_Frostbite(fd, fs, norm, wo, wi, albedo, metallic, roughness);
-	return fd + fs;
+	return BRDFd_Frostbite(norm, wo, wi, albedo, metallic, roughness)
+		+ BRDFs_Frostbite(norm, wo, wi, albedo, metallic, roughness);
+}
+
+vec3 BRDFd_Frostbite(vec3 norm, vec3 wo, vec3 wi, vec3 albedo, float metallic, float roughness) {
+	return (1 - metallic) * DisneyDiffuseFr(norm, wo, wi, roughness) * INV_PI * albedo;
+}
+
+vec3 BRDFs_Frostbite(vec3 norm, vec3 wo, vec3 wi, vec3 albedo, float metallic, float roughness) {
+	vec3 wh = normalize(wo + wi);
+
+	float D = SchlickGGX_D(norm, wh, roughness);
+	float G = SchlickGGX_SmithG_Analytic(norm, wo, wi, roughness);
+	vec3 F = SchlickFr(wo, wh, albedo, metallic);
+
+	return D * G * F / (4.0f * dot(wh, wo) * dot(wh, wi));
 }
 
 vec3 Frostbite_SpecularDominantDir(vec3 norm, vec3 R, float roughness) {

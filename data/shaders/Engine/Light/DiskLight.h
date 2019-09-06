@@ -42,35 +42,33 @@ vec3 DiskLight_MRP(DiskLight light, vec3 p, vec3 R) {
 	vec3 d1kd2 = d1 + k * d2;
 	float a2 = curR2 / dot(d1kd2, d1kd2);
 	float a = sqrt(a2);
-	vec3 d3 = a * d1kd2;
-	
+	vec3 d3 = sign(dot(-R, d0)) * a * d1kd2;
 	return light.position + d3;
 }
 
 vec3 DiskLight_Illuminance(DiskLight light, vec3 p, vec3 norm) {
 	vec3 PtoL = light.position - p;
-	float dist = length(PtoL);
-	vec3 wi = PtoL / dist;
+	float h = length(PtoL);
+	vec3 wi = PtoL / h;
 	float cosTheta = dot(wi, norm);
 	float sinTheta = sqrt(1 - cosTheta * cosTheta);
 	float cotTheta = cosTheta / sinTheta;
-	float ratio = dist / light.radius;
-	float ratio2 = ratio * ratio;
+	float H = h / light.radius;
+	float H2 = H * H;
 
-	float illuminanceFactor;
-	if (cotTheta > 1 / ratio)
-		illuminanceFactor = cosTheta / (1 + ratio2);
+	float formFactor;
+	if (cotTheta > 1 / H)
+		formFactor = cosTheta / (1 + H2);
 	else {
-		float x = sqrt(1 - ratio2 * cotTheta * cotTheta);
+		float x = sqrt(1 - H2 * cotTheta * cotTheta);
 
-		illuminanceFactor = -ratio * x * sinTheta / (PI * (1 + ratio2)) +
-			(1 / PI) * atan(x * sinTheta / ratio) +
-			cosTheta * (PI - acos(ratio * cotTheta)) / (PI * (1 + ratio2));
+		formFactor = -H * x * sinTheta / (PI * (1 + H2)) +
+			INV_PI * atan(x * sinTheta / H) +
+			cosTheta * (PI - acos(H * cotTheta)) / (PI * (1 + H2));
 	}
-	illuminanceFactor *= PI * dot(light.dir, -wi);
-	illuminanceFactor = max(0.0, illuminanceFactor);
+	formFactor = max(0.0, formFactor);
 
-	return illuminanceFactor * light.luminance;
+	return PI * max(0, dot(light.dir, -wi)) * formFactor * light.luminance;
 }
 
 #endif // !ENGINE_LIGHT_DISK_LIGHT_H

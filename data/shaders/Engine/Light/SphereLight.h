@@ -18,29 +18,30 @@ vec3 SphereLight_MRP(SphereLight light, vec3 vertex, vec3 R);
 
 vec3 SphereLight_Illuminance(SphereLight light, vec3 vertex, vec3 norm) {
 	vec3 diff = light.position - vertex;
-	float dist = length(diff);
-	vec3 wi = diff / dist;
-	float cosTheta = dot(wi, norm);
+	float H = length(diff);
+	vec3 wi = diff / H;
+	float cosBeta = dot(wi, norm);
 
-	float ratio = dist / light.radius;
-	float ratio2 = ratio * ratio;
+	float h = H / light.radius;
+	float h2 = h * h;
 
-	float illuminanceFactor;
-	if (ratio * cosTheta > 1)
-		illuminanceFactor = cosTheta / ratio2;
+	float formFactor;
+	if (h * cosBeta > 1)
+		formFactor = cosBeta / h2;
 	else {
-		float sinTheta = sqrt(1 - cosTheta * cosTheta);
-		float cotTheta = cosTheta / sinTheta;
-		float x = sqrt(ratio2 - 1);
-		float y = -x * cotTheta;
+		float sinBeta = sqrt(1 - cosBeta * cosBeta);
+		float cotBeta = cosBeta / sinBeta;
 
-		illuminanceFactor = (1 / (PI * ratio2)) *
-			(cosTheta * acos(y) - x * sinTheta * sqrt(1 - y * y)) +
-			(1 / PI) * atan(sinTheta * sqrt(1 - y * y) / x);
+		float x = sqrt(h2 - 1);
+		float y = -x * cotBeta;
+
+		formFactor = (1 / (PI * h2)) *
+			(cosBeta * acos(y) - x * sinBeta * sqrt(1 - y * y)) +
+			(1 / PI) * atan(sinBeta * sqrt(1 - y * y) / x);
 	}
-	illuminanceFactor *= PI;
-	illuminanceFactor = max(0.0, illuminanceFactor);
-	return illuminanceFactor * light.luminance;
+	formFactor = max(0.0, formFactor);
+
+	return PI * formFactor * light.luminance;
 }
 
 vec3 SphereLight_LuminancePower(SphereLight light) {

@@ -138,6 +138,8 @@ uniform float lightFar;
 
 // ----------------- 函数声明
 
+vec3 BRDFd(int ID, vec3 norm, vec3 wo, vec3 wi, vec3 albedo, float metallic, float roughness);
+vec3 BRDFs(int ID, vec3 norm, vec3 wo, vec3 wi, vec3 albedo, float metallic, float roughness);
 void BRDF(out vec3 diffuse, out vec3 spec, int ID, vec3 norm, vec3 wo, vec3 wi, vec3 albedo, float metallic, float roughness);
 
 float Fwin(float d, float radius);
@@ -276,7 +278,7 @@ void main() {
 
 		vec3 fd, fs;
 		BRDF(fd, fs, ID, norm, wo, wi, albedo, metallic, roughness);
-		
+
 		float attenuation = step(0, dot(-wi, diskLights[i].dir)) / max(0.00001, dist2);
 		vec3 illuminanceS = diskLights[i].luminance * attenuation;
 		float cosTheta = max(0, dot(wi, norm));
@@ -325,8 +327,7 @@ void main() {
 				float dist = sqrt(dist2);
 				vec3 wi = PtoL / dist;
 
-				vec3 fd, fs;
-				BRDF(fd, fs, ID, norm, wo, wi, albedo, metallic, roughness);
+				vec3 fd = BRDFd(ID, norm, wo, wi, albedo, metallic, roughness);
 
 				result += illuminance * fd;
 			}
@@ -341,8 +342,7 @@ void main() {
 				float dist = sqrt(dist2);
 				vec3 wi = PtoL / dist;
 
-				vec3 fd, fs;
-				BRDF(fd, fs, ID, norm, wo, wi, albedo, metallic, roughness);
+				vec3 fd = BRDFd(ID, norm, wo, wi, albedo, metallic, roughness);
 
 				result += illuminance * fd;
 			}
@@ -355,8 +355,7 @@ void main() {
 			float dist = sqrt(dist2);
 			vec3 wi = PtoL / dist;
 
-			vec3 fd, fs;
-			BRDF(fd, fs, ID, norm, wo, wi, albedo, metallic, roughness);
+			vec3 fs = BRDFs(ID, norm, wo, wi, albedo, metallic, roughness);
 #define MODE 0
 #if MODE == 0 // average distance
 			float avrgDist2 = CapsuleLight_AvrgDist2(capsuleLights[i], pos);
@@ -380,19 +379,38 @@ void main() {
 // ----------------- 函数定义
 
 void BRDF(out vec3 fd, out vec3 fs, int ID, vec3 norm, vec3 wo, vec3 wi, vec3 albedo, float metallic, float roughness) {
-	if(ID == 0) {
+	if(ID == 0)
 		BRDF_MetalWorkflow(fd, fs, norm, wo, wi, albedo, metallic, roughness);
-	}
-	else if(ID == 1) {
+	else if(ID == 1)
 		BRDF_Diffuse(fd, fs, albedo);
-	}
-	else if(ID == 2) {
+	else if(ID == 2)
 		BRDF_Frostbite(fd, fs, norm, wo, wi, albedo, metallic, roughness);
-	}
 	else{
 		fd = vec3(0);
 		fs = vec3(0);
 	}
+}
+
+vec3 BRDFd(int ID, vec3 norm, vec3 wo, vec3 wi, vec3 albedo, float metallic, float roughness) {
+	if (ID == 0)
+		return BRDFd_MetalWorkflow(wo, wi, albedo, metallic);
+	else if (ID == 1)
+		return BRDFd_Diffuse(albedo);
+	else if (ID == 2)
+		return BRDFd_Frostbite(norm, wo, wi, albedo, metallic, roughness);
+	else
+		return vec3(0);
+}
+
+vec3 BRDFs(int ID, vec3 norm, vec3 wo, vec3 wi, vec3 albedo, float metallic, float roughness) {
+	if (ID == 0)
+		return BRDFs_MetalWorkflow(norm, wo, wi, albedo, metallic, roughness);
+	else if (ID == 1)
+		return BRDFs_Diffuse(albedo);
+	else if (ID == 2)
+		return BRDFs_Frostbite(norm, wo, wi, albedo, metallic, roughness);
+	else
+		return vec3(0);
 }
 
 float DiskIlluminanceFactor(vec3 wi, vec3 norm, float dist, float radius, vec3 forward) {

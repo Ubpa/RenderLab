@@ -96,7 +96,7 @@ vec3 AreaLight_MRP(AreaLight light, vec3 vertex, vec3 R) {
 	vec3 d1kd2 = d1 + k * d2;
 	float a2 = curR2 / dot(d1kd2, d1kd2);
 	float a = sqrt(a2);
-	vec3 d3 = a * d1kd2;
+	vec3 d3 = sign(dot(-R, d0)) * a * d1kd2;
 
 	return light.position + d3;
 }

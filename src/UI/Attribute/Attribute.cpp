@@ -532,7 +532,7 @@ void Attribute::ComponentVisitor::Visit(Ptr<CmptLight> cmpt) {
 void Attribute::ComponentVisitor::Visit(Ptr<AreaLight> light) {
 	auto grid = GetGrid(attr->componentType2item[typeid(CmptLight)]);
 	grid->AddEditColor("- Color", light->color);
-	grid->AddEditVal("- Intensity", light->intensity, 0, 20, 2000);
+	grid->AddEditVal("- Intensity", light->intensity, 0, 10000, 100000);
 	grid->AddEditVal("- Width", light->width, 0.1);
 	grid->AddEditVal("- Height", light->height, 0.1);
 	grid->AddButton("- Autocorrection", [this, light]() {
@@ -571,20 +571,20 @@ void Attribute::ComponentVisitor::Visit(Ptr<AreaLight> light) {
 void Attribute::ComponentVisitor::Visit(Ptr<PointLight> light) {
 	auto grid = GetGrid(attr->componentType2item[typeid(CmptLight)]);
 	grid->AddEditColor("- Color", light->color);
-	grid->AddEditVal("- Intensity", light->intensity, 0, 20, 2000);
+	grid->AddEditVal("- Intensity", light->intensity, 0, 10000, 100000);
 	grid->AddEditVal("- Radius", light->radius, 0, 100.0, 1000);
 }
 
 void Attribute::ComponentVisitor::Visit(Ptr<DirectionalLight> light) {
 	auto grid = GetGrid(attr->componentType2item[typeid(CmptLight)]);
 	grid->AddEditColor("- Color", light->color);
-	grid->AddEditVal("- Intensity", light->intensity, 0, 20, 2000);
+	grid->AddEditVal("- Intensity", light->intensity, 0, 10000, 100000);
 }
 
 void Attribute::ComponentVisitor::Visit(Ptr<SpotLight> light) {
 	auto grid = GetGrid(attr->componentType2item[typeid(CmptLight)]);
 	grid->AddEditColor("- Color", light->color);
-	grid->AddEditVal("- Intensity", light->intensity, 0, 20, 2000);
+	grid->AddEditVal("- Intensity", light->intensity, 0, 10000, 100000);
 	grid->AddEditVal("- Radius", light->radius, 0, 100.0, 1000);
 	grid->AddEditVal("- Angle", light->angle, 1.0, 179.0, 178);
 	grid->AddEditVal("- Full Ratio", light->fullRatio, 0.0, 1.0, 100);
@@ -601,7 +601,7 @@ void Attribute::ComponentVisitor::Visit(Ptr<InfiniteAreaLight> light) {
 
 void Attribute::ComponentVisitor::Visit(Ptr<SphereLight> light) {
 	auto grid = GetGrid(attr->componentType2item[typeid(CmptLight)]);
-	grid->AddEditVal("- Intensity", light->intensity, 0, 100, 1000);
+	grid->AddEditVal("- Intensity", light->intensity, 0, 10000, 100000);
 	grid->AddEditColor("- Color", light->color);
 	grid->AddEditVal("- Radius", light->radius, 0.01, 100.0, 1000);
 
@@ -614,7 +614,7 @@ void Attribute::ComponentVisitor::Visit(Ptr<SphereLight> light) {
 		auto geoCmpt = curSObj->GetComponent<CmptGeometry>();
 		if (!geoCmpt)
 			geoCmpt = CmptGeometry::New(curSObj, Sphere::New());
-		if (!CastTo<Plane>(geoCmpt->primitive))
+		if (!CastTo<Sphere>(geoCmpt->primitive))
 			geoCmpt->primitive = Sphere::New();
 
 		// transform
@@ -640,7 +640,7 @@ void Attribute::ComponentVisitor::Visit(Ptr<SphereLight> light) {
 
 void Attribute::ComponentVisitor::Visit(Ptr<DiskLight> light) {
 	auto grid = GetGrid(attr->componentType2item[typeid(CmptLight)]);
-	grid->AddEditVal("- Intensity", light->intensity, 0, 100, 1000);
+	grid->AddEditVal("- Intensity", light->intensity, 0, 10000, 100000);
 	grid->AddEditColor("- Color", light->color);
 	grid->AddEditVal("- Radius", light->radius, 0, 100, 1000);
 
@@ -653,7 +653,7 @@ void Attribute::ComponentVisitor::Visit(Ptr<DiskLight> light) {
 		auto geoCmpt = curSObj->GetComponent<CmptGeometry>();
 		if (!geoCmpt)
 			geoCmpt = CmptGeometry::New(curSObj, Disk::New());
-		if (!CastTo<Plane>(geoCmpt->primitive))
+		if (!CastTo<Disk>(geoCmpt->primitive))
 			geoCmpt->primitive = Disk::New();
 
 		// transform
