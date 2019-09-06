@@ -327,11 +327,13 @@ void Raster::UpdateUBO_CapsuleLights() {
 		auto up = l2w(Normalf(0, 1, 0)).Normalize();
 		auto p0 = midPos + 0.5f * capsuleLight->height * Vec3f(up);
 		auto p1 = midPos - 0.5f * capsuleLight->height * Vec3f(up);
+		float height = (p1 - p0).Norm();
 
 		int base = 16 + 48 * capsuleLightIdx;
 		glBufferSubData(GL_UNIFORM_BUFFER, base +  0, 12, p0.Data());
 		glBufferSubData(GL_UNIFORM_BUFFER, base + 12,  4, &capsuleLight->radius);
 		glBufferSubData(GL_UNIFORM_BUFFER, base + 16, 12, p1.Data());
+		glBufferSubData(GL_UNIFORM_BUFFER, base + 28,  4, &height);
 		glBufferSubData(GL_UNIFORM_BUFFER, base + 32, 12, capsuleLight->Luminance().Data());
 
 		capsuleLightIdx++;

@@ -16,16 +16,16 @@ struct AreaLight {
 	vec3 luminance; // 12   48
 };
 
-float AreaLight_IlluminanceFactor(AreaLight light, vec3 vertex, vec3 norm);
+vec3 AreaLight_Illuminance(AreaLight light, vec3 vertex, vec3 norm);
 
 vec3 AreaLight_MRP(AreaLight light, vec3 vertex, vec3 R);
 
 // ------------------------------ й╣ож ------------------------------
 
-float AreaLight_IlluminanceFactor(AreaLight light, vec3 vertex, vec3 norm) {
+vec3 AreaLight_Illuminance(AreaLight light, vec3 vertex, vec3 norm) {
 	vec3 fragToLight = light.position - vertex;
 	if (dot(-fragToLight, light.dir) <= 0)
-		return 0;
+		return vec3(0);
 
 	float dist2 = dot(fragToLight, fragToLight);
 	float dist = sqrt(dist2);
@@ -52,7 +52,7 @@ float AreaLight_IlluminanceFactor(AreaLight light, vec3 vertex, vec3 norm) {
 		max(0, dot(normalize(p3 - vertex), norm)) +
 		max(0, dot(wi, norm)));
 
-	return illuminanceFactor;
+	return illuminanceFactor * light.luminance;
 }
 
 vec3 AreaLight_MRP(AreaLight light, vec3 vertex, vec3 R) {

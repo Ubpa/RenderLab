@@ -679,7 +679,7 @@ void Attribute::ComponentVisitor::Visit(Ptr<DiskLight> light) {
 
 void Attribute::ComponentVisitor::Visit(Ptr<CapsuleLight> light) {
 	auto grid = GetGrid(attr->componentType2item[typeid(CmptLight)]);
-	grid->AddEditVal("- Intensity", light->intensity, 0, 100, 1000);
+	grid->AddEditVal("- Intensity", light->intensity, 0, 10000, 100000);
 	grid->AddEditColor("- Color", light->color);
 	grid->AddEditVal("- Radius", light->radius, 0, 100, 1000);
 	grid->AddEditVal("- Height", light->height, 0, 100, 1000);

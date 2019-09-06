@@ -266,7 +266,7 @@ void main() {
 	
 	// disk light
 	for(int i=0; i<numDiskLight; i++) {
-		float illuminanceFactor = DiskLight_IlluminanceFactor(diskLights[i], pos, norm);
+		vec3 illuminanceD = DiskLight_Illuminance(diskLights[i], pos, norm);
 
 		vec3 MRP = DiskLight_MRP(diskLights[i], pos, R);
 		vec3 PtoL = MRP - pos;
@@ -278,13 +278,14 @@ void main() {
 		BRDF(fd, fs, ID, norm, wo, wi, albedo, metallic, roughness);
 		
 		float attenuation = step(0, dot(-wi, diskLights[i].dir)) / max(0.00001, dist2);
+		vec3 illuminanceS = diskLights[i].luminance * attenuation;
 		float cosTheta = max(0, dot(wi, norm));
-		result += (illuminanceFactor * fd + cosTheta * attenuation * fs) * diskLights[i].L;
+		result += illuminanceD * fd + cosTheta * illuminanceS * fs;
 	}
 	
 	// area light
 	for(int i=0; i<numAreaLight; i++) {
-		float illuminanceFactor = AreaLight_IlluminanceFactor(areaLights[i], pos, norm);
+		vec3 illuminanceD = AreaLight_Illuminance(areaLights[i], pos, norm);
 		
 		vec3 MRP = AreaLight_MRP(areaLights[i], pos, R);
 		vec3 PtoL = MRP - pos;
@@ -296,12 +297,18 @@ void main() {
 		BRDF(fd, fs, ID, norm, wo, wi, albedo, metallic, roughness);
 
 		float attenuation = step(0, dot(-wi, areaLights[i].dir)) / max(0.0001, dist2);
+		vec3 illuminanceS = areaLights[i].luminance * attenuation;
 		float cosTheta = max(0, dot(wi, norm));
-		result += (illuminanceFactor * fd + cosTheta * attenuation * fs)* areaLights[i].luminance;
+		result += illuminanceD * fd + cosTheta * illuminanceS * fs;
 	}
 	
 	// capsule light
 	for(int i=0; i<numCapsuleLight; i++) {
+		float r2 = capsuleLights[i].radius * capsuleLights[i].radius;
+		float sphereArea = FOUR_PI * r2;
+		float rectArea = 2 * capsuleLights[i].radius * capsuleLights[i].height;
+		float capsuleArea = CapsuleLight_Area(capsuleLights[i]);
+
 		{// diffuse
 			{// area
 				vec3 forward = normalize(Line_ClosestPoint(Line_2P(capsuleLights[i].p0, capsuleLights[i].p1), pos) - pos);
@@ -309,9 +316,9 @@ void main() {
 				vec3 left = capsuleLights[i].p0 - capsuleLights[i].p1;
 				float height = length(left);
 				vec3 nLeft = left / height;
-				AreaLight areaLight = AreaLight(areaCenter, 2 * capsuleLights[i].radius, forward, height, nLeft, capsuleLights[i].L);
+				AreaLight areaLight = AreaLight(areaCenter, 2 * capsuleLights[i].radius, forward, height, nLeft, capsuleLights[i].L * capsuleArea / rectArea);
 
-				float illumFactor = AreaLight_IlluminanceFactor(areaLight, pos, norm);
+				vec3 illuminance = AreaLight_Illuminance(areaLight, pos, norm);
 
 				vec3 PtoL = areaCenter - pos;
 				float dist2 = dot(PtoL, PtoL);
@@ -321,11 +328,11 @@ void main() {
 				vec3 fd, fs;
 				BRDF(fd, fs, ID, norm, wo, wi, albedo, metallic, roughness);
 
-				result += illumFactor * fd * areaLight.luminance;
+				result += illuminance * fd;
 			}
 			{// sphere
 				vec3 sphereCenter = Segment_ClosestPoint(Segment(capsuleLights[i].p0, capsuleLights[i].p1), pos);
-				SphereLight sphereLight = SphereLight(sphereCenter, capsuleLights[i].L, capsuleLights[i].radius);
+				SphereLight sphereLight = SphereLight(sphereCenter, capsuleLights[i].L * capsuleArea / sphereArea, capsuleLights[i].radius);
 
 				vec3 illuminance = SphereLight_Illuminance(sphereLight, pos, norm);
 
@@ -342,19 +349,28 @@ void main() {
 		}
 		{// specular
 			vec3 MRP = CapsuleLight_MRP(capsuleLights[i], pos, R);
+			//result = MRP;
 			vec3 PtoL = MRP - pos;
 			float dist2 = dot(PtoL, PtoL);
-			float attenuation = 1.0 / max(0.0001, dist2);
 			float dist = sqrt(dist2);
 			vec3 wi = PtoL / dist;
 
 			vec3 fd, fs;
 			BRDF(fd, fs, ID, norm, wo, wi, albedo, metallic, roughness);
-
-			float r2 = capsuleLights[i].radius * capsuleLights[i].radius;
-			vec3 axis = capsuleLights[i].p1 - capsuleLights[i].p0;
+#define MODE 0
+#if MODE == 0 // average distance
+			float avrgDist2 = CapsuleLight_AvrgDist2(capsuleLights[i], pos);
+			float attenuation = 1.0 / max(0.0001, avrgDist2);
+#elif MODE == 1 // mid point
+			vec3 center = 0.5 * (capsuleLights[i].p1 + capsuleLights[i].p0);
+			vec3 PtoC = center - pos;
+			float distToC2 = dot(PtoC, PtoC);
+			float attenuation = 1.0 / max(0.0001, distToC2);
+#else // MRP
+			float attenuation = 1.0 / max(0.0001, dist2);
+#endif
 			float cosTheta = max(0, dot(wi, norm));
-			result += cosTheta * attenuation * fs * capsuleLights[i].L;
+			result += cosTheta * attenuation * (sphereArea / capsuleArea) * fs * capsuleLights[i].L;
 		}
 	}
 	

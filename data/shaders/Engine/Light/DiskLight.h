@@ -10,12 +10,12 @@
 struct DiskLight {
 	vec3 position;  // 12    0
 	vec3 dir;       // 12   32
-	vec3 L;         // 12   16
+	vec3 luminance; // 12   16
 	float radius;   //  4   44
 };
 
 vec3 DiskLight_MRP(DiskLight light, vec3 p, vec3 R);
-float DiskLight_IlluminanceFactor(DiskLight light, vec3 p, vec3 norm);
+vec3 DiskLight_Illuminance(DiskLight light, vec3 p, vec3 norm);
 
 // ------------------------------ й╣ож ------------------------------
 
@@ -47,7 +47,7 @@ vec3 DiskLight_MRP(DiskLight light, vec3 p, vec3 R) {
 	return light.position + d3;
 }
 
-float DiskLight_IlluminanceFactor(DiskLight light, vec3 p, vec3 norm) {
+vec3 DiskLight_Illuminance(DiskLight light, vec3 p, vec3 norm) {
 	vec3 PtoL = light.position - p;
 	float dist = length(PtoL);
 	vec3 wi = PtoL / dist;
@@ -70,7 +70,7 @@ float DiskLight_IlluminanceFactor(DiskLight light, vec3 p, vec3 norm) {
 	illuminanceFactor *= PI * dot(light.dir, -wi);
 	illuminanceFactor = max(0.0, illuminanceFactor);
 
-	return illuminanceFactor;
+	return illuminanceFactor * light.luminance;
 }
 
 #endif // !ENGINE_LIGHT_DISK_LIGHT_H
