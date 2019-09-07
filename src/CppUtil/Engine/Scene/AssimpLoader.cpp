@@ -9,7 +9,7 @@
 #include <CppUtil/Engine/CmptGeometry.h>
 
 #include <CppUtil/Engine/TriMesh.h>
-#include <CppUtil/Engine/BSDF_MetalWorkflow.h>
+#include <CppUtil/Engine/BSDF_Frostbite.h>
 
 #include <CppUtil/Basic/StrAPI.h>
 #include <CppUtil/Basic/Image.h>
@@ -132,7 +132,7 @@ void AssimpLoader::LoadMesh(Str2Img & str2img, const string & dir, aiMesh *mesh,
 	auto triMesh = TriMesh::New(indices, poses, normals, texcoords, tangents);
 	CmptGeometry::New(sobj, triMesh);
 
-	auto bsdf = BSDF_MetalWorkflow::New();
+	auto bsdf = BSDF_Frostbite::New();
 	CmptMaterial::New(sobj, bsdf);
 
 	// process materials
