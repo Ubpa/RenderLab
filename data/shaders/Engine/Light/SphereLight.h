@@ -1,6 +1,8 @@
 #ifndef ENGINE_LIGHT_SPHERE_LIGHT_H
 #define ENGINE_LIGHT_SPHERE_LIGHT_H
 
+#include "../../Math/basic.h"
+
 // ------------------------------ 接口 ------------------------------
 
 // 32
@@ -13,6 +15,7 @@ struct SphereLight {
 vec3 SphereLight_Illuminance(SphereLight light, vec3 vertex, vec3 norm);
 vec3 SphereLight_LuminancePower(SphereLight light);
 vec3 SphereLight_MRP(SphereLight light, vec3 vertex, vec3 R);
+float SphereLight_FsNormFactor(SphereLight light, vec3 vertex, float roughness);
 
 // ------------------------------ 实现 ------------------------------
 
@@ -52,6 +55,14 @@ vec3 SphereLight_MRP(SphereLight light, vec3 vertex, vec3 R) {
 	vec3 fragToLight = light.position - vertex;
 	vec3 LtoR = dot(fragToLight, R) * R - fragToLight;
 	return light.position + saturate(light.radius / length(LtoR)) * LtoR;
+}
+
+float SphereLight_FsNormFactor(SphereLight light, vec3 P, float roughness) {
+	float dist = length(light.position - P);
+	float alpha = roughness * roughness;
+	float alphaPrime = saturate(alpha + light.radius / (3 * dist));
+	float ratio = alpha / alphaPrime;
+	return ratio * ratio;
 }
 
 #endif // !ENGINE_LIGHT_SPHERE_LIGHT_H

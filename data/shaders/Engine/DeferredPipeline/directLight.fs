@@ -174,9 +174,10 @@ void main() {
 	
 	int ID = int(data0.w);
 	vec3 pos = data0.xyz;
-	vec3 norm = data1.xyz;
+	vec3 norm = normalize(data1.xyz);
 	vec3 albedo = data2.xyz;
 	float roughness = data1.w;
+	roughness = mix(0.02, roughness, roughness);
 	float metallic = data2.w;
 	float ao = data3.w;
 	
@@ -263,7 +264,8 @@ void main() {
 		
 		vec3 illuminanceS = sphereLights[i].luminance / max(0.0001, dist2);
 		float cosTheta = max(0, dot(wi, norm));
-		result += illuminanceD * fd + cosTheta * illuminanceS * fs;
+		float normalizeFactor = SphereLight_FsNormFactor(sphereLights[i], pos, roughness);
+		result += illuminanceD * fd + normalizeFactor * cosTheta * illuminanceS * fs;
 	}
 	
 	// disk light
