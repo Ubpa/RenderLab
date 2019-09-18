@@ -1,5 +1,5 @@
-#ifndef _CPPUTIL_BASIC_CSV_CSV_H_
-#define _CPPUTIL_BASIC_CSV_CSV_H_
+#ifndef _CPPUTIL_BASIC_CSV_CSVSaver_H_
+#define _CPPUTIL_BASIC_CSV_CSVSaver_H_
 
 #include <CppUtil/Basic/File.h>
 
@@ -9,9 +9,9 @@
 namespace CppUtil {
 	namespace Basic {
 		template<typename ValT>
-		class CSV {
+		class CSVSaver {
 		public:
-			CSV(const std::vector<std::string> & keys)
+			CSVSaver(const std::vector<std::string> & keys)
 				: keys(keys) { }
 			
 			size_t GetKeyLength() const {
@@ -31,7 +31,7 @@ namespace CppUtil {
 		};
 
 		template <typename ValT>
-		bool CSV<ValT>::AddLine(const std::vector<ValT> & lineValues) {
+		bool CSVSaver<ValT>::AddLine(const std::vector<ValT> & lineValues) {
 			if (lineValues.size() != keys.size())
 				return false;
 
@@ -40,7 +40,7 @@ namespace CppUtil {
 		}
 
 		template <typename ValT>
-		bool CSV<ValT>::Save(const std::string & path) const {
+		bool CSVSaver<ValT>::Save(const std::string & path) const {
 			File file(path, File::WRITE);
 			if (!file.IsValid())
 				return false;
@@ -64,4 +64,4 @@ namespace CppUtil {
 	}
 }
 
-#endif//!_CPPUTIL_BASIC_CSV_CSV_H_
+#endif//!_CPPUTIL_BASIC_CSV_CSVSaver_H_

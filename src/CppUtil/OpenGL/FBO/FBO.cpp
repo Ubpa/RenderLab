@@ -89,7 +89,7 @@ FBO::FBO(uint width, uint height, const std::vector<uint> & dimVecForGBuffer)
 	glBindFramebuffer(GL_FRAMEBUFFER, ID);
 
 	const uint formats[4] = { GL_RED, GL_RG, GL_RGB, GL_RGBA };
-	const uint internalFormats[4] = { GL_R16F, GL_RG16F, GL_RGB16F, GL_RGBA16F };
+	const uint internalFormats[4] = { GL_R32F, GL_RG32F, GL_RGB32F, GL_RGBA32F };
 	vector<uint> attachments;
 
 	for (int i = 0; i < dimVecForGBuffer.size(); i++) {

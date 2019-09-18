@@ -160,6 +160,8 @@ Optix: 6.0
 - [x] GLSL include
 - [x] 光源与其他 Component 统一
 - [ ] GLSL 库函数
+- [ ] 将 Engine 取出
+- [x] 去除 CUDA 和 Optix 的依赖
 - [ ] 重构 OpenGL 库（资源管理）
 - [ ] 拷贝粘贴，模型、图像等复用
 - [ ] CSM
@@ -177,7 +179,7 @@ Optix: 6.0
 - [ ] 添加注释
 - [ ] 保存 Code 模式的 Trimesh
 - [ ] 优化 intersector
-- [ ] 清除 useless 参数
+- [x] 清除 useless 参数
 
 ### Bugs
 

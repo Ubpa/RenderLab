@@ -124,3 +124,20 @@ string File::ModeToStr(Mode mode) {
 		break;
 	}
 }
+
+
+const string File::ReadAll(const std::string & fileName) {
+	File file(fileName, Mode::READ);
+	return file.ReadAll();
+}
+
+const std::vector<std::string> File::ReadAllLines(const std::string & fileName) {
+	File file(fileName, Mode::READ);
+	return file.ReadAllLines();
+}
+
+bool File::IsSame(const std::string & fileName0, const std::string & fileName1) {
+	auto str0 = ReadAll(fileName0);
+	auto str1 = ReadAll(fileName1);
+	return str0 == str1;
+}

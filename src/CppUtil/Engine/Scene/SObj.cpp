@@ -68,10 +68,18 @@ bool SObj::Save(const string & path) {
 }
 
 const Ptr<SObj> SObj::Load(const string & path) {
+	Ptr<SObj> sobj;
 	if (StrAPI::IsEndWith(path, ".sobj"))
-		return SObjLoader::Load(path);
+		sobj = SObjLoader::Load(path);
+	else
+		sobj = AssimpLoader::Load(path);
 
-	return AssimpLoader::Load(path);
+	if (!sobj) {
+		printf("WARNING::SObj::Load:\n"
+			"\t""loaded sobj is null");
+	}
+
+	return sobj;
 }
 
 bool SObj::DetachComponent(Ptr<Component> component) {

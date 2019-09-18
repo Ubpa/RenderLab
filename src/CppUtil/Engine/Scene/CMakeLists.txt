@@ -14,9 +14,17 @@ endforeach(SOURCE ${ALL_SOURCES})
 set(STR_TARGET_SOURCES "${STR_TARGET_SOURCES} ${CMAKE_SOURCE_DIR}/include/CppUtil/Engine/SObj.h")
 set(STR_TARGET_SOURCES "${STR_TARGET_SOURCES} ${CMAKE_SOURCE_DIR}/include/CppUtil/Engine/SObj.inl")
 set(STR_TARGET_SOURCES "${STR_TARGET_SOURCES} ${CMAKE_SOURCE_DIR}/include/CppUtil/Engine/Scene.h")
+
+set(STR_TARGET_SOURCES "${STR_TARGET_SOURCES} ${CMAKE_SOURCE_DIR}/include/CppUtil/Engine/Component.h")
+set(STR_TARGET_SOURCES "${STR_TARGET_SOURCES} ${CMAKE_SOURCE_DIR}/include/CppUtil/Engine/CmptTransform.h")
+set(STR_TARGET_SOURCES "${STR_TARGET_SOURCES} ${CMAKE_SOURCE_DIR}/include/CppUtil/Engine/CmptGeometry.h")
+set(STR_TARGET_SOURCES "${STR_TARGET_SOURCES} ${CMAKE_SOURCE_DIR}/include/CppUtil/Engine/CmptCamera.h")
+set(STR_TARGET_SOURCES "${STR_TARGET_SOURCES} ${CMAKE_SOURCE_DIR}/include/CppUtil/Engine/CmptMaterial.h")
+set(STR_TARGET_SOURCES "${STR_TARGET_SOURCES} ${CMAKE_SOURCE_DIR}/include/CppUtil/Engine/CmptLight.h")
+
 #多个库文件用 [空格] 分隔，如果为空，就输入[一个空格]
 #如：set(STR_TARGET_LIBS "lib1.lib lib2.lib")
-set(STR_TARGET_LIBS_COMMON "Component Light Primitive Material tinyxml2 StrAPI")
+set(STR_TARGET_LIBS_COMMON "Light Primitive Material tinyxml2 StrAPI")
 set(STR_TARGET_LIBS_DEBUG "3rdParty/assimp-vc140-mtd 3rdParty/zlibstaticd 3rdParty/IrrXMLd")
 set(STR_TARGET_LIBS_RELEASE "3rdParty/assimp-vc140-mt 3rdParty/zlibstatic 3rdParty/IrrXML")
 

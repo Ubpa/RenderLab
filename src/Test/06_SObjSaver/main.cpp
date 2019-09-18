@@ -8,6 +8,8 @@
 
 #include <CppUtil/Basic/Image.h>
 
+#include <CppUtil/Basic/File.h>
+
 #include <ROOT_PATH.h>
 
 using namespace CppUtil;
@@ -68,10 +70,21 @@ int main() {
 		auto materialIron = CmptMaterial::New(sobj_IronSphere, bsdfIron);
 	}
 
-	sobj->Save(ROOT_PATH + "data/out/write.xml");
+	string fileName0 = ROOT_PATH + "data/out/write.sobj";
+	string fileName1 = ROOT_PATH + "data/out/writeAfterRead.sobj";
+	sobj->Save(fileName0);
 
-	auto newSObj = SObj::Load(ROOT_PATH + "data/out/write.xml");
-	newSObj->Save(ROOT_PATH + "data/out/writeAfterRead.xml");
+	auto newSObj = SObj::Load(fileName0);
+	if (newSObj)
+		newSObj->Save(fileName1);
+
+	if (File::ReadAllLines(fileName0).size() == File::ReadAllLines(fileName1).size()) {
+		printf("two files have same lines\n");
+	}
+	else {
+		printf("ERROR:\n"
+			"\t""two files are different\n");
+	}
 
 	return 0;
 }

@@ -150,13 +150,6 @@ set(CMAKE_MODULE_PATH
 set(USE_QT_OPENGL_API ON)
 find_package(Qt5 REQUIRED Widgets OpenGL)
 
-set(OptiX_INSTALL_DIR "C:/ProgramData/NVIDIA Corporation/OptiX SDK 6.0.0" CACHE PATH "Path to OptiX installed location." FORCE)
-
-#set(CUDA_TOOLKIT_ROOT_DIR CACHE PATH "cuda root")
-find_package(CUDA 5.0 REQUIRED)
-
-set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR})
-
 configure_file(config/config.in ${CMAKE_SOURCE_DIR}/config/config.out)
 install(FILES "${CMAKE_SOURCE_DIR}/config/config.out"
   DESTINATION config)
@@ -166,8 +159,6 @@ include_directories (
 	${PROJECT_SOURCE_DIR}/include
 	${PROJECT_SOURCE_DIR}/include/3rdParty
 	${CMAKE_BINARY_DIR}/config
-	${OptiX_INSTALL_DIR}/include
-	${CUDA_TOOLKIT_ROOT_DIR}/include
 	# $ENV{XXX_INCLUDE_PATH}
 	# ...
 )
@@ -176,13 +167,31 @@ link_directories (
 	${PROJECT_SOURCE_DIR}/lib/CppUtil/Basic
 	${PROJECT_SOURCE_DIR}/lib/CppUtil/OpenGL
 	${PROJECT_SOURCE_DIR}/lib/CppUtil/RTX
-	${OptiX_INSTALL_DIR}/lib64
-	#${CUDA_TOOLKIT_ROOT_DIR}/lib/X64
 	# $ENV{XXX_LIB_PATH}
 	# ...
 )
 
-FIND_PACKAGE( OpenMP REQUIRED)
+set(USE_DENOISE OFF CACHE BOOL OFF)
+if(USE_DENOISE)
+	add_definitions(-DUSE_DENOISE)
+
+	set(OptiX_INSTALL_DIR "C:/ProgramData/NVIDIA Corporation/OptiX SDK 6.0.0" CACHE PATH "Path to OptiX installed location." FORCE)
+
+	#set(CUDA_TOOLKIT_ROOT_DIR CACHE PATH "cuda root")
+	find_package(CUDA 5.0 REQUIRED)
+
+	set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR})
+	
+	include_directories (
+		${OptiX_INSTALL_DIR}/include
+		${CUDA_TOOLKIT_ROOT_DIR}/include
+	)
+	link_directories (
+		${OptiX_INSTALL_DIR}/lib64
+	)
+endif()
+
+FIND_PACKAGE(OpenMP REQUIRED)
 if(OPENMP_FOUND)
 	message("OPENMP FOUND")
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")

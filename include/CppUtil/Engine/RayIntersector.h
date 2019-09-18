@@ -19,11 +19,11 @@ namespace CppUtil {
 		class RayIntersector final : public Intersector {
 		public:
 			// isIntersect 用于判断与 Primitive 是否相交
-			// closestSObj 用于记录最近的SObj
+			// closestSObj 用于记录最近的 SObj
 			// n 用于记录最近的相交处的法向
 			struct Rst {
 				bool IsIntersect() const {
-					return closestSObj != nullptr;
+					return isIntersect;
 				}
 
 				Basic::Ptr<SObj> closestSObj;

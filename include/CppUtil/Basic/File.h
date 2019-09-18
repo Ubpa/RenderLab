@@ -33,6 +33,12 @@ namespace CppUtil {
 			bool IsValid() const;
 
 			void Close();
+
+		public: // static
+			static const std::string ReadAll(const std::string & fileName);
+			static const std::vector<std::string> ReadAllLines(const std::string & fileName);
+			static bool IsSame(const std::string & fileName0, const std::string & fileName1);
+
 		private:
 			std::string ModeToStr(Mode mode);
 

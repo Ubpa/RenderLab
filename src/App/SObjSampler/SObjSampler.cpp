@@ -20,7 +20,7 @@
 
 #include <CppUtil/OpenGL/Camera.h>
 
-#include <CppUtil/Basic/CSV.h>
+#include <CppUtil/Basic/CSVSaver.h>
 #include <CppUtil/Basic/Image.h>
 #include <CppUtil/Basic/LambdaOp.h>
 #include <CppUtil/Basic/OpQueue.h>
@@ -222,7 +222,7 @@ void SObjSampler::SaveData() {
 	string path = GetArgAs<string>(ENUM_ARG::csv);
 	string prefix = isNotFromRootPath ? "" : ROOT_PATH;
 
-	CSV<float> csv(keys);
+	CSVSaver<float> csvSaver(keys);
 
 	//auto indirectImg = ToPtr(new Image(512, 512, 3));
 	//auto directImg = ToPtr(new Image(512, 512, 3));
@@ -290,14 +290,14 @@ void SObjSampler::SaveData() {
 			lineVals.push_back(indirectIllum.y);
 			lineVals.push_back(indirectIllum.z);
 
-			csv.AddLine(lineVals);
+			csvSaver.AddLine(lineVals);
 		}
 	}
 	//indirectImg->SaveAsPNG(ROOT_PATH + "data/out/indirectIllum.png");
 	//directImg->SaveAsPNG(ROOT_PATH + "data/out/directIllum.png");
 	//globalImg->SaveAsPNG(ROOT_PATH + "data/out/global.png");
 
-	csv.Save(prefix + path);
+	csvSaver.Save(prefix + path);
 	File idMapFile(prefix + path + "_ID_name.txt", File::WRITE);
 	for (auto & pair : ID2name)
 		idMapFile.Printf("%d : %s\n", pair.first, pair.second.c_str());
