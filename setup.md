@@ -14,13 +14,13 @@
   - 将 `YOUR_PATH_TO/Qt5/msvc 2017 64/bin` 加入环境变量 `Path` 中
 
 
-- **【如果需要降噪】**下载 CUDA 9.0（因为 Tensorflow-GPU 需要 9.0 版本，故一直用的是 9.0 版本的 CUDA，没换成新版本），选**自定义**，不安装自带的驱动（自带的版本过低）
+-  **[如果需要降噪]** 下载 CUDA 9.0（因为 Tensorflow-GPU 需要 9.0 版本，故一直用的是 9.0 版本的 CUDA，没换成新版本），选**自定义**，不安装自带的驱动（自带的版本过低）
 
-- **【如果需要降噪】**下载 OptiX 6.0（要用到其中的 **Optix AI Denoiser**），保存在默认位置即可（否则 CMake 里边要修改下 `OptiX_INSTALL_DIR`）
+-  **[如果需要降噪]** 下载 OptiX 6.0（要用到其中的 **Optix AI Denoiser**），保存在默认位置即可（否则 CMake 里边要修改下 `OptiX_INSTALL_DIR`）
 
   - 将 OptiX 的 bin 目录（`C:\ProgramData\NVIDIA Corporation\OptiX SDK 6.0.0\bin64`）加到环境变量 `Path` 中
 
-- **【如果需要降噪】**更新 N 卡驱动到最新（**418.81 及以上**，这是 Optix 要求的，CUDA安装时装了旧版驱动的话就在这一步更新一下）
+-  **[如果需要降噪]** 更新 N 卡驱动到最新（**418.81 及以上**，这是 Optix 要求的，CUDA安装时装了旧版驱动的话就在这一步更新一下）
 
 - 用 CMake-GUI 建工程
 
@@ -34,7 +34,7 @@
 
     > 确保 `Optix_INSTALL_DIR`、`Optix_INCLUDE` 和 `CUDA_TOOLKIT+ROOT_DIR` 是正确的
 
-    - **【如果需要降噪】**勾选 `USE_DENOISE` 
+    -  **[如果需要降噪]** 勾选 `USE_DENOISE` 
 
   - generate
 

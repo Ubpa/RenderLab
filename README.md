@@ -66,7 +66,7 @@ Optix: 6.0
 
 驱动：418.81 or later is required
 
-安装方法见于 [setup.md](https://github.com/Ubpa/RenderLab/blob/master/setup.md) 
+安装方法见于 [setup.md](setup.md) 
 
 ## 3. TODO
 
