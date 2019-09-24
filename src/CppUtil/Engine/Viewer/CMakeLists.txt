@@ -20,6 +20,7 @@ set(STR_TARGET_SOURCES "${STR_TARGET_SOURCES} ${CMAKE_SOURCE_DIR}/include/CppUti
 set(STR_TARGET_SOURCES "${STR_TARGET_SOURCES} ${CMAKE_SOURCE_DIR}/include/CppUtil/Engine/DirectIllumRaster.h")
 set(STR_TARGET_SOURCES "${STR_TARGET_SOURCES} ${CMAKE_SOURCE_DIR}/include/CppUtil/Engine/DeferredRaster.h")
 set(STR_TARGET_SOURCES "${STR_TARGET_SOURCES} ${CMAKE_SOURCE_DIR}/include/CppUtil/Engine/ForwardNPR.h")
+set(STR_TARGET_SOURCES "${STR_TARGET_SOURCES} ${CMAKE_SOURCE_DIR}/include/CppUtil/Engine/LTCTex.h")
 
 #多个库文件用 [空格] 分隔，如果为空，就输入[一个空格]
 #如：set(STR_TARGET_LIBS "lib1.lib lib2.lib")

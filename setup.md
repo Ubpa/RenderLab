@@ -30,9 +30,9 @@
 
   - build 目录就是 根目录下的 build 文件夹（ 自行创建 `YOUR_PATH_TO/RenderLab/build`） 
 
-  - configure，选 **Vistual Studio 15 2017 Win64**，CMake 会自动找到 CUDA 和 OptiX
+  - configure，选 **Vistual Studio 15 2017 Win64**，**[如果需要降噪]** CMake 会自动找到 CUDA 和 OptiX
 
-    > 确保 `Optix_INSTALL_DIR`、`Optix_INCLUDE` 和 `CUDA_TOOLKIT+ROOT_DIR` 是正确的
+    > **[如果需要降噪]** 确保 `Optix_INSTALL_DIR`、`Optix_INCLUDE` 和 `CUDA_TOOLKIT+ROOT_DIR` 是正确的
 
     -  **[如果需要降噪]** 勾选 `USE_DENOISE` 
 

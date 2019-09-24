@@ -4,6 +4,7 @@
 #include <CppUtil/Engine/Raster.h>
 
 #include <CppUtil/OpenGL/FBO.h>
+#include <CppUtil/OpenGL/Texture.h>
 
 #include <CppUtil/Basic/UGM/Transform.h>
 #include <CppUtil/Basic/TypeMap.h>
@@ -90,6 +91,9 @@ namespace CppUtil{
 			OpenGL::Shader postProcessShader;
 
 			OpenGL::Shader curMaterialShader;
+
+			OpenGL::Texture ltcTex1;
+			OpenGL::Texture ltcTex2;
 
 			static const int maxPointLights;// 8
 			static const int maxDirectionalLights;// 8

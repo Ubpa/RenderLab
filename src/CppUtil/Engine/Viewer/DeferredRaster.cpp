@@ -37,6 +37,8 @@
 
 #include <CppUtil/Basic/Image.h>
 
+#include <CppUtil/Engine/LTCTex.h>
+
 #include <ROOT_PATH.h>
 
 using namespace Define;
@@ -163,6 +165,11 @@ void DeferredRaster::InitShader_DirectLight() {
 	for (int i = 0; i < maxSpotLights; i++)
 		directLightShader.SetInt("spotLightDepthMap" + to_string(i), idx++);
 
+	ltcTex1 = Texture(LTCTex::SIZE, LTCTex::SIZE, LTCTex::data1, GL_FLOAT, GL_RGBA, GL_RGBA32F, Texture::MAG_FILTER::LINEAR);
+	ltcTex2 = Texture(LTCTex::SIZE, LTCTex::SIZE, LTCTex::data2, GL_FLOAT, GL_RGBA, GL_RGBA32F, Texture::MAG_FILTER::LINEAR);
+	directLightShader.SetInt("LTCTex1", idx++);
+	directLightShader.SetInt("LTCTex2", idx++);
+
 	directLightShader.SetFloat("lightNear", lightNear);
 	directLightShader.SetFloat("lightFar", lightFar);
 
@@ -282,6 +289,11 @@ void DeferredRaster::Pass_DirectLight() {
 
 		sldmGenerator->GetDepthMap(cmptLight).Use(spotLightBase + spotLightIdx);
 	}
+
+	// ltc
+	const int ltcBase = spotLightBase + maxSpotLights;
+	ltcTex1.Use(ltcBase);
+	ltcTex2.Use(ltcBase + 1);
 
 	pOGLW->GetVAO(ShapeType::Screen).Draw(directLightShader);
 }

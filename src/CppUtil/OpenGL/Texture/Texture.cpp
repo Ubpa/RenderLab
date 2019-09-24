@@ -30,13 +30,14 @@ Texture::Texture(PtrC<Image> img) : ID(0), type(ENUM_TYPE_2D_DYNAMIC) {
 	SetImg(*img);
 }
 
-Texture::Texture(uint width, uint height, const float * data, uint dataType, uint srcFormat, uint internalFormat) {
+Texture::Texture(uint width, uint height, const float * data, uint dataType, uint srcFormat, uint internalFormat, MAG_FILTER magFilter) {
 	glGenTextures(1, &ID);
 	glBindTexture(GL_TEXTURE_2D, ID);
 	glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, srcFormat, dataType, data);
 	//glGenerateMipmap(GL_TEXTURE_2D);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	uint glMagFilter = magFilter == MAG_FILTER::NEAREST ? GL_NEAREST : GL_LINEAR;
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, glMagFilter);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, glMagFilter);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	type = ENUM_TYPE_2D;

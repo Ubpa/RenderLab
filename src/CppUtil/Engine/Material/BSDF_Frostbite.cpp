@@ -30,8 +30,8 @@ const Vec3f BSDF_Frostbite::Fr_DisneyDiffuse(const Normalf & wo, const Normalf &
 	float energyBias = Math::Lerp(0.f, 0.5f, linearRoughness);
 	float energyFactor = Math::Lerp(1.f, 1.f / 1.51f, linearRoughness);
 	float fd90 = energyBias + 2.f * HoWi2 * linearRoughness;
-	float lightScatter = 1.f + fd90 * pow(1.f - NoWi * NoWi, 5);
-	float viewScatter = 1.f + fd90 * pow(1.f - NoWo * NoWo, 5);
+	float lightScatter = 1.f + fd90 * pow(1.f - NoWi, 5);
+	float viewScatter = 1.f + fd90 * pow(1.f - NoWo, 5);
 
 	return lightScatter * viewScatter * energyFactor;
 }

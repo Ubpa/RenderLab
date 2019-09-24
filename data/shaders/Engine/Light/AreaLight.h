@@ -20,7 +20,23 @@ vec3 AreaLight_Illuminance(AreaLight light, vec3 vertex, vec3 norm);
 
 vec3 AreaLight_MRP(AreaLight light, vec3 vertex, vec3 R);
 
+void AreaLight_Corners(AreaLight light, out vec3 p0, out vec3 p1, out vec3 p2, out vec3 p3);
+
 // ------------------------------ й╣ож ------------------------------
+
+// p0 BL, p1 BR, p2 TR, p3 TL
+void AreaLight_Corners(AreaLight light, out vec3 p0, out vec3 p1, out vec3 p2, out vec3 p3) {
+	float a = light.width * 0.5;
+	float b = light.height * 0.5;
+	vec3 verticle = cross(light.dir, light.horizontal);
+	vec3 halfWidthVec = light.horizontal * a;
+	vec3 halfHeightVec = verticle * b;
+
+	p0 = light.position - halfHeightVec - halfWidthVec;
+	p1 = light.position - halfHeightVec + halfWidthVec;
+	p2 = light.position + halfHeightVec + halfWidthVec;
+	p3 = light.position + halfHeightVec - halfWidthVec;
+}
 
 vec3 AreaLight_Illuminance(AreaLight light, vec3 vertex, vec3 norm) {
 	vec3 fragToLight = light.position - vertex;
@@ -35,15 +51,9 @@ vec3 AreaLight_Illuminance(AreaLight light, vec3 vertex, vec3 norm) {
 	float a = light.width * 0.5;
 	float b = light.height * 0.5;
 	float solidAngle = 4 * asin(a*b / sqrt((a*a + dist2) * (b*b + dist2)));
-
-	vec3 verticle = cross(light.dir, light.horizontal);
-	vec3 halfWidthVec = light.horizontal * a;
-	vec3 halfHeightVec = verticle * b;
-
-	vec3 p0 = light.position - halfWidthVec - halfHeightVec;
-	vec3 p1 = light.position - halfWidthVec + halfHeightVec;
-	vec3 p2 = light.position + halfWidthVec - halfHeightVec;
-	vec3 p3 = light.position + halfWidthVec + halfHeightVec;
+	
+	vec3 p0, p1, p2, p3;
+	AreaLight_Corners(light, p0, p1, p2, p3);
 
 	float illuminanceFactor = solidAngle * 0.2 * (
 		max(0, dot(normalize(p0 - vertex), norm)) +

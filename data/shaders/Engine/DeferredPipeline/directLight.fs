@@ -12,6 +12,7 @@
 #include "../Light/PointLight.h"
 #include "../Light/SpotLight.h"
 #include "../Light/DiskLight.h"
+#include "../Light/LTC.h"
 
 // ----------------- 输入输出
 
@@ -289,6 +290,13 @@ void main() {
 	
 	// area light
 	for(int i=0; i<numAreaLight; i++) {
+#if 1
+		vec3 F0 = MetalWorkflowF0(albedo, metallic);
+		vec3 spec = LTC_Spec(norm, wo, pos, F0, roughness, areaLights[i]);
+		vec3 FrR = SchlickFrR(wo, norm, F0, roughness);
+		vec3 diffuse = (1 - metallic) * albedo * FrR * LTC_Diffuse(norm, wo, pos, roughness, areaLights[i]);
+		result += diffuse + spec;
+#else
 		vec3 illuminanceD = AreaLight_Illuminance(areaLights[i], pos, norm);
 		
 		vec3 MRP = AreaLight_MRP(areaLights[i], pos, R);
@@ -299,11 +307,12 @@ void main() {
 		
 		vec3 fd, fs;
 		BRDF(fd, fs, ID, norm, wo, wi, albedo, metallic, roughness);
-
+		
 		float attenuation = step(0, dot(-wi, areaLights[i].dir)) / max(0.0001, dist2);
 		vec3 illuminanceS = areaLights[i].luminance * attenuation;
 		float cosTheta = max(0, dot(wi, norm));
 		result += illuminanceD * fd + cosTheta * illuminanceS * fs;
+#endif
 	}
 	
 	// capsule light

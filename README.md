@@ -110,6 +110,13 @@ Optix: 6.0
     - [ ] planar reflection
 - [ ] 相机
 
+### Rect LTC
+
+- [ ] LUT
+  - [x] GGX LTC LUT (matrix(4) + norm(2) + sphere(1))
+  - [ ] Disney diffuse LUT (matrix(4))
+- [ ] Texture
+
 ### Impotant
 
 - [x] 自己编写数学运算库，放弃 glm
@@ -180,6 +187,7 @@ Optix: 6.0
 - [ ] 保存 Code 模式的 Trimesh
 - [ ] 优化 intersector
 - [x] 清除 useless 参数
+- [ ] AreaLight 改名为 RectLight
 
 ### Bugs
 

@@ -27,7 +27,11 @@ namespace CppUtil {
 			Texture();
 			Texture(uint ID, ENUM_TYPE type);
 			Texture(ENUM_TYPE type);
-			Texture(uint width, uint height, const float * data, uint dataType, uint srcFormat, uint internalFormat);
+			enum class MAG_FILTER {
+				NEAREST,
+				LINEAR
+			};
+			Texture(uint width, uint height, const float * data, uint dataType, uint srcFormat, uint internalFormat, MAG_FILTER magFilter = MAG_FILTER::NEAREST);
 			Texture(const std::vector<std::string> & skybox);
 			Texture(const std::vector<Basic::PtrC<Basic::Image>> & skyboxImgs);
 			Texture(const std::string & path, bool flip = false, bool gammaCorrection = false);
