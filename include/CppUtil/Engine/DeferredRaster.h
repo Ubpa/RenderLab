@@ -92,8 +92,8 @@ namespace CppUtil{
 
 			OpenGL::Shader curMaterialShader;
 
-			OpenGL::Texture ltcTex1;
-			OpenGL::Texture ltcTex2;
+			OpenGL::Texture ltcTex1; // GGX m(0,0) m(2,0) m(0,2) m(2,2)
+			OpenGL::Texture ltcTex2; // GGX norm, fresnel, 0(unused), sphere
 
 			static const int maxPointLights;// 8
 			static const int maxDirectionalLights;// 8

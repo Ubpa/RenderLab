@@ -294,7 +294,7 @@ void main() {
 		vec3 F0 = MetalWorkflowF0(albedo, metallic);
 		vec3 spec = LTC_Spec(norm, wo, pos, F0, roughness, areaLights[i]);
 		vec3 FrR = SchlickFrR(wo, norm, F0, roughness);
-		vec3 diffuse = (1 - metallic) * albedo * FrR * LTC_Diffuse(norm, wo, pos, roughness, areaLights[i]);
+		vec3 diffuse = (1 - metallic) * albedo * FrR * INV_PI * LTC_Diffuse(norm, wo, pos, roughness, areaLights[i]);
 		result += diffuse + spec;
 #else
 		vec3 illuminanceD = AreaLight_Illuminance(areaLights[i], pos, norm);

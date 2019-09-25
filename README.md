@@ -110,12 +110,12 @@ Optix: 6.0
     - [ ] planar reflection
 - [ ] 相机
 
-### Rect LTC
+### LTC
 
-- [ ] LUT
-  - [x] GGX LTC LUT (matrix(4) + norm(2) + sphere(1))
-  - [ ] Disney diffuse LUT (matrix(4))
+- [x] GGX LTC LUT (matrix(4) + norm(2) + sphere(1))
 - [ ] Texture
+- [ ] disk
+- [ ] sphere
 
 ### Impotant
 
