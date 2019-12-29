@@ -10,6 +10,11 @@ namespace CppUtil {
 		template<typename V, typename E, typename P>
 		class TVertex : public HeapObj {
 		public:
+			using V_t = V;
+			using E_t = E;
+			using P_t = P;
+
+		public:
 			const Ptr<THalfEdge<V,E,P>> HalfEdge() { return halfEdge.lock(); }
 			void SetHalfEdge(Ptr<THalfEdge<V, E, P>> he) { halfEdge = he; }
 			bool IsIsolated() const { return halfEdge.expired(); }

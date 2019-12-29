@@ -10,30 +10,32 @@ using namespace CppUtil;
 class V;
 class E;
 class P;
-class V : public TVertex<V, E, P> {
+class V : public TVertex<V,E,P> {
 protected:
 	virtual ~V() = default;
 public:
 	string name;
 };
-class E : public TEdge<V, E, P> {};
-class P : public TPolygon<V, E, P> {};
-
+class E : public TEdge<V, E, P> {
+protected:
+	virtual ~E() = default;
+public:
+	const string Name() { return HalfEdge()->Origin()->name + "-" + HalfEdge()->End()->name; }
+};
+class P : public TPolygon<V, E, P> {
+protected:
+	virtual ~P() = default;
+};
 
 ostream & operator<< (ostream & os, Ptr<V> v) {
 	os << v->name;
 	return os;
 }
 
-ostream & operator<< (ostream & os, Ptr<HEMesh<V,E,P>::HE> he) {
+ostream & operator<< (ostream & os, Ptr<HEMesh<V>::HE> he) {
 	os << he->Origin() << "->" << he->End()
 		<< ", next " << he->Next()->Origin() << "->" << he->Next()->End()
 		<< ", pair " << he->Pair()->Origin() << "->" << he->Pair()->End();
-	return os;
-}
-
-ostream & operator<< (ostream & os, Ptr<E> e) {
-	os << e->HalfEdge()->Origin() << "-" << e->HalfEdge()->End();
 	return os;
 }
 
@@ -47,7 +49,7 @@ ostream & operator<< (ostream & os, Ptr<P> p) {
 	return os;
 }
 
-void Print(Ptr<HEMesh<V, E, P>> mesh) {
+void Print(Ptr<HEMesh<V>> mesh) {
 	cout << " V:" << mesh->Vertices().size() << endl;
 	for (auto v : mesh->Vertices())
 		cout << "    "<< v->name << endl;
@@ -58,7 +60,7 @@ void Print(Ptr<HEMesh<V, E, P>> mesh) {
 
 	cout << " E:" << mesh->Edges().size() << endl;
 	for (auto e : mesh->Edges())
-		cout << "    " << e << endl;
+		cout << "    " << e->Name() << endl;
 
 	cout << " P:" << mesh->Polygons().size() << endl << endl;
 	for (auto p : mesh->Polygons())
@@ -68,8 +70,8 @@ void Print(Ptr<HEMesh<V, E, P>> mesh) {
 }
 
 int main() {
-	auto mesh = HEMesh<V, E, P>::New();
-
+	auto mesh = HEMesh<V>::New();
+	
 	cout << "add v0, v1, v2" << endl;
 	auto v0 = mesh->AddVertex();
 	v0->name = "v0";

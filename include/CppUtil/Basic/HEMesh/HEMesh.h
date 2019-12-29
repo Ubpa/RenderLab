@@ -12,19 +12,16 @@
 
 namespace CppUtil {
 	namespace Basic {
-		template<typename V, typename E, typename P//,
-			//typename = std::enable_if_t<std::is_base_of_v<TVertex<V,E,P>, V>>,
-			//typename = std::enable_if_t<std::is_base_of_v<TEdge<V,E,P>, E>>,
-			//typename = std::enable_if_t<std::is_base_of_v<TPolygon<V,E,P>, P>>
+		template<typename V,
+			typename = std::enable_if_t<std::is_base_of_v<TVertex<V, typename V::E_t, typename V::P_t>, V>>,
+			typename = std::enable_if_t<std::is_base_of_v<TEdge<V, typename V::E_t, typename V::P_t>, typename V::E_t>>,
+			typename = std::enable_if_t<std::is_base_of_v<TPolygon<V, typename V::E_t, typename V::P_t>, typename V::P_t>>
 		>
-		class HEMesh : public HeapObj {
+		class _HEMesh : public HeapObj {
 		public:
+			using E = typename V::E_t;
+			using P = typename V::P_t;
 			using HE = THalfEdge<V, E, P>;
-		public:
-			HEMesh() = default;
-
-		public:
-			static const Ptr<HEMesh> New() { return Basic::New<HEMesh>(); }
 
 		public:
 			const std::unordered_set<Ptr<V>> & Vertices() { return vertices; }
@@ -98,12 +95,12 @@ namespace CppUtil {
 
 			const Ptr<E> AddEdge(Ptr<V> v0, Ptr<V> v1) {
 				if (v0 == v1) {
-					printf("ERROR::HEMesh::AddEdge\n"
+					printf("ERROR::_HEMesh::AddEdge\n"
 						"\t""v0 == v1\n");
 					return nullptr;
 				}
 				if (IsConnected(v0, v1)) {
-					printf("ERROR::HEMesh::AddEdge\n"
+					printf("ERROR::_HEMesh::AddEdge\n"
 						"\t""v0 is already connected with v1\n");
 					return nullptr;
 				}
@@ -157,19 +154,19 @@ namespace CppUtil {
 
 			const Ptr<P> AddPolygon(const std::vector<Ptr<HE>> heLoop) {
 				if (heLoop.size() <= 1) {
-					printf("ERROR::HEMesh::AddPolygon:\n"
+					printf("ERROR::_HEMesh::AddPolygon:\n"
 						"\t""heLoop's size <= 1\n");
 					return nullptr;
 				}
 				for (int i = 0; i < heLoop.size(); i++) {
 					if (!heLoop[i]->IsFree()) {
-						printf("ERROR::HEMesh::AddPolygon:\n"
+						printf("ERROR::_HEMesh::AddPolygon:\n"
 							"\t""heLoop[%d] isn't free\n", i);
 						return nullptr;
 					}
 					int next = (i + 1) % heLoop.size();
 					if (heLoop[i]->Next() != heLoop[next]) {
-						printf("ERROR::HEMesh::AddPolygon:\n"
+						printf("ERROR::_HEMesh::AddPolygon:\n"
 							"\t""heLoop[%d]'s next isn't heLoop[%d]\n", i, next);
 						return nullptr;
 					}
@@ -236,13 +233,19 @@ namespace CppUtil {
 			}
 
 		protected:
-			virtual ~HEMesh() = default;
+			virtual ~_HEMesh() = default;
 
 		private:
 			std::unordered_set<Ptr<V>> vertices;
 			std::unordered_set<Ptr<HE>> halfEdges;
 			std::unordered_set<Ptr<E>> edges;
 			std::unordered_set<Ptr<P>> polygons;
+		};
+
+		template<typename V>
+		class HEMesh : public _HEMesh<V> {
+		public:
+			static const Ptr<HEMesh> New() { return Basic::New<HEMesh>(); }
 		};
 	}
 }
