@@ -5,6 +5,7 @@
 
 namespace CppUtil {
 	namespace Engine {
+		// renderable
 		class Primitive : public Shape {
 		protected:
 			Primitive() = default;

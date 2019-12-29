@@ -180,6 +180,10 @@ Optix: 6.0
 - [ ] 重构序列化
 - [ ] Bloom
 - [ ] 重构 MicrofacetDistribution
+- [ ] opengl 的 c++ 版本
+- [ ] 半边结构
+- [ ] loop
+- [ ] 参数化
 
 ### Unimportant
 
