@@ -2,24 +2,24 @@
 #ifndef _CPPUTIL_BASIC_HEMESH_BASE_HEMESH_H_
 #define _CPPUTIL_BASIC_HEMESH_BASE_HEMESH_H_
 
-#include <CppUtil/Basic/HEMesh/BaseVertex.h>
-#include <CppUtil/Basic/HEMesh/BaseHalfEdge.h>
-#include <CppUtil/Basic/HEMesh/BaseEdge.h>
-#include <CppUtil/Basic/HEMesh/BasePolygon.h>
+#include <CppUtil/Basic/HEMesh/TVertex.h>
+#include <CppUtil/Basic/HEMesh/THalfEdge.h>
+#include <CppUtil/Basic/HEMesh/TEdge.h>
+#include <CppUtil/Basic/HEMesh/TPolygon.h>
 
 #include <vector>
 #include <unordered_set>
 
 namespace CppUtil {
 	namespace Basic {
-
-		template<typename V = BaseVertex, typename HE = BaseHalfEdge, typename E = BaseEdge, typename P = BasePolygon,
-			typename = std::enable_if_t<std::is_base_of_v<BaseVertex, V>>,
-			typename = std::enable_if_t<std::is_base_of_v<BaseHalfEdge, HE>>,
-			typename = std::enable_if_t<std::is_base_of_v<BaseEdge, E>>,
-			typename = std::enable_if_t<std::is_base_of_v<BasePolygon, P>>
+		template<typename V, typename E, typename P//,
+			//typename = std::enable_if_t<std::is_base_of_v<TVertex<V,E,P>, V>>,
+			//typename = std::enable_if_t<std::is_base_of_v<TEdge<V,E,P>, E>>,
+			//typename = std::enable_if_t<std::is_base_of_v<TPolygon<V,E,P>, P>>
 		>
 		class HEMesh : public HeapObj {
+		public:
+			using HE = THalfEdge<V, E, P>;
 		public:
 			HEMesh() = default;
 
