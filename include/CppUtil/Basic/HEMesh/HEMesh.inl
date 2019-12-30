@@ -6,7 +6,7 @@ const Ptr<V> HEMesh<V, _0, _1, _2>::AddVertex() {
 }
 
 template<typename V, typename _0, typename _1, typename _2>
-const Ptr<typename V::E_t> HEMesh<V, _0, _1, _2>::AddEdge(Ptr<V> v0, Ptr<V> v1) {
+const Ptr<typename V::E_t> HEMesh<V, _0, _1, _2>::AddEdge(Ptr<V> v0, Ptr<V> v1, Ptr<E> e) {
 	if (v0 == v1) {
 		printf("ERROR::HEMesh::AddEdge\n"
 			"\t""v0 == v1\n");
@@ -18,7 +18,6 @@ const Ptr<typename V::E_t> HEMesh<V, _0, _1, _2>::AddEdge(Ptr<V> v0, Ptr<V> v1) 
 		return nullptr;
 	}
 
-	auto e = Basic::New<E>();
 	auto he0 = Basic::New<HE>();
 	auto he1 = Basic::New<HE>();
 	edges.insert(e);
@@ -251,4 +250,55 @@ Ptr<V> HEMesh<V, _0, _1, _2>::SpiltEdge(Ptr<E> e) {
 	AddPolygon({ he43,he31,he14 });
 
 	return v4;
+}
+
+template<typename V, typename _0, typename _1, typename _2>
+bool HEMesh<V, _0, _1, _2>::FlipEdge(Ptr<E> e) {
+	auto he01 = e->HalfEdge();
+	auto he10 = he01->Pair();
+
+	auto poly0 = he01->Polygon();
+	auto poly1 = he10->Polygon();
+	
+	if (poly0 == poly1) {
+		printf("ERROR::HEMesh::SpiltEdge:\n"
+			"\t""two side of edge are same\n");
+		return false;
+	}
+
+	auto v0 = he01->Origin();
+	auto v1 = he10->Origin();
+
+	auto he02 = he10->Next();
+	auto he13 = he01->Next();
+	
+	auto v2 = he02->End();
+	auto v3 = he13->End();
+
+	auto heLoop0 = poly0->BoundaryHEs(he13->Next(), he01);
+	auto heLoop1 = poly1->BoundaryHEs(he02->Next(), he10);
+
+	RemoveEdge(e);
+	AddEdge(v2, v3, e);
+
+	auto he23 = e->HalfEdge();
+	auto he32 = he23->Pair();
+	
+	heLoop0.push_back(he02);
+	heLoop0.push_back(he23);
+	heLoop1.push_back(he13);
+	heLoop1.push_back(he32);
+
+	AddPolygon(heLoop0);
+	AddPolygon(heLoop1);
+
+	return true;
+}
+
+template<typename V, typename _0, typename _1, typename _2>
+void HEMesh<V, _0, _1, _2>::Clear() {
+	vertices.clear();
+	halfEdges.clear();
+	edges.clear();
+	polygons.clear();
 }

@@ -155,5 +155,44 @@ int main() {
 		Print(mesh);
 	}
 
+	// test flip edge
+	{
+		cout
+			<< "----------------------" << endl
+			<< "    test FlipEdge     " << endl
+			<< "----------------------" << endl;
+
+		auto mesh = HEMesh<V>::New();
+
+		auto v0 = mesh->AddVertex();
+		auto v1 = mesh->AddVertex();
+		auto v2 = mesh->AddVertex();
+		auto v3 = mesh->AddVertex();
+		v0->name = "v0";
+		v1->name = "v1";
+		v2->name = "v2";
+		v3->name = "v3";
+
+		auto e01 = mesh->AddEdge(v0, v1);
+		auto e12 = mesh->AddEdge(v1, v2);
+		auto e02 = mesh->AddEdge(v0, v2);
+		auto e23 = mesh->AddEdge(v2, v3);
+		auto e30 = mesh->AddEdge(v3, v0);
+
+		auto he01 = e01->HalfEdge();
+		auto he12 = e12->HalfEdge();
+		auto he02 = e02->HalfEdge();
+		auto he23 = e23->HalfEdge();
+		auto he30 = e30->HalfEdge();
+		auto he20 = he02->Pair();
+
+		mesh->AddPolygon({ he01,he12,he20 });
+		mesh->AddPolygon({ he02,he23,he30 });
+
+		Print(mesh);
+		mesh->FlipEdge(e02);
+		Print(mesh);
+	}
+
 	return 0;
 }

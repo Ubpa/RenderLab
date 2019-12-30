@@ -45,7 +45,7 @@ namespace CppUtil {
 
 			const Ptr<V> AddVertex();
 			// e's halfedge is form v0 to v1
-			const Ptr<E> AddEdge(Ptr<V> v0, Ptr<V> v1);
+			const Ptr<E> AddEdge(Ptr<V> v0, Ptr<V> v1, Ptr<E> e = Basic::New<E>());
 			// polygon's halfedge is heLoop[0]
 			const Ptr<P> AddPolygon(const std::vector<Ptr<HE>> heLoop);
 			void RemovePolygon(Ptr<P> polygon);
@@ -53,6 +53,9 @@ namespace CppUtil {
 			void RemoveVertex(Ptr<V> v);
 
 			Ptr<V> SpiltEdge(Ptr<E> e);
+			bool FlipEdge(Ptr<E> e);
+
+			void Clear();
 
 		protected:
 			virtual ~HEMesh() = default;

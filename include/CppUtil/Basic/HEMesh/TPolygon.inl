@@ -1,11 +1,11 @@
 template<typename V, typename E, typename P>
-const std::vector<Ptr<THalfEdge<V,E,P>>> TPolygon<V,E,P>::BoundaryHEs() {
+const std::vector<Ptr<THalfEdge<V, E, P>>> TPolygon<V, E, P>::BoundaryHEs(Ptr<HE> begin, Ptr<HE> end) {
 	std::vector<Ptr<HE>> hes;
-	auto he = HalfEdge();
+	auto he = begin;
 	do {
 		hes.push_back(he);
 		he = he->Next();
-	} while (he != HalfEdge());
+	} while (he != end);
 	return hes;
 }
 
