@@ -24,12 +24,7 @@ namespace CppUtil {
 			void SetPolygon(Ptr<P> p) { polygon = p; }
 
 			bool IsFree() const { return polygon.expired(); }
-			const Ptr<THalfEdge> Pre() {
-				Ptr<THalfEdge> he;
-				for (he = This<THalfEdge>(); he->Next()->Next() != This<THalfEdge>(); he = he->Next())
-					;// empty
-				return he->Next();
-			}
+			const Ptr<THalfEdge> Pre();
 			const Ptr<THalfEdge> RotateNext() { return Pair()->Next(); }
 
 		private:
@@ -40,6 +35,8 @@ namespace CppUtil {
 			WPtr<E> edge;
 			WPtr<P> polygon;
 		};
+
+#include <CppUtil/Basic/HEMesh/THalfEdge.inl>
 	}
 }
 
