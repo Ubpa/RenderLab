@@ -7,8 +7,8 @@
 #include <CppUtil/Basic/HEMesh/TEdge.h>
 #include <CppUtil/Basic/HEMesh/TPolygon.h>
 
-#include <vector>
-#include <unordered_set>
+#include <CppUtil/Basic/random_set.h>
+
 #include <assert.h>
 
 namespace CppUtil {
@@ -28,15 +28,15 @@ namespace CppUtil {
 			static const Ptr<HEMesh> New() { return Basic::New<HEMesh>(); }
 
 		public:
-			const std::unordered_set<Ptr<V>> & Vertices() { return vertices; }
-			const std::unordered_set<Ptr<HE>> & HalfEdges() { return halfEdges; }
-			const std::unordered_set<Ptr<E>> & Edges() { return edges; }
-			const std::unordered_set<Ptr<P>> & Polygons() { return polygons; }
+			const std::vector<Ptr<V>> & Vertices() { return vertices.vec(); }
+			const std::vector<Ptr<HE>> & HalfEdges() { return halfEdges.vec(); }
+			const std::vector<Ptr<E>> & Edges() { return edges.vec(); }
+			const std::vector<Ptr<P>> & Polygons() { return polygons.vec(); }
 
-			const std::unordered_set<PtrC<V>> Vertices() const { return Const(vertices); }
-			const std::unordered_set<PtrC<HE>> HalfEdges() const { return Const(halfEdges); }
-			const std::unordered_set<PtrC<E>> Edges() const { return Const(edges); }
-			const std::unordered_set<PtrC<P>> Polygons() const { return Const(polygons); }
+			const std::vector<PtrC<V>> Vertices() const { return Const(const_cast<HEMesh*>(this)->Vertices()); }
+			const std::vector<PtrC<HE>> HalfEdges() const { return Const(const_cast<HEMesh*>(this)->HalfEdges()); }
+			const std::vector<PtrC<E>> Edges() const { return Const(const_cast<HEMesh*>(this)->Edges()); }
+			const std::vector<PtrC<P>> Polygons() const { return Const(const_cast<HEMesh*>(this)->Polygons()); }
 
 			int NumVertices() const { return vertices.size(); }
 			int NumEdges() const { return halfEdges.size(); }
@@ -56,15 +56,16 @@ namespace CppUtil {
 			bool FlipEdge(Ptr<E> e);
 
 			void Clear();
+			void Reserve(size_t n);
 
 		protected:
 			virtual ~HEMesh() = default;
 
 		private:
-			std::unordered_set<Ptr<V>> vertices;
-			std::unordered_set<Ptr<HE>> halfEdges;
-			std::unordered_set<Ptr<E>> edges;
-			std::unordered_set<Ptr<P>> polygons;
+			random_set<Ptr<V>> vertices;
+			random_set<Ptr<HE>> halfEdges;
+			random_set<Ptr<E>> edges;
+			random_set<Ptr<P>> polygons;
 		};
 
 #include<CppUtil/Basic/HEMesh/HEMesh.inl>

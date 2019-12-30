@@ -31,6 +31,15 @@ const Ptr<THalfEdge<V, E, P>> TVertex<V, E, P>::FindFreeIncident(){
 }
 
 template<typename V, typename E, typename P>
+const Ptr<THalfEdge<V, E, P>> TVertex<V, E, P>::FindHalfEdge(PtrC<V> v0, PtrC<V> v1) {
+	for (auto he : v0->AjdOutHEs()) {
+		if (he->End() == v1)
+			return he;
+	}
+	return nullptr;
+}
+
+template<typename V, typename E, typename P>
 const std::vector<Ptr<V>> TVertex<V, E, P>::AdjVertices() {
 	std::vector<Ptr<V>> adjVs;
 	for (auto he : AjdOutHEs())

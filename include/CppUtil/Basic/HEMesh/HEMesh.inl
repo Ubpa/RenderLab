@@ -23,7 +23,6 @@ const Ptr<typename V::E_t> HEMesh<V, _0, _1, _2>::AddEdge(Ptr<V> v0, Ptr<V> v1, 
 	edges.insert(e);
 	halfEdges.insert(he0);
 	halfEdges.insert(he1);
-
 	// [init]
 	e->SetHalfEdge(he0);
 
@@ -301,4 +300,12 @@ void HEMesh<V, _0, _1, _2>::Clear() {
 	halfEdges.clear();
 	edges.clear();
 	polygons.clear();
+}
+
+template<typename V, typename _0, typename _1, typename _2>
+void HEMesh<V, _0, _1, _2>::Reserve(size_t n) {
+	vertices.reserve(n);
+	halfEdges.reserve(n);
+	edges.reserve(n);
+	polygons.reserve(n);
 }
