@@ -15,7 +15,15 @@ namespace CppUtil {
 			const Ptr<V> Origin() { return origin.lock(); }
 			const Ptr<E> Edge() { return edge.lock(); }
 			const Ptr<P> Polygon() { return polygon.lock(); }
+
+			const PtrC<THalfEdge> Next() const { return const_cast<THalfEdge*>(this)->Next(); }
+			const PtrC<THalfEdge> Pair() const { return const_cast<THalfEdge*>(this)->Pair(); }
+			const PtrC<V> Origin() const { return const_cast<THalfEdge*>(this)->Origin(); }
+			const PtrC<E> Edge() const { return const_cast<THalfEdge*>(this)->Edge(); }
+			const PtrC<P> Polygon() const { return const_cast<THalfEdge*>(this)->Polygon(); }
+
 			const Ptr<V> End() { return pair.lock()->Origin(); }
+			const PtrC<V> End() const { return const_cast<THalfEdge*>(this)->End(); }
 
 			void SetNext(Ptr<THalfEdge> he) { next = he; }
 			void SetPair(Ptr<THalfEdge> he) { pair = he; }
@@ -25,7 +33,9 @@ namespace CppUtil {
 
 			bool IsFree() const { return polygon.expired(); }
 			const Ptr<THalfEdge> Pre();
+			const PtrC<THalfEdge> Pre() const { return const_cast<THalfEdge*>(this)->Pre(); }
 			const Ptr<THalfEdge> RotateNext() { return Pair()->Next(); }
+			const PtrC<THalfEdge> RotateNext() const { return const_cast<THalfEdge*>(this)->RotateNext(); }
 
 		private:
 			WPtr<THalfEdge> next;

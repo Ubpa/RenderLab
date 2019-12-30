@@ -16,16 +16,26 @@ namespace CppUtil {
 
 		public:
 			const Ptr<THalfEdge<V,E,P>> HalfEdge() { return halfEdge.lock(); }
+			const PtrC<THalfEdge<V, E, P>> HalfEdge() const { return const_cast<TVertex*>(this)->HalfEdge(); }
+
 			void SetHalfEdge(Ptr<THalfEdge<V, E, P>> he) { halfEdge = he; }
 
 			bool IsIsolated() const { return halfEdge.expired(); }
 
 			const std::vector<Ptr<HE>> AjdOutHEs();
+			const std::vector<PtrC<HE>> AjdOutHEs() const { return Const(const_cast<TVertex*>(this)->AjdOutHEs()); }
+
 			const std::vector<Ptr<E>> AdjEdges();
+			const std::vector<PtrC<HE>> AdjEdges() const { return Const(const_cast<TVertex*>(this)->AdjEdges()); }
+
 			const Ptr<HE> FindFreeOutHE();
+			const PtrC<HE> FindFreeOutHE() const { return const_cast<TVertex*>(this)->FindFreeOutHE(); }
+
 			const std::vector<Ptr<V>> AdjVertices();
-			static bool IsConnected(Ptr<V> v0, Ptr<V> v1);
-			bool IsConnectedWith(Ptr<V> v) { return IsConnected(This<V>(), v); }
+			const std::vector<PtrC<V>> AdjVertices() const { return Const(const_cast<TVertex*>(this)->AdjVertices()); }
+
+			static bool IsConnected(PtrC<V> v0, PtrC<V> v1);
+			bool IsConnectedWith(PtrC<V> v) const { return IsConnected(This<V>(), v); }
 
 		protected:
 			virtual ~TVertex() = default;

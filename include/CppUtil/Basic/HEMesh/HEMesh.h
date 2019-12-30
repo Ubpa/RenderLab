@@ -32,6 +32,16 @@ namespace CppUtil {
 			const std::unordered_set<Ptr<E>> & Edges() { return edges; }
 			const std::unordered_set<Ptr<P>> & Polygons() { return polygons; }
 
+			const std::unordered_set<PtrC<V>> Vertices() const { return Const(vertices); }
+			const std::unordered_set<PtrC<HE>> HalfEdges() const { return Const(halfEdges); }
+			const std::unordered_set<PtrC<E>> Edges() const { return Const(edges); }
+			const std::unordered_set<PtrC<P>> Polygons() const { return Const(polygons); }
+
+			int NumVertices() const { return vertices.size(); }
+			int NumEdges() const { return halfEdges.size(); }
+			int NumPolygons() const { return polygons.size(); }
+			int NumHalfEdges() const { return halfEdges.size(); }
+
 			const Ptr<V> AddVertex();
 			const Ptr<E> AddEdge(Ptr<V> v0, Ptr<V> v1);
 			const Ptr<P> AddPolygon(const std::vector<Ptr<HE>> heLoop);

@@ -38,7 +38,7 @@ const std::vector<Ptr<V>> TVertex<V, E, P>::AdjVertices() {
 }
 
 template<typename V, typename E, typename P>
-bool TVertex<V, E, P>::IsConnected(Ptr<V> v0, Ptr<V> v1) {
+bool TVertex<V, E, P>::IsConnected(PtrC<V> v0, PtrC<V> v1) {
 	if (v0 == nullptr || v1 == nullptr)
 		return false;
 

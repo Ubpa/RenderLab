@@ -13,9 +13,12 @@ namespace CppUtil {
 
 		public:
 			const Ptr<THalfEdge<V,E,P>> HalfEdge() { return halfEdge.lock(); }
+			const PtrC<THalfEdge<V, E, P>> HalfEdge() const { return const_cast<TPolygon*>(this)->HalfEdge(); }
+
 			void SetHalfEdge(Ptr<THalfEdge<V, E, P>> he) { halfEdge = he; }
 
 			const std::vector<Ptr<HE>> BoundaryHEs();
+			const std::vector<PtrC<HE>> BoundaryHEs() const { return Const(const_cast<TPolygon*>(this)->BoundaryHEs()); }
 
 		private:
 			WPtr<THalfEdge<V, E, P>> halfEdge;

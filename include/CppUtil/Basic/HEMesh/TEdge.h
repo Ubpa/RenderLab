@@ -10,6 +10,7 @@ namespace CppUtil {
 		class TEdge : public HeapObj {
 		public:
 			const Ptr<THalfEdge<V, E, P>> HalfEdge() { return halfEdge.lock(); }
+			const Ptr<THalfEdge<V, E, P>> HalfEdge() const { return const_cast<TEdge*>(this)->HalfEdge(); }
 			void SetHalfEdge(Ptr<THalfEdge<V, E, P> > he) { halfEdge = he; }
 
 		private:
