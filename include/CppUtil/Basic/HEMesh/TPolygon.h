@@ -27,6 +27,8 @@ namespace CppUtil {
 			size_t Degree() const { return static_cast<int>(BoundaryHEs().size()); }
 			const std::vector<Ptr<E>> BoundaryEdges();
 			const std::vector<PtrC<E>> BoundaryEdges() const { return Const(const_cast<TPolygon*>(this)->BoundaryEdges()); }
+			const std::vector<Ptr<V>> BoundaryVertice();
+			const std::vector<PtrC<V>> BoundaryVertice() const { return Const(const_cast<TPolygon*>(this)->BoundaryVertice()); }
 
 		private:
 			WPtr<THalfEdge<V, E, P>> halfEdge;

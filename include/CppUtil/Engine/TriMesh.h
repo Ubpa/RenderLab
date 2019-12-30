@@ -26,7 +26,10 @@ namespace CppUtil {
 				const std::vector<Normalf> & normals,
 				const std::vector<Point2> & texcoords,
 				const std::vector<Normalf> & tangents = std::vector<Normalf>(),
-				ENUM_TYPE type = ENUM_TYPE::CODE);
+				ENUM_TYPE type = ENUM_TYPE::CODE)
+			{
+				Init(true, indice, positions, normals, texcoords, tangents, type);
+			}
 
 			TriMesh(uint triNum, uint vertexNum,
 				const uint * indice,
@@ -39,8 +42,8 @@ namespace CppUtil {
 		public:
 			static const Basic::Ptr<TriMesh> New(const std::vector<uint> & indice,
 				const std::vector<Point3> & positions,
-				const std::vector<Normalf> & normals,
-				const std::vector<Point2> & texcoords,
+				const std::vector<Normalf> & normals = std::vector<Normalf>(),
+				const std::vector<Point2> & texcoords = std::vector<Point2>(),
 				const std::vector<Normalf> & tangents = std::vector<Normalf>(),
 				ENUM_TYPE type = ENUM_TYPE::CODE) {
 				return Basic::New<TriMesh>(indice, positions, normals, texcoords, tangents, type);
@@ -55,6 +58,25 @@ namespace CppUtil {
 				ENUM_TYPE type = ENUM_TYPE::CODE) {
 				return Basic::New<TriMesh>(triNum, vertexNum, indice, positions, normals, texcoords, tangents, type);
 			}
+
+		public:
+			void Init(const std::vector<uint> & indice,
+				const std::vector<Point3> & positions,
+				const std::vector<Normalf> & normals = std::vector<Normalf>(),
+				const std::vector<Point2> & texcoords = std::vector<Point2>(),
+				const std::vector<Normalf> & tangents = std::vector<Normalf>(),
+				ENUM_TYPE type = ENUM_TYPE::CODE)
+			{
+				Init(false, indice, positions, normals, texcoords, tangents, type);
+			}
+
+		private:
+			void Init(bool creator, const std::vector<uint> & indice,
+				const std::vector<Point3> & positions,
+				const std::vector<Normalf> & normals = std::vector<Normalf>(),
+				const std::vector<Point2> & texcoords = std::vector<Point2>(),
+				const std::vector<Normalf> & tangents = std::vector<Normalf>(),
+				ENUM_TYPE type = ENUM_TYPE::CODE);
 
 		private:
 			virtual ~TriMesh() = default;
@@ -85,6 +107,7 @@ namespace CppUtil {
 
 		private:
 			void GenTangents();
+			void GenNormals();
 
 		private:
 			ENUM_TYPE type;

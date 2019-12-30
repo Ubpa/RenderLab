@@ -7,42 +7,12 @@
 #include <CppUtil/Basic/Plane.h>
 #include <CppUtil/Basic/Disk.h>
 
+#include <map>
+
 using namespace CppUtil;
 using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
 using namespace std;
-
-TriMesh::TriMesh(const vector<uint> & indice,
-	const vector<Point3> & positions,
-	const vector<Normalf> & normals,
-	const vector<Point2> & texcoords,
-	const vector<Normalf> & tangents,
-	ENUM_TYPE type)
-:	indice(indice),
-	positions(positions),
-	normals(normals),
-	texcoords(texcoords),
-	tangents(tangents),
-	type(type)
-{
-	if (!(indice.size() > 0 && indice.size() % 3 == 0)
-		|| positions.size() <= 0
-		|| normals.size() != positions.size()
-		|| texcoords.size() != positions.size()
-		|| (tangents.size() != 0 && tangents.size() != positions.size())) {
-		type = ENUM_TYPE::INVALID;
-		printf("ERROR: TriMesh is invalid.\n");
-		return;
-	}
-
-	// traingel 的 mesh 在 init 的时候设置
-	// 因为现在还没有生成 share_ptr
-	for (uint i = 0; i < indice.size(); i += 3)
-		triangles.push_back(Triangle::New(indice[i], indice[i+1], indice[i+2]));
-
-	if(tangents.size() == 0)
-		GenTangents();
-}
 
 TriMesh::TriMesh(uint triNum, uint vertexNum,
 	const uint * indice,
@@ -53,7 +23,7 @@ TriMesh::TriMesh(uint triNum, uint vertexNum,
 	ENUM_TYPE type)
 	: type(type)
 {
-	if (!indice || !positions || !normals || !texcoords) {
+	if (!indice || !positions || !texcoords) {
 		type = ENUM_TYPE::INVALID;
 		printf("ERROR: TriMesh is invalid.\n");
 		return;
@@ -61,11 +31,18 @@ TriMesh::TriMesh(uint triNum, uint vertexNum,
 
 	for (uint i = 0; i < vertexNum; i++) {
 		this->positions.push_back(Point3(positions[3 * i], positions[3 * i + 1], positions[3 * i + 2]));
-		this->normals.push_back(Normalf(normals[3 * i], normals[3 * i + 1], normals[3 * i + 2]));
-		this->texcoords.push_back(Point2(texcoords[2 * i], texcoords[2 * i + 1]));
+		if(normals)
+			this->normals.push_back(Normalf(normals[3 * i], normals[3 * i + 1], normals[3 * i + 2]));
+		if(texcoords)
+			this->texcoords.push_back(Point2(texcoords[2 * i], texcoords[2 * i + 1]));
 		if(tangents)
 			this->tangents.push_back({ tangents[3 * i],tangents[3 * i + 1],tangents[3 * i + 2] });
 	}
+
+	if (!normals)
+		GenNormals();
+	if (!texcoords)
+		this->texcoords.resize(vertexNum);
 
 	// traingel 的 mesh 在 init 的时候设置
 	// 因为现在还没有生成 share_ptr
@@ -81,6 +58,55 @@ TriMesh::TriMesh(uint triNum, uint vertexNum,
 		GenTangents();
 }
 
+void TriMesh::Init(bool creator, const std::vector<uint> & indice,
+	const std::vector<Point3> & positions,
+	const std::vector<Normalf> & normals,
+	const std::vector<Point2> & texcoords,
+	const std::vector<Normalf> & tangents,
+	ENUM_TYPE type)
+{
+	this->indice.clear();
+	this->positions.clear();
+	this->normals.clear();
+	this->texcoords.clear();
+	this->triangles.clear();
+	type = ENUM_TYPE::INVALID;
+
+	if (!(indice.size() > 0 && indice.size() % 3 == 0)
+		|| positions.size() <= 0
+		|| !normals.empty() && normals.size() != positions.size()
+		|| !texcoords.empty() && texcoords.size() != positions.size()
+		|| (tangents.size() != 0 && tangents.size() != positions.size()))
+	{
+		printf("ERROR: TriMesh is invalid.\n");
+		return;
+	}
+
+	this->indice = indice;
+	this->positions = positions;
+
+	if (normals.empty())
+		GenNormals();
+	else
+		this->normals = normals;
+
+	if (texcoords.empty())
+		this->texcoords.resize(positions.size());
+	else
+		this->texcoords = texcoords;
+
+	if (tangents.size() == 0)
+		GenTangents();
+
+	// traingel 的 mesh 在 init 的时候设置
+	// 因为现在还没有生成 share_ptr
+	for (uint i = 0; i < indice.size(); i += 3)
+		triangles.push_back(Triangle::New(indice[i], indice[i + 1], indice[i + 2]));
+
+	if (!creator)
+		Init_AfterGenPtr();
+}
+
 void TriMesh::Init_AfterGenPtr() {
 	auto triMesh = This<TriMesh>();
 	for (auto triangle : triangles)
@@ -88,6 +114,39 @@ void TriMesh::Init_AfterGenPtr() {
 
 	for (auto triangle : triangles)
 		box.UnionWith(triangle->GetBBox());
+}
+
+void TriMesh::GenNormals() {
+	normals.clear();
+	map<size_t, vector<Normalf>> map2wNVec; // map vertex idx to weighted normal vec
+	for (size_t i = 0; i < indice.size(); i+=3) {
+		auto v0 = indice[i];
+		auto v1 = indice[i+1];
+		auto v2 = indice[i+2];
+
+		auto pos0 = positions[v0];
+		auto pos1 = positions[v1];
+		auto pos2 = positions[v2];
+
+		auto d10 = pos0 - pos1;
+		auto d12 = pos2 - pos1;
+		auto wN = d12.Cross(d10);
+
+		map2wNVec[v0].push_back(wN);
+		map2wNVec[v1].push_back(wN);
+		map2wNVec[v2].push_back(wN);
+	}
+
+	normals.resize(positions.size());
+	for (auto pair : map2wNVec) {
+		Normalf sumWN;
+		float sumW = 0.f;
+		for (auto wN : pair.second) {
+			sumWN += wN;
+			sumW += wN.Norm();
+		}
+		normals[pair.first] = sumWN / sumW;
+	}
 }
 
 void TriMesh::GenTangents() {

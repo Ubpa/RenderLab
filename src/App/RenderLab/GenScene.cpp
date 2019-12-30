@@ -611,8 +611,52 @@ Ptr<Scene> GenScene10() {
 	return Scene::New(sobj_Root, "scene 10");
 }
 
+Ptr<Scene> GenScene11() {
+	auto sobjRoot = SObj::New(nullptr, "root");
+	vector<Point3> positions = {
+		Point3(0, 0, 0), // v0
+		Point3(0, 0, 1), // v1
+		Point3(1, 0, 1), // v2
+		Point3(1, 0, 0), // v3
+		Point3(0, 1, 0), // v4
+		Point3(0, 1, 1), // v5
+		Point3(1, 1, 1), // v6
+		Point3(1, 1, 0), // v7
+	};
+	vector<uint> indice = {
+		0, 2, 1,
+		0, 3, 2,
+
+		0, 5, 4,
+		0, 1, 5,
+
+		1, 6, 5,
+		1, 2, 6,
+
+		2, 7, 6,
+		2, 3, 7,
+
+		3, 4, 7,
+		3, 0, 4,
+
+		4, 6, 7,
+		4, 5, 6
+	};
+
+	auto meshObj = SObj::New(sobjRoot, "mesh");
+	auto mesh = TriMesh::New(indice, positions);
+	meshObj->AddComponent<CmptGeometry>(mesh);
+	meshObj->AddComponent<CmptTransform>();
+	meshObj->AddComponent<CmptMaterial>(BSDF_Frostbite::New());
+
+	auto lightObj = SObj::New(sobjRoot, "light");
+	lightObj->AddComponent<CmptLight>(InfiniteAreaLight::New(nullptr));
+
+	return Scene::New(sobjRoot);
+}
+
 Ptr<Scene> GenScene(int n) {
-	const int num = 11;
+	const int num = 12;
 	Ptr<Scene>(*f[num])() = {
 		&GenScene00,
 		&GenScene01,
@@ -625,6 +669,7 @@ Ptr<Scene> GenScene(int n) {
 		&GenScene08,
 		&GenScene09,
 		&GenScene10,
+		&GenScene11,
 	};
 
 	if (n < num)

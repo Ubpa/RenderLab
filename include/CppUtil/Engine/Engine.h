@@ -8,6 +8,7 @@
 #include <CppUtil/Engine/AllBSDFs.h>
 
 #include <CppUtil/Engine/AreaLight.h>
+#include <CppUtil/Engine/InfiniteAreaLight.h>
 #include <CppUtil/Engine/RayIntersector.h>
 #include <CppUtil/Engine/Sphere.h>
 #include <CppUtil/Engine/Plane.h>

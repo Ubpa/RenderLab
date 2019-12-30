@@ -37,7 +37,8 @@ namespace CppUtil {
 
 		public:
 			const OpenGL::VAO GetVAO(ShapeType shapeType);
-			const OpenGL::VAO GetVAO(const Basic::PtrC<Engine::TriMesh> mesh);
+			const OpenGL::VAO GetVAO(Basic::PtrC<Engine::TriMesh> mesh);
+			void DirtyVAO(Basic::PtrC<Engine::TriMesh> mesh);
 			const OpenGL::Texture GetTex(Basic::PtrC<Basic::Image> img);
 
 			template<typename T>

@@ -18,9 +18,15 @@ const Ptr<typename V::E_t> HEMesh<V, _0, _1, _2>::AddEdge(Ptr<V> v0, Ptr<V> v1, 
 		return nullptr;
 	}
 
+	bool newEdge = false;
+	if (!e) {
+		e = Basic::New<E>();
+		edges.insert(e);
+		newEdge = true;
+	}
+	
 	auto he0 = Basic::New<HE>();
 	auto he1 = Basic::New<HE>();
-	edges.insert(e);
 	halfEdges.insert(he0);
 	halfEdges.insert(he1);
 	// [init]
@@ -114,7 +120,7 @@ void HEMesh<V, _0, _1, _2>::RemovePolygon(Ptr<P> polygon) {
 }
 
 template<typename V, typename _0, typename _1, typename _2>
-void HEMesh<V, _0, _1, _2>::RemoveEdge(Ptr<E> e) {
+void HEMesh<V, _0, _1, _2>::RemoveEdge(Ptr<E> e, bool needErase) {
 	assert(e != nullptr);
 	auto he0 = e->HalfEdge();
 	auto he1 = he0->Pair();
@@ -147,7 +153,8 @@ void HEMesh<V, _0, _1, _2>::RemoveEdge(Ptr<E> e) {
 	// delete
 	halfEdges.erase(he0);
 	halfEdges.erase(he1);
-	edges.erase(e);
+	if(needErase)
+		edges.erase(e);
 }
 
 template<typename V, typename _0, typename _1, typename _2>
@@ -187,12 +194,12 @@ Ptr<V> HEMesh<V, _0, _1, _2>::SpiltEdge(Ptr<E> e) {
 		auto v1 = he10->Origin();
 		auto v2 = he12->End();
 
-		RemoveEdge(e);
+		RemoveEdge(e, false); // don't erase
 		
 		auto v3 = AddVertex();
 
 		auto e30 = AddEdge(v3, v0);
-		auto e31 = AddEdge(v3, v1);
+		auto e31 = AddEdge(v3, v1, e); // use old edge
 		auto e32 = AddEdge(v3, v2);
 
 		auto he31 = e31->HalfEdge();
@@ -224,12 +231,12 @@ Ptr<V> HEMesh<V, _0, _1, _2>::SpiltEdge(Ptr<E> e) {
 	auto v2 = he20->Origin();
 	auto v3 = he31->Origin();
 
-	RemoveEdge(e);
+	RemoveEdge(e, false); // don't erase
 
 	auto v4 = AddVertex();
 
 	auto e40 = AddEdge(v4, v0);
-	auto e41 = AddEdge(v4, v1);
+	auto e41 = AddEdge(v4, v1, e); // use old edge
 	auto e42 = AddEdge(v4, v2);
 	auto e43 = AddEdge(v4, v3);
 
@@ -252,7 +259,7 @@ Ptr<V> HEMesh<V, _0, _1, _2>::SpiltEdge(Ptr<E> e) {
 }
 
 template<typename V, typename _0, typename _1, typename _2>
-bool HEMesh<V, _0, _1, _2>::FlipEdge(Ptr<E> e) {
+bool HEMesh<V, _0, _1, _2>::RotateEdge(Ptr<E> e) {
 	auto he01 = e->HalfEdge();
 	auto he10 = he01->Pair();
 
@@ -277,8 +284,8 @@ bool HEMesh<V, _0, _1, _2>::FlipEdge(Ptr<E> e) {
 	auto heLoop0 = poly0->BoundaryHEs(he13->Next(), he01);
 	auto heLoop1 = poly1->BoundaryHEs(he02->Next(), he10);
 
-	RemoveEdge(e);
-	AddEdge(v2, v3, e);
+	RemoveEdge(e, false); // don't erase
+	AddEdge(v2, v3, e); // use old edge
 
 	auto he23 = e->HalfEdge();
 	auto he32 = he23->Pair();
@@ -308,4 +315,22 @@ void HEMesh<V, _0, _1, _2>::Reserve(size_t n) {
 	halfEdges.reserve(n);
 	edges.reserve(n);
 	polygons.reserve(n);
+}
+
+template<typename V, typename _0, typename _1, typename _2>
+bool HEMesh<V, _0, _1, _2>::HaveBoundary() const {
+	for (auto he : halfEdges){
+		if (he->IsBoundary())
+			return true;
+	}
+	return false;
+}
+
+template<typename V, typename _0, typename _1, typename _2>
+bool HEMesh<V, _0, _1, _2>::IsTriMesh() const {
+	for (auto poly : polygons) {
+		if (poly->Degree() != 3)
+			return false;
+	}
+	return true;
 }

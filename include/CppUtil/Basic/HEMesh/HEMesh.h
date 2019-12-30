@@ -38,25 +38,40 @@ namespace CppUtil {
 			const std::vector<PtrC<E>> Edges() const { return Const(const_cast<HEMesh*>(this)->Edges()); }
 			const std::vector<PtrC<P>> Polygons() const { return Const(const_cast<HEMesh*>(this)->Polygons()); }
 
-			int NumVertices() const { return vertices.size(); }
-			int NumEdges() const { return halfEdges.size(); }
-			int NumPolygons() const { return polygons.size(); }
-			int NumHalfEdges() const { return halfEdges.size(); }
+			size_t NumVertices() const { return vertices.size(); }
+			size_t NumEdges() const { return halfEdges.size(); }
+			size_t NumPolygons() const { return polygons.size(); }
+			size_t NumHalfEdges() const { return halfEdges.size(); }
+
+			size_t Index(Ptr<V> v) const { return vertices.idx(v); }
+			size_t Index(Ptr<E> e) const { return edges.idx(e); }
+			size_t Index(Ptr<P> p) const { return polygons.idx(p); }
 
 			const Ptr<V> AddVertex();
 			// e's halfedge is form v0 to v1
-			const Ptr<E> AddEdge(Ptr<V> v0, Ptr<V> v1, Ptr<E> e = Basic::New<E>());
+			const Ptr<E> AddEdge(Ptr<V> v0, Ptr<V> v1) { return AddEdge(v0, v1, nullptr); }
 			// polygon's halfedge is heLoop[0]
 			const Ptr<P> AddPolygon(const std::vector<Ptr<HE>> heLoop);
 			void RemovePolygon(Ptr<P> polygon);
-			void RemoveEdge(Ptr<E> e);
+			void RemoveEdge(Ptr<E> e) { RemoveEdge(e, true); }
 			void RemoveVertex(Ptr<V> v);
 
+			// e remains in container
+			// add 3 new edge
+			// new e's halfedge is from new v to e->halfedge->end
 			Ptr<V> SpiltEdge(Ptr<E> e);
-			bool FlipEdge(Ptr<E> e);
+			// counter-clock, remain e in container
+			bool RotateEdge(Ptr<E> e);
 
 			void Clear();
 			void Reserve(size_t n);
+
+			bool HaveBoundary() const;
+			bool IsTriMesh() const;
+
+		private:
+			const Ptr<E> AddEdge(Ptr<V> v0, Ptr<V> v1, Ptr<E> e);
+			void RemoveEdge(Ptr<E> e, bool needErase);
 
 		protected:
 			virtual ~HEMesh() = default;

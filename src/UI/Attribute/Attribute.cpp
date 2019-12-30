@@ -2,6 +2,9 @@
 
 #include <UI/Grid.h>
 
+#include <CppUtil/Engine/MeshEdit/LoopSubdivision.h>
+#include <CppUtil/Qt/RawAPI_OGLW.h>
+
 #include <CppUtil/Engine/SObj.h>
 #include <CppUtil/Engine/AllComponents.h>
 
@@ -42,6 +45,7 @@ using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
 using namespace CppUtil::Basic::Math;
 using namespace CppUtil::OpenGL;
+using namespace CppUtil::QT;
 using namespace std;
 
 class Attribute::ComponentVisitor : public Visitor {
@@ -321,6 +325,11 @@ void Attribute::ComponentVisitor::Visit(Ptr<TriMesh> mesh) {
 	auto grid = GetGrid(attr->componentType2item[typeid(CmptGeometry)]);
 	grid->AddText("- Triangle", mesh->GetIndice().size() / 3);
 	grid->AddText("- Vertex", mesh->GetPositions().size());
+	grid->AddButton("Loop Subdivision", [mesh, pOGLW = attr->pOGLW]() {
+		auto loopSubdivision = LoopSubdivision::New(mesh);
+		loopSubdivision->Run(1);
+		pOGLW->DirtyVAO(mesh);
+	});
 }
 
 void Attribute::ComponentVisitor::Visit(Ptr<Capsule> capsule) {
@@ -725,8 +734,9 @@ Attribute::Attribute()
 	: tbox(nullptr), visitor(ComponentVisitor::New(this)){
 }
 
-void Attribute::Init(QToolBox * tbox) {
+void Attribute::Init(QToolBox * tbox, RawAPI_OGLW * pOGLW) {
 	this->tbox = tbox;
+	this->pOGLW = pOGLW;
 	SetSObj(nullptr);
 }
 

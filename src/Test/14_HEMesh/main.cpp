@@ -155,12 +155,12 @@ int main() {
 		Print(mesh);
 	}
 
-	// test flip edge
+	// test rotate edge
 	{
 		cout
-			<< "----------------------" << endl
-			<< "    test FlipEdge     " << endl
-			<< "----------------------" << endl;
+			<< "-----------------------" << endl
+			<< "    test RotateEdge    " << endl
+			<< "-----------------------" << endl;
 
 		auto mesh = HEMesh<V>::New();
 
@@ -190,7 +190,7 @@ int main() {
 		mesh->AddPolygon({ he02,he23,he30 });
 
 		Print(mesh);
-		mesh->FlipEdge(e02);
+		mesh->RotateEdge(e02);
 		Print(mesh);
 	}
 

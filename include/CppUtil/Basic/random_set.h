@@ -4,8 +4,9 @@
 
 #include <unordered_map>
 #include <vector>
+#include <stack>
 
-template<typename T>
+template<typename T, class Alloc = std::allocator<T>>
 class random_set {
 public:
 	void insert(const T & e) {
@@ -27,7 +28,9 @@ public:
 	}
 
 	auto begin() { return Tvec.begin(); }
+	auto begin() const { return Tvec.begin(); }
 	auto end() { return Tvec.end(); }
+	auto end() const { return Tvec.end(); }
 
 	T & operator[](size_t i) { return Tvec[i]; }
 	const T & operator[](size_t i) const { return Tvec[i]; }
@@ -43,9 +46,16 @@ public:
 	}
 
 	const std::vector<T> & vec() const { return Tvec; }
+
+	size_t idx(const T & e) const {
+		auto target = Tmap.find(e);
+		if (target == Tmap.end())
+			return -1;
+		return target->second;
+	}
 private:
 	std::unordered_map<T, size_t> Tmap;
-	std::vector<T> Tvec;
+	std::vector<T, Alloc> Tvec;
 };
 
 #endif // !_CPPUTIL_BASIC_HEADER_RANDOM_SET_H_

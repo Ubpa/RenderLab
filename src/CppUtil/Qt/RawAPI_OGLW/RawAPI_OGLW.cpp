@@ -166,7 +166,7 @@ const VAO RawAPI_OGLW::GetVAO(ShapeType shapeType){
 	}
 }
 
-const VAO RawAPI_OGLW::GetVAO(const PtrC<TriMesh> mesh) {
+const VAO RawAPI_OGLW::GetVAO(PtrC<TriMesh> mesh) {
 	auto target = mesh2VAO.find(mesh);
 	if (target != mesh2VAO.end())
 		return target->second;
@@ -185,6 +185,10 @@ const VAO RawAPI_OGLW::GetVAO(const PtrC<TriMesh> mesh) {
 	mesh2VAO[mesh] = VAO_P3N3T2T3_Mesh;
 
 	return VAO_P3N3T2T3_Mesh;
+}
+
+void RawAPI_OGLW::DirtyVAO(PtrC<TriMesh> mesh) {
+	mesh2VAO.erase(mesh);
 }
 
 const Texture RawAPI_OGLW::GetTex(PtrC<Image> img) {

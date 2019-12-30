@@ -15,6 +15,9 @@ namespace CppUtil {
 		class SObj;
 		class Component;
 	}
+	namespace QT {
+		class RawAPI_OGLW;
+	}
 }
 
 
@@ -32,7 +35,7 @@ namespace Ui {
 		}
 
 	public:
-		void Init(QToolBox * tbox);
+		void Init(QToolBox * tbox, CppUtil::QT::RawAPI_OGLW * pOGLW);
 		void SetSObj(CppUtil::Basic::Ptr<CppUtil::Engine::SObj> sobj);
 		const CppUtil::Basic::Ptr<CppUtil::Engine::SObj> GetCurSObj() const { return curSObj.lock(); }
 		template<typename T, typename = std::enable_if_t<std::is_base_of_v<CppUtil::Engine::Component, T>>>
@@ -59,6 +62,8 @@ namespace Ui {
 		CppUtil::Basic::Ptr<ComponentVisitor> visitor;
 
 		CppUtil::Basic::WPtr<CppUtil::Engine::SObj> curSObj;
+
+		CppUtil::QT::RawAPI_OGLW * pOGLW;
 	};
 }
 

@@ -34,7 +34,7 @@ namespace CppUtil {
 			const Ptr<HE> FindFreeIncident();
 			const PtrC<HE> FindFreeIncident() const { return const_cast<TVertex*>(this)->FindFreeOutHE(); }
 
-			static const Ptr<HE> FindHalfEdge(PtrC<V> v0, PtrC<V> v1);
+			static const Ptr<HE> FindHalfEdge(Ptr<V> v0, Ptr<V> v1);
 
 			const std::vector<Ptr<V>> AdjVertices();
 			const std::vector<PtrC<V>> AdjVertices() const { return Const<std::vector, V>(const_cast<TVertex*>(this)->AdjVertices()); }
