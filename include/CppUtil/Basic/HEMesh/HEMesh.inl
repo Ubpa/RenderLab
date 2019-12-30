@@ -312,9 +312,9 @@ void HEMesh<V, _0, _1, _2>::Clear() {
 template<typename V, typename _0, typename _1, typename _2>
 void HEMesh<V, _0, _1, _2>::Reserve(size_t n) {
 	vertices.reserve(n);
-	halfEdges.reserve(n);
-	edges.reserve(n);
-	polygons.reserve(n);
+	halfEdges.reserve(6*n);
+	edges.reserve(3*n);
+	polygons.reserve(2*n);
 }
 
 template<typename V, typename _0, typename _1, typename _2>

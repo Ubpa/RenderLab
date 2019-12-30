@@ -38,7 +38,7 @@ public:
 	size_t size() const { return Tvec.size(); }
 	void reserve(size_t n) {
 		Tvec.reserve(n);
-		Tmap.reserve(n);
+		Tmap.reserve(4*n);
 	}
 	void clear() {
 		Tvec.clear();

@@ -2,6 +2,16 @@
 
 #include <CppUtil/Engine/TriMesh.h>
 #include <CppUtil/Basic/Math.h>
+#include <thread>
+
+#include <omp.h>
+
+#ifdef NDEBUG
+#define THREAD_NUM omp_get_num_procs() - 1
+#else
+#define THREAD_NUM 1
+//#define THREAD_NUM omp_get_num_procs() - 1
+#endif //  NDEBUG
 
 using namespace CppUtil;
 using namespace CppUtil::Basic;
@@ -91,41 +101,67 @@ bool LoopSubdivision::Run(size_t n){
 			indice.push_back(static_cast<uint>(heMesh->Index(v)));
 	}
 	
-	//auto normals = triMesh->GetNormals();
-	//auto origIdx = triMesh->GetIndice();
-	//auto origPos = triMesh->GetPositions();
 	triMesh->Init(indice, positions);
 
 	return true;
 }
 
 void LoopSubdivision::HEMeshSubdivision() {
-	// update vertex pos
-	for (auto v : heMesh->Vertices()) {
-		auto adjVs = v->AdjVertices();
-		size_t n = adjVs.size();
-		float u = n == 3 ? 3.f / 16.f : 3.f / (8.f*n);
-		Vec3 sumPos;
-		for (auto adjV : adjVs)
-			sumPos += adjV->pos;
-		v->newPos = (1.f-n*u)*v->pos + u * sumPos;
-		v->isNew = false;
+	// 1. update vertex pos
+	{
+		auto & vertices = heMesh->Vertices();
+		auto work = [&vertices](size_t id) {
+			for (size_t i = id; i < vertices.size(); i += THREAD_NUM) {
+				auto v = vertices[i];
+				auto adjVs = v->AdjVertices();
+				size_t n = adjVs.size();
+				float u = n == 3 ? 3.f / 16.f : 3.f / (8.f*n);
+				Vec3 sumPos;
+				for (auto adjV : adjVs)
+					sumPos += adjV->pos;
+				v->newPos = (1.f - n * u)*v->pos + u * sumPos;
+				v->isNew = false;
+			}
+		};
+
+		vector<thread> workers;
+		for (int i = 0; i < THREAD_NUM; i++)
+			workers.push_back(thread(work, i));
+
+		// wait workers
+		for (auto & worker : workers)
+			worker.join();
 	}
 
-	// compute pos of new vertice on edges
-	for (auto e : heMesh->Edges()) {
-		auto pos0 = e->HalfEdge()->Origin()->pos;
-		auto pos1 = e->HalfEdge()->Pair()->Origin()->pos;
-		auto pos2 = e->HalfEdge()->Next()->End()->pos;
-		auto pos3 = e->HalfEdge()->Pair()->Next()->End()->pos;
+	// 2. compute pos of new vertice on edges
+	{
+		auto & edges = heMesh->Edges();
+		auto work = [&edges](size_t id) {
+			for (size_t i = id; i < edges.size(); i += THREAD_NUM) {
+				auto e = edges[i];
+				auto pos0 = e->HalfEdge()->Origin()->pos;
+				auto pos1 = e->HalfEdge()->Pair()->Origin()->pos;
+				auto pos2 = e->HalfEdge()->Next()->End()->pos;
+				auto pos3 = e->HalfEdge()->Pair()->Next()->End()->pos;
 
-		e->newPos = (3.f*(pos0 + pos1) + pos2 + pos3) / 8.f;
-		e->isNew = false;
+				e->newPos = (3.f*(pos0 + pos1) + pos2 + pos3) / 8.f;
+			}
+		};
+
+		vector<thread> workers;
+		for (int i = 0; i < THREAD_NUM; i++)
+			workers.push_back(thread(work, i));
+
+		// wait workers
+		for (auto & worker : workers)
+			worker.join();
 	}
-
-	// spilt edges
+	
+	// 3. spilt edges
 	auto & edges = heMesh->Edges();
 	size_t nE = edges.size();
+	vector<Ptr<E>> newEdges;
+	newEdges.reserve(2 * nE);
 	for (int i = 0; i < nE; i++) { // when i go up, edges change, but still can iterate 
 		auto e = edges[i];
 
@@ -134,18 +170,37 @@ void LoopSubdivision::HEMeshSubdivision() {
 		v->newPos = e->newPos;
 
 		auto he = e->HalfEdge();
-		he->Next()->Next()->Edge()->isNew = true;
-		he->Pair()->Next()->Edge()->isNew = true;
+		newEdges.push_back(he->Next()->Next()->Edge());
+		newEdges.push_back(he->Pair()->Next()->Edge());
 	}
 
-	// flip new edge with old and new vertex
-	for (auto e : heMesh->Edges()) {
-		if (!e->isNew || e->HalfEdge()->Origin()->isNew + e->HalfEdge()->Pair()->Origin()->isNew != 1 )
+	// 4. flip new edge with old and new vertex
+	for (auto e : newEdges) {
+		if (e->HalfEdge()->Origin()->isNew + e->HalfEdge()->Pair()->Origin()->isNew != 1 )
 			continue;
 
 		heMesh->RotateEdge(e);
 	}
 
-	for (auto v : heMesh->Vertices())
-		v->pos = v->newPos;
+	// 5. update vertex pos
+	{
+		for (auto v : heMesh->Vertices())
+			v->pos = v->newPos;
+
+		auto & vertices = heMesh->Vertices();
+		auto work = [&vertices](size_t id) {
+			for (size_t i = id; i < vertices.size(); i += THREAD_NUM) {
+				auto v = vertices[i];
+				v->pos = v->newPos;
+			}
+		};
+
+		vector<thread> workers;
+		for (int i = 0; i < THREAD_NUM; i++)
+			workers.push_back(thread(work, i));
+
+		// wait workers
+		for (auto & worker : workers)
+			worker.join();
+	}
 }

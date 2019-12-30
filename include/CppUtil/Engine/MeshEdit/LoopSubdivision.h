@@ -39,7 +39,6 @@ namespace CppUtil {
 			};
 			class E : public Basic::TEdge<V, E, P> {
 			public:
-				bool isNew = false;
 				Vec3 newPos;
 			};
 			class P :public Basic::TPolygon<V, E, P> { };
