@@ -21,10 +21,11 @@ const std::vector<Ptr<E>> TVertex<V, E, P>::AdjEdges() {
 }
 
 template<typename V, typename E, typename P>
-const Ptr<THalfEdge<V, E, P>> TVertex<V, E, P>::FindFreeOutHE() {
+const Ptr<THalfEdge<V, E, P>> TVertex<V, E, P>::FindFreeIncident(){
 	for (auto outHE : AjdOutHEs()) {
-		if (outHE->IsFree())
-			return outHE;
+		auto inHE = outHE->Pair();
+		if (inHE->IsFree())
+			return inHE;
 	}
 	return nullptr;
 }
@@ -47,5 +48,14 @@ bool TVertex<V, E, P>::IsConnected(PtrC<V> v0, PtrC<V> v1) {
 			return true;
 	}
 
+	return false;
+}
+
+template<typename V, typename E, typename P>
+bool TVertex<V, E, P>::IsBoundary() const {
+	for (auto he : AjdOutHEs()) {
+		if (he->IsBoundary())
+			return true;
+	}
 	return false;
 }

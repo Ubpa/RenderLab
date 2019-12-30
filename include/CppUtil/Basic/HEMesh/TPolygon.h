@@ -2,10 +2,13 @@
 #ifndef _CPPUTIL_BASIC_HEMESH_T_POLYGON_H_
 #define _CPPUTIL_BASIC_HEMESH_T_POLYGON_H_
 
-#include <CppUtil/Basic/HEMesh/THalfEdge.h>
+#include <CppUtil/Basic/HeapObj.h>
 
 namespace CppUtil {
 	namespace Basic {
+		template<typename V, typename E, typename P>
+		class THalfEdge;
+
 		template<typename V, typename E, typename P>
 		class TPolygon : public HeapObj {
 		private:
@@ -19,6 +22,9 @@ namespace CppUtil {
 
 			const std::vector<Ptr<HE>> BoundaryHEs();
 			const std::vector<PtrC<HE>> BoundaryHEs() const { return Const(const_cast<TPolygon*>(this)->BoundaryHEs()); }
+			size_t Degree() const { return static_cast<int>(BoundaryHEs().size()); }
+			const std::vector<Ptr<E>> BoundaryEdges();
+			const std::vector<PtrC<E>> BoundaryEdges() const { return Const(const_cast<TPolygon*>(this)->BoundaryEdges()); }
 
 		private:
 			WPtr<THalfEdge<V, E, P>> halfEdge;

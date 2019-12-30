@@ -2,13 +2,14 @@
 #ifndef _CPPUTIL_BASIC_HEMESH_BASE_HEMESH_H_
 #define _CPPUTIL_BASIC_HEMESH_BASE_HEMESH_H_
 
-#include <CppUtil/Basic/HEMesh/TVertex.h>
 #include <CppUtil/Basic/HEMesh/THalfEdge.h>
+#include <CppUtil/Basic/HEMesh/TVertex.h>
 #include <CppUtil/Basic/HEMesh/TEdge.h>
 #include <CppUtil/Basic/HEMesh/TPolygon.h>
 
 #include <vector>
 #include <unordered_set>
+#include <assert.h>
 
 namespace CppUtil {
 	namespace Basic {
@@ -19,9 +20,9 @@ namespace CppUtil {
 		>
 		class HEMesh : public HeapObj {
 		public:
+			using HE = typename V::HE;
 			using E = typename V::E_t;
 			using P = typename V::P_t;
-			using HE = typename V::HE;
 
 		public:
 			static const Ptr<HEMesh> New() { return Basic::New<HEMesh>(); }
@@ -43,11 +44,15 @@ namespace CppUtil {
 			int NumHalfEdges() const { return halfEdges.size(); }
 
 			const Ptr<V> AddVertex();
+			// e's halfedge is form v0 to v1
 			const Ptr<E> AddEdge(Ptr<V> v0, Ptr<V> v1);
+			// polygon's halfedge is heLoop[0]
 			const Ptr<P> AddPolygon(const std::vector<Ptr<HE>> heLoop);
 			void RemovePolygon(Ptr<P> polygon);
 			void RemoveEdge(Ptr<E> e);
 			void RemoveVertex(Ptr<V> v);
+
+			Ptr<V> SpiltEdge(Ptr<E> e);
 
 		protected:
 			virtual ~HEMesh() = default;

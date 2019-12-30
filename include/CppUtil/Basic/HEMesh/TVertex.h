@@ -2,11 +2,14 @@
 #ifndef _CPPUTIL_BASIC_HEMESH_T_VERETX_H_
 #define _CPPUTIL_BASIC_HEMESH_T_VERETX_H_
 
-#include <CppUtil/Basic/HEMesh/THalfEdge.h>
+#include <CppUtil/Basic/HeapObj.h>
 #include <vector>
 
 namespace CppUtil {
 	namespace Basic {
+		template<typename V, typename E, typename P>
+		class THalfEdge;
+
 		template<typename V, typename E, typename P>
 		class TVertex : public HeapObj {
 		public:
@@ -28,14 +31,15 @@ namespace CppUtil {
 			const std::vector<Ptr<E>> AdjEdges();
 			const std::vector<PtrC<HE>> AdjEdges() const { return Const(const_cast<TVertex*>(this)->AdjEdges()); }
 
-			const Ptr<HE> FindFreeOutHE();
-			const PtrC<HE> FindFreeOutHE() const { return const_cast<TVertex*>(this)->FindFreeOutHE(); }
+			const Ptr<HE> FindFreeIncident();
+			const PtrC<HE> FindFreeIncident() const { return const_cast<TVertex*>(this)->FindFreeOutHE(); }
 
 			const std::vector<Ptr<V>> AdjVertices();
-			const std::vector<PtrC<V>> AdjVertices() const { return Const(const_cast<TVertex*>(this)->AdjVertices()); }
+			const std::vector<PtrC<V>> AdjVertices() const { return Const<std::vector, V>(const_cast<TVertex*>(this)->AdjVertices()); }
 
 			static bool IsConnected(PtrC<V> v0, PtrC<V> v1);
 			bool IsConnectedWith(PtrC<V> v) const { return IsConnected(This<V>(), v); }
+			bool IsBoundary() const;
 
 		protected:
 			virtual ~TVertex() = default;
