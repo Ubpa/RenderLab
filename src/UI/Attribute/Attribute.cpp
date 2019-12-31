@@ -3,6 +3,8 @@
 #include <UI/Grid.h>
 
 #include <CppUtil/Engine/MeshEdit/LoopSubdivision.h>
+#include <CppUtil/Engine/MeshEdit/MinSurf.h>
+
 #include <CppUtil/Qt/RawAPI_OGLW.h>
 
 #include <CppUtil/Engine/SObj.h>
@@ -328,6 +330,11 @@ void Attribute::ComponentVisitor::Visit(Ptr<TriMesh> mesh) {
 	grid->AddButton("Loop Subdivision", [mesh, pOGLW = attr->pOGLW]() {
 		auto loopSubdivision = LoopSubdivision::New(mesh);
 		loopSubdivision->Run(1);
+		pOGLW->DirtyVAO(mesh);
+	});
+	grid->AddButton("Minimize Surface", [mesh, pOGLW = attr->pOGLW]() {
+		auto minSurf = MinSurf::New(mesh);
+		minSurf->Run();
 		pOGLW->DirtyVAO(mesh);
 	});
 }

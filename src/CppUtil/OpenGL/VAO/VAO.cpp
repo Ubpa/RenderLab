@@ -76,6 +76,7 @@ VAO::VAO(const std::vector<VBO_DataPatch> & vec_VBO_DataPatch, const std::vector
 	}
 	//按照没有索引的情况设置 pointNum
 	this->pointNum = vec_VBO_DataPatch[0].dataSize / (sizeof(float) * vec_VBO_DataPatch[0].attrLen);
+	attrNum = vec_VBO_DataPatch.size();
 	hasIndex = false;
 	isValid = true;
 }

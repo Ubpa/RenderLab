@@ -6,6 +6,7 @@
 #include <CppUtil/Basic/Sphere.h>
 #include <CppUtil/Basic/Plane.h>
 #include <CppUtil/Basic/Disk.h>
+#include <CppUtil/Basic/BasicSampler.h>
 
 #include <map>
 
@@ -69,8 +70,8 @@ void TriMesh::Init(bool creator, const std::vector<uint> & indice,
 	this->positions.clear();
 	this->normals.clear();
 	this->texcoords.clear();
-	this->triangles.clear();
-	type = ENUM_TYPE::INVALID;
+	triangles.clear();
+	this->type = ENUM_TYPE::INVALID;
 
 	if (!(indice.size() > 0 && indice.size() % 3 == 0)
 		|| positions.size() <= 0
@@ -84,6 +85,7 @@ void TriMesh::Init(bool creator, const std::vector<uint> & indice,
 
 	this->indice = indice;
 	this->positions = positions;
+	this->type = type;
 
 	if (normals.empty())
 		GenNormals();
@@ -97,6 +99,8 @@ void TriMesh::Init(bool creator, const std::vector<uint> & indice,
 
 	if (tangents.size() == 0)
 		GenTangents();
+	else
+		this->tangents = tangents;
 
 	// traingel 的 mesh 在 init 的时候设置
 	// 因为现在还没有生成 share_ptr
@@ -182,7 +186,8 @@ void TriMesh::GenTangents() {
 		float t1 = w2.y - w1.y;
 		float t2 = w3.y - w1.y;
 
-		float r = 1.0F / (s1 * t2 - s2 * t1);
+		float denominator = s1 * t2 - s2 * t1;
+		float r = denominator == 0.f ? 1.f : 1.f/denominator;
 		Normalf sdir((t2 * x1 - t1 * x2) * r, (t2 * y1 - t1 * y2) * r,
 			(t2 * z1 - t1 * z2) * r);
 		Normalf tdir((s1 * x2 - s2 * x1) * r, (s1 * y2 - s2 * y1) * r,
@@ -204,7 +209,8 @@ void TriMesh::GenTangents() {
 		const Normalf & t = tan1[a];
 
 		// Gram-Schmidt orthogonalize
-		tangents[a] = (t - n * n.Dot(t)).Normalize();
+		auto projT = t - n * n.Dot(t);
+		tangents[a] = projT.Norm2() == 0.f ? BasicSampler::UniformOnSphere() : projT.Normalize();
 
 		// Calculate handedness
 		tangents[a] *= (n.Cross(t).Dot(tan2[a]) < 0.0F) ? -1.0F : 1.0F;

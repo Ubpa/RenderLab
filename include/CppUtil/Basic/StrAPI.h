@@ -26,6 +26,9 @@ namespace CppUtil {
 			const std::string DelTailAfter(const std::string & str, char c);
 
 			const std::string Between(const std::string & str, char left, char right);
+
+			const std::string LowerCase(const std::string & str);
+			const std::string UpperCase(const std::string & str);
 		}
 	}
 }

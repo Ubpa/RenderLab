@@ -23,9 +23,10 @@ using namespace std;
 
 const Ptr<SObj> AssimpLoader::Load(const std::string & path) {
 	bool isSupport = false;
-	const string support[2]= { ".obj", ".FBX"};
+	const string support[2]= { ".obj", ".fbx"};
+	auto lowerCasePath = StrAPI::LowerCase(path);
 	for (auto postfix : support) {
-		if (StrAPI::IsEndWith(path, postfix)) {
+		if (StrAPI::IsEndWith(lowerCasePath, postfix)) {
 			isSupport = true;
 			break;
 		}
@@ -94,11 +95,13 @@ void AssimpLoader::LoadMesh(Str2Img & str2img, const string & dir, aiMesh *mesh,
 		poses.push_back(pos);
 
 		// normals
-		Normalf normal;
-		normal.x = mesh->mNormals[i].x;
-		normal.y = mesh->mNormals[i].y;
-		normal.z = mesh->mNormals[i].z;
-		normals.push_back(normal);
+		if (mesh->mNormals) {
+			Normalf normal;
+			normal.x = mesh->mNormals[i].x;
+			normal.y = mesh->mNormals[i].y;
+			normal.z = mesh->mNormals[i].z;
+			normals.push_back(normal);
+		}
 
 		// texture coordinates
 		if (mesh->mTextureCoords[0]) // does the mesh contain texture coordinates?
@@ -129,6 +132,18 @@ void AssimpLoader::LoadMesh(Str2Img & str2img, const string & dir, aiMesh *mesh,
 		for (uint j = 0; j < face.mNumIndices; j++)
 			indices.push_back(face.mIndices[j]);
 	}
+
+	// offset, scale
+	Vec3 minP, maxP;
+	for (const auto & pos : poses) {
+		minP = minP.MinWith(pos);
+		maxP = maxP.MaxWith(pos);
+	}
+	Vec3 offset = -(minP + maxP) / 2;
+	float scale = sqrt(3.f / (maxP - minP).Norm2());
+	for (auto & pos : poses)
+		pos = scale * (Vec3(pos) + offset);
+
 	auto triMesh = TriMesh::New(indices, poses, normals, texcoords, tangents);
 	CmptGeometry::New(sobj, triMesh);
 

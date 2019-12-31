@@ -181,9 +181,11 @@ Optix: 6.0
 - [ ] Bloom
 - [ ] 重构 MicrofacetDistribution
 - [ ] opengl 的 c++ 版本
-- [ ] 半边结构
-- [ ] loop
+- [x] 半边结构
+- [x] loop
+- [ ] 极小化曲面
 - [ ] 参数化
+- [ ] 空间场平滑插值 RBF
 
 ### Unimportant
 
