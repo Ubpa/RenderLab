@@ -9,6 +9,7 @@
 namespace CppUtil {
 	namespace Engine {
 		class TriMesh;
+		class Paramaterize;
 
 		class MinSurf : public Basic::HeapObj {
 		public:
@@ -38,7 +39,8 @@ namespace CppUtil {
 			class P :public Basic::TPolygon<V, E, P> { };
 		private:
 			Basic::Ptr<TriMesh> triMesh;
-			Basic::Ptr<Basic::HEMesh<V>> heMesh;
+			Basic::Ptr<Basic::HEMesh<V>> heMesh; // vertice order is same with triMesh
+			friend Paramaterize;
 		};
 	}
 }

@@ -70,6 +70,8 @@ namespace CppUtil {
 				Init(false, indice, positions, normals, texcoords, tangents, type);
 			}
 
+			bool Update(const std::vector<Point2> & texcoords);
+
 		private:
 			void Init(bool creator, const std::vector<uint> & indice,
 				const std::vector<Point3> & positions,

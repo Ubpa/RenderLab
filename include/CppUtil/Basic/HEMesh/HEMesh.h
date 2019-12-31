@@ -10,6 +10,7 @@
 #include <CppUtil/Basic/random_set.h>
 
 #include <assert.h>
+#include <set>
 
 namespace CppUtil {
 	namespace Basic {
@@ -67,6 +68,8 @@ namespace CppUtil {
 			void Reserve(size_t n);
 
 			bool HaveBoundary() const;
+			const std::vector<std::vector<Ptr<HE>>> Boundaries();
+			size_t NumBoundaries() const { return const_cast<HEMesh*>(this)->Boundaries().size(); }
 			bool IsTriMesh() const;
 
 		private:

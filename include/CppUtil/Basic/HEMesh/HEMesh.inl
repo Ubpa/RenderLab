@@ -334,3 +334,21 @@ bool HEMesh<V, _0, _1, _2>::IsTriMesh() const {
 	}
 	return true;
 }
+
+template<typename V, typename _0, typename _1, typename _2>
+const std::vector<std::vector<Ptr<typename V::HE>>> HEMesh<V, _0, _1, _2>::Boundaries() {
+	std::vector<std::vector<Ptr<HE>>> boundaries;
+	std::set<Ptr<HE>> found;
+	for (auto he : halfEdges) {
+		if (he->IsBoundary() && found.find(he) == found.end()) {
+			boundaries.push_back(std::vector<Ptr<HE>>());
+			auto cur = he;
+			do {
+				boundaries.back().push_back(cur);
+				found.insert(cur);
+				cur = cur->Next();
+			} while (cur != he);
+		}
+	}
+	return boundaries;
+}
