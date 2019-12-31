@@ -30,7 +30,7 @@ bool DeformRBF::Init(Basic::Ptr<TriMesh> triMesh) {
 	return true;
 }
 
-bool DeformRBF::Run(const std::vector<Constraint> & constraints) {
+bool DeformRBF::Run(const std::vector<Constraint> & constraints, const vector<size_t> & updateIndice) {
 	if (!triMesh) {
 		printf("ERROR::DeformRBF::Run\n"
 			"\t""!triMesh\n");
@@ -105,13 +105,13 @@ bool DeformRBF::Run(const std::vector<Constraint> & constraints) {
 	}
 
 	MatrixXf RBF = A.colPivHouseholderQr().solve(b);
-	cout << A << endl << endl<< b<<endl << endl << RBF;
 
 	// compute target pos of vertex
 	vector<Point3> qVec;
-	for (auto & pos : origPos) {
+	for (auto id : updateIndice) {
+		auto pos = origPos[id];
 		// compute p
-		MatrixXf p(1,m + k);
+		MatrixXf p(1, m + k);
 		for (size_t i = 0; i < m; i++) {
 			auto ci = origPos[constraints[i].id];
 			p(i) = phi(Point3::Distance(ci, pos));
@@ -129,11 +129,8 @@ bool DeformRBF::Run(const std::vector<Constraint> & constraints) {
 
 		// compute q
 		MatrixXf q = p * RBF;
-		qVec.push_back({q(0,0),q(0,1),q(0,2)});
+		triMesh->GetPositions()[id] = { q(0,0),q(0,1),q(0,2) };
 	}
-
-	// update trimesh pos
-	triMesh->Update(qVec);
 
 	return true;
 }

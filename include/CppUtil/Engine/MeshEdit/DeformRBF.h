@@ -22,11 +22,13 @@ namespace CppUtil {
 			static const Basic::Ptr<DeformRBF> New(Basic::Ptr<TriMesh> triMesh) {
 				return Basic::New<DeformRBF>(triMesh);
 			}
+		public:
+			const Basic::Ptr<TriMesh> GetMesh() const { return triMesh; }
 
 		public:
 			void Clear();
 			bool Init(Basic::Ptr<TriMesh> triMesh);
-			bool Run(const std::vector<Constraint> & constraints);
+			bool Run(const std::vector<Constraint> & constraints, const std::vector<size_t> & updateIndice);
 			void Restore();
 			 
 		private:

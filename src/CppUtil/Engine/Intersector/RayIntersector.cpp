@@ -294,6 +294,20 @@ void RayIntersector::Visit(Ptr<Triangle> triangle) {
 	const auto & tg3 = tangents[idx3];
 
 	rst.tangent = (w * tg1 + u * tg2 + v * tg3).Normalize();
+
+	rst.triangle = triangle;
+	if (w < u) {
+		if (u < v)
+			rst.idx = idx3;
+		else
+			rst.idx = idx2;
+	}
+	else {
+		if (w > v)
+			rst.idx = idx1;
+		else
+			rst.idx = idx3;
+	}
 }
 
 void RayIntersector::Visit(Ptr<TriMesh> mesh) {

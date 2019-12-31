@@ -30,6 +30,8 @@ namespace CppUtil {
 				Normalf n;
 				Point2 texcoord;
 				Normalf tangent;
+				Basic::Ptr<Triangle> triangle;
+				int idx;
 			private:
 				friend class RayIntersector;
 				bool isIntersect;

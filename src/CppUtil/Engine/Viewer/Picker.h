@@ -2,6 +2,8 @@
 #define _ENGINE_VIEWER_PICKER_H_
 
 #include <CppUtil/Basic/HeapObj.h>
+#include <CppUtil/Engine/MeshEdit/DeformRBF.h>
+#include <CppUtil/Basic/UGM/UGM.h>
 
 namespace CppUtil {
 	namespace Engine {
@@ -30,6 +32,14 @@ namespace CppUtil {
 			Viewer * viewer;
 
 			Basic::Ptr<RayIntersector> rayIntersector;
+			Basic::Ptr<DeformRBF> deformRBF;
+			std::vector<DeformRBF::Constraint> cons;
+			std::vector<size_t> deformIndice;
+			bool isInDeform = false;
+			Point3 origPos;
+			Vec3 dir;
+			int y;
+			int lastY;
 		};
 	}
 }

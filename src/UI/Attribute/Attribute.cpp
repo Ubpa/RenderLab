@@ -6,6 +6,7 @@
 #include <CppUtil/Engine/MeshEdit/MinSurf.h>
 #include <CppUtil/Engine/MeshEdit/Glue.h>
 #include <CppUtil/Engine/MeshEdit/Paramaterize.h>
+#include <CppUtil/Engine/MeshEdit/DeformRBF.h>
 
 #include <CppUtil/Qt/RawAPI_OGLW.h>
 
@@ -348,6 +349,14 @@ void Attribute::ComponentVisitor::Visit(Ptr<TriMesh> mesh) {
 		auto paramaterize = Paramaterize::New(mesh);
 		paramaterize->Run();
 		pOGLW->DirtyVAO(mesh);
+	});
+
+	grid->AddButton("Deform RBF", [mesh, pOGLW = attr->pOGLW]() {
+		bool canDeform;
+		if (GS::GetV("canDeform", canDeform))
+			GS::Reg("canDeform", !canDeform);
+		else
+			GS::Reg("canDeform", true);
 	});
 }
 

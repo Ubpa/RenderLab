@@ -96,6 +96,12 @@ namespace CppUtil {
 			const std::vector<Normalf> & GetTangents() const { return tangents; }
 			const std::vector<uint> & GetIndice() const { return indice; }
 			const std::vector<Basic::Ptr<Triangle>> & GetTriangles() const { return triangles; }
+			std::vector<Point3> & GetPositions() { return positions; }
+			std::vector<Normalf> & GetNormals() { return normals; }
+			std::vector<Point2> & GetTexcoords() { return texcoords; }
+			std::vector<Normalf> & GetTangents() { return tangents; }
+			std::vector<uint> & GetIndice() { return indice; }
+			std::vector<Basic::Ptr<Triangle>> & GetTriangles() { return triangles; }
 
 		public:
 			virtual const BBoxf GetBBox() const override {
