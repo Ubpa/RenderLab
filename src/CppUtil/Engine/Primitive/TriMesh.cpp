@@ -111,6 +111,24 @@ void TriMesh::Init(bool creator, const std::vector<uint> & indice,
 		Init_AfterGenPtr();
 }
 
+bool TriMesh::Update(const std::vector<Point3> & positions) {
+	if (type == INVALID) {
+		printf("ERROR::TriMesh::Update:\n"
+			"\t""type == INVALID\n");
+		return false;
+	}
+
+	if (positions.size() != this->positions.size()) {
+		printf("ERROR::TriMesh::Update:\n"
+			"\t""%zd positions.size() != %zd this->positions.size()\n", positions.size(), this->positions.size());
+		return false;
+	}
+
+	this->positions = positions;
+
+	return true;
+}
+
 bool TriMesh::Update(const vector<Point2> & texcoords) {
 	if (type == INVALID) {
 		printf("ERROR::TriMesh::Update:\n"
