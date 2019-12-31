@@ -19,6 +19,16 @@ namespace CppUtil {
 			os << Math::ToZero(valN[N - 1]) << "]";
 			return os;
 		}
+
+		template <int N, typename T>
+		bool operator>(const Val<N, T> & v0, const Val<N, T> & v1) {
+			return !(v0 <= v1);
+		}
+
+		template <int N, typename T>
+		bool operator>=(const Val<N, T> & v0, const Val<N, T> & v1) {
+			return !(v0 < v1);
+		}
 	}
 
 	template <int N, typename T>

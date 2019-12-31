@@ -4,6 +4,7 @@
 
 #include <CppUtil/Engine/MeshEdit/LoopSubdivision.h>
 #include <CppUtil/Engine/MeshEdit/MinSurf.h>
+#include <CppUtil/Engine/MeshEdit/Glue.h>
 
 #include <CppUtil/Qt/RawAPI_OGLW.h>
 
@@ -335,6 +336,11 @@ void Attribute::ComponentVisitor::Visit(Ptr<TriMesh> mesh) {
 	grid->AddButton("Minimize Surface", [mesh, pOGLW = attr->pOGLW]() {
 		auto minSurf = MinSurf::New(mesh);
 		minSurf->Run();
+		pOGLW->DirtyVAO(mesh);
+	});
+	grid->AddButton("Glue", [mesh, pOGLW = attr->pOGLW]() {
+		auto glue = Glue::New(mesh);
+		glue->Run();
 		pOGLW->DirtyVAO(mesh);
 	});
 }

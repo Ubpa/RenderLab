@@ -81,6 +81,18 @@ namespace CppUtil {
 				return *this;
 			}
 
+			bool operator<(const T & v) const {
+				return
+					x < v.x || x == v.x && (
+						y < v.y );
+			}
+
+			bool operator<=(const T & v) const {
+				return
+					x < v.x || x == v.x && (
+						y <= v.y);
+			}
+
 		public:
 			union
 			{
