@@ -10,14 +10,14 @@ namespace CppUtil {
 			Cube();
 			float * GetNormalArr();
 			float * GetTexCoordsArr();
-			uint * GetIndexArr();
-			uint GetNormalArrSize();
-			uint GetTexCoordsArrSize();
-			uint GetIndexArrSize();
+			unsigned * GetIndexArr();
+			unsigned GetNormalArrSize();
+			unsigned GetTexCoordsArrSize();
+			unsigned GetIndexArrSize();
 		protected:
 			std::vector<std::array<float, 3>> normalArr;
 			std::vector<std::array<float, 2>> texCoordsArr;
-			std::vector<std::array<uint, 3>> indexArr;
+			std::vector<std::array<unsigned, 3>> indexArr;
 			static const float cubeData[192];
 		};
 	}

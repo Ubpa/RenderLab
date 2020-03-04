@@ -2,9 +2,10 @@
 #define _BASIC_IMAGE_IMAGE_H_
 
 #include <Basic/HeapObj.h>
-#include <Basic/UGM/RGB.h>
-#include <Basic/UGM/RGBA.h>
-#include <Basic/UGM/Point2.h>
+#include <UGM/rgb.h>
+#include <UGM/rgba.h>
+#include <UGM/point.h>
+#include <UGM/val.h>
 
 #include <string>
 
@@ -32,7 +33,7 @@ namespace CppUtil {
 			bool SaveAsPNG(const std::string & fileName, bool flip = false) const;
 
 			Ptr<Image> GenFlip() const;
-			Ptr<Image> Clear(const RGBAf & clearColor = RGBAf{0.f});
+			Ptr<Image> Clear(const Ubpa::rgbaf & clearColor = Ubpa::rgbaf{0.f,0.f,0.f,0.f});
 			Ptr<Image> Inverse();
 
 			Image & operator =(const Image & img) noexcept;
@@ -51,64 +52,64 @@ namespace CppUtil {
 
 		public:
 			int xy2idx(int x, int y) const;
-			int xy2idx(const Point2i & xy) const {
-				return xy2idx(xy.x, xy.y);
+			int xy2idx(const Ubpa::vali2 & xy) const {
+				return xy2idx(xy[0], xy[1]);
 			}
-			const Point2i idx2xy(int idx) const;
+			const Ubpa::vali2 idx2xy(int idx) const;
 
 		public:
-			const RGBAf GetPixel(int x, int y) const;
-			const RGBAf GetPixel(const Point2i & xy) const { return GetPixel(xy.x, xy.y); }
-			const RGBAf GetPixel(int idx) const { return GetPixel(idx2xy(idx)); }
+			const Ubpa::rgbaf GetPixel(int x, int y) const;
+			const Ubpa::rgbaf GetPixel(const Ubpa::vali2 & xy) const { return GetPixel(xy[0], xy[1]); }
+			const Ubpa::rgbaf GetPixel(int idx) const { return GetPixel(idx2xy(idx)); }
 
 			float & At(int x, int y, int channel);
 			const float & At(int x, int y, int channel) const { return const_cast<Image *>(this)->At(x, y, channel); }
-			float & At(const Point2i & xy, int channel) { return At(xy.x, xy.y, channel); }
-			const float & At(const Point2i & xy, int channel) const { return const_cast<Image *>(this)->At(xy, channel); }
+			float & At(const Ubpa::vali2 & xy, int channel) { return At(xy[0], xy[1], channel); }
+			const float & At(const Ubpa::vali2 & xy, int channel) const { return const_cast<Image *>(this)->At(xy, channel); }
 			float & At(int idx, int channel) { return At(idx2xy(idx), channel); }
 			const float & At(int idx, int channel) const { return const_cast<Image *>(this)->At(idx, channel); }
 
 			void SetPixel(int x, int y, float r, float g, float b);
-			void SetPixel(int x, int y, const RGBf & rgb) {
-				SetPixel(x, y, rgb.r, rgb.g, rgb.b);
+			void SetPixel(int x, int y, const Ubpa::rgbf & rgb) {
+				SetPixel(x, y, rgb[0], rgb[1], rgb[2]);
 			}
-			void SetPixel(const Point2i & xy, float r, float g, float b) {
-				SetPixel(xy.x, xy.y, r, g, b);
+			void SetPixel(const Ubpa::vali2 & xy, float r, float g, float b) {
+				SetPixel(xy[0], xy[1], r, g, b);
 			}
-			void SetPixel(const Point2i & xy, const RGBf & rgb) {
-				SetPixel(xy.x, xy.y, rgb.r, rgb.g, rgb.b);
+			void SetPixel(const Ubpa::vali2 & xy, const Ubpa::rgbf & rgb) {
+				SetPixel(xy[0], xy[1], rgb[0], rgb[1], rgb[2]);
 			}
 
 			void SetPixel(int x, int y, float r, float g, float b, float a);
-			void SetPixel(int x, int y, const RGBAf & rgba) {
-				SetPixel(x, y, rgba.r, rgba.g, rgba.b, rgba.a);
+			void SetPixel(int x, int y, const Ubpa::rgbaf & rgba) {
+				SetPixel(x, y, rgba[0], rgba[1], rgba[2], rgba[3]);
 			}
-			void SetPixel(const Point2i & xy, float r, float g, float b, float a) {
-				SetPixel(xy.x, xy.y, r, g, b, a);
+			void SetPixel(const Ubpa::vali2 & xy, float r, float g, float b, float a) {
+				SetPixel(xy[0], xy[1], r, g, b, a);
 			}
-			void SetPixel(const Point2i & xy, const RGBAf & rgba) {
-				SetPixel(xy.x, xy.y, rgba.r, rgba.g, rgba.b, rgba.a);
+			void SetPixel(const Ubpa::vali2 & xy, const Ubpa::rgbaf & rgba) {
+				SetPixel(xy[0], xy[1], rgba[0], rgba[1], rgba[2], rgba[3]);
 			}
-			void SetPixel(const Point2i & xy, const RGBf & rgb, float a) {
-				SetPixel(xy.x, xy.y, rgb.r, rgb.g, rgb.b, a);
+			void SetPixel(const Ubpa::vali2 & xy, const Ubpa::rgbf & rgb, float a) {
+				SetPixel(xy[0], xy[1], rgb[0], rgb[1], rgb[2], a);
 			}
-			void SetPixel(int x, int y, const RGBf & rgb, float a) {
-				SetPixel(x, y, rgb.r, rgb.g, rgb.b, a);
+			void SetPixel(int x, int y, const Ubpa::rgbf & rgb, float a) {
+				SetPixel(x, y, rgb[0], rgb[1], rgb[2], a);
 			}
 
-			const RGBAf SampleNearest(float u, float v) const;
-			const RGBAf SampleNearest(const Point2 & texcoord) const {
-				return SampleNearest(texcoord.x, texcoord.y);
+			const Ubpa::rgbaf SampleNearest(float u, float v) const;
+			const Ubpa::rgbaf SampleNearest(const Ubpa::pointf2 & texcoord) const {
+				return SampleNearest(texcoord[0], texcoord[1]);
 			}
-			const RGBAf SampleBilinear(float u, float v) const;
-			const RGBAf SampleBilinear(const Point2 & texcoord) const {
-				return SampleBilinear(texcoord.x, texcoord.y);
+			const Ubpa::rgbaf SampleBilinear(float u, float v) const;
+			const Ubpa::rgbaf SampleBilinear(const Ubpa::pointf2 & texcoord) const {
+				return SampleBilinear(texcoord[0], texcoord[1]);
 			}
 			enum class Mode {
 				NEAREST,
 				BILINEAR,
 			};
-			const RGBAf Sample(float u, float v, Mode mode) const {
+			const Ubpa::rgbaf Sample(float u, float v, Mode mode) const {
 				switch (mode)
 				{
 				case Mode::NEAREST:
@@ -118,11 +119,11 @@ namespace CppUtil {
 					return SampleBilinear(u, v);
 					break;
 				default:
-					return RGBAf(0.f);
+					return Ubpa::rgbaf(0.f,0.f,0.f,0.f);
 				}
 			}
-			const RGBAf Sample(const Point2 & texcoord, Mode mode) const {
-				return Sample(texcoord.x, texcoord.y, mode);
+			const Ubpa::rgbaf Sample(const Ubpa::pointf2 & texcoord, Mode mode) const {
+				return Sample(texcoord[0], texcoord[1], mode);
 			}
 
 		protected:

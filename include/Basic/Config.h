@@ -21,7 +21,7 @@ namespace CppUtil {
 			bool GetV(const std::string & id, std::string & val, const std::string & defaultVal = "") const;
 			bool IsValid() const;
 		private:
-			bool Config::DecodeLine(const std::string & data);
+			bool DecodeLine(const std::string & data);
 			//------------
 			LStorage<std::string, std::string> strDirectory;
 			LStorage<std::string, float> floatDirectory;

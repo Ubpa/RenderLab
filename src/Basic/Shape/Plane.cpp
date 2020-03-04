@@ -15,15 +15,15 @@ Plane::Plane()
 
 	normalArr = vector<array<float, 3>>(vertexNum);
 	texCoordsArr = vector<array<float, 2>>(vertexNum);
-	indexArr = vector<array<uint, 3>>(triNum);
+	indexArr = vector<array<unsigned, 3>>(triNum);
 	
-	for (uint i = 0; i < vertexNum; i++) {
+	for (unsigned i = 0; i < vertexNum; i++) {
 		posArr[i] = { vertexData[8 * i], vertexData[8 * i + 1],vertexData[8 * i + 2] };
 		normalArr[i] = { vertexData[8 * i + 3], vertexData[8 * i + 4],vertexData[8 * i + 5] };
 		texCoordsArr[i] = { vertexData[8 * i + 6], vertexData[8 * i + 7] };
 	}
 
-	const uint indice[6] = {
+	const unsigned indice[6] = {
 		0, 1, 2,
 		3, 2, 1
 	};
@@ -40,18 +40,18 @@ float * Plane::GetTexCoordsArr() {
 	return texCoordsArr.front().data();
 }
 
-uint * Plane::GetIndexArr() {
+unsigned * Plane::GetIndexArr() {
 	return indexArr.front().data();
 }
 
-uint Plane::GetNormalArrSize() {
-	return static_cast<uint>(normalArr.size() * 3 * sizeof(float));
+unsigned Plane::GetNormalArrSize() {
+	return static_cast<unsigned>(normalArr.size() * 3 * sizeof(float));
 }
 
-uint Plane::GetTexCoordsArrSize() {
-	return static_cast<uint>(texCoordsArr.size() * 2 * sizeof(float));
+unsigned Plane::GetTexCoordsArrSize() {
+	return static_cast<unsigned>(texCoordsArr.size() * 2 * sizeof(float));
 }
 
-uint Plane::GetIndexArrSize() {
-	return static_cast<uint>(indexArr.size() * 3 * sizeof(uint));
+unsigned Plane::GetIndexArrSize() {
+	return static_cast<unsigned>(indexArr.size() * 3 * sizeof(unsigned));
 }

@@ -1,13 +1,13 @@
 #ifndef _BASIC_SAMPLER_SAMPLER_2D_H_
 #define _BASIC_SAMPLER_SAMPLER_2D_H_
 
-#include <Basic/UGM/Val2.h>
+#include <UGM/val.h>
 
 namespace CppUtil {
 	namespace Basic {
 		class Sampler2D {
 		public:
-			virtual const Val2 GetSample() const = 0;
+			virtual const Ubpa::valf2 GetSample() const = 0;
 			virtual ~Sampler2D() {}
 		};
 	}

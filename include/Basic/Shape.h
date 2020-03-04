@@ -1,10 +1,7 @@
 #ifndef _BASIC_SHAPE_SHAPE_H_
 #define _BASIC_SHAPE_SHAPE_H_
 
-typedef unsigned int uint;
-
-#include <Basic/UGM/Vector2.h>
-#include <Basic/UGM/Vector3.h>
+#include <UGM/vec.h>
 
 #include <vector>
 #include <array>
@@ -13,15 +10,15 @@ namespace CppUtil {
 	namespace Basic {
 		class Shape {
 		public:
-			Shape(uint vertexNum, uint triNum = 0);
+			Shape(unsigned vertexNum, unsigned triNum = 0);
 			float * GetPosArr();
-			uint GetVertexNum() { return vertexNum; }
-			uint GetTriNum() { return triNum; }
-			uint GetPosArrSize();
+			unsigned GetVertexNum() { return vertexNum; }
+			unsigned GetTriNum() { return triNum; }
+			unsigned GetPosArrSize();
 		protected:
-			std::vector<Vec3f> posArr;
-			uint vertexNum;
-			uint triNum;
+			std::vector<Ubpa::vecf3> posArr;
+			unsigned vertexNum;
+			unsigned triNum;
 		};
 	}
 }

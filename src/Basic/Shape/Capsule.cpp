@@ -7,7 +7,7 @@
 using namespace CppUtil::Basic;
 using namespace std;
 
-Capsule::Capsule(uint n, float height)
+Capsule::Capsule(unsigned n, float height)
 	: Shape((2*n+1)*(2 * n +2), 4 * n * (2 * n +1)), height(height)
 {
 	// 纵向 2n+1 格，2n+2 个点
@@ -15,56 +15,56 @@ Capsule::Capsule(uint n, float height)
 	// (2n+2)(2n+1) 个点
 	// 2(2n)(2n+1) == 8n^2 + 4n 个三角形
 
-	normalArr = vector<Vec3f>(vertexNum);
-	texCoordsArr = vector<Vec2f>(vertexNum);
-	indexArr = vector<uVec3i>(triNum);
-	tangentArr = vector<Vec3f>(vertexNum);
+	normalArr = vector<Ubpa::vecf3>(vertexNum);
+	texCoordsArr = vector<Ubpa::vecf2>(vertexNum);
+	indexArr = vector<Ubpa::valu3>(triNum);
+	tangentArr = vector<Ubpa::vecf3>(vertexNum);
 
 	float halfH = height / 2;
 
 	// 上半球
-	for (uint i = 0; i <= 2 * n; i++) {
-		for (uint j = 0; j <= n; j++) {
+	for (unsigned i = 0; i <= 2 * n; i++) {
+		for (unsigned j = 0; j <= n; j++) {
 			float phi = 2 * Math::PI * i / float(2 * n);
 			float theta = Math::PI * j / float(2 * n);
 
 			float x = sinf(theta) * sinf(phi);
 			float y = cosf(theta);
 			float z = sinf(theta) * cosf(phi);
-			posArr[i + j * (2 * n + 1)] = Vec3f(x, y + halfH, z);
-			normalArr[i + j * (2 * n + 1)] = Vec3f(x, y, z);
+			posArr[i + j * (2 * n + 1)] = Ubpa::vecf3(x, y + halfH, z);
+			normalArr[i + j * (2 * n + 1)] = Ubpa::vecf3(x, y, z);
 		}
 	}
 
 	// 下半球
-	for (uint i = 0; i <= 2 * n; i++) {
-		for (uint j = n + 1; j <= 2 * n + 1; j++) {
+	for (unsigned i = 0; i <= 2 * n; i++) {
+		for (unsigned j = n + 1; j <= 2 * n + 1; j++) {
 			float phi = 2 * Math::PI * i / float(2 * n);
 			float theta = Math::PI * (j-1) / float(2 * n);
 
 			float x = sinf(theta) * sinf(phi);
 			float y = cosf(theta);
 			float z = sinf(theta) * cosf(phi);
-			posArr[i + j * (2 * n + 1)] = Vec3f(x, y - halfH, z);
-			normalArr[i + j * (2 * n + 1)] = Vec3f(x, y, z);
+			posArr[i + j * (2 * n + 1)] = Ubpa::vecf3(x, y - halfH, z);
+			normalArr[i + j * (2 * n + 1)] = Ubpa::vecf3(x, y, z);
 		}
 	}
 
-	for (uint i = 0; i < vertexNum; i++) {
-		auto norm = posArr[i].Normalize();
+	for (unsigned i = 0; i < vertexNum; i++) {
+		auto norm = posArr[i].normalize();
 
-		float phi = std::atan2(-norm.x, -norm.z) + Math::PI;
-		float theta = acos(norm.y);
+		float phi = std::atan2(-norm[0], -norm[2]) + Math::PI;
+		float theta = acos(norm[1]);
 
 		auto u = phi / (2.f * Math::PI);
 		auto v = theta / Math::PI;
 		
-		texCoordsArr[i] = Vec2f(u, v);
-		tangentArr[i] = Vec3f(cos(phi), 0, -sin(phi));
+		texCoordsArr[i] = Ubpa::vecf2(u, v);
+		tangentArr[i] = Ubpa::vecf3(cos(phi), 0, -sin(phi));
 	}
 
-	for (uint i = 0; i < 2 * n; i++) {
-		for (uint j = 0; j < 2 * n + 1; j++) {
+	for (unsigned i = 0; i < 2 * n; i++) {
+		for (unsigned j = 0; j < 2 * n + 1; j++) {
 			// 1 2
 			// 3 4
 
@@ -82,33 +82,33 @@ Capsule::Capsule(uint n, float height)
 }
 
 float * Capsule::GetNormalArr() {
-	return normalArr.front().Data();
+	return normalArr.front().data();
 }
 
 float * Capsule::GetTexCoordsArr() {
-	return texCoordsArr.front().Data();
+	return texCoordsArr.front().data();
 }
 
-uint * Capsule::GetIndexArr() {
-	return indexArr.front().Data();
+unsigned * Capsule::GetIndexArr() {
+	return indexArr.front().data();
 }
 
 float * Capsule::GetTangentArr() {
-	return tangentArr.front().Data();
+	return tangentArr.front().data();
 }
 
-uint Capsule::GetNormalArrSize() {
-	return static_cast<uint>(normalArr.size() * 3 * sizeof(float));
+unsigned Capsule::GetNormalArrSize() {
+	return static_cast<unsigned>(normalArr.size() * 3 * sizeof(float));
 }
 
-uint Capsule::GetTexCoordsArrSize() {
-	return static_cast<uint>(texCoordsArr.size() * 2 * sizeof(float));
+unsigned Capsule::GetTexCoordsArrSize() {
+	return static_cast<unsigned>(texCoordsArr.size() * 2 * sizeof(float));
 }
 
-uint Capsule::GetIndexArrSize() {
-	return static_cast<uint>(indexArr.size() * 3 * sizeof(uint));
+unsigned Capsule::GetIndexArrSize() {
+	return static_cast<unsigned>(indexArr.size() * 3 * sizeof(unsigned));
 }
 
-uint Capsule::GetTangentArrSize() {
-	return static_cast<uint>(tangentArr.size() * 3 * sizeof(float));
+unsigned Capsule::GetTangentArrSize() {
+	return static_cast<unsigned>(tangentArr.size() * 3 * sizeof(float));
 }

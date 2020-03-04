@@ -7,65 +7,65 @@
 using namespace CppUtil::Basic;
 using namespace std;
 
-Disk::Disk(uint n)
+Disk::Disk(unsigned n)
 	: Shape(n+1, n)
 {
-	normalArr = vector<Vec3f>(n + 1);
-	texCoordsArr = vector<Vec2f>(n + 1);
-	tangentArr = vector<Vec3f>(n + 1);
-	indexArr = vector<uVec3i>(n);
+	normalArr = vector<Ubpa::vecf3>(n + 1);
+	texCoordsArr = vector<Ubpa::vecf2>(n + 1);
+	tangentArr = vector<Ubpa::vecf3>(n + 1);
+	indexArr = vector<Ubpa::valu3>(n);
 
 	float deltaTheta = 2 * Math::PI / n;
 	float y = 0;
-	for (uint i = 0; i < n; i++) {
+	for (unsigned i = 0; i < n; i++) {
 		float theta = i * deltaTheta;
 		float z = cosf(theta);
 		float x = sinf(theta);
-		posArr[i] = Vec3f(x, y, z);
-		texCoordsArr[i] = Vec2f((1 + x) / 2, (1 + z) / 2);
+		posArr[i] = Ubpa::vecf3(x, y, z);
+		texCoordsArr[i] = Ubpa::vecf2((1 + x) / 2, (1 + z) / 2);
 	}
-	posArr[n] = Vec3f(0,0,0);
-	texCoordsArr[n] = Vec2f(0.5, 0.5);
+	posArr[n] = Ubpa::vecf3(0,0,0);
+	texCoordsArr[n] = Ubpa::vecf2(0.5, 0.5);
 
-	for (uint i = 0; i < n + 1; i++) {
-		normalArr[i] = Vec3f(0,1,0);
-		tangentArr[i] = Vec3(1,0,0);
+	for (unsigned i = 0; i < n + 1; i++) {
+		normalArr[i] = Ubpa::vecf3(0,1,0);
+		tangentArr[i] = Ubpa::vecf3(1,0,0);
 	}
 
-	for (uint i = 0; i < n; i++) {
+	for (unsigned i = 0; i < n; i++) {
 		int next = (i + 1) % n;
-		indexArr[i] = uVec3i(i,next,n);
+		indexArr[i] = Ubpa::valu3(i,next,n);
 	}
 }
 
 float * Disk::GetNormalArr() {
-	return normalArr.front().Data();
+	return normalArr.front().data();
 }
 
 float * Disk::GetTexCoordsArr() {
-	return texCoordsArr.front().Data();
+	return texCoordsArr.front().data();
 }
 
-uint * Disk::GetIndexArr() {
-	return indexArr.front().Data();
+unsigned * Disk::GetIndexArr() {
+	return indexArr.front().data();
 }
 
 float * Disk::GetTangentArr() {
-	return tangentArr.front().Data();
+	return tangentArr.front().data();
 }
 
-uint Disk::GetNormalArrSize() {
-	return static_cast<uint>(normalArr.size() * 3 * sizeof(float));
+unsigned Disk::GetNormalArrSize() {
+	return static_cast<unsigned>(normalArr.size() * 3 * sizeof(float));
 }
 
-uint Disk::GetTexCoordsArrSize() {
-	return static_cast<uint>(texCoordsArr.size() * 2 * sizeof(float));
+unsigned Disk::GetTexCoordsArrSize() {
+	return static_cast<unsigned>(texCoordsArr.size() * 2 * sizeof(float));
 }
 
-uint Disk::GetIndexArrSize() {
-	return static_cast<uint>(indexArr.size() * 3 * sizeof(uint));
+unsigned Disk::GetIndexArrSize() {
+	return static_cast<unsigned>(indexArr.size() * 3 * sizeof(unsigned));
 }
 
-uint Disk::GetTangentArrSize() {
-	return static_cast<uint>(tangentArr.size() * 3 * sizeof(float));
+unsigned Disk::GetTangentArrSize() {
+	return static_cast<unsigned>(tangentArr.size() * 3 * sizeof(float));
 }

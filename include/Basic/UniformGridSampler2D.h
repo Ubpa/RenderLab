@@ -7,7 +7,7 @@ namespace CppUtil {
 	namespace Basic {
 		class UniformGridSampler2D : public Sampler2D {
 		public:
-			virtual const Val2 GetSample() const;
+			virtual const Ubpa::valf2 GetSample() const;
 		};
 	}
 }

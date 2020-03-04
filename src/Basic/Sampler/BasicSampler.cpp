@@ -1,43 +1,44 @@
 #include <Basic/BasicSampler.h>
 
 #include <Basic/Math.h>
+#include <UGM/vec.h>
 
 using namespace CppUtil;
 using namespace CppUtil::Basic;
 
-const Point2 BasicSampler::UniformInSquare() {
+const Ubpa::pointf2 BasicSampler::UniformInSquare() {
 	return { Math::Rand_F(), Math::Rand_F() };
 }
 
-const Point2 BasicSampler::UniformInDisk() {
+const Ubpa::pointf2 BasicSampler::UniformInDisk() {
 	auto u = UniformInSquare();
 
 	// Map uniform random numbers to $[-1,1]^2$
-	auto uOffset = static_cast<Point2>(2.f * Vec2(u) - Vec2(1, 1));
+	auto uOffset = (2.f * u.cast_to<Ubpa::vecf2>() - Ubpa::vecf2(1, 1)).cast_to<Ubpa::pointf2>();
 
 	// Handle degeneracy at the origin
-	if (uOffset.x == 0 && uOffset.y == 0)
-		return Point2(0, 0);
+	if (uOffset[0] == 0 && uOffset[1] == 0)
+		return Ubpa::pointf2(0, 0);
 
 	// Apply concentric mapping to point
 	float theta, r;
-	if (std::abs(uOffset.x) > std::abs(uOffset.y)) {
-		r = uOffset.x;
-		theta = Math::PI / 4.f * (uOffset.y / uOffset.x);
+	if (std::abs(uOffset[0]) > std::abs(uOffset[1])) {
+		r = uOffset[0];
+		theta = Math::PI / 4.f * (uOffset[1] / uOffset[0]);
 	}
 	else {
-		r = uOffset.y;
-		theta = Math::PI / 2.f - Math::PI / 4.f * (uOffset.x / uOffset.y);
+		r = uOffset[1];
+		theta = Math::PI / 2.f - Math::PI / 4.f * (uOffset[0] / uOffset[1]);
 	}
-	return Point2f(r * std::cos(theta), r * std::sin(theta));
+	return Ubpa::pointf2(r * std::cos(theta), r * std::sin(theta));
 }
 
-const Point2 BasicSampler::UniformOnDisk() {
+const Ubpa::pointf2 BasicSampler::UniformOnDisk() {
 	float theta = Math::Rand_F() * 2 * Math::PI;
 	return { cos(theta), sin(theta) };
 }
 
-const Vec3 BasicSampler::UniformOnSphere() {
+const Ubpa::vecf3 BasicSampler::UniformOnSphere() {
 	auto Xi1 = Math::Rand_F();
 	auto Xi2 = Math::Rand_F();
 
@@ -55,21 +56,21 @@ float BasicSampler::PDofUniformOnSphere() {
 	return 1.f / (4.f*Math::PI);
 }
 
-const Vec3 BasicSampler::UniformOnSphere(float & pd) {
+const Ubpa::vecf3 BasicSampler::UniformOnSphere(float & pd) {
 	pd = PDofUniformOnSphere();
 	return UniformOnSphere();
 }
 
-const Vec3 BasicSampler::CosOnHalfSphere() {
+const Ubpa::vecf3 BasicSampler::CosOnHalfSphere() {
 	auto pInDisk = UniformInDisk();
-	float z = sqrt(1 - pInDisk.x * pInDisk.x - pInDisk.y*pInDisk.y);
-	return { pInDisk, z };
+	float z = sqrt(1 - pInDisk[0] * pInDisk[0] - pInDisk[1]*pInDisk[1]);
+	return { pInDisk[0], pInDisk[1], z };
 }
 
-const Vec3 BasicSampler::CosOnSphere() {
+const Ubpa::vecf3 BasicSampler::CosOnSphere() {
 	auto p = CosOnHalfSphere();
 	if (Math::Rand_F() < 0.5f)
-		p.z *= -1;
+		p[2] *= -1;
 
 	return p;
 }

@@ -2,28 +2,29 @@
 #define _CPPUTIL_BASIC_SHAPE_CAPSULE_H_
 
 #include <Basic/Shape.h>
+#include <UGM/val.h>
 
 namespace CppUtil {
 	namespace Basic {
 		class Capsule : public Shape {
 		public:
-			Capsule(uint n, float height = 2.f);
+			Capsule(unsigned n, float height = 2.f);
 			float * GetNormalArr();
 			float * GetTexCoordsArr();
-			uint * GetIndexArr();
+			unsigned * GetIndexArr();
 			float * GetTangentArr();
-			uint GetNormalArrSize();
-			uint GetTexCoordsArrSize();
-			uint GetIndexArrSize();
-			uint GetTangentArrSize();
+			unsigned GetNormalArrSize();
+			unsigned GetTexCoordsArrSize();
+			unsigned GetIndexArrSize();
+			unsigned GetTangentArrSize();
 
 			float GetHeight() const { return height; }
 
 		protected:
-			std::vector<Vec3f> normalArr;
-			std::vector<Vec2f> texCoordsArr;
-			std::vector<uVec3i> indexArr;
-			std::vector<Vec3f> tangentArr;
+			std::vector<Ubpa::vecf3> normalArr;
+			std::vector<Ubpa::vecf2> texCoordsArr;
+			std::vector<Ubpa::valu3> indexArr;
+			std::vector<Ubpa::vecf3> tangentArr;
 
 		private:
 			float height;

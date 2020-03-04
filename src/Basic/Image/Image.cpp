@@ -187,8 +187,8 @@ bool Image::IsValid() const{
 	return data != NULL && channel > 0 && channel <= 4;
 }
 
-const RGBAf Image::GetPixel(int x, int y) const {
-	RGBAf rgba(0, 0, 0, 1);
+const Ubpa::rgbaf Image::GetPixel(int x, int y) const {
+	Ubpa::rgbaf rgba(0, 0, 0, 1);
 	for (int i = 0; i < channel; i++)
 		rgba[i] = At(x, y, i);
 
@@ -215,7 +215,7 @@ void Image::SetPixel(int x, int y, float r, float g, float b, float a) {
 	At(x, y, 3) = a;
 }
 
-const RGBAf Image::SampleNearest(float u, float v) const {
+const Ubpa::rgbaf Image::SampleNearest(float u, float v) const {
 	u = Math::Clamp(u, 0.f, 0.999999f);
 	v = Math::Clamp(v, 0.f, 0.999999f);
 	float xf = u * width;
@@ -225,7 +225,7 @@ const RGBAf Image::SampleNearest(float u, float v) const {
 	return GetPixel(xi, yi);
 }
 
-const RGBAf Image::SampleBilinear(float u, float v) const {
+const Ubpa::rgbaf Image::SampleBilinear(float u, float v) const {
 	float xf = Math::Clamp<float>(u, 0, 0.999999f) * width;
 	float yf = Math::Clamp<float>(v, 0, 0.999999f) * height;
 
@@ -234,21 +234,21 @@ const RGBAf Image::SampleBilinear(float u, float v) const {
 	int y0 = static_cast<int>(yf);
 	int y1 = Math::Clamp<int>(y0 + ((yf - y0) < 0.5 ? -1 : 1), 0, height - 1);
 
-	RGBAf colors[4] = {
+	Ubpa::rgbaf colors[4] = {
 		GetPixel(x0,y0),
 		GetPixel(x1,y0),
 		GetPixel(x0,y1),
 		GetPixel(x1,y1),
 	};
-
+	
 	float tx = abs(xf - (x0 + 0.5f));
 	float ty = abs(yf - (y0 + 0.5f));
-	RGBAf mixColor = RGBAf::Lerp(RGBAf::Lerp(colors[0], colors[1], tx), RGBAf::Lerp(colors[2], colors[3], tx), ty);
+	Ubpa::rgbaf mixColor = colors[0].lerp(colors[1], tx).lerp(colors[2].lerp(colors[3], tx), ty);
 
 	return mixColor;
 }
 
-Ptr<Image> Image::Clear(const RGBAf & clearColor) {
+Ptr<Image> Image::Clear(const Ubpa::rgbaf & clearColor) {
 	if (!IsValid()) {
 		printf("ERROR::Image::Clear:\n"
 			"\t""img is invalid\n");
@@ -256,7 +256,7 @@ Ptr<Image> Image::Clear(const RGBAf & clearColor) {
 	}
 
 	if (channel <= 3) {
-		const auto rgb = clearColor.ToRGB();
+		const auto rgb = clearColor.to_rgb();
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
 				for (int c = 0; c < channel; c++)
@@ -281,7 +281,7 @@ int Image::xy2idx(int x, int y) const {
 	return x + y * width;
 }
 
-const Point2i Image::idx2xy(int idx) const {
+const Ubpa::vali2 Image::idx2xy(int idx) const {
 	assert(idx >= 0 && idx < width * height);
 	int y = idx / width;
 	int x = idx - y * width;
