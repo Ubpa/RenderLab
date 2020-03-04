@@ -1,11 +1,11 @@
 #ifndef _OPENGL_MESH_MESH_H_
 #define _OPENGL_MESH_MESH_H_
 
-typedef unsigned int uint;
+typedef unsigned int unsigned;
 
-#include <Basic/UGM/Point3.h>
-#include <Basic/UGM/Normal.h>
-#include <Basic/UGM/Vector2.h>
+#include <UGM/point.h>
+#include <UGM/Normal.h>
+#include <UGM/vec.h>
 
 #include <string>
 #include <vector>
@@ -18,11 +18,11 @@ namespace CppUtil {
 		public:
 			struct Vertex {
 				// position
-				Point3 Position;
+				Ubpa::pointf3 Position;
 				// normal
 				Normalf Normal;
 				// texCoords
-				Vec2 TexCoords;
+				Ubpa::vecf2 TexCoords;
 				// tangent
 				//Normalf Tangent;
 				// bitangent
@@ -30,14 +30,14 @@ namespace CppUtil {
 			};
 
 			struct TextureInfo {
-				uint id;
+				unsigned id;
 				std::string type;
 				std::string path;
 			};
 
 			/*  Functions  */
 			// constructor
-			Mesh(const std::vector<Vertex> & vertices, const std::vector<uint> & indices, const std::vector<TextureInfo> & textureInfos);
+			Mesh(const std::vector<Vertex> & vertices, const std::vector<unsigned> & indices, const std::vector<TextureInfo> & textureInfos);
 
 			// render the mesh
 			void Draw(const Shader & shader, const std::string & materialPrefix = "");
@@ -45,12 +45,12 @@ namespace CppUtil {
 		private:
 			/*  Mesh Data  */
 			std::vector<Vertex> vertices;
-			std::vector<uint> indices;
+			std::vector<unsigned> indices;
 			std::vector<TextureInfo> textureInfos;
-			uint VAO;
+			unsigned VAO;
 
 			/*  Render data  */
-			uint VBO, EBO;
+			unsigned VBO, EBO;
 
 			/*  Functions    */
 			// initializes all the buffer objects/arrays

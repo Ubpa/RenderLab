@@ -38,7 +38,7 @@ Shader::Shader(const string & vertexPath, const string & fragmentPath, const str
 	const char * fsCStr = fsStr.c_str();
 
 	// vertex shader
-	uint glvs = glCreateShader(GL_VERTEX_SHADER);
+	unsigned glvs = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(glvs, 1, &vsCStr, NULL);
 	glCompileShader(glvs);
 	if (!CheckCompileErrors(glvs, CompileType::VERTEX)) {
@@ -48,7 +48,7 @@ Shader::Shader(const string & vertexPath, const string & fragmentPath, const str
 	}
 
 	// fragment Shader
-	uint glfs = glCreateShader(GL_FRAGMENT_SHADER);
+	unsigned glfs = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(glfs, 1, &fsCStr, NULL);
 	glCompileShader(glfs);
 	if(!CheckCompileErrors(glfs, CompileType::FRAGMENT)) {
@@ -58,7 +58,7 @@ Shader::Shader(const string & vertexPath, const string & fragmentPath, const str
 	}
 
 	// geometry Sahder
-	uint glgs = 0;
+	unsigned glgs = 0;
 	if (hasGS) {
 		string gsStr = Process(geometryPath);
 		if (gsStr.size() == 0) {
@@ -99,7 +99,7 @@ Shader::Shader(const string & vertexPath, const string & fragmentPath, const str
 	glDeleteShader(glgs);
 }
 
-uint Shader::GetID() const { return ID; }
+unsigned Shader::GetID() const { return ID; }
 bool Shader::IsValid() const { return valid; }
 
 bool Shader::Use() const{
@@ -128,23 +128,23 @@ void Shader::SetFloat(const string &name, float value) const{
 	glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
 }
 
-void Shader::SetFloats(const string &name, uint n, const float * values) const {
+void Shader::SetFloats(const string &name, unsigned n, const float * values) const {
 	Use();
 	glUniform1fv(glGetUniformLocation(ID, name.c_str()), n, values);
 }
 
 
-void Shader::SetVec2f(const std::string &name, float value0, float value1) const {
+void Shader::SetVecf2(const std::string &name, float value0, float value1) const {
 	Use();
 	glUniform2f(glGetUniformLocation(ID, name.c_str()), value0, value1);
 }
 
-void Shader::SetVec3f(const string &name, float value0, float value1, float value2) const {
+void Shader::SetVecf3(const string &name, float value0, float value1, float value2) const {
 	Use();
 	glUniform3f(glGetUniformLocation(ID, name.c_str()), value0, value1, value2);
 }
 
-void Shader::SetVec3fs(const std::string &name, uint n, const float * data) const {
+void Shader::SetVecf3s(const std::string &name, unsigned n, const float * data) const {
 	Use();
 	glUniform3fv(glGetUniformLocation(ID, name.c_str()), 4, data);
 }
@@ -154,16 +154,16 @@ void Shader::SetVec4f(const string &name, float value0, float value1, float valu
 	glUniform4f(glGetUniformLocation(ID, name.c_str()), value0, value1, value2, value3);
 }
 
-void Shader::SetMat4f(const string &name, const float * matValue) const{
+void Shader::SetMatf4(const string &name, const float * matValue) const{
 	Use();
 	glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, matValue);
 }
 
-void Shader::UniformBlockBind(const string &name, uint bindPoint) const {
+void Shader::UniformBlockBind(const string &name, unsigned bindPoint) const {
 	glUniformBlockBinding(ID, glGetUniformBlockIndex(ID, name.c_str()), bindPoint);
 }
 
-int Shader::CheckCompileErrors(uint shader, CompileType type){
+int Shader::CheckCompileErrors(unsigned shader, CompileType type){
 	int success;
 	glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
 

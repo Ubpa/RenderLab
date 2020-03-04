@@ -71,7 +71,7 @@ namespace CppUtil {
 		template<typename ImplT, typename ...Args>
 		const Ptr<ImplT> New(Args && ... args) {
 			const auto pImplT = Ptr<ImplT>(new ImplT(std::forward<Args>(args)...), HeapObj::Delete);
-			static_cast<Ptr<HeapObj>>(pImplT)->Init_AfterGenPtr();
+			pImplT->Init_AfterGenPtr();
 			return pImplT;
 		}
 	}

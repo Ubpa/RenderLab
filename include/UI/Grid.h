@@ -3,11 +3,11 @@
 
 #include <Basic/HeapObj.h>
 
-#include <Basic/UGM/RGB.h>
+#include <UGM/rgb.h>
 
-#include <Basic/UGM/Val2.h>
-#include <Basic/UGM/Val3.h>
-#include <Basic/UGM/Val4.h>
+#include <UGM/val.h>
+#include <UGM/val.h>
+#include <UGM/Ubpa::valf4.h>
 
 #include <qstring.h>
 
@@ -53,9 +53,9 @@ namespace Ui {
 		void AddEditVal(const std::string & text, volatile int & val) {
 			AddEditVal(text, val, [&val](int v) {val = v; });
 		}
-		void AddEditVal(const std::vector<std::string> & texts, const CppUtil::Val3 & val, const CppUtil::Val3 & singleStep, const std::function<void(const CppUtil::Val3 &)> & slot);
-		void AddEditVal(const std::vector<std::string> & texts, CppUtil::Val3 & val, const CppUtil::Val3 & singleStep) {
-			AddEditVal(texts, val, singleStep, [&](const CppUtil::Val3 & newVal) {val = newVal; });
+		void AddEditVal(const std::vector<std::string> & texts, const Ubpa::valf3 & val, const Ubpa::valf3 & singleStep, const std::function<void(const Ubpa::valf3 &)> & slot);
+		void AddEditVal(const std::vector<std::string> & texts, Ubpa::valf3 & val, const Ubpa::valf3 & singleStep) {
+			AddEditVal(texts, val, singleStep, [&](const Ubpa::valf3 & newVal) {val = newVal; });
 		}
 
 		// slider
@@ -69,9 +69,9 @@ namespace Ui {
 			AddEditVal(text, val, minVal, maxVal, stepNum, [&val](double v) {val = v; });
 		}
 
-		void AddEditVal(const std::vector<std::string> & texts, const CppUtil::Val3 & val, const CppUtil::Val3 & minVal, const CppUtil::Val3 & maxVal, const CppUtil::Val3i & stepNum, const std::function<void(const CppUtil::Val3 &)> & slot);
-		void AddEditVal(const std::vector<std::string> & texts, CppUtil::Val3 & val, const CppUtil::Val3 & minVal, const CppUtil::Val3 & maxVal, const CppUtil::Val3i & stepNum) {
-			AddEditVal(texts, val, minVal, maxVal, stepNum, [&](const CppUtil::Val3 & newVal) {val = newVal; });
+		void AddEditVal(const std::vector<std::string> & texts, const Ubpa::valf3 & val, const Ubpa::valf3 & minVal, const Ubpa::valf3 & maxVal, const Ubpa::valf3i & stepNum, const std::function<void(const Ubpa::valf3 &)> & slot);
+		void AddEditVal(const std::vector<std::string> & texts, Ubpa::valf3 & val, const Ubpa::valf3 & minVal, const Ubpa::valf3 & maxVal, const Ubpa::valf3i & stepNum) {
+			AddEditVal(texts, val, minVal, maxVal, stepNum, [&](const Ubpa::valf3 & newVal) {val = newVal; });
 		}
 
 		// checkbox
@@ -84,7 +84,7 @@ namespace Ui {
 		void AddText(const std::string & text, numT val) { AddText(text, QString::number(val).toStdString()); }
 
 		// color : [0, 1] x 3
-		void AddEditColor(const std::string & text, CppUtil::RGBf & color);
+		void AddEditColor(const std::string & text, Ubpa::rgbf & color);
 
 		// combobox
 		typedef std::map<std::string, std::function<void()>> SlotMap;

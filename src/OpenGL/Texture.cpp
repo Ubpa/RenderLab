@@ -20,7 +20,7 @@ const Texture Texture::InValid(0, ENUM_TYPE_NOT_VALID);
 Texture::Texture()
 	: ID(0), type(ENUM_TYPE_NOT_VALID) { }
 
-Texture::Texture(uint ID, ENUM_TYPE type)
+Texture::Texture(unsigned ID, ENUM_TYPE type)
 	: ID(ID), type(type) { }
 
 Texture::Texture(ENUM_TYPE type)
@@ -30,12 +30,12 @@ Texture::Texture(PtrC<Image> img) : ID(0), type(ENUM_TYPE_2D_DYNAMIC) {
 	SetImg(*img);
 }
 
-Texture::Texture(uint width, uint height, const float * data, uint dataType, uint srcFormat, uint internalFormat, MAG_FILTER magFilter) {
+Texture::Texture(unsigned width, unsigned height, const float * data, unsigned dataType, unsigned srcFormat, unsigned internalFormat, MAG_FILTER magFilter) {
 	glGenTextures(1, &ID);
 	glBindTexture(GL_TEXTURE_2D, ID);
 	glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, srcFormat, dataType, data);
 	//glGenerateMipmap(GL_TEXTURE_2D);
-	uint glMagFilter = magFilter == MAG_FILTER::NEAREST ? GL_NEAREST : GL_LINEAR;
+	unsigned glMagFilter = magFilter == MAG_FILTER::NEAREST ? GL_NEAREST : GL_LINEAR;
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, glMagFilter);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, glMagFilter);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -76,7 +76,7 @@ bool Texture::Load(const std::vector<std::string> & skybox) {
 	// +Z (front) 
 	// -Z (back)
 	// -------------------------------------------------------
-	for (uint i = 0; i < skybox.size(); i++)
+	for (unsigned i = 0; i < skybox.size(); i++)
 	{
 		auto img = Image::New(skybox[i]);
 		if (!img->IsValid()) {
@@ -110,7 +110,7 @@ Texture::Texture(const vector<PtrC<Image>> & skyboxImgs) {
 	glGenTextures(1, &ID);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, ID);
 
-	for (uint i = 0; i < 6; i++)
+	for (unsigned i = 0; i < 6; i++)
 	{
 		if (!skyboxImgs[i]->IsValid()) {
 			printf("Cubemap texture load fail\n");
@@ -232,7 +232,7 @@ bool Texture::SetImg(const Image & img) {
 	return true;
 }
 
-bool Texture::Use(uint id) const{
+bool Texture::Use(unsigned id) const{
 	if (!IsValid()) {
 		printf("ERROR::Texture::Use:\n"
 			"\t""use a invalid texture\n");
@@ -244,7 +244,7 @@ bool Texture::Use(uint id) const{
 	return true;
 }
 
-uint Texture::Type2GL(ENUM_TYPE type) {
+unsigned Texture::Type2GL(ENUM_TYPE type) {
 	switch (type)
 	{
 	case ENUM_TYPE_NOT_VALID:
@@ -289,7 +289,7 @@ void Texture::UnBind() const{
 	glBindTexture(Type2GL(type), 0);
 }
 
-bool Texture::GenBufferForCubemap(uint width, uint height) {
+bool Texture::GenBufferForCubemap(unsigned width, unsigned height) {
 	if (type != ENUM_TYPE_CUBE_MAP) {
 		printf("ERROR::Texture::GenBufferForCubemap:\n"
 			"\t""type is not ENUM_TYPE_CUBE_MAP\n");
@@ -299,7 +299,7 @@ bool Texture::GenBufferForCubemap(uint width, uint height) {
 	glGenTextures(1, &ID);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, ID);
 
-	for (uint i = 0; i < 6; i++)
+	for (unsigned i = 0; i < 6; i++)
 	{
 		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, nullptr);
 	}

@@ -26,7 +26,7 @@ namespace Define{
 	//------------ common shader
 	const std::string str_ShadersCommon_Prefix = "/data/shaders/Common/";
 	const std::string str_VsPostfix = ".vs";
-	const std::string str_GsPostfix = ".gs";
+	const std::string str_GsPostfix = "[1]s";
 	const std::string str_FsPostfix = ".fs";
 
 	const std::string str_Basic_P3N3T2T3_vs = str_ShadersCommon_Prefix + "basic_P3N3T2T3" + str_VsPostfix;
@@ -64,7 +64,7 @@ namespace Define{
 
 	const std::string str_MVP_P3_vs = str_ShadersCommon_Prefix + "MVP_P3" + str_VsPostfix;
 
-	const float data_ScreenVertices[] = { // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
+	const float data_ScreenVertices[] = { // vertex attributes for a quad that fills the entire screen in normalized Device Coordinates.
 		// positions   // texCoords
 		-1.0f,  1.0f,  0.0f, 1.0f,
 		-1.0f, -1.0f,  0.0f, 0.0f,
@@ -75,7 +75,7 @@ namespace Define{
 		 1.0f,  1.0f,  1.0f, 1.0f
 	};
 
-	const float data_Flip_ScreenVertices[] = { // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
+	const float data_Flip_ScreenVertices[] = { // vertex attributes for a quad that fills the entire screen in normalized Device Coordinates.
 		// positions   // texCoords
 		-1.0f,  1.0f,  0.0f, 0.0f,
 		-1.0f, -1.0f,  0.0f, 1.0f,

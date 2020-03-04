@@ -19,7 +19,7 @@ using namespace std;
 FBO::FBO()
 	: type(ENUM_TYPE_INVALID), isValid(false) { }
 
-FBO::FBO(uint width, uint height, ENUM_TYPE type)
+FBO::FBO(unsigned width, unsigned height, ENUM_TYPE type)
 	: type(type), width(width), height(height) {
 	switch (type)
 	{
@@ -82,19 +82,19 @@ FBO::FBO(uint width, uint height, ENUM_TYPE type)
 	}
 }
 
-FBO::FBO(uint width, uint height, const std::vector<uint> & dimVecForGBuffer)
+FBO::FBO(unsigned width, unsigned height, const std::vector<unsigned> & dimVecForGBuffer)
 	: width(width), height(height), dimVec(dimVecForGBuffer)
 {
 	glGenFramebuffers(1, &ID);
 	glBindFramebuffer(GL_FRAMEBUFFER, ID);
 
-	const uint formats[4] = { GL_RED, GL_RG, GL_RGB, GL_RGBA };
-	const uint internalFormats[4] = { GL_R32F, GL_RG32F, GL_RGB32F, GL_RGBA32F };
-	vector<uint> attachments;
+	const unsigned formats[4] = { GL_RED, GL_RG, GL_RGB, GL_RGBA };
+	const unsigned internalFormats[4] = { GL_R32F, GL_RG32F, GL_RGB32F, GL_RGBA32F };
+	vector<unsigned> attachments;
 
 	for (int i = 0; i < dimVecForGBuffer.size(); i++) {
 		const int dim = dimVecForGBuffer[i];
-		uint texID;
+		unsigned texID;
 		glGenTextures(1, &texID);
 		glBindTexture(GL_TEXTURE_2D, texID);
 		glTexImage2D(GL_TEXTURE_2D, 0, internalFormats[dim - 1], width, height, 0, formats[dim - 1], GL_FLOAT, NULL);
@@ -112,14 +112,14 @@ FBO::FBO(uint width, uint height, const std::vector<uint> & dimVecForGBuffer)
 
 	/*
 	// create and attach depth buffer (renderbuffer)
-	uint rboDepth;
+	unsigned rboDepth;
 	glGenRenderbuffers(1, &rboDepth);
 	glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth);
 	*/
 
-	uint depthBufferID;
+	unsigned depthBufferID;
 	glGenTextures(1, &depthBufferID);
 	glBindTexture(GL_TEXTURE_2D, depthBufferID);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
@@ -148,11 +148,11 @@ FBO::FBO(uint width, uint height, const std::vector<uint> & dimVecForGBuffer)
 	return;
 }
 
-bool FBO::GenFBO_BASIC(uint width, uint height) {
+bool FBO::GenFBO_BASIC(unsigned width, unsigned height) {
 	glGenFramebuffers(1, &ID);
 	glBindFramebuffer(GL_FRAMEBUFFER, ID);
 
-	uint colorBufferID;
+	unsigned colorBufferID;
 	glGenTextures(1, &colorBufferID);
 	glBindTexture(GL_TEXTURE_2D, colorBufferID);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
@@ -160,7 +160,7 @@ bool FBO::GenFBO_BASIC(uint width, uint height) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorBufferID, 0);
 
-	uint RBO;
+	unsigned RBO;
 	glGenRenderbuffers(1, &RBO);
 	glBindRenderbuffer(GL_RENDERBUFFER, RBO);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
@@ -178,12 +178,12 @@ bool FBO::GenFBO_BASIC(uint width, uint height) {
 	return true;
 }
 
-bool FBO::GenFBO_RGBF_DEPTH(uint width, uint height, uint colorBufferNum) {
+bool FBO::GenFBO_RGBF_DEPTH(unsigned width, unsigned height, unsigned colorBufferNum) {
 	glGenFramebuffers(1, &ID);
 	glBindFramebuffer(GL_FRAMEBUFFER, ID);
 
-	for (uint i = 0; i < colorBufferNum; i++) {
-		uint colorBufferID;
+	for (unsigned i = 0; i < colorBufferNum; i++) {
+		unsigned colorBufferID;
 		glGenTextures(1, &colorBufferID);
 		glBindTexture(GL_TEXTURE_2D, colorBufferID);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, NULL);
@@ -196,14 +196,14 @@ bool FBO::GenFBO_RGBF_DEPTH(uint width, uint height, uint colorBufferNum) {
 	}
 
 	if (colorBufferNum > 1) {
-		uint * attachments = new uint[colorBufferNum];
-		for (uint i = 0; i < colorBufferNum; i++)
+		unsigned * attachments = new unsigned[colorBufferNum];
+		for (unsigned i = 0; i < colorBufferNum; i++)
 			attachments[i] = GL_COLOR_ATTACHMENT0 + i;
 		glDrawBuffers(colorBufferNum, attachments);
 		delete [] attachments;
 	}
 
-	uint RBO;
+	unsigned RBO;
 	glGenRenderbuffers(1, &RBO);
 	glBindRenderbuffer(GL_RENDERBUFFER, RBO);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
@@ -222,12 +222,12 @@ bool FBO::GenFBO_RGBF_DEPTH(uint width, uint height, uint colorBufferNum) {
 	return true;
 }
 
-bool FBO::GenFBO_MSAA(uint width, uint height) {
-	const uint samples = 4;
+bool FBO::GenFBO_MSAA(unsigned width, unsigned height) {
+	const unsigned samples = 4;
 	glGenFramebuffers(1, &ID);
 	glBindFramebuffer(GL_FRAMEBUFFER, ID);
 
-	uint colorBufferID;
+	unsigned colorBufferID;
 	glGenTextures(1, &colorBufferID);
 	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, colorBufferID);
 	glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, GL_RGB, width, height, GL_TRUE);
@@ -235,7 +235,7 @@ bool FBO::GenFBO_MSAA(uint width, uint height) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, colorBufferID, 0);
 
-	uint RBO;
+	unsigned RBO;
 	glGenRenderbuffers(1, &RBO);
 	glBindRenderbuffer(GL_RENDERBUFFER, RBO);
 	glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, GL_DEPTH24_STENCIL8, width, height);
@@ -253,11 +253,11 @@ bool FBO::GenFBO_MSAA(uint width, uint height) {
 	return true;
 }
 
-bool FBO::GenFBO_COLOR(uint width, uint height, bool isFloat) {
+bool FBO::GenFBO_COLOR(unsigned width, unsigned height, bool isFloat) {
 	glGenFramebuffers(1, &ID);
 	glBindFramebuffer(GL_FRAMEBUFFER, ID);
 	// create a color attachment texture
-	uint colorBufferID;
+	unsigned colorBufferID;
 	glGenTextures(1, &colorBufferID);
 	glBindTexture(GL_TEXTURE_2D, colorBufferID);
 	glTexImage2D(GL_TEXTURE_2D, 0, isFloat ? GL_RGB16F : GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
@@ -279,11 +279,11 @@ bool FBO::GenFBO_COLOR(uint width, uint height, bool isFloat) {
 	return true;
 }
 
-bool FBO::GenFBO_RTX(uint width, uint height) {
+bool FBO::GenFBO_RTX(unsigned width, unsigned height) {
 	glGenFramebuffers(1, &ID);
 	glBindFramebuffer(GL_FRAMEBUFFER, ID);
 	// create a color attachment texture
-	uint colorBufferID;
+	unsigned colorBufferID;
 	glGenTextures(1, &colorBufferID);
 	glBindTexture(GL_TEXTURE_2D, colorBufferID);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
@@ -305,11 +305,11 @@ bool FBO::GenFBO_RTX(uint width, uint height) {
 	return true;
 }
 
-bool FBO::GenFBO_RED(uint width, uint height) {
+bool FBO::GenFBO_RED(unsigned width, unsigned height) {
 	glGenFramebuffers(1, &ID);
 	glBindFramebuffer(GL_FRAMEBUFFER, ID);
 	// create a color attachment texture
-	uint colorBufferID;
+	unsigned colorBufferID;
 	glGenTextures(1, &colorBufferID);
 	glBindTexture(GL_TEXTURE_2D, colorBufferID);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RGB, GL_FLOAT, NULL);
@@ -329,10 +329,10 @@ bool FBO::GenFBO_RED(uint width, uint height) {
 	return true;
 }
 
-bool FBO::GenFBO_DEPTH(uint width, uint height) {
+bool FBO::GenFBO_DEPTH(unsigned width, unsigned height) {
 	glGenFramebuffers(1, &ID);
 	// create depth texture
-	uint depthBufferID;
+	unsigned depthBufferID;
 	glGenTextures(1, &depthBufferID);
 	glBindTexture(GL_TEXTURE_2D, depthBufferID);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
@@ -360,10 +360,10 @@ bool FBO::GenFBO_DEPTH(uint width, uint height) {
 	return true;
 }
 
-bool FBO::GenFBO_CUBE_DEPTH(uint width, uint height) {
+bool FBO::GenFBO_CUBE_DEPTH(unsigned width, unsigned height) {
 	glGenFramebuffers(1, &ID);
 
-	uint depthBufferID;
+	unsigned depthBufferID;
 	glGenTextures(1, &depthBufferID);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, depthBufferID);
 	for (GLuint i = 0; i < 6; ++i)
@@ -393,10 +393,10 @@ bool FBO::GenFBO_CUBE_DEPTH(uint width, uint height) {
 	return true;
 }
 
-bool FBO::GenFBO_GBUFFER(uint width, uint height) {
+bool FBO::GenFBO_GBUFFER(unsigned width, unsigned height) {
 	glGenFramebuffers(1, &ID);
 	glBindFramebuffer(GL_FRAMEBUFFER, ID);
-	uint gPosition, gNormal, gAlbedoSpec;
+	unsigned gPosition, gNormal, gAlbedoSpec;
 
 	// position color buffer
 	glGenTextures(1, &gPosition);
@@ -425,11 +425,11 @@ bool FBO::GenFBO_GBUFFER(uint width, uint height) {
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gAlbedoSpec, 0);
 
 	// tell OpenGL which color attachments we'll use (of this framebuffer) for rendering 
-	uint attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
+	unsigned attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
 	glDrawBuffers(3, attachments);
 
 	// create and attach depth buffer (renderbuffer)
-	uint rboDepth;
+	unsigned rboDepth;
 	glGenRenderbuffers(1, &rboDepth);
 	glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
@@ -449,13 +449,13 @@ bool FBO::GenFBO_GBUFFER(uint width, uint height) {
 	return true;
 }
 
-bool FBO::GenFBO_RAYTRACING(uint width, uint height) {
+bool FBO::GenFBO_RAYTRACING(unsigned width, unsigned height) {
 	glGenFramebuffers(1, &ID);
 	glBindFramebuffer(GL_FRAMEBUFFER, ID);
 
-	const uint colorBufferNum = 4;
-	for (uint i = 0; i < colorBufferNum - 1; i++) {
-		uint colorBufferID;
+	const unsigned colorBufferNum = 4;
+	for (unsigned i = 0; i < colorBufferNum - 1; i++) {
+		unsigned colorBufferID;
 		glGenTextures(1, &colorBufferID);
 		glBindTexture(GL_TEXTURE_2D, colorBufferID);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, NULL);
@@ -467,7 +467,7 @@ bool FBO::GenFBO_RAYTRACING(uint width, uint height) {
 		colorTextures.push_back(Texture(colorBufferID, Texture::ENUM_TYPE_2D));
 	}
 	{
-		uint colorBufferID;
+		unsigned colorBufferID;
 		glGenTextures(1, &colorBufferID);
 		glBindTexture(GL_TEXTURE_2D, colorBufferID);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, NULL);
@@ -479,7 +479,7 @@ bool FBO::GenFBO_RAYTRACING(uint width, uint height) {
 		colorTextures.push_back(Texture(colorBufferID, Texture::ENUM_TYPE_2D));
 	}
 
-	uint attachments[colorBufferNum] = {
+	unsigned attachments[colorBufferNum] = {
 		GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3
 	};
 	glDrawBuffers(colorBufferNum, attachments);
@@ -496,12 +496,12 @@ bool FBO::GenFBO_RAYTRACING(uint width, uint height) {
 	return true;
 }
 
-bool FBO::GenFBO_DYNAMIC_COLOR(uint width, uint height) {
+bool FBO::GenFBO_DYNAMIC_COLOR(unsigned width, unsigned height) {
 	glGenFramebuffers(1, &ID);
 	glBindFramebuffer(GL_FRAMEBUFFER, ID);
 
 	// create and attach depth buffer (renderbuffer)
-	uint rboDepth;
+	unsigned rboDepth;
 	glGenRenderbuffers(1, &rboDepth);
 	glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
@@ -519,7 +519,7 @@ bool FBO::GenFBO_DYNAMIC_COLOR(uint width, uint height) {
 	return true;
 }
 
-uint FBO::GetID() const {
+unsigned FBO::GetID() const {
 	if (!isValid)
 		return 0;
 	
@@ -543,7 +543,7 @@ bool FBO::IsComplete() const {
 	return true;
 }
 
-uint FBO::PassType2GL(ENUM_PASS_TYPE passType) {
+unsigned FBO::PassType2GL(ENUM_PASS_TYPE passType) {
 	switch (passType)
 	{
 	case OpenGL::FBO::ENUM_PASS_COLOR:
@@ -566,7 +566,7 @@ bool FBO::PassTo(const FBO & fbo, ENUM_PASS_TYPE passType) const {
 	return PassTo(fbo.ID, fbo.width, fbo.height, passType);
 }
 
-bool FBO::PassTo(uint fboID, uint width, uint height, ENUM_PASS_TYPE passType) const {
+bool FBO::PassTo(unsigned fboID, unsigned width, unsigned height, ENUM_PASS_TYPE passType) const {
 	if (!isValid)
 		return false;
 
@@ -576,7 +576,7 @@ bool FBO::PassTo(uint fboID, uint width, uint height, ENUM_PASS_TYPE passType) c
 	return true;
 }
 
-const Texture & FBO::GetColorTexture(uint idx) const {
+const Texture & FBO::GetColorTexture(unsigned idx) const {
 	if (!isValid || idx > colorTextures.size())
 		return Texture::InValid;
 
@@ -640,7 +640,7 @@ bool FBO::SetColor(const Texture & tex, TexTarget textarget, int mip) {
 		GL_TEXTURE_CUBE_MAP_NEGATIVE_Z,
 	};
 
-	auto idx = static_cast<uint>(textarget);
+	auto idx = static_cast<unsigned>(textarget);
 
 	if (idx == 0 && (tex.GetType() != Texture::ENUM_TYPE::ENUM_TYPE_2D && tex.GetType() != Texture::ENUM_TYPE::ENUM_TYPE_2D_DYNAMIC)) {
 		printf("ERROR::FBO::SetColor:\n"
@@ -662,7 +662,7 @@ bool FBO::SetColor(const Texture & tex, TexTarget textarget, int mip) {
 	return true;
 }
 
-void FBO::Resize(uint width, uint height) {
+void FBO::Resize(unsigned width, unsigned height) {
 	if (!IsValid())
 		return;
 	if (type != ENUM_TYPE_GBUFFER)
@@ -681,13 +681,13 @@ void FBO::Resize(uint width, uint height) {
 
 	glBindFramebuffer(GL_FRAMEBUFFER, ID);
 
-	const uint formats[4] = { GL_RED, GL_RG, GL_RGB, GL_RGBA };
-	const uint internalFormats[4] = { GL_R16F, GL_RG16F, GL_RGB16F, GL_RGBA16F };
-	vector<uint> attachments;
+	const unsigned formats[4] = { GL_RED, GL_RG, GL_RGB, GL_RGBA };
+	const unsigned internalFormats[4] = { GL_R16F, GL_RG16F, GL_RGB16F, GL_RGBA16F };
+	vector<unsigned> attachments;
 
 	for (int i = 0; i < dimVec.size(); i++) {
 		const int dim = dimVec[i];
-		uint texID;
+		unsigned texID;
 		glGenTextures(1, &texID);
 		glBindTexture(GL_TEXTURE_2D, texID);
 		glTexImage2D(GL_TEXTURE_2D, 0, internalFormats[dim - 1], width, height, 0, formats[dim - 1], GL_FLOAT, NULL);
@@ -705,14 +705,14 @@ void FBO::Resize(uint width, uint height) {
 
 	/*
 	// create and attach depth buffer (renderbuffer)
-	uint rboDepth;
+	unsigned rboDepth;
 	glGenRenderbuffers(1, &rboDepth);
 	glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth);
 	*/
 
-	uint depthBufferID;
+	unsigned depthBufferID;
 	glGenTextures(1, &depthBufferID);
 	glBindTexture(GL_TEXTURE_2D, depthBufferID);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);

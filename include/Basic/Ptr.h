@@ -59,7 +59,7 @@ namespace CppUtil {
 				return ptr;
 			}
 		};
-		template<typename FromType, typename ToType>
+		/*template<typename FromType, typename ToType>
 		struct CastWrapper<FromType, ToType, false, false> {
 			static const Ptr<ToType> call(const Ptr<FromType> & ptr) {
 				return ERROR_FromType_can_not_cast_to_ToType();
@@ -67,7 +67,7 @@ namespace CppUtil {
 			static const WPtr<ToType> call(const WPtr<FromType> & ptr) {
 				return ERROR_FromType_can_not_cast_to_ToType();
 			}
-		};
+		};*/
 
 		template<typename ToType, typename FromType>
 		const Ptr<ToType> CastTo(const Ptr<FromType> & ptr) {

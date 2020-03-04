@@ -1,7 +1,7 @@
 #ifndef _OPENGL_CAMERA_CAMERA_H_
 #define _OPENGL_CAMERA_CAMERA_H_
 
-#include <Basic/UGM/Transform.h>
+#include <UGM/transform.h>
 
 #include <vector>
 
@@ -26,25 +26,25 @@ namespace CppUtil {
 
 		public:
 			Camera(
-				const Point3 & position = Point3(0.0f, 0.0f, 4.0f),
+				const Ubpa::pointf3 & position = Ubpa::pointf3(0.0f, 0.0f, 4.0f),
 				float yaw = YAW,
 				float pitch = PITCH,
 				float ratioWH = RATIO_WH,
 				float nearPlane = NEAR_PLANE,
 				float farPlane = FAR_PLANE,
-				const Vec3 & up = Vec3(0.0f, 1.0f, 0.0f),
+				const Ubpa::vecf3 & up = Ubpa::vecf3(0.0f, 1.0f, 0.0f),
 				ENUM_Projection projectionMode = PROJECTION_MODE
 			);
 
 		public:
-			Transform GetViewMatrix() const;
-			Transform GetProjectionMatrix() const;
+			Ubpa::transformf GetViewMatrix() const;
+			Ubpa::transformf GetProjectionMatrix() const;
 
 			// 返回世界坐标系下视锥体的的八个顶点
-			const std::vector<Point3> Corners() const;
+			const std::vector<Ubpa::pointf3> Corners() const;
 			
-			Point3 & GetPos();
-			Vec3 GetFront() const { return front; }
+			Ubpa::pointf3 & GetPos();
+			Ubpa::vecf3 GetFront() const { return front; }
 
 			const float & GetFOV() const { return fov; }
 			const float & GetAspectRatio() const { return ratioWH; }
@@ -62,17 +62,17 @@ namespace CppUtil {
 			void SetRatioWH(float w, float h) { ratioWH = w / h; }
 			void SetRatioWH(float ratioWH) { this->ratioWH = ratioWH; }
 			void SetFOV(float fov) { this->fov = fov; }
-			void SetPose(const Point3 & pos, float yaw, float pitch);
+			void SetPose(const Ubpa::pointf3 & pos, float yaw, float pitch);
 
 		private:
 			void updateCameraVectors();
 
 			// Camera Attributes
-			Point3 position;
-			Vec3 front;
-			Vec3 up;
-			Vec3 right;
-			Vec3 worldUp;
+			Ubpa::pointf3 position;
+			Ubpa::vecf3 front;
+			Ubpa::vecf3 up;
+			Ubpa::vecf3 right;
+			Ubpa::vecf3 worldUp;
 			float fov;
 			float ratioWH;
 			float nearPlane;

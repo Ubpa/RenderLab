@@ -1,12 +1,8 @@
 #ifndef _OPENGL_SHADER_SHADER_H_
 #define _OPENGL_SHADER_SHADER_H_
 
-typedef unsigned int uint;
-
-#include <Basic/UGM/Val2.h>
-#include <Basic/UGM/Val3.h>
-#include <Basic/UGM/Val4.h>
-#include <Basic/UGM/Transform.h>
+#include <UGM/val.h>
+#include <UGM/transform.h>
 
 #include <string>
 #include <enum.h>
@@ -21,7 +17,7 @@ namespace CppUtil {
 			Shader();
 			Shader(const std::string &  vertexPath, const std::string & fragmentPath, const std::string & geometryPath = "");
 
-			uint GetID() const;
+			unsigned GetID() const;
 			bool IsValid() const;
 
 			// activate the shader
@@ -34,30 +30,30 @@ namespace CppUtil {
 				SetInt(name, value);
 			}
 			void SetFloat(const std::string &name, float value) const;
-			void SetFloats(const std::string &name, uint n, const float * values) const;
-			void SetVec2f(const std::string &name, float value0, float value1) const;
-			void SetVec2f(const std::string &name, const Val2 & v) const {
-				SetVec2f(name, v[0], v[1]);
+			void SetFloats(const std::string &name, unsigned n, const float * values) const;
+			void SetVecf2(const std::string &name, float value0, float value1) const;
+			void SetVecf2(const std::string &name, const Ubpa::valf2 & v) const {
+				SetVecf2(name, v[0], v[1]);
 			}
-			void SetVec3f(const std::string &name, float value0, float value1, float value2) const;
-			void SetVec3f(const std::string &name, const Val3 & v) const {
-				SetVec3f(name, v[0], v[1], v[2]);
+			void SetVecf3(const std::string &name, float value0, float value1, float value2) const;
+			void SetVecf3(const std::string &name, const Ubpa::valf3 & v) const {
+				SetVecf3(name, v[0], v[1], v[2]);
 			}
-			void SetVec3fs(const std::string &name, uint n, const float * data) const;
+			void SetVecf3s(const std::string &name, unsigned n, const float * data) const;
 			void SetVec4f(const std::string &name, float value0, float value1, float value2, float value3) const;
-			void SetVec4f(const std::string &name, const Val4 & v) const {
+			void SetVec4f(const std::string &name, const Ubpa::valf4 & v) const {
 				SetVec4f(name, v[0], v[1], v[2], v[3]);
 			}
-			void SetMat4f(const std::string &name, const float * matValue) const;
-			void SetMat4f(const std::string &name, const Mat4f & mat) const {
-				SetMat4f(name, mat.Data());
+			void SetMatf4(const std::string &name, const float * matValue) const;
+			void SetMatf4(const std::string &name, const Ubpa::matf4 & mat) const {
+				SetMatf4(name, mat.data());
 			}
-			void SetMat4f(const std::string &name, const Transform & tsfm) const {
-				SetMat4f(name, tsfm.GetMatrix());
+			void SetMatf4(const std::string &name, const Ubpa::transformf & tsfm) const {
+				SetMatf4(name, tsfm.data());
 			}
 
 			//------------
-			void UniformBlockBind(const std::string &name, uint bindPoint) const;
+			void UniformBlockBind(const std::string &name, unsigned bindPoint) const;
 
 		public:
 			static const Shader InValid;
@@ -68,9 +64,9 @@ namespace CppUtil {
 
 		private:
 			// utility function for checking shader compilation/linking errors.
-			int CheckCompileErrors(uint shader, CompileType type);
+			int CheckCompileErrors(unsigned shader, CompileType type);
 			//------------
-			uint ID;
+			unsigned ID;
 			bool valid;
 		};
 	}

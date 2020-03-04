@@ -38,8 +38,8 @@ namespace CppUtil {
 		public:
 			template<typename LambadaExpr>
 			void Reg(LambadaExpr lambdaVisitFunc) {
-				using ptrE = FunctionTraitsLambda<LambadaExpr>::arg<0>::type;
-				using EleType = ptrE::element_type;
+				using ptrE = typename FunctionTraitsLambda<LambadaExpr>::template arg<0>::type;
+				using EleType = typename ptrE::element_type;
 				const Func func = [lambdaVisitFunc](Ptr<Element> pEle) {
 					lambdaVisitFunc(CastTo<EleType>(pEle));
 				};

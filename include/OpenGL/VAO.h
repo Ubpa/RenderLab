@@ -1,8 +1,6 @@
 #ifndef _OPENGL_VAO_VAO_H_
 #define _OPENGL_VAO_VAO_H_
 
-typedef unsigned int uint;
-
 #include <vector>
 
 namespace CppUtil {
@@ -13,27 +11,27 @@ namespace CppUtil {
 		public:
 			struct VBO_DataPatch {
 				float const * data;
-				uint dataSize;
-				uint attrLen;
+				unsigned dataSize;
+				unsigned attrLen;
 			};
 			VAO();
 			// dataSize is sizeof(data), not elementNum of data
-			VAO(float const * data, uint dataSize, const std::vector<uint> & attrLen);
-			VAO(float const * data, uint dataSize, const std::vector<uint> & attrLen, uint const * index, uint indexSize);
-			VAO(const std::vector<VBO_DataPatch> & vec_VBO_DataPatch, const std::vector<uint> & divisors = std::vector<uint>());
-			VAO(const std::vector<VBO_DataPatch> & vec_VBO_DataPatch, uint const * index, uint indexSize, const std::vector<uint> & divisors = std::vector<uint>());
+			VAO(float const * data, unsigned dataSize, const std::vector<unsigned> & attrLen);
+			VAO(float const * data, unsigned dataSize, const std::vector<unsigned> & attrLen, unsigned const * index, unsigned indexSize);
+			VAO(const std::vector<VBO_DataPatch> & vec_VBO_DataPatch, const std::vector<unsigned> & divisors = std::vector<unsigned>());
+			VAO(const std::vector<VBO_DataPatch> & vec_VBO_DataPatch, unsigned const * index, unsigned indexSize, const std::vector<unsigned> & divisors = std::vector<unsigned>());
 
-			uint GetID() const;
-			uint GetAttrNum() const;
+			unsigned GetID() const;
+			unsigned GetAttrNum() const;
 			bool IsValid() const;
 			bool Use() const;
 			bool Draw(const Shader & shader) const;
 		private:
-			bool GenBindEBO(uint const * index, uint indexSize);
+			bool GenBindEBO(unsigned const * index, unsigned indexSize);
 			//------------
-			uint attrNum;
-			uint ID;
-			uint pointNum;
+			unsigned attrNum;
+			unsigned ID;
+			unsigned pointNum;
 			bool hasIndex;
 			bool isValid;
 

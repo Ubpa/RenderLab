@@ -15,7 +15,7 @@ VAO::VAO() :isValid(false) { }
 
 const VAO VAO::inValid = VAO();
 
-VAO::VAO(float const * data, uint dataSize, const std::vector<uint> & attrLen){
+VAO::VAO(float const * data, unsigned dataSize, const std::vector<unsigned> & attrLen){
 	if (data == NULL || dataSize == 0 || attrLen.size() == 0) {
 		isValid = false;
 		ID = 0;
@@ -25,35 +25,35 @@ VAO::VAO(float const * data, uint dataSize, const std::vector<uint> & attrLen){
 	glGenVertexArrays(1, &ID);
 	glBindVertexArray(ID);
 
-	uint VBO;
+	unsigned VBO;
 	glGenBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, dataSize, data, GL_STATIC_DRAW);
-	uint patchLen = 0;
+	unsigned patchLen = 0;
 	for (auto & len : attrLen)
 		patchLen += len;
-	for (uint i = 0, accu = 0; i < attrLen.size(); i++) {
+	for (unsigned i = 0, accu = 0; i < attrLen.size(); i++) {
 		glVertexAttribPointer(i, attrLen[i], GL_FLOAT, GL_FALSE, patchLen * sizeof(float), (void*)(accu * sizeof(float)));
 		glEnableVertexAttribArray(i);
 		accu += attrLen[i];
 	}
-	attrNum = static_cast<uint>(attrLen.size());
+	attrNum = static_cast<unsigned>(attrLen.size());
 	//按照没有索引的情况设置 pointNum
 	this->pointNum = dataSize / (sizeof(float) * patchLen);
 	isValid = true;
 	hasIndex = false;
 }
 
-VAO::VAO(float const * data, uint dataSize, const std::vector<uint> & attrLen, uint const * index, uint indexSize)
+VAO::VAO(float const * data, unsigned dataSize, const std::vector<unsigned> & attrLen, unsigned const * index, unsigned indexSize)
 	: VAO(data, dataSize, attrLen){
 	if (IsValid()) {
-		pointNum = indexSize / sizeof(uint);
+		pointNum = indexSize / sizeof(unsigned);
 		hasIndex = true;
 		isValid = GenBindEBO(index, indexSize);
 	}
 }
 
-VAO::VAO(const std::vector<VBO_DataPatch> & vec_VBO_DataPatch, const std::vector<uint> & divisors) {
+VAO::VAO(const std::vector<VBO_DataPatch> & vec_VBO_DataPatch, const std::vector<unsigned> & divisors) {
 	if (vec_VBO_DataPatch.size() == 0
 		|| (divisors.size() > 0 && vec_VBO_DataPatch.size() != divisors.size())) {
 		isValid = false;
@@ -63,9 +63,9 @@ VAO::VAO(const std::vector<VBO_DataPatch> & vec_VBO_DataPatch, const std::vector
 	glGenVertexArrays(1, &ID);
 	glBindVertexArray(ID);
 
-	for (uint i = 0; i < vec_VBO_DataPatch.size(); i++) {
+	for (unsigned i = 0; i < vec_VBO_DataPatch.size(); i++) {
 		auto & dataPatch = vec_VBO_DataPatch[i];
-		uint VBO;
+		unsigned VBO;
 		glGenBuffers(1, &VBO);
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);
 		glBufferData(GL_ARRAY_BUFFER, dataPatch.dataSize, dataPatch.data, GL_STATIC_DRAW);
@@ -76,33 +76,33 @@ VAO::VAO(const std::vector<VBO_DataPatch> & vec_VBO_DataPatch, const std::vector
 	}
 	//按照没有索引的情况设置 pointNum
 	this->pointNum = vec_VBO_DataPatch[0].dataSize / (sizeof(float) * vec_VBO_DataPatch[0].attrLen);
-	attrNum = static_cast<uint>(vec_VBO_DataPatch.size());
+	attrNum = static_cast<unsigned>(vec_VBO_DataPatch.size());
 	hasIndex = false;
 	isValid = true;
 }
 
-VAO::VAO(const std::vector<VBO_DataPatch> & vec_VBO_DataPatch, uint const * index, uint indexSize, const std::vector<uint> & divisors)
+VAO::VAO(const std::vector<VBO_DataPatch> & vec_VBO_DataPatch, unsigned const * index, unsigned indexSize, const std::vector<unsigned> & divisors)
 	: VAO(vec_VBO_DataPatch, divisors){
 	if (IsValid()) {
-		pointNum = indexSize / sizeof(uint);
+		pointNum = indexSize / sizeof(unsigned);
 		hasIndex = true;
 		isValid = GenBindEBO(index, indexSize);
 	}
 }
 
-bool VAO::GenBindEBO(uint const * index, uint indexSize) {
-	uint EBO;
+bool VAO::GenBindEBO(unsigned const * index, unsigned indexSize) {
+	unsigned EBO;
 	glGenBuffers(1, &EBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexSize, index, GL_STATIC_DRAW);
 	return true;
 }
 
-uint VAO::GetID() const {
+unsigned VAO::GetID() const {
 	return ID;
 }
 
-uint VAO::GetAttrNum() const {
+unsigned VAO::GetAttrNum() const {
 	return ID;
 }
 

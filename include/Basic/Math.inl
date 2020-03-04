@@ -44,7 +44,7 @@ namespace CppUtil {
 
 				T rst = val[0];
 				for (size_t i = 1; i < val.size(); i++)
-					rst = glm::min(rst, val[i]);
+					rst = std::min(rst, val[i]);
 
 				return rst;
 			}
@@ -56,7 +56,7 @@ namespace CppUtil {
 
 				T rst = val[0];
 				for (size_t i = 1; i < val.size(); i++)
-					rst = glm::max(rst, val[i]);
+					rst = std::max(rst, val[i]);
 
 				return rst;
 			}

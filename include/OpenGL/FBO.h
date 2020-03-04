@@ -1,8 +1,6 @@
 #ifndef _OPENGL_FBO_FBO_H_
 #define _OPENGL_FBO_FBO_H_
 
-typedef unsigned int uint;
-
 #include <OpenGL/Texture.h>
 
 #include <vector>
@@ -35,17 +33,17 @@ namespace CppUtil {
 			};
 
 			FBO();
-			FBO(uint width, uint height, ENUM_TYPE type = ENUM_TYPE_BASIC);
-			FBO(uint width, uint height, const std::vector<uint> & dimVecForGBuffer);
+			FBO(unsigned width, unsigned height, ENUM_TYPE type = ENUM_TYPE_BASIC);
+			FBO(unsigned width, unsigned height, const std::vector<unsigned> & dimVecForGBuffer);
 			bool PassTo(const FBO & fbo, ENUM_PASS_TYPE passType = ENUM_PASS_COLOR) const;
-			bool PassTo(uint fboID, uint width, uint height, ENUM_PASS_TYPE passType = ENUM_PASS_COLOR) const;
+			bool PassTo(unsigned fboID, unsigned width, unsigned height, ENUM_PASS_TYPE passType = ENUM_PASS_COLOR) const;
 
 			bool Use() const;
-			void Resize(uint width, uint height);
+			void Resize(unsigned width, unsigned height);
 			static void UseDefault();
-			static uint DefaultBuffer;
-			uint GetID() const;
-			const Texture & GetColorTexture(uint idx) const;
+			static unsigned DefaultBuffer;
+			unsigned GetID() const;
+			const Texture & GetColorTexture(unsigned idx) const;
 			const Texture & GetDepthTexture() const;
 			bool IsValid() const;
 
@@ -60,29 +58,29 @@ namespace CppUtil {
 			};
 			bool SetColor(const Texture & tex, TexTarget textarget, int mip = 0);
 		private:
-			bool GenFBO_BASIC(uint width, uint height);
-			bool GenFBO_RGBF_DEPTH(uint width, uint height, uint colorBufferNum = 1);
-			bool GenFBO_MSAA(uint width, uint height);
-			bool GenFBO_COLOR(uint width, uint height, bool isFloat = false);
-			bool GenFBO_RED(uint width, uint height);
-			bool GenFBO_DEPTH(uint width, uint height);
-			bool GenFBO_CUBE_DEPTH(uint width, uint height);
-			bool GenFBO_GBUFFER(uint width, uint height);
-			bool GenFBO_RAYTRACING(uint width, uint height);
-			bool GenFBO_RTX(uint width, uint height);
-			bool GenFBO_DYNAMIC_COLOR(uint width, uint height);
+			bool GenFBO_BASIC(unsigned width, unsigned height);
+			bool GenFBO_RGBF_DEPTH(unsigned width, unsigned height, unsigned colorBufferNum = 1);
+			bool GenFBO_MSAA(unsigned width, unsigned height);
+			bool GenFBO_COLOR(unsigned width, unsigned height, bool isFloat = false);
+			bool GenFBO_RED(unsigned width, unsigned height);
+			bool GenFBO_DEPTH(unsigned width, unsigned height);
+			bool GenFBO_CUBE_DEPTH(unsigned width, unsigned height);
+			bool GenFBO_GBUFFER(unsigned width, unsigned height);
+			bool GenFBO_RAYTRACING(unsigned width, unsigned height);
+			bool GenFBO_RTX(unsigned width, unsigned height);
+			bool GenFBO_DYNAMIC_COLOR(unsigned width, unsigned height);
 
 			bool IsComplete() const;
-			static uint PassType2GL(ENUM_PASS_TYPE passType);
+			static unsigned PassType2GL(ENUM_PASS_TYPE passType);
 
 			ENUM_TYPE type;
-			uint ID;
+			unsigned ID;
 			std::vector<Texture> colorTextures;
 			Texture depthTexture;
-			uint width;
-			uint height;
+			unsigned width;
+			unsigned height;
 			bool isValid;
-			std::vector<uint> dimVec;
+			std::vector<unsigned> dimVec;
 		};
 	}
 }

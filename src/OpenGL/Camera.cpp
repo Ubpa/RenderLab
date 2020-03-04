@@ -17,13 +17,13 @@ const Camera::ENUM_Projection Camera::PROJECTION_MODE = Camera::PROJECTION_PERSE
 
 // Constructor with vectors
 Camera::Camera(
-	const Point3 & position,
+	const Ubpa::pointf3 & position,
 	float yaw,
 	float pitch,
 	float ratioWH,
 	float nearPlane,
 	float farPlane,
-	const Vec3 & up,
+	const Ubpa::vecf3 & up,
 	ENUM_Projection projectionMode
 )
 	:
@@ -48,33 +48,33 @@ void Camera::SetOrtho() {
 	projectionMode = ENUM_Projection::PROJECTION_ORTHO;
 }
 
-Point3 & Camera::GetPos() {
+Ubpa::pointf3 & Camera::GetPos() {
 	return position;
 }
 
 // Returns the view matrix calculated using Euler Angles and the LookAt Matrix
-Transform Camera::GetViewMatrix() const {
-	return Transform::LookAt(position, position + front, up);
+Ubpa::transformf Camera::GetViewMatrix() const {
+	return Ubpa::transformf::look_at(position, (position + front).cast_to<Ubpa::pointf3>(), up);
 }
 
 // Returns the projection matrix calculated using zoom, ratioWH, nearPlane, farPlane
-Transform Camera::GetProjectionMatrix() const {
+Ubpa::transformf Camera::GetProjectionMatrix() const {
 	switch (projectionMode)
 	{
 	case OpenGL::Camera::PROJECTION_PERSEPCTIVE:
-		return Transform::Perspcetive(fov, ratioWH, nearPlane, farPlane);
+		return Ubpa::transformf::perspcetive(fov, ratioWH, nearPlane, farPlane);
 	case OpenGL::Camera::PROJECTION_ORTHO:
-		return Transform::Orthographic(fov / 2.0f, fov / 2.0f / ratioWH, nearPlane, farPlane);
+		return Ubpa::transformf::orthographic(fov / 2.0f, fov / 2.0f / ratioWH, nearPlane, farPlane);
 	default:
-		return Transform(1);
+		return Ubpa::transformf::eye();
 	}
 }
 
-const vector<Point3> Camera::Corners() const {
+const vector<Ubpa::pointf3> Camera::Corners() const {
 	auto w2n = GetProjectionMatrix() * GetViewMatrix();
-	auto n2w = w2n.Inverse();
+	auto n2w = w2n.inverse();
 
-	const Point3 nCorners[8] = {
+	const Ubpa::pointf3 nCorners[8] = {
 		{-1,-1,-1},
 		{-1,-1, 1},
 		{-1, 1,-1},
@@ -85,9 +85,9 @@ const vector<Point3> Camera::Corners() const {
 		{ 1, 1, 1},
 	};
 
-	vector<Point3> wCorners;
+	vector<Ubpa::pointf3> wCorners;
 	for (int i = 0; i < 8; i++) {
-		const auto wCorner = n2w(nCorners[i]);
+		const auto wCorner = n2w * nCorners[i];
 		wCorners.push_back(wCorner);
 	}
 
@@ -97,13 +97,13 @@ const vector<Point3> Camera::Corners() const {
 // Calculates the front vector from the Camera's (updated) Euler Angles
 void Camera::updateCameraVectors() {
 	// Calculate the new Front vector
-	front.x = cos(Math::Radians(yaw)) * cos(Math::Radians(pitch));
-	front.y = sin(Math::Radians(pitch));
-	front.z = sin(Math::Radians(yaw)) * cos(Math::Radians(pitch));
-	front.NormalizeSelf();
+	front[0] = cos(Math::Radians(yaw)) * cos(Math::Radians(pitch));
+	front[1] = sin(Math::Radians(pitch));
+	front[2] = sin(Math::Radians(yaw)) * cos(Math::Radians(pitch));
+	front.normalize_self();
 	// Also re-calculate the Right and Up vector
-	right = front.Cross(worldUp).Normalize();  // Normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
-	up = right.Cross(front).Normalize();
+	right = front.cross(worldUp).normalize();  // normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
+	up = right.cross(front).normalize();
 }
 
 // Processes input received from a mouse input system. Expects the offset value in both the x and y direction.
@@ -154,7 +154,7 @@ void Camera::ProcessKeyboard(ENUM_Movement direction, float deltaTime) {
 		position -= up * velocity;
 }
 
-void Camera::SetPose(const Point3 & pos, float yaw, float pitch) {
+void Camera::SetPose(const Ubpa::pointf3 & pos, float yaw, float pitch) {
 	position = pos;
 	this->yaw = yaw;
 	this->pitch = pitch;
