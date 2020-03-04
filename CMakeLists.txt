@@ -77,6 +77,8 @@ include_directories (
 	${PROJECT_SOURCE_DIR}/include
 	${PROJECT_SOURCE_DIR}/include/3rdParty
 	${PROJECT_SOURCE_DIR}/external/UHEMesh/include
+	${PROJECT_SOURCE_DIR}/external/UGM/include
+	${PROJECT_SOURCE_DIR}/external/UTemplate/include
 	${CMAKE_BINARY_DIR}/config
 	# $ENV{XXX_INCLUDE_PATH}
 	# ...

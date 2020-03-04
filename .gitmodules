@@ -4,3 +4,9 @@
 [submodule "external/UHEMesh"]
 	path = external/UHEMesh
 	url = https://github.com/Ubpa/UHEMesh
+[submodule "external/UGM"]
+	path = external/UGM
+	url = https://github.com/Ubpa/UGM
+[submodule "external/UTemplate"]
+	path = external/UTemplate
+	url = https://github.com/Ubpa/UTemplate
