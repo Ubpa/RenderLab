@@ -1,7 +1,7 @@
 #ifndef _APP_RTGI_WITH_RRF_UNIT_H_
 #define _APP_RTGI_WITH_RRF_UNIT_H_
 
-#include <CppUtil/Basic/HeapObj.h>
+#include <Basic/HeapObj.h>
 
 #include <3rdParty/enum.h>
 

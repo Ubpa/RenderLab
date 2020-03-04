@@ -2,7 +2,7 @@
 
 #include "Model.h"
 
-#include <CppUtil/Basic/Error.h>
+#include <Basic/Error.h>
 
 #include <sstream>
 

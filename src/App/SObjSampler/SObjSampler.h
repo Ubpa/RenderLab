@@ -3,8 +3,8 @@
 #include <QtWidgets/QMainWindow>
 #include "ui_SObjSampler.h"
 
-#include <CppUtil/Qt/PaintImgOpCreator.h>
-#include <CppUtil/Basic/Ptr.h>
+#include <Qt/PaintImgOpCreator.h>
+#include <Basic/Ptr.h>
 
 #include <3rdParty/docopt/docopt.h>
 #include <3rdParty/enum.h>

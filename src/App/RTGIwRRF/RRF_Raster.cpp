@@ -1,20 +1,20 @@
 #include "RRF_Raster.h"
 
-#include <CppUtil/Qt/RawAPI_Define.h>
-#include <CppUtil/Qt/RawAPI_OGLW.h>
+#include <Qt/RawAPI_Define.h>
+#include <Qt/RawAPI_OGLW.h>
 
-#include <CppUtil/Engine/Scene.h>
-#include <CppUtil/Engine/SObj.h>
-#include <CppUtil/Engine/CmptMaterial.h>
-#include <CppUtil/Engine/CmptGeometry.h>
-#include <CppUtil/Engine/BSDF_FrostedGlass.h>
+#include <Engine/Scene.h>
+#include <Engine/SObj.h>
+#include <Engine/CmptMaterial.h>
+#include <Engine/CmptGeometry.h>
+#include <Engine/BSDF_FrostedGlass.h>
 
-#include <CppUtil/OpenGL/CommonDefine.h>
+#include <OpenGL/CommonDefine.h>
 
-#include <CppUtil/Basic/Image.h>
-#include <CppUtil/Basic/EventManager.h>
-#include <CppUtil/Basic/LambdaOp.h>
-#include <CppUtil/Basic/Math.h>
+#include <Basic/Image.h>
+#include <Basic/EventManager.h>
+#include <Basic/LambdaOp.h>
+#include <Basic/Math.h>
 
 #include <ROOT_PATH.h>
 

@@ -1,7 +1,7 @@
 #ifndef _GEN_SCENE_H_
 #define _GEN_SCENE_H_
 
-#include <CppUtil/Basic/Ptr.h>
+#include <Basic/Ptr.h>
 
 namespace CppUtil {
 	namespace Engine {

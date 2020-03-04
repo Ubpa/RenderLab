@@ -1,13 +1,13 @@
 #ifndef _UI_GRID_H_
 #define _UI_GRID_H_
 
-#include <CppUtil/Basic/HeapObj.h>
+#include <Basic/HeapObj.h>
 
-#include <CppUtil/Basic/UGM/RGB.h>
+#include <Basic/UGM/RGB.h>
 
-#include <CppUtil/Basic/UGM/Val2.h>
-#include <CppUtil/Basic/UGM/Val3.h>
-#include <CppUtil/Basic/UGM/Val4.h>
+#include <Basic/UGM/Val2.h>
+#include <Basic/UGM/Val3.h>
+#include <Basic/UGM/Val4.h>
 
 #include <qstring.h>
 

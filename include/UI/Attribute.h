@@ -1,9 +1,9 @@
 #ifndef _UI_ATTRIBUTE_H_
 #define _UI_ATTRIBUTE_H_
 
-#include <CppUtil/Basic/TypeMap.h>
+#include <Basic/TypeMap.h>
 
-#include <CppUtil/Basic/Ptr.h>
+#include <Basic/Ptr.h>
 
 #include <qobject.h>
 #include <qtoolbox.h>

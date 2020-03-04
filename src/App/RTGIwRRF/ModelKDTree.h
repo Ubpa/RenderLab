@@ -1,7 +1,7 @@
 #ifndef _APP_RTGI_WITH_RRF_MODEL_KDTREE_H_
 #define _APP_RTGI_WITH_RRF_MODEL_KDTREE_H_
 
-#include <CppUtil/Basic/KDTree.h>
+#include <Basic/KDTree.h>
 
 #include <vector>
 #include <string>

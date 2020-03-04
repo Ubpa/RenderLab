@@ -1,7 +1,7 @@
 #ifndef _APP_RTGI_WITH_RRF_MODEL_H_
 #define _APP_RTGI_WITH_RRF_MODEL_H_
 
-#include <CppUtil/Basic/HeapObj.h>
+#include <Basic/HeapObj.h>
 
 #include <vector>
 #include <string>

@@ -1,16 +1,16 @@
 #include "RTX_Sampler.h"
 
-#include <CppUtil/Engine/Scene.h>
-#include <CppUtil/Engine/SObj.h>
-#include <CppUtil/Engine/RayTracer.h>
-#include <CppUtil/Engine/CmptCamera.h>
-#include <CppUtil/Engine/SObj.h>
-#include <CppUtil/Engine/Ray.h>
-#include <CppUtil/Engine/BVHAccel.h>
+#include <Engine/Scene.h>
+#include <Engine/SObj.h>
+#include <Engine/RayTracer.h>
+#include <Engine/CmptCamera.h>
+#include <Engine/SObj.h>
+#include <Engine/Ray.h>
+#include <Engine/BVHAccel.h>
 
-#include <CppUtil/Basic/Image.h>
-#include <CppUtil/Basic/ImgPixelSet.h>
-#include <CppUtil/Basic/Math.h>
+#include <Basic/Image.h>
+#include <Basic/ImgPixelSet.h>
+#include <Basic/Math.h>
 
 #include <thread>
 

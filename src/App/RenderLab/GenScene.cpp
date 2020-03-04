@@ -1,10 +1,10 @@
 #include "GenScene.h"
 
-#include <CppUtil/Engine/Engine.h>
+#include <Engine/Engine.h>
 
-#include <CppUtil/Basic/Image.h>
-#include <CppUtil/Basic/Math.h>
-#include <CppUtil/Basic/Cube.h>
+#include <Basic/Image.h>
+#include <Basic/Math.h>
+#include <Basic/Cube.h>
 
 #include <ROOT_PATH.h>
 
@@ -650,7 +650,9 @@ Ptr<Scene> GenScene11() {
 	meshObj->AddComponent<CmptMaterial>(BSDF_Frostbite::New());
 
 	auto lightObj = SObj::New(sobjRoot, "light");
-	lightObj->AddComponent<CmptLight>(InfiniteAreaLight::New(nullptr));
+	lightObj->AddComponent<CmptLight>(InfiniteAreaLight::New(Image::New(ROOT_PATH+"data/textures/newport_loft.hdr")));
+	auto ball = SObj::Load(ROOT_PATH + "data/objects/Balls.obj");
+	sobjRoot->AddChild(ball);
 
 	return Scene::New(sobjRoot);
 }

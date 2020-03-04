@@ -1,7 +1,6 @@
-#生成 exe 就 "EXE"，生成 lib 就 "LIB"
-set(MODE "LIB")
+Ubpa_GlobGroupSrcs(RST sources PATHS
+	${CMAKE_CURRENT_SOURCE_DIR}
+	"${PROJECT_SOURCE_DIR}/include/3rdParty"
+)
 
-GET_DIR_NAME(DIRNAME)
-set(FOLDER_NAME ${DIRNAME})
-
-ADD_ALL_SUBDIR()
+Ubpa_AddTarget(MODE "LIB" SOURCES ${sources})

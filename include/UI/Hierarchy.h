@@ -1,7 +1,7 @@
 #ifndef _UI_HIERARCHY_HIERARCHY_H_
 #define _UI_HIERARCHY_HIERARCHY_H_
 
-#include <CppUtil/Basic/HeapObj.h>
+#include <Basic/HeapObj.h>
 
 #include <QtWidgets/QTreeWidget>
 

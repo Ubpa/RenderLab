@@ -1,8 +1,8 @@
 #ifndef _APP_RTGI_WITH_RRF_RRF_RASTER_H_
 #define _APP_RTGI_WITH_RRF_RRF_RASTER_H_
 
-#include <CppUtil/Engine/ForwardRaster.h>
-#include <CppUtil/OpenGL/FBO.h>
+#include <Engine/ForwardRaster.h>
+#include <OpenGL/FBO.h>
 
 #include <3rdParty/enum.h>
 

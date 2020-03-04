@@ -1,8 +1,0 @@
-#生成 exe 就 "EXE"，生成 lib 就 "LIB"
-set(MODE "EXE")
-set(TARGET_PREFIX "Test_")
-
-GET_DIR_NAME(DIRNAME)
-set(FOLDER_NAME ${DIRNAME})
-
-ADD_ALL_SUBDIR()

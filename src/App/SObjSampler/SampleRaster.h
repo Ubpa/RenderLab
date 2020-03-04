@@ -1,8 +1,8 @@
 #ifndef _APP_SOBJ_SAMPLER_SAMPLE_RASTER_H_
 #define _APP_SOBJ_SAMPLER_SAMPLE_RASTER_H_
 
-#include <CppUtil/Engine/ForwardRaster.h>
-#include <CppUtil/OpenGL/FBO.h>
+#include <Engine/ForwardRaster.h>
+#include <OpenGL/FBO.h>
 
 namespace App {
 	using namespace CppUtil;

@@ -1,1 +1,0 @@
-ADD_ALL_SUBDIR()

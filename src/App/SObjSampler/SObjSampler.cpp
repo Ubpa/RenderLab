@@ -7,25 +7,25 @@
 #include <UI/Attribute.h>
 #include <UI/Setting.h>
 
-#include <CppUtil/Qt/PaintImgOpCreator.h>
-#include <CppUtil/Qt/OpThread.h>
+#include <Qt/PaintImgOpCreator.h>
+#include <Qt/OpThread.h>
 
-#include <CppUtil/Engine/Roamer.h>
-#include <CppUtil/Engine/PathTracer.h>
-#include <CppUtil/Engine/Viewer.h>
-#include <CppUtil/Engine/Scene.h>
-#include <CppUtil/Engine/SObj.h>
-#include <CppUtil/Engine/CmptCamera.h>
-#include <CppUtil/Engine/CmptTransform.h>
+#include <Engine/Roamer.h>
+#include <Engine/PathTracer.h>
+#include <Engine/Viewer.h>
+#include <Engine/Scene.h>
+#include <Engine/SObj.h>
+#include <Engine/CmptCamera.h>
+#include <Engine/CmptTransform.h>
 
-#include <CppUtil/OpenGL/Camera.h>
+#include <OpenGL/Camera.h>
 
-#include <CppUtil/Basic/CSVSaver.h>
-#include <CppUtil/Basic/Image.h>
-#include <CppUtil/Basic/LambdaOp.h>
-#include <CppUtil/Basic/OpQueue.h>
-#include <CppUtil/Basic/GStorage.h>
-#include <CppUtil/Basic/Math.h>
+#include <Basic/CSVSaver.h>
+#include <Basic/Image.h>
+#include <Basic/LambdaOp.h>
+#include <Basic/OpQueue.h>
+#include <Basic/GStorage.h>
+#include <Basic/Math.h>
 
 #include <ROOT_PATH.h>
 

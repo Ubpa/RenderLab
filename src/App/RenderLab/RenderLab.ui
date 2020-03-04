@@ -395,7 +395,7 @@ font: 15pt &quot;Consolas&quot;;
   <customwidget>
    <class>CppUtil::QT::RawAPI_OGLW</class>
    <extends>QOpenGLWidget</extends>
-   <header location="global">CppUtil/QT/RawAPI_OGLW.h</header>
+   <header location="global">QT/RawAPI_OGLW.h</header>
   </customwidget>
   <customwidget>
    <class>Ui::Tree</class>

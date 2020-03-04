@@ -4,9 +4,9 @@
 #include "Model.h"
 #include "Unit.h"
 
-#include <CppUtil/Basic/File.h>
-#include <CppUtil/Basic/Math.h>
-#include <CppUtil/Basic/Error.h>
+#include <Basic/File.h>
+#include <Basic/Math.h>
+#include <Basic/Error.h>
 
 #include <3rdParty/csv/CSV.hpp>
 

@@ -3,8 +3,8 @@
 #include <QtWidgets/QMainWindow>
 #include "ui_RenderLab.h"
 
-#include <CppUtil/Qt/PaintImgOpCreator.h>
-#include <CppUtil/Basic/Ptr.h>
+#include <Qt/PaintImgOpCreator.h>
+#include <Basic/Ptr.h>
 
 namespace CppUtil {
 	namespace Basic {

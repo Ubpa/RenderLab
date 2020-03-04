@@ -1,9 +1,9 @@
 #ifndef _APP_SOBJ_SAMPLER_RTX_SAMPLER_H_
 #define _APP_SOBJ_SAMPLER_RTX_SAMPLER_H_
 
-#include <CppUtil/Basic/HeapObj.h>
+#include <Basic/HeapObj.h>
 
-#include <CppUtil/Basic/UGM/Point2.h>
+#include <Basic/UGM/Point2.h>
 
 #include <functional>
 #include <vector>

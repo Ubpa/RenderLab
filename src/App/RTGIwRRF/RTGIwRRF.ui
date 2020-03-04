@@ -39,7 +39,7 @@
   <customwidget>
    <class>CppUtil::QT::RawAPI_OGLW</class>
    <extends>QOpenGLWidget</extends>
-   <header location="global">CppUtil/Qt/RawAPI_OGLW.h</header>
+   <header location="global">Qt/RawAPI_OGLW.h</header>
   </customwidget>
  </customwidgets>
  <resources>

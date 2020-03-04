@@ -266,7 +266,10 @@ __pycache__/
 *.bmp
 *.gif
 *.png
+*.hdr
+
 *.pdf
+*.zip
 
 config/config.out
 

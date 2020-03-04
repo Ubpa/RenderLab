@@ -1,0 +1,6 @@
+[submodule "external/UCMake"]
+	path = external/UCMake
+	url = https://github.com/Ubpa/UCMake
+[submodule "external/UHEMesh"]
+	path = external/UHEMesh
+	url = https://github.com/Ubpa/UHEMesh

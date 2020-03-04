@@ -4,20 +4,20 @@
 #include <UI/Attribute.h>
 #include <UI/Setting.h>
 
-#include <CppUtil/Qt/PaintImgOpCreator.h>
-#include <CppUtil/Qt/OpThread.h>
+#include <Qt/PaintImgOpCreator.h>
+#include <Qt/OpThread.h>
 
-#include <CppUtil/Engine/RTX_Renderer.h>
-#include <CppUtil/Engine/PathTracer.h>
-#include <CppUtil/Engine/Viewer.h>
-#include <CppUtil/Engine/Scene.h>
-#include <CppUtil/Engine/SObj.h>
-#include <CppUtil/Engine/OptixAIDenoiser.h>
+#include <Engine/RTX_Renderer.h>
+#include <Engine/PathTracer.h>
+#include <Engine/Viewer.h>
+#include <Engine/Scene.h>
+#include <Engine/SObj.h>
+#include <Engine/OptixAIDenoiser.h>
 
-#include <CppUtil/Basic/Image.h>
-#include <CppUtil/Basic/LambdaOp.h>
-#include <CppUtil/Basic/GStorage.h>
-#include <CppUtil/Basic/Math.h>
+#include <Basic/Image.h>
+#include <Basic/LambdaOp.h>
+#include <Basic/GStorage.h>
+#include <Basic/Math.h>
 
 #include <ROOT_PATH.h>
 

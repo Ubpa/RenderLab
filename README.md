@@ -46,6 +46,13 @@
     - 圆盘光源 DiskLight
 - 离线渲染
   - 路径追踪 PathTracing
+- 网格编辑
+  - 参数化 Paramaterization
+  - 粘合 Glue
+  - 变形 DeformRBF
+  - 极小曲面 MinSurf
+  - 各向同性网格重划分 IsotropicRemeshing
+  - Loop 细分 LoopSubdivision
 - 其他功能
   - [几何数学库 UGM](https://github.com/Ubpa/RenderLab/tree/master/include/CppUtil/Basic/UGM) 
   - AI 降噪 OptixAIDenoiser
@@ -140,7 +147,6 @@ Optix: 6.0
   - [x] UI
   - [x] （反）序列化
 - [x] 环境光
-
   - [x] 离线
     - [x] 别名法 AliasMethod
     - [x] 无限远光源 InifiniteAreaLight
@@ -183,9 +189,11 @@ Optix: 6.0
 - [ ] opengl 的 c++ 版本
 - [x] 半边结构
 - [x] loop
-- [ ] 极小化曲面
-- [ ] 参数化
-- [ ] 空间场平滑插值 RBF
+- [x] 极小化曲面
+- [x] 参数化
+- [x] 空间场平滑插值 RBF
+- [ ] 释放 OpenGL 资源
+- [ ] TriMesh 性能优化
 
 ### Unimportant
 
