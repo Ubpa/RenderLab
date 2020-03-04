@@ -28,11 +28,11 @@ namespace CppUtil {
 		public:
 			const Ubpa::point<T, 3> & operator[](int idx) const {
 				assert(idx == 0 || idx == 1);
-				return data[idx];
+				return _data[idx];
 			}
 			Ubpa::point<T, 3> & operator[](int idx) {
 				assert(idx == 0 || idx == 1);
-				return data[idx];
+				return _data[idx];
 			}
 
 		public:
@@ -60,7 +60,7 @@ namespace CppUtil {
 				if (!IsValid())
 					return static_cast<T>(0);
 				const auto d = Diagonal();
-				return d[0] * d[1] * d
+				return d[0] * d[1] * d[2];
 			}
 			int MaxExtent() const {
 				const auto d = Diagonal();
@@ -77,7 +77,7 @@ namespace CppUtil {
 			}
 
 			template<typename U>
-			const Ubpa::point<T, 3> Lerp(const Val<3, U> & t) {
+			const Ubpa::point<T, 3> Lerp(const Ubpa::val<U, 3> & t) {
 				return Ubpa::point<T, 3>(
 					Math::Lerp(minP[0], maxP[0], t[0]),
 					Math::Lerp(minP[1], maxP[1], t[1]),
@@ -86,7 +86,7 @@ namespace CppUtil {
 			}
 
 			const Ubpa::vec<T, 3> Offset(const Ubpa::point<T, 3> & p) const {
-				Ubpa::vec<T, 3> o = p - pMin;
+				Ubpa::vec<T, 3> o = p - minP;
 				const auto d = Diagonal();
 				o[0] /= d[0];
 				o[1] /= d[1];
@@ -96,7 +96,7 @@ namespace CppUtil {
 
 			template <typename U>
 			explicit operator BBox<U>() const {
-				return BBox<U>((Point<U>)minP, (Point<U>)maxP);
+				return BBox<U>(minP.cast_to<Ubpa::point<U, 3>(), maxP.cast_to<Ubpa::point<U, 3>>());
 			}
 
 			const BBox Union(const BBox & rhs) const {
@@ -122,8 +122,8 @@ namespace CppUtil {
 				return BBox(minP, maxP);
 			}
 			BBox & IntersectWith(const BBox & rhs) {
-				minP = Ubpa::point<T, 3>::Max(lhs.minP, rhs.minP);
-				maxP = Ubpa::point<T, 3>::Min(lhs.maxP, rhs.maxP);
+				minP = Ubpa::point<T, 3>::Max(minP, rhs.minP);
+				maxP = Ubpa::point<T, 3>::Min(maxP, rhs.maxP);
 				return *this;
 			}
 

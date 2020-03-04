@@ -20,13 +20,13 @@ namespace CppUtil {
 				// position
 				Ubpa::pointf3 Position;
 				// normal
-				Normalf Normal;
+				Ubpa::normalf Normal;
 				// texCoords
 				Ubpa::vecf2 TexCoords;
 				// tangent
-				//Normalf Tangent;
+				//Ubpa::normalf Tangent;
 				// bitangent
-				//Normalf Bitangent;
+				//Ubpa::normalf Bitangent;
 			};
 
 			struct TextureInfo {

@@ -102,12 +102,12 @@ namespace CppUtil {
 
 		template<typename T>
 		void RawAPI_OGLW::GetP(const std::string & uniqueID, T * & p) {
-			GS::GetP(objectName().toStdString() + uniqueID, p);
+			CppUtil::Basic::GS::GetP(objectName().toStdString() + uniqueID, p);
 		}
 
 		template<typename T>
 		bool RawAPI_OGLW::GetV(const std::string & uniqueID, T & val) {
-			return GS::GetV(objectName().toStdString() + uniqueID, val);
+			return CppUtil::Basic::GS::GetV(objectName().toStdString() + uniqueID, val);
 		}
 	}
 }

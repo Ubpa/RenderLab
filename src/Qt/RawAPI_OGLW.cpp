@@ -113,10 +113,10 @@ void RawAPI_OGLW::InitShapeVAOs() {
 	// plane
 	auto plane = TriMesh::GenPlane();
 	vector<VAO::VBO_DataPatch> P3_Plane_Vec_VBO_Data_Patch = {
-		{plane->GetPositions().data()->Data(), static_cast<uint>(plane->GetPositions().size() * 3 * sizeof(float)), 3},
-		{plane->GetNormals().data()->Data(), static_cast<uint>(plane->GetNormals().size() * 3 * sizeof(float)), 3},
-		{plane->GetTexcoords().data()->Data(), static_cast<uint>(plane->GetTexcoords().size() * 2 * sizeof(float)), 2},
-		{plane->GetTangents().data()->Data(), static_cast<uint>(plane->GetTangents().size() * 3 * sizeof(float)), 3},
+		{plane->GetPositions().data()->data(), static_cast<uint>(plane->GetPositions().size() * 3 * sizeof(float)), 3},
+		{plane->GetNormals().data()->data(), static_cast<uint>(plane->GetNormals().size() * 3 * sizeof(float)), 3},
+		{plane->GetTexcoords().data()->data(), static_cast<uint>(plane->GetTexcoords().size() * 2 * sizeof(float)), 2},
+		{plane->GetTangents().data()->data(), static_cast<uint>(plane->GetTangents().size() * 3 * sizeof(float)), 3},
 	};
 	VAO_P3N3T2T3_Plane = VAO(P3_Plane_Vec_VBO_Data_Patch, plane->GetIndice().data(), static_cast<uint>(plane->GetIndice().size() * sizeof(uint)));
 
@@ -126,10 +126,10 @@ void RawAPI_OGLW::InitShapeVAOs() {
 	// disk
 	auto disk = TriMesh::GenDisk();
 	vector<VAO::VBO_DataPatch> P3_Disk_Vec_VBO_Data_Patch = {
-		{disk->GetPositions().data()->Data(), static_cast<uint>(disk->GetPositions().size() * 3 * sizeof(float)), 3},
-		{disk->GetNormals().data()->Data(), static_cast<uint>(disk->GetNormals().size() * 3 * sizeof(float)), 3},
-		{disk->GetTexcoords().data()->Data(), static_cast<uint>(disk->GetTexcoords().size() * 2 * sizeof(float)), 2},
-		{disk->GetTangents().data()->Data(), static_cast<uint>(disk->GetTangents().size() * 3 * sizeof(float)), 3},
+		{disk->GetPositions().data()->data(), static_cast<uint>(disk->GetPositions().size() * 3 * sizeof(float)), 3},
+		{disk->GetNormals().data()->data(), static_cast<uint>(disk->GetNormals().size() * 3 * sizeof(float)), 3},
+		{disk->GetTexcoords().data()->data(), static_cast<uint>(disk->GetTexcoords().size() * 2 * sizeof(float)), 2},
+		{disk->GetTangents().data()->data(), static_cast<uint>(disk->GetTangents().size() * 3 * sizeof(float)), 3},
 	};
 	VAO_P3N3T2T3_Disk = VAO(P3_Disk_Vec_VBO_Data_Patch, disk->GetIndice().data(), static_cast<uint>(disk->GetIndice().size() * sizeof(uint)));
 
@@ -175,10 +175,10 @@ const VAO RawAPI_OGLW::GetVAO(PtrC<TriMesh> mesh) {
 		return VAO::inValid;
 
 	vector<VAO::VBO_DataPatch> P3_Mesh_Vec_VBO_Data_Patch = {
-		{mesh->GetPositions().data()->Data(), static_cast<uint>(mesh->GetPositions().size() * 3 * sizeof(float)), 3},
-		{mesh->GetNormals().data()->Data(), static_cast<uint>(mesh->GetNormals().size() * 3 * sizeof(float)), 3},
-		{mesh->GetTexcoords().data()->Data(), static_cast<uint>(mesh->GetTexcoords().size() * 2 * sizeof(float)), 2},
-		{mesh->GetTangents().data()->Data(), static_cast<uint>(mesh->GetTangents().size() * 3 * sizeof(float)), 3},
+		{mesh->GetPositions().data()->data(), static_cast<uint>(mesh->GetPositions().size() * 3 * sizeof(float)), 3},
+		{mesh->GetNormals().data()->data(), static_cast<uint>(mesh->GetNormals().size() * 3 * sizeof(float)), 3},
+		{mesh->GetTexcoords().data()->data(), static_cast<uint>(mesh->GetTexcoords().size() * 2 * sizeof(float)), 2},
+		{mesh->GetTangents().data()->data(), static_cast<uint>(mesh->GetTangents().size() * 3 * sizeof(float)), 3},
 	};
 
 	VAO VAO_P3N3T2T3_Mesh(P3_Mesh_Vec_VBO_Data_Patch, mesh->GetIndice().data(), static_cast<uint>(mesh->GetIndice().size() * sizeof(uint)));
