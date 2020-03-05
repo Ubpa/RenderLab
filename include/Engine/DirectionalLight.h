@@ -8,11 +8,11 @@ namespace CppUtil {
 		// 局部坐标系中，朝下 -y
 		class DirectionalLight : public Light {
 		public:
-			DirectionalLight(const RGBf &color = RGBf(1), float intensity = 1.0f)
+			DirectionalLight(const Ubpa::rgbf &color = Ubpa::rgbf(1.f), float intensity = 1.0f)
 				: color(color), intensity(intensity) { }
 
 		public:
-			static const Basic::Ptr<DirectionalLight> New(const RGBf &color = RGBf(1), float intensity = 1.0f) {
+			static const Basic::Ptr<DirectionalLight> New(const Ubpa::rgbf &color = Ubpa::rgbf(1.f), float intensity = 1.0f) {
 				return Basic::New<DirectionalLight>(color, intensity);
 			}
 
@@ -26,16 +26,16 @@ namespace CppUtil {
 			// @arg1 out，wi 指向光源，为单位向量
 			// @arg2 out，p 点到光源采样点的距离
 			// @arg3 out，概率密度 probability density
-			virtual const RGBf Sample_L(const Point3 & p, Normalf & wi, float & distToLight, float & PD) const override;
+			virtual const Ubpa::rgbf Sample_L(const Ubpa::pointf3 & p, Ubpa::normalf & wi, float & distToLight, float & PD) const override;
 
 			// 概率密度函数
 			// !!! p，wi 处于灯的坐标空间中
-			virtual float PDF(const Point3 & p, const Normalf & wi) const override { return 0; }
+			virtual float PDF(const Ubpa::pointf3 & p, const Ubpa::normalf & wi) const override { return 0.f; }
 
 			virtual bool IsDelta() const override { return true; }
 
 		public:
-			RGBf color;
+			Ubpa::rgbf color;
 			float intensity;
 		};
 	}

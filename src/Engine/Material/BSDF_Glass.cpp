@@ -6,18 +6,18 @@ using namespace CppUtil;
 using namespace CppUtil::Engine;
 using namespace CppUtil::Basic::Math;
 
-const RGBf BSDF_Glass::Sample_f(const Normalf & wo, const Point2 & texcoord, Normalf & wi, float & PD) {
+const Ubpa::rgbf BSDF_Glass::Sample_f(const Ubpa::normalf & wo, const Ubpa::pointf2 & texcoord, Ubpa::normalf & wi, float & PD) {
 	// PDF is delta
 
 	if (!SurfCoord::Refract(wo, wi, ior)) {
 		// 全反射
 		PD = 1.0f;
 		wi = SurfCoord::Reflect(wo);
-		return 1.0f / abs(wi.z) * reflectance;
+		return 1.0f / abs(wi[2]) * reflectance;
 	}
 
 	// 用空气中的角作为 cos theta
-	float cosTheta = wo.z >= 0 ? wo.z : wi.z;
+	float cosTheta = wo[2] >= 0 ? wo[2] : wi[2];
 
 	float R0 = pow((ior - 1) / (ior + 1), 2);
 
@@ -28,12 +28,12 @@ const RGBf BSDF_Glass::Sample_f(const Normalf & wo, const Point2 & texcoord, Nor
 
 		PD = Fr;
 		wi = SurfCoord::Reflect(wo);
-		return Fr / abs(wi.z) * reflectance;
+		return Fr / abs(wi[2]) * reflectance;
 	}
 
 	PD = 1 - Fr;
 
-	float iorRatio = wo.z > 0 ? 1.0f / ior : ior;
-	float attenuation = iorRatio * iorRatio * (1 - Fr) / abs(wi.z);
+	float iorRatio = wo[2] > 0 ? 1.0f / ior : ior;
+	float attenuation = iorRatio * iorRatio * (1 - Fr) / abs(wi[2]);
 	return attenuation * transmittance;
 }

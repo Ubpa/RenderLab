@@ -67,7 +67,7 @@ const Ptr<SObj> AssimpLoader::LoadNode(Str2Img & str2img, const string & dir, ai
 		LoadMesh(str2img, dir, mesh, scene, meshObj);
 	}
 	// after we've processed all of the meshes (if any) we then recursively process each of the children nodes
-	for (uint i = 0; i < node->mNumChildren; i++) {
+	for (unsigned i = 0; i < node->mNumChildren; i++) {
 		auto child = LoadNode(str2img, dir, node->mChildren[i], scene);
 		sobj->AddChild(child);
 	}
@@ -77,72 +77,72 @@ const Ptr<SObj> AssimpLoader::LoadNode(Str2Img & str2img, const string & dir, ai
 
 void AssimpLoader::LoadMesh(Str2Img & str2img, const string & dir, aiMesh *mesh, const aiScene *scene, Basic::Ptr<SObj> sobj) {
 	// data to fill
-	vector<Point3> poses;
-	vector<Point2> texcoords;
-	vector<Normalf> normals;
-	vector<uint> indices;
-	vector<Normalf> tangents;
+	vector<Ubpa::pointf3> poses;
+	vector<Ubpa::pointf2> texcoords;
+	vector<Ubpa::normalf> normals;
+	vector<unsigned> indices;
+	vector<Ubpa::normalf> tangents;
 	//vector<Mesh::TextureInfo> textureInfos;
 
 	// Walk through each of the mesh's vertices
-	for (uint i = 0; i < mesh->mNumVertices; i++)
+	for (unsigned i = 0; i < mesh->mNumVertices; i++)
 	{
 		// positions
-		Point3 pos;
-		pos.x = mesh->mVertices[i].x;
-		pos.y = mesh->mVertices[i].y;
-		pos.z = mesh->mVertices[i].z;
+		Ubpa::pointf3 pos;
+		pos[0] = mesh->mVertices[i][0];
+		pos[1] = mesh->mVertices[i][1];
+		pos[2] = mesh->mVertices[i][2];
 		poses.push_back(pos);
 
 		// normals
 		if (mesh->mNormals) {
-			Normalf normal;
-			normal.x = mesh->mNormals[i].x;
-			normal.y = mesh->mNormals[i].y;
-			normal.z = mesh->mNormals[i].z;
+			Ubpa::normalf normal;
+			normal[0] = mesh->mNormals[i][0];
+			normal[1] = mesh->mNormals[i][1];
+			normal[2] = mesh->mNormals[i][2];
 			normals.push_back(normal);
 		}
 
 		// texture coordinates
 		if (mesh->mTextureCoords[0]) // does the mesh contain texture coordinates?
 		{
-			Point2 texcoord;
+			Ubpa::pointf2 texcoord;
 			// a vertex can contain up to 8 different texture coordinates. We thus make the assumption that we won't 
 			// use models where a vertex can have multiple texture coordinates so we always take the first set (0).
-			texcoord.x = mesh->mTextureCoords[0][i].x;
-			texcoord.y = mesh->mTextureCoords[0][i].y;
+			texcoord[0] = mesh->mTextureCoords[0][i][0];
+			texcoord[1] = mesh->mTextureCoords[0][i][1];
 			texcoords.push_back(texcoord);
 		}
 		else
 			texcoords.push_back({ 0,0 });
 		// tangent
 		if (mesh->mTangents)
-			tangents.push_back({ mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z });
+			tangents.push_back({ mesh->mTangents[i][0], mesh->mTangents[i][1], mesh->mTangents[i][2] });
 		// bitangent
-		//vector.x = mesh->mBitangents[i].x;
-		//vector.y = mesh->mBitangents[i].y;
-		//vector.z = mesh->mBitangents[i].z;
+		//vector[0] = mesh->mBitangents[i][0];
+		//vector[1] = mesh->mBitangents[i][1];
+		//vector[2] = mesh->mBitangents[i][2];
 		//vertex.Bitangent = vector;
 	}
 	// now wak through each of the mesh's faces (a face is a mesh its triangle) and retrieve the corresponding vertex indices.
-	for (uint i = 0; i < mesh->mNumFaces; i++)
+	for (unsigned i = 0; i < mesh->mNumFaces; i++)
 	{
 		aiFace face = mesh->mFaces[i];
 		// retrieve all indices of the face and store them in the indices vector
-		for (uint j = 0; j < face.mNumIndices; j++)
+		for (unsigned j = 0; j < face.mNumIndices; j++)
 			indices.push_back(face.mIndices[j]);
 	}
 
 	// offset, scale
-	Vec3 minP, maxP;
+	Ubpa::pointf3 minP, maxP;
 	for (const auto & pos : poses) {
-		minP = minP.MinWith(pos);
-		maxP = maxP.MaxWith(pos);
+		minP = Ubpa::pointf3::min(minP, pos);
+		maxP = Ubpa::pointf3::max(maxP, pos);
 	}
-	Vec3 offset = -(minP + maxP) / 2;
-	float scale = sqrt(3.f / (maxP - minP).Norm2());
+	auto offset = -Ubpa::pointf3::mid(minP,maxP).cast_to<Ubpa::vecf3>();
+	float scale = sqrt(3.f / (maxP - minP).norm2());
 	for (auto & pos : poses)
-		pos = scale * (Vec3(pos) + offset);
+		pos = (scale * (pos.cast_to<Ubpa::vecf3>() + offset)).cast_to<Ubpa::pointf3>();
 
 	auto triMesh = TriMesh::New(indices, poses, normals, texcoords, tangents);
 	CmptGeometry::New(sobj, triMesh);
@@ -162,7 +162,7 @@ void AssimpLoader::LoadMesh(Str2Img & str2img, const string & dir, aiMesh *mesh,
 	bsdf->metallicTexture = LoadTexture(str2img, dir, material, aiTextureType_SPECULAR);
 	auto shininess = LoadTexture(str2img, dir, material, aiTextureType_SHININESS);
 	if(shininess)
-		bsdf->roughnessTexture = shininess->Inverse();
+		bsdf->roughnessTexture = shininess->inverse();
 	bsdf->normalTexture = LoadTexture(str2img, dir, material, aiTextureType_NORMALS);
 	bsdf->aoTexture = LoadTexture(str2img, dir, material, aiTextureType_AMBIENT);
 }

@@ -6,7 +6,7 @@ using namespace CppUtil;
 using namespace CppUtil::Basic;
 using namespace CppUtil::Engine;
 
-float Beckmann::D(const Normalf & wh) const {
+float Beckmann::D(const Ubpa::normalf & wh) const {
 	if (SurfCoord::CosTheta(wh) < 0)
 		return 0.f;
 
@@ -16,10 +16,10 @@ float Beckmann::D(const Normalf & wh) const {
 
 	const auto cos4Theta = SurfCoord::Cos2Theta(wh) * SurfCoord::Cos2Theta(wh);
 	const auto alpha2 = alpha * alpha;
-	return exp(-tan2Theta / alpha2) / (Math::PI * alpha2 * cos4Theta);
+	return exp(-tan2Theta / alpha2) / (Ubpa::PI<float> * alpha2 * cos4Theta);
 }
 
-float Beckmann::Lambda(const Normalf & w) const {
+float Beckmann::Lambda(const Ubpa::normalf & w) const {
 	auto absTanTheta = std::abs(SurfCoord::TanTheta(w));
 	if (std::isnan(absTanTheta))
 		return 98e8f;
@@ -31,7 +31,7 @@ float Beckmann::Lambda(const Normalf & w) const {
 	return (1 - 1.259f * a + 0.396f * a * a) / (3.535f * a + 2.181f * a * a);
 }
 
-const Normalf Beckmann::Sample_wh() const {
+const Ubpa::normalf Beckmann::Sample_wh() const {
 	// sample
 	const float Xi1 = Math::Rand_F();
 	const float Xi2 = Math::Rand_F();
@@ -44,7 +44,7 @@ const Normalf Beckmann::Sample_wh() const {
 	const auto sinTheta = std::max(0.f, sqrt(1.f - cosTheta * cosTheta));
 	
 	// phi
-	const auto phi = 2 * Math::PI * Xi2;
+	const auto phi = 2 * Ubpa::PI<float> * Xi2;
 
 	return SurfCoord::SphericalDirection(sinTheta, cosTheta, phi);
 }

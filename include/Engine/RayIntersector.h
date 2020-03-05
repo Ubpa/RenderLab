@@ -2,10 +2,10 @@
 #define _ENGINE_INTERSECTOR_RAY_INTERSECTOR_H_
 
 #include <Engine/Intersector.h>
-#include <Basic/UGM/Point.h>
-#include <Basic/UGM/Point2.h>
-#include <Basic/UGM/Normal.h>
-#include <Basic/UGM/BBox.h>
+#include <UGM/point.h>
+#include <UGM/point.h>
+#include <UGM/normal.h>
+#include <UGM/bbox.h>
 
 #include <Engine/Ray.h>
 
@@ -27,9 +27,9 @@ namespace CppUtil {
 				}
 
 				Basic::Ptr<SObj> closestSObj;
-				Normalf n;
-				Point2 texcoord;
-				Normalf tangent;
+				Ubpa::normalf n;
+				Ubpa::pointf2 texcoord;
+				Ubpa::normalf tangent;
 				Basic::Ptr<Triangle> triangle;
 				int idx;
 			private:
@@ -63,7 +63,7 @@ namespace CppUtil {
 			void Visit(Basic::Ptr<Capsule> capsule);
 
 		private:
-			bool Intersect(const BBoxf & bbox, const Val3f & invDir) const;
+			bool Intersect(const Ubpa::bboxf3 & bbox, const Ubpa::valf3 & invDir) const;
 
 		private:
 			Ray * ray;

@@ -48,9 +48,6 @@ namespace CppUtil {
 			void SetMatf4(const std::string &name, const Ubpa::matf4 & mat) const {
 				SetMatf4(name, mat.data());
 			}
-			void SetMatf4(const std::string &name, const Ubpa::transformf & tsfm) const {
-				SetMatf4(name, tsfm.data());
-			}
 
 			//------------
 			void UniformBlockBind(const std::string &name, unsigned bindPoint) const;

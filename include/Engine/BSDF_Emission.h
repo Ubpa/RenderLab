@@ -7,11 +7,11 @@ namespace CppUtil {
 	namespace Engine {
 		class BSDF_Emission final : public BSDF {
 		public:
-			BSDF_Emission(const RGBf & color = RGBf(1.f), float intensity = 1.f)
+			BSDF_Emission(const Ubpa::rgbf & color = Ubpa::rgbf(1.f), float intensity = 1.f)
 				: color(color), intensity(intensity) { }
 
 		public:
-			static const Basic::Ptr<BSDF_Emission> New(const RGBf & color = RGBf(1.f), float intensity = 1.f) {
+			static const Basic::Ptr<BSDF_Emission> New(const Ubpa::rgbf & color = Ubpa::rgbf(1.f), float intensity = 1.f) {
 				return Basic::New<BSDF_Emission>(color, intensity);
 			}
 
@@ -19,23 +19,23 @@ namespace CppUtil {
 			virtual ~BSDF_Emission() = default;
 
 		public:
-			virtual const RGBf F(const Normalf & wo, const Normalf & wi, const Point2 & texcoord) override { return RGBf(0.f); }
+			virtual const Ubpa::rgbf F(const Ubpa::normalf & wo, const Ubpa::normalf & wi, const Ubpa::pointf2 & texcoord) override { return Ubpa::rgbf(0.f); }
 
 			// probability density function
-			virtual float PDF(const Normalf & wo, const Normalf & wi, const Point2 & texcoord) override { return 0; }
+			virtual float PDF(const Ubpa::normalf & wo, const Ubpa::normalf & wi, const Ubpa::pointf2 & texcoord) override { return 0; }
 
 			// PD is probability density
 			// return albedo
-			virtual const RGBf Sample_f(const Normalf & wo, const Point2 & texcoord, Normalf & wi, float & PD) override {
+			virtual const Ubpa::rgbf Sample_f(const Ubpa::normalf & wo, const Ubpa::pointf2 & texcoord, Ubpa::normalf & wi, float & PD) override {
 				PD = 0;
-				return RGBf(0.f);
+				return Ubpa::rgbf(0.f);
 			}
 
 			// luminance
-			virtual const RGBf Emission(const Normalf & wo) const override { return SurfCoord::CosTheta(wo) > 0 ? intensity * color : RGBf(0); }
+			virtual const Ubpa::rgbf Emission(const Ubpa::normalf & wo) const override { return SurfCoord::CosTheta(wo) > 0 ? intensity * color : Ubpa::rgbf(0.f); }
 
 		public:
-			RGBf color;
+			Ubpa::rgbf color;
 			float intensity;
 		};
 	}

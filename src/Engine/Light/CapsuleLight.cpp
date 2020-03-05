@@ -1,58 +1,59 @@
 #include <Engine/CapsuleLight.h>
 
 #include <Basic/BasicSampler.h>
+#include <Basic/Math.h>
 
 using namespace CppUtil;
 using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
 using namespace std;
 
-const RGBf CapsuleLight::Sample_L(const Point3 & p, Normalf & wi, float & distToLight, float & PD) const {
+const Ubpa::rgbf CapsuleLight::Sample_L(const Ubpa::pointf3 & p, Ubpa::normalf & wi, float & distToLight, float & PD) const {
 	// 暂时先简单地均匀采样
-	float sphereArea = 4 * Math::PI * radius * radius;
-	float cylinderArea = 2 * Math::PI * radius * height;
+	float sphereArea = 4 * Ubpa::PI<float> * radius * radius;
+	float cylinderArea = 2 * Ubpa::PI<float> * radius * height;
 	float wholeArea = sphereArea + cylinderArea;
 
-	Point3 pos;
-	Normalf normal;
+	Ubpa::pointf3 pos;
+	Ubpa::normalf normal;
 	if (Math::Rand_F() < sphereArea / wholeArea) {
 		// Sphere
-		pos = BasicSampler::UniformOnSphere();
-		normal = pos;
-		pos.y += pos.y >= 0 ? height / 2 : - height / 2;
+		pos = BasicSampler::UniformOnSphere().cast_to<Ubpa::pointf3>();
+		normal = pos.cast_to<Ubpa::normalf>();
+		pos[1] += pos[1] >= 0 ? height / 2 : - height / 2;
 	}
 	else {
 		// Cylinder
 		auto posOnDisk = BasicSampler::UniformOnDisk();
 		auto y = (Math::Rand_F() - 0.5f) * height;
-		pos = Point3(posOnDisk[0], y, posOnDisk[1]);
-		normal = Normalf(posOnDisk.x, 0, posOnDisk.y);
+		pos = Ubpa::pointf3(posOnDisk[0], y, posOnDisk[1]);
+		normal = Ubpa::normalf(posOnDisk[0], 0, posOnDisk[1]);
 	}
 
 	auto d = pos - p;
 
-	auto dist2 = d.Dot(d);
+	auto dist2 = d.dot(d);
 
 	distToLight = sqrt(dist2);
 
-	wi = d / distToLight;
+	wi = (d / distToLight).cast_to<Ubpa::normalf>();
 
-	float cosTheta = (-wi).Dot(normal);
-	PD = dist2 / (wholeArea * Math::Abs(cosTheta));
+	float cosTheta = (-wi).dot(normal);
+	PD = dist2 / (wholeArea * std::abs(cosTheta));
 
-	return cosTheta < 0 ? RGBf(0) : Luminance();
+	return cosTheta < 0 ? Ubpa::rgbf(0.f) : Luminance();
 }
 
-float CapsuleLight::PDF(const Point3 & p, const Normalf & wi) const {
+float CapsuleLight::PDF(const Ubpa::pointf3 & p, const Ubpa::normalf & wi) const {
 	float halfH = height / 2;
-	float sphereArea = 4 * Math::PI * radius * radius;
-	float cylinderArea = 2 * Math::PI * radius * height;
+	float sphereArea = 4 * Ubpa::PI<float> * radius * radius;
+	float cylinderArea = 2 * Ubpa::PI<float> * radius * height;
 	float wholeArea = sphereArea + cylinderArea;
 
 	do { // 圆柱
-		float a = wi.x * wi.x + wi.z * wi.z;
-		float b = wi.x * p.x + wi.z * p.z;
-		float c = p.x * p.x + p.z * p.z - radius * radius;
+		float a = wi[0] * wi[0] + wi[2] * wi[2];
+		float b = wi[0] * p[0] + wi[2] * p[2];
+		float c = p[0] * p[0] + p[2] * p[2] - radius * radius;
 
 		float discriminant = b * b - a * c;
 		if (discriminant <= 0)
@@ -63,25 +64,25 @@ float CapsuleLight::PDF(const Point3 & p, const Normalf & wi) const {
 		if (t < 0)
 			return 0; // 后侧才相交
 
-		auto pos = p + t * Vec3(wi);
-		if (pos.y <= -halfH || pos.y >= halfH)
+		auto pos = p + t * wi.cast_to<Ubpa::vecf3>();
+		if (pos[1] <= -halfH || pos[1] >= halfH)
 			break; // 不与圆柱相交
 
-		float dist2 = p.Distance2With(pos);
-		auto normal = Vec3(pos.x, 0, pos.y) / radius;
+		float dist2 = Ubpa::pointf3::distance2(p, pos);
+		auto normal = Ubpa::vecf3(pos[0], 0, pos[1]) / radius;
 
-		float cosTheta = normal.Dot(p-pos) / sqrt(dist2); // positive
+		float cosTheta = normal.dot(p-pos) / sqrt(dist2); // positive
 		return dist2 / (wholeArea * cosTheta);
 	} while (false);
 
-	//float a = wi.Dot(wi);
+	//float a = wi.dot(wi);
 	float a = 1.f;
 
 	do {// 上半球
-		Point3 center(0, halfH, 0);
-		auto oc = p - center;
-		float b = wi.Dot(oc);
-		float c = oc.Norm2() - radius * radius;
+		Ubpa::pointf3 center(0, halfH, 0);
+		Ubpa::vecf3 oc = p - center;
+		float b = wi.cast_to<Ubpa::vecf3>().dot(oc);
+		float c = oc.norm2() - radius * radius;
 
 		float discriminant = b * b - a * c;
 		if (discriminant <= 0)
@@ -89,25 +90,25 @@ float CapsuleLight::PDF(const Point3 & p, const Normalf & wi) const {
 
 		float sqrtDiscriminant = sqrt(discriminant);
 		float t = -(b + sqrtDiscriminant) / a;
-		auto pos = p + t * Vec3(wi);
+		auto pos = p + t * wi.cast_to<Ubpa::vecf3>();
 		if (t < 0)
 			break;
 
-		if (pos.y <= halfH)
+		if (pos[1] <= halfH)
 			break;
 
 		auto normal = (pos - center) / radius;
-		float dist2 = pos.Distance2With(p);
-		float cosTheta = normal.Dot(p - pos) / sqrt(dist2); // positive
+		float dist2 = Ubpa::pointf3::distance2(p, pos);
+		float cosTheta = normal.dot(p - pos) / sqrt(dist2); // positive
 		
 		return dist2 / (wholeArea * cosTheta);
 	} while (false);
 
 	do {// 下半球
-		Point3 center(0, -halfH, 0);
+		Ubpa::pointf3 center(0, -halfH, 0);
 		auto oc = p - center;
-		float b = wi.Dot(oc);
-		float c = oc.Norm2() - radius * radius;
+		float b = wi.cast_to<Ubpa::vecf3>().dot(oc);
+		float c = oc.norm2() - radius * radius;
 
 		float discriminant = b * b - a * c;
 		if (discriminant <= 0)
@@ -115,16 +116,16 @@ float CapsuleLight::PDF(const Point3 & p, const Normalf & wi) const {
 
 		float sqrtDiscriminant = sqrt(discriminant);
 		float t = -(b + sqrtDiscriminant) / a;
-		auto pos = p + t * Vec3(wi);
+		auto pos = p + t * wi.cast_to<Ubpa::vecf3>();
 		if (t < 0)
 			break;
 		
-		if (pos.y >= -halfH)
+		if (pos[1] >= -halfH)
 			break;
 
 		auto normal = (pos - center) / radius;
-		float dist2 = pos.Distance2With(p);
-		float cosTheta = normal.Dot(p - pos) / sqrt(dist2); // positive
+		float dist2 = Ubpa::pointf3::distance2(pos, p);
+		float cosTheta = normal.dot(p - pos) / sqrt(dist2); // positive
 
 		return dist2 / (wholeArea * cosTheta);
 	} while (false);

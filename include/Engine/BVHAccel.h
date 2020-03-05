@@ -3,8 +3,8 @@
 
 #include <Basic/Element.h>
 
-#include <Basic/UGM/BBox.h>
-#include <Basic/UGM/Transform.h>
+#include <UGM/bbox.h>
+#include <UGM/transform.h>
 
 #include <vector>
 #include <unordered_map>
@@ -30,14 +30,14 @@ namespace CppUtil {
 		public:
 			class LinearBVHNode {
 			public:
-				void InitLeaf(const BBoxf & box, int shapesOffset, int shapesNum) {
+				void InitLeaf(const Ubpa::bboxf3 & box, int shapesOffset, int shapesNum) {
 					this->box = box;
 					this->shapesOffset = shapesOffset;
 					this->shapesNum = shapesNum;
 					axis = -1;
 				}
 
-				void InitBranch(const BBoxf & box, int secondChildIdx, int axis) {
+				void InitBranch(const Ubpa::bboxf3 & box, int secondChildIdx, int axis) {
 					this->box = box;
 					this->secondChildIdx = secondChildIdx;
 					shapesNum = 0;
@@ -45,7 +45,7 @@ namespace CppUtil {
 				}
 
 			public:
-				const BBoxf & GetBox() const { return box; }
+				const Ubpa::bboxf3 & GetBox() const { return box; }
 				bool IsLeaf() const { return shapesNum != 0; }
 				const std::vector<int> ShapesIdx() const {
 					assert(IsLeaf());
@@ -65,7 +65,7 @@ namespace CppUtil {
 				}
 
 			private:
-				BBoxf box;
+				Ubpa::bboxf3 box;
 				union {
 					int shapesOffset; // leaf
 					int secondChildIdx; // interior
@@ -80,7 +80,7 @@ namespace CppUtil {
 			void Clear();
 
 		public:
-			const Basic::Transform & GetShapeW2LMat(Basic::Ptr<Shape> shape) const;
+			const Ubpa::transformf & GetShapeW2LMat(Basic::Ptr<Shape> shape) const;
 			const Basic::Ptr<SObj> GetSObj(Basic::Ptr<Shape> shape) const;
 
 			const LinearBVHNode & GetBVHNode(int idx) const {
@@ -97,7 +97,7 @@ namespace CppUtil {
 
 		private:
 			// triangle 要通过 mesh 在这里取得 matrix
-			std::unordered_map<Basic::Ptr<Primitive>, Basic::Transform> worldToLocalMatrixes;
+			std::unordered_map<Basic::Ptr<Primitive>, Ubpa::transformf> worldToLocalMatrixes;
 			std::unordered_map<Basic::Ptr<Primitive>, Basic::Ptr<SObj>> primitive2sobj;
 
 			// shapes and box

@@ -5,11 +5,11 @@
 #include <Basic/Ptr.h>
 #include <Basic/FunctionTraits.h>
 
-#include <Basic/UGM/Point.h>
-#include <Basic/UGM/Vector.h>
-#include <Basic/UGM/Normal.h>
-#include <Basic/UGM/RGB.h>
-#include <Basic/UGM/RGBA.h>
+#include <UGM/point.h>
+#include <UGM/vec.h>
+#include <UGM/normal.h>
+#include <UGM/rgb.h>
+#include <UGM/rgba.h>
 
 #include <string>
 #include <map>
@@ -34,11 +34,11 @@ namespace CppUtil {
 		private:
 			template<typename T>
 			static const T To(const Key & key) {
-				return static_cast<T>(To<T::valNum, typename T::valType>(key));
+				return To<T::N, typename T::T>(key).cast_to<T>();
 			}
 
-			template<int N, typename T>
-			static const Val<N, T> To(const Key & key) {
+			template<size_t N, typename T>
+			static const Ubpa::val<T, N> To(const Key & key) {
 				assert(N == 2 || N == 3 || N == 4);
 				T arr[N];
 				size_t begin = 0;
@@ -46,20 +46,23 @@ namespace CppUtil {
 				for (int i = 0; i < N-1; i++) {
 					end = key.find(' ', end + 1);
 					if (end == std::string::npos) {
-						printf("To<Val<%d,%s>> ERROR: end == std::string::npos\n", N, typeid(T).name());
-						return Val<N, T>(0);
+						printf("To<Val<%zd,%s>> ERROR: end == std::string::npos\n", N, typeid(T).name());
+						return Ubpa::val<T, N>(static_cast<T>(0));
 					}
 
 					arr[i] = To<T>(key.substr(begin, end));
 					begin = end;
 				}
 				if (begin == key.size()) {
-					printf("To<Val<%d,%s>> ERROR: begin == key.size()\n", N, typeid(T).name());
-					return Val<N, T>(0);
+					printf("To<Val<%zd,%s>> ERROR: begin == key.size()\n", N, typeid(T).name());
+					return Ubpa::val<T, N>(static_cast<T>(0));
 				}
 				arr[N - 1] = To<T>(key.substr(begin, key.size()));
 
-				return Val<N, T>(arr);
+				Ubpa::val<T, N> rst;
+				for (size_t i = 0; i < N; i++)
+					rst[i] = arr[i];
+				return rst;
 			}
 
 			// 将 ele 视为 ValImplType 载入
@@ -91,8 +94,8 @@ namespace CppUtil {
 
 			template<typename LambdaExpr>
 			static void Reg_Text_Lambda(FuncMap & funcMap, Key key, LambdaExpr lambda) {
-				using ValType = Basic::FunctionTraitsLambda<decltype(lambda)>::arg<0>::type;
-				using rawValType = std::remove_cv<std::remove_reference<ValType>::type>::type;
+				using ValType = typename Basic::FunctionTraitsLambda<decltype(lambda)>::template arg<0>::type;
+				using rawValType = typename std::remove_cv<typename std::remove_reference<ValType>::type>::type;
 				const Func<const rawValType &> func = lambda;
 				Reg_Text_Func(funcMap, key, func);
 			}
@@ -109,7 +112,7 @@ namespace CppUtil {
 			// 将 name == key 的 ele 的 text 以 T 做参数调用 obj 的 setVal
 			template<typename ValType, typename ObjType, typename RetType>
 			static void Reg_Text_setVal(FuncMap & funcMap, Key key, Basic::Ptr<ObjType> obj, RetType(ObjType::*setVal)(ValType)) {
-				using rawValType = std::remove_cv<std::remove_reference<ValType>::type>::type;
+				using rawValType = typename std::remove_cv<typename std::remove_reference<ValType>::type>::type;
 				Reg_Text_Lambda(funcMap, key, [=](const rawValType & val) {
 					((*obj).*setVal)(val);
 				});
@@ -126,8 +129,8 @@ namespace CppUtil {
 
 			template<typename LambdaExpr>
 			static void Reg_Load_Lambda(FuncMap & funcMap, Key key, LambdaExpr lambda) {
-				using ValType = Basic::FunctionTraitsLambda<decltype(lambda)>::arg<0>::type;
-				using rawValType = std::remove_cv<std::remove_reference<ValType>::type>::type;
+				using ValType = typename Basic::FunctionTraitsLambda<decltype(lambda)>::template arg<0>::type;
+				using rawValType = typename std::remove_cv<typename std::remove_reference<ValType>::type>::type;
 				const Func<const rawValType &> func = lambda;
 				Reg_Load_Func(funcMap, key, func);
 			}

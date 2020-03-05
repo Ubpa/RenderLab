@@ -1,29 +1,29 @@
 #include <Engine/Sphere.h>
 
-#include <Basic/UGM/Point2.h>
+#include <UGM/point.h>
 
 using namespace CppUtil;
 using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
 
-const Point2 Sphere::TexcoordOf(const Normalf & normal) {
-	auto nDir = normal.Normalize();
-	const float phi = std::atan2(-nDir.x, -nDir.z) + Math::PI;
-	const float theta = acos(nDir.y);
+const Ubpa::pointf2 Sphere::TexcoordOf(const Ubpa::normalf & normal) {
+	auto nDir = normal.normalize();
+	const float phi = std::atan2(-nDir[0], -nDir[2]) + Ubpa::PI<float>;
+	const float theta = acos(nDir[1]);
 
-	const auto u = phi / (2.f * Math::PI);
-	const auto v = theta / Math::PI;
-	return Point2(u, v);
+	const auto u = phi / (2.f * Ubpa::PI<float>);
+	const auto v = theta / Ubpa::PI<float>;
+	return Ubpa::pointf2(u, v);
 }
 
-const Normalf Sphere::TangentOf(const Normalf & normal) {
-	auto nDir = normal.Normalize();
-	const float phi = std::atan2(-nDir.x, -nDir.z) + Math::PI;
+const Ubpa::normalf Sphere::TangentOf(const Ubpa::normalf & normal) {
+	auto nDir = normal.normalize();
+	const float phi = std::atan2(-nDir[0], -nDir[2]) + Ubpa::PI<float>;
 
-	return Normalf(cos(phi), 0, -sin(phi));
+	return Ubpa::normalf(cos(phi), 0, -sin(phi));
 }
 
-const Normalf Sphere::SphereCoord::ToDir() const {
+const Ubpa::normalf Sphere::SphereCoord::ToDir() const {
 	const auto sinTheta = sin(theta);
 
 	float x = sinTheta * sin(phi);

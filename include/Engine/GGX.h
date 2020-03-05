@@ -24,11 +24,11 @@ namespace CppUtil {
 
 		public:
 			// 法线分布函数
-			virtual float D(const Normalf & wh) const override;
-			virtual const Normalf Sample_wh() const override;
+			virtual float D(const Ubpa::normalf & wh) const override;
+			virtual const Ubpa::normalf Sample_wh() const override;
 
 		protected:
-			virtual float Lambda(const Normalf & w) const override;
+			virtual float Lambda(const Ubpa::normalf & w) const override;
 
 		protected:
 			float alpha;

@@ -52,7 +52,7 @@ namespace CppUtil {
 			}
 
 			template<typename T>
-			constexpr bool IsZero(T orig, T bound = static_cast<T>(0.000001)) {
+			constexpr bool is_all_zero(T orig, T bound = static_cast<T>(0.000001)) {
 				return Equal(orig, static_cast<T>(0));
 			}
 

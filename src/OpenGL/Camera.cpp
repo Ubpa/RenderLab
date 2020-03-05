@@ -52,7 +52,7 @@ Ubpa::pointf3 & Camera::GetPos() {
 	return position;
 }
 
-// Returns the view matrix calculated using Euler Angles and the LookAt Matrix
+// Returns the view matrix calculated using Euler Angles and the look_at Matrix
 Ubpa::transformf Camera::GetViewMatrix() const {
 	return Ubpa::transformf::look_at(position, (position + front).cast_to<Ubpa::pointf3>(), up);
 }
@@ -62,7 +62,7 @@ Ubpa::transformf Camera::GetProjectionMatrix() const {
 	switch (projectionMode)
 	{
 	case OpenGL::Camera::PROJECTION_PERSEPCTIVE:
-		return Ubpa::transformf::perspcetive(fov, ratioWH, nearPlane, farPlane);
+		return Ubpa::transformf::perspective(Ubpa::to_radian(fov), ratioWH, nearPlane, farPlane);
 	case OpenGL::Camera::PROJECTION_ORTHO:
 		return Ubpa::transformf::orthographic(fov / 2.0f, fov / 2.0f / ratioWH, nearPlane, farPlane);
 	default:
@@ -97,9 +97,9 @@ const vector<Ubpa::pointf3> Camera::Corners() const {
 // Calculates the front vector from the Camera's (updated) Euler Angles
 void Camera::updateCameraVectors() {
 	// Calculate the new Front vector
-	front[0] = cos(Math::Radians(yaw)) * cos(Math::Radians(pitch));
-	front[1] = sin(Math::Radians(pitch));
-	front[2] = sin(Math::Radians(yaw)) * cos(Math::Radians(pitch));
+	front[0] = cos(Ubpa::to_radian(yaw)) * cos(Ubpa::to_radian(pitch));
+	front[1] = sin(Ubpa::to_radian(pitch));
+	front[2] = sin(Ubpa::to_radian(yaw)) * cos(Ubpa::to_radian(pitch));
 	front.normalize_self();
 	// Also re-calculate the Right and Up vector
 	right = front.cross(worldUp).normalize();  // normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.

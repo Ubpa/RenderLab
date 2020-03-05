@@ -4,7 +4,7 @@
 
 #include <Basic/HeapObj.h>
 #include <UHEMesh/HEMesh.h>
-#include <Basic/UGM/UGM.h>
+#include <UGM/UGM>
 
 namespace CppUtil {
 	namespace Engine {
@@ -33,7 +33,7 @@ namespace CppUtil {
 			class P;
 			class V : public Ubpa::TVertex<V, E, P> {
 			public:
-				Vec3 pos;
+				Ubpa::vecf3 pos;
 			};
 			class E : public Ubpa::TEdge<V, E, P> { };
 			class P :public Ubpa::TPolygon<V, E, P> { };

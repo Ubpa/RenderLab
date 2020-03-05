@@ -5,7 +5,7 @@
 #include <Basic/Node.h>
 #include <Basic/TypeMap.h>
 #include <Basic/Visitor.h>
-#include <Basic/UGM/Transform.h>
+#include <UGM/transform.h>
 
 #include <string>
 #include <vector>
@@ -64,8 +64,8 @@ namespace CppUtil {
 
 		public:
 			// º¥ ±º∆À„
-			const Basic::Transform GetLocalToWorldMatrix();
-			const Point3 GetWorldPos() { return GetLocalToWorldMatrix()(Point3(0)); }
+			const Ubpa::transformf GetLocalToWorldMatrix();
+			const Ubpa::pointf3 GetWorldPos() { return GetLocalToWorldMatrix() * Ubpa::pointf3(0.f,0.f,0.f); }
 
 		public:
 			std::string name;

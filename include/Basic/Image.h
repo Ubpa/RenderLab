@@ -34,7 +34,7 @@ namespace CppUtil {
 
 			Ptr<Image> GenFlip() const;
 			Ptr<Image> Clear(const Ubpa::rgbaf & clearColor = Ubpa::rgbaf{0.f,0.f,0.f,0.f});
-			Ptr<Image> Inverse();
+			Ptr<Image> inverse();
 
 			Image & operator =(const Image & img) noexcept;
 			Image & operator =(Image && img) noexcept;

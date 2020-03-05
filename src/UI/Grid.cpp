@@ -2,7 +2,7 @@
 
 #include <Basic/Image.h>
 #include <Basic/Math.h>
-#include <Basic/UGM/Scale.h>
+#include <UGM/Scale.h>
 
 #include <qlabel.h>
 #include <qgridlayout.h>
@@ -182,26 +182,26 @@ void Grid::AddText(const string & left, const string & right) {
 	AddRow(left, label1);
 }
 
-void Grid::AddEditColor(const string & text, CppUtil::RGBf & color) {
+void Grid::AddEditColor(const string & text, Ubpa::rgbf & color) {
 	auto button = new QPushButton;
 	stringstream stylesheet;
 	stylesheet << "background-color: rgb(" <<
-		Math::Clamp<int>(255 * color.r, 0, 255) << ", " <<
-		Math::Clamp<int>(255 * color.g, 0, 255) << ", " <<
-		Math::Clamp<int>(255 * color.b, 0, 255) << ");";
+		Math::Clamp<int>(255 * color[0], 0, 255) << ", " <<
+		Math::Clamp<int>(255 * color[1], 0, 255) << ", " <<
+		Math::Clamp<int>(255 * color[2], 0, 255) << ");";
 	button->setStyleSheet(QString::fromStdString(stylesheet.str()));
 
 	page->connect(button, &QPushButton::clicked, [&color, button]() {
-		const QColor qcolor = QColorDialog::getColor(QColor(255 * color.r, 255 * color.g, 255 * color.b));
+		const QColor qcolor = QColorDialog::getColor(QColor(255 * color[0], 255 * color[1], 255 * color[2]));
 		if (!qcolor.isValid())
 			return;
 
-		color.r = qcolor.red() / 255.0f;
-		color.g = qcolor.green() / 255.0f;
-		color.b = qcolor.blue() / 255.0f;
+		color[0] = qcolor.red() / 255.0f;
+		color[1] = qcolor.green() / 255.0f;
+		color[2] = qcolor.blue() / 255.0f;
 
 		stringstream stylesheet;
-		stylesheet << "background-color: rgb(" << int(255 * color.r) << ", " << int(255 * color.g) << ", " << int(255 * color.b) << ");";
+		stylesheet << "background-color: rgb(" << int(255 * color[0]) << ", " << int(255 * color[1]) << ", " << int(255 * color[2]) << ");";
 		button->setStyleSheet(QString::fromStdString(stylesheet.str()));
 	});
 
@@ -375,9 +375,9 @@ void Grid::AddTitle(const string & text) {
 	AddRow(text);
 }
 
-void Grid::AddEditVal(const vector<string> & texts, const Val3 & val, const Val3 & minVal, const Val3 & maxVal, const Val3i & stepNum, const function<void(const Val3 &)> & slot) {
-	auto f_step = (Scalef(maxVal) - Scalef(minVal)) / Scalef(stepNum);
-	auto i_val = (Scalef(val) - Scalef(minVal)) / f_step;
+void Grid::AddEditVal(const vector<string> & texts, const Ubpa::valf3 & val, const Ubpa::valf3 & minVal, const Ubpa::valf3 & maxVal, const Ubpa::vali3 & stepNum, const function<void(const Ubpa::valf3 &)> & slot) {
+	auto f_step = (maxVal.cast_to<Ubpa::vecf3>() - minVal.cast_to<Ubpa::vecf3>()).cast_to<Ubpa::scalef3>() / stepNum.cast_to<Ubpa::scalef3>();
+	auto i_val = (val.cast_to<Ubpa::vecf3>() - minVal.cast_to<Ubpa::vecf3>()).cast_to<Ubpa::scalef3>() / f_step;
 	QSlider * horizontalSliders[3] = {
 		new QSlider,
 		new QSlider,
@@ -417,7 +417,7 @@ void Grid::AddEditVal(const vector<string> & texts, const Val3 & val, const Val3
 			auto y = spinboxs[1]->value();
 			auto z = spinboxs[2]->value();
 
-			slot(Val3(x, y, z));
+			slot(Ubpa::valf3(x, y, z));
 		});
 
 		page->connect(spinboxs[idx], signalFunc1, [=](double d_val) {
@@ -431,7 +431,7 @@ void Grid::AddEditVal(const vector<string> & texts, const Val3 & val, const Val3
 			auto y = spinboxs[1]->value();
 			auto z = spinboxs[2]->value();
 
-			slot(Val3(x, y, z));
+			slot(Ubpa::valf3(x, y, z));
 		});
 
 		AddText(texts[idx]);
@@ -439,7 +439,7 @@ void Grid::AddEditVal(const vector<string> & texts, const Val3 & val, const Val3
 	}
 }
 
-void Grid::AddEditVal(const vector<string> & texts, const Val3 & val, const Val3 & singleStep, const function<void(const Val3 &)> & slot) {
+void Grid::AddEditVal(const vector<string> & texts, const Ubpa::valf3 & val, const Ubpa::valf3 & singleStep, const function<void(const Ubpa::valf3 &)> & slot) {
 	QDoubleSpinBox * spinboxs[3] = {
 		new QDoubleSpinBox,
 		new QDoubleSpinBox,
@@ -461,7 +461,7 @@ void Grid::AddEditVal(const vector<string> & texts, const Val3 & val, const Val3
 			auto y = spinboxs[1]->value();
 			auto z = spinboxs[2]->value();
 
-			slot(Val3(x, y, z));
+			slot(Ubpa::valf3(x, y, z));
 		});
 
 		AddRow(texts[i], spinboxs[i]);

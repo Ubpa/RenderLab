@@ -163,18 +163,18 @@ void Attribute::ComponentVisitor::Visit(Ptr<CmptTransform> transform) {
 
 	// position
 	grid->AddText("- Position");
-	grid->AddEditVal({ "x","y","z" }, transform->GetPosition(), Val3(0.1f), [=](const Val3 & val) {
-		transform->SetPosition(val);
+	grid->AddEditVal({ "x","y","z" }, transform->GetPosition().cast_to<Ubpa::valf3>(), Ubpa::valf3(0.1f), [=](const Ubpa::valf3 & val) {
+		transform->SetPosition(val.cast_to<Ubpa::pointf3>());
 	});
 
 	grid->AddText("- Rotation");
-	grid->AddEditVal({"x","y","z"}, transform->GetRotationEuler(), Vec3(-90, -180, -180), Vec3(90, 180, 180), Vec3i(180, 360, 360), [=](const Val3 & val) {
-		transform->SetRotation(EulerYXZf(val));
+	grid->AddEditVal({"x","y","z"}, transform->GetRotationEuler().cast_to<Ubpa::valf3>(), Ubpa::valf3(-90, -180, -180), Ubpa::valf3(90, 180, 180), Ubpa::vali3(180, 360, 360), [=](const Ubpa::valf3 & val) {
+		transform->SetRotation(Ubpa::eulerf{ Ubpa::to_radian(val[0]),Ubpa::to_radian(val[1]) ,Ubpa::to_radian(val[2]) });
 	});
 
 	grid->AddText("- Scale");
-	grid->AddEditVal({ "x","y","z" }, transform->GetScale(), Val3(0.1f), [=](const Val3 & val) {
-		transform->SetScale(val);
+	grid->AddEditVal({ "x","y","z" }, transform->GetScale().cast_to<Ubpa::valf3>(), Ubpa::valf3(0.1f), [=](const Ubpa::valf3 & val) {
+		transform->SetScale(val.cast_to<Ubpa::scalef3>());
 	});
 }
 
@@ -206,8 +206,8 @@ void Attribute::ComponentVisitor::Visit(Ptr<CmptCamera> camera) {
 		auto fov = camera->GetFOV();
 		auto transform = camera->GetSObj()->GetLocalToWorldMatrix();
 
-		auto eulerAngle = transform.RotationEulerYXZ();
-		roamerCam->SetPose(transform.Position(), -eulerAngle.y - 90, eulerAngle.x);
+		auto eulerAngle = transform.decompose_euler();
+		roamerCam->SetPose(transform.decompose_position(), Ubpa::to_radian(eulerAngle[1]), Ubpa::to_radian(eulerAngle[0]));
 		roamerCam->SetFOV(fov);
 		EventMngr::GetInstance().Response(0, roamerCam);
 	});
@@ -235,9 +235,9 @@ void Attribute::ComponentVisitor::Visit(Ptr<CmptCamera> camera) {
 
 		auto front = roamerCam->GetFront();
 		auto pos = roamerCam->GetPos();
-		auto lookAt = Transform::LookAt(pos, pos + front);
-		auto w2parent = camera->GetSObj()->GetLocalToWorldMatrix().Inverse() * transformCmpt->GetTransform();
-		transformCmpt->SetTransform(lookAt.Inverse() *  w2parent);
+		auto lookAt = Ubpa::transformf::look_at(pos, pos + front);
+		auto w2parent = camera->GetSObj()->GetLocalToWorldMatrix().inverse() * transformCmpt->GetTransform();
+		transformCmpt->SetTransform(lookAt.inverse() *  w2parent);
 
 	});
 }
@@ -615,7 +615,7 @@ void Attribute::ComponentVisitor::Visit(Ptr<AreaLight> light) {
 		if (!emission)
 			matCmpt->material = emission = BSDF_Emission::New();
 		emission->color = light->color;
-		emission->intensity = light->Luminance().Illumination() / light->color.Illumination();
+		emission->intensity = light->Luminance().illumination() / light->color.illumination();
 
 		attr->SetSObj(curSObj);
 		attr->SetCurCmpt<CmptLight>();
@@ -685,7 +685,7 @@ void Attribute::ComponentVisitor::Visit(Ptr<SphereLight> light) {
 		if (!emission)
 			matCmpt->material = emission = BSDF_Emission::New();
 		emission->color = light->color;
-		emission->intensity = light->Luminance().Illumination() / light->color.Illumination();
+		emission->intensity = light->Luminance().illumination() / light->color.illumination();
 
 		attr->SetSObj(curSObj);
 		attr->SetCurCmpt<CmptLight>();
@@ -724,7 +724,7 @@ void Attribute::ComponentVisitor::Visit(Ptr<DiskLight> light) {
 		if (!emission)
 			matCmpt->material = emission = BSDF_Emission::New();
 		emission->color = light->color;
-		emission->intensity = light->Luminance().Illumination() / light->color.Illumination();
+		emission->intensity = light->Luminance().illumination() / light->color.illumination();
 
 		attr->SetSObj(curSObj);
 		attr->SetCurCmpt<CmptLight>();
@@ -766,7 +766,7 @@ void Attribute::ComponentVisitor::Visit(Ptr<CapsuleLight> light) {
 		if (!emission)
 			matCmpt->material = emission = BSDF_Emission::New();
 		emission->color = light->color;
-		emission->intensity = light->Luminance().Illumination() / light->color.Illumination();
+		emission->intensity = light->Luminance().illumination() / light->color.illumination();
 
 		attr->SetSObj(curSObj);
 		attr->SetCurCmpt<CmptLight>();

@@ -9,16 +9,16 @@ namespace CppUtil {
 	namespace Engine {
 		class Gooch : public Material {
 		public:
-			Gooch(const RGBf & colorFactor = RGBf(1.0f)) :colorFactor(colorFactor) {}
+			Gooch(const Ubpa::rgbf & colorFactor = Ubpa::rgbf(1.0f)) :colorFactor(colorFactor) {}
 			virtual ~Gooch() = default;
 
 		public:
-			static Basic::Ptr<Gooch> New(const RGBf & colorFactor = RGBf(1.0f)) {
+			static Basic::Ptr<Gooch> New(const Ubpa::rgbf & colorFactor = Ubpa::rgbf(1.0f)) {
 				return Basic::New<Gooch>(colorFactor);
 			}
 
 		public:
-			RGBf colorFactor;
+			Ubpa::rgbf colorFactor;
 			Basic::Ptr<Basic::Image> colorTexture;
 		};
 	}

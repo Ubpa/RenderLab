@@ -2,7 +2,7 @@
 #define _CPPUTIL_ENGINE_PRIMITIVE_SHAPE_H_
 
 #include <Basic/Element.h>
-#include <Basic/UGM/BBox.h>
+#include <UGM/bbox.h>
 
 namespace CppUtil {
 	namespace Engine {
@@ -14,7 +14,7 @@ namespace CppUtil {
 			virtual ~Shape() = default;
 
 		public:
-			virtual const BBoxf GetBBox() const = 0;
+			virtual const Ubpa::bboxf3 GetBBox() const = 0;
 			virtual const Basic::Ptr<Primitive> GetPrimitive() = 0;
 		};
 	}

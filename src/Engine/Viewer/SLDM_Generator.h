@@ -7,7 +7,7 @@
 #include <OpenGL/VAO.h>
 #include <OpenGL/Shader.h>
 
-#include <Basic/UGM/Transform.h>
+#include <UGM/transform.h>
 
 namespace CppUtil {
 	namespace QT {
@@ -46,7 +46,7 @@ namespace CppUtil {
 		public:
 			void Init();
 			const OpenGL::Texture GetDepthMap(Basic::PtrC<CmptLight> light) const;
-			const Transform GetProjView(Basic::PtrC<CmptLight> light) const;
+			const Ubpa::transformf GetProjView(Basic::PtrC<CmptLight> light) const;
 
 		private:
 			void Visit(Basic::Ptr<Scene> scene);
@@ -70,13 +70,13 @@ namespace CppUtil {
 				OpenGL::Texture tex;
 			};
 			std::map<Basic::WPtrC<CmptLight>, FBO_Tex> lightMap;
-			std::map<Basic::WPtrC<CmptLight>, Transform> light2pv;
+			std::map<Basic::WPtrC<CmptLight>, Ubpa::transformf> light2pv;
 			int depthMapSize;
 			float lightNear;
 			float lightFar;
 
 			OpenGL::Shader shader_genDepth;
-			std::vector<Transform> modelVec;
+			std::vector<Ubpa::transformf> modelVec;
 		};
 	}
 }

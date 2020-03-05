@@ -2,8 +2,8 @@
 #define _ENGINE_PRIMITIVE_SPHERE_H_
 
 #include <Engine/Primitive.h>
-#include <Basic/UGM/Point2.h>
-#include <Basic/UGM/Normal.h>
+#include <UGM/point.h>
+#include <UGM/normal.h>
 
 namespace CppUtil {
 	namespace Engine {
@@ -17,18 +17,18 @@ namespace CppUtil {
 			virtual ~Sphere() = default;
 
 		public:
-			virtual const BBoxf GetBBox() const override {
-				return BBoxf(Point3(-1.f), Point3(1.f));
+			virtual const Ubpa::bboxf3 GetBBox() const override {
+				return Ubpa::bboxf3(Ubpa::pointf3(-1.f,-1.f,-1.f), Ubpa::pointf3(1.f,1.f,1.f));
 			}
 
 		public:
 			struct SphereCoord {
 				SphereCoord(float theta, float phi) : theta(theta), phi(phi) {}
 
-				SphereCoord(const Point2 & texcoord)
-				 : SphereCoord(texcoord.y * Basic::Math::PI, texcoord.x * 2.f * Basic::Math::PI) { }
+				SphereCoord(const Ubpa::pointf2 & texcoord)
+				 : SphereCoord(texcoord[1] * Ubpa::PI<float>, texcoord[0] * 2.f * Ubpa::PI<float>) { }
 
-				const Normalf ToDir() const;
+				const Ubpa::normalf ToDir() const;
 
 				float theta;
 				float phi;
@@ -37,11 +37,11 @@ namespace CppUtil {
 			// 将法向转为纹理坐标
 			// theta 对应 v，上 0 下 1
 			// phi 对应 u，z 轴为 0，顺右手方向增大
-			static const Point2 TexcoordOf(const Normalf & normal);
+			static const Ubpa::pointf2 TexcoordOf(const Ubpa::normalf & normal);
 
 			// 将法向转为切向
 			// u 方向
-			static const Normalf TangentOf(const Normalf & normal);
+			static const Ubpa::normalf TangentOf(const Ubpa::normalf & normal);
 		};
 	}
 }

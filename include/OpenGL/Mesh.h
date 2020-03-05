@@ -4,7 +4,7 @@
 typedef unsigned int unsigned;
 
 #include <UGM/point.h>
-#include <UGM/Normal.h>
+#include <UGM/normal.h>
 #include <UGM/vec.h>
 
 #include <string>

@@ -46,62 +46,62 @@ void PathTracer::Init(Ptr<Scene> scene, Ptr<BVHAccel> bvhAccel) {
 		lights.push_back(light);
 
 		const auto lightToWorld = cmptLight->GetLightToWorldMatrixWithoutScale();
-		const auto worldToLight = lightToWorld.Inverse();
+		const auto worldToLight = lightToWorld.inverse();
 
 		worldToLightVec.push_back(worldToLight);
 		lightToWorldVec.push_back(lightToWorld);
 	}
 }
 
-const RGBf PathTracer::Trace(ERay & ray, int depth, RGBf pathThroughput) {
+const Ubpa::rgbf PathTracer::Trace(ERay & ray, int depth, Ubpa::rgbf pathThroughput) {
 	rayIntersector->Init(&ray);
 	bvhAccel->Accept(rayIntersector);
 	auto closestRst = rayIntersector->GetRst();
 	if (!closestRst.closestSObj) {
-		RGBf Le(0.f);
+		Ubpa::rgbf Le(0.f);
 		for (auto light : lights)
 			Le += light->Le(ray);
 
 		return Le;
 	}
 
-	const Point3 hitPos = ray.EndPos();
+	const Ubpa::pointf3 hitPos = ray.EndPos();
 
 	auto cmptMaterial = closestRst.closestSObj->GetComponent<CmptMaterial>();
 	if (!cmptMaterial || !cmptMaterial->material)
-		return RGBf(0);
+		return Ubpa::rgbf(0.f);
 
 	auto bsdf = dynamic_pointer_cast<BSDF>(cmptMaterial->material);
 	if (bsdf == nullptr)
-		return Vec3f(0);
+		return Ubpa::rgbf(0.f);
 
 	bsdf->ChangeNormal(closestRst.texcoord, closestRst.tangent, closestRst.n);
 
-	const auto surfaceToWorld = closestRst.n.GenCoordSpace();
-	const auto worldToSurface = surfaceToWorld.Transpose();
+	const auto surfaceToWorld = closestRst.n.coord_space();
+	const auto worldToSurface = surfaceToWorld.transpose();
 
 	// w_out 处于表面坐标系，向外
-	const Normalf w_out = (worldToSurface * (-ray.d)).Normalize();
+	const Ubpa::normalf w_out = (worldToSurface * (-ray.d)).normalize().cast_to<Ubpa::normalf>();
 
-	RGBf emitL = depth == 0 ? bsdf->Emission(w_out) : RGBf(0);
+	Ubpa::rgbf emitL = depth == 0 ? bsdf->Emission(w_out) : Ubpa::rgbf(0.f);
 
 	// SampleLightMode mode = depth > 0 ? SampleLightMode::RandomOne : SampleLightMode::ALL;
 	SampleLightMode mode = SampleLightMode::RandomOne;
-	const RGBf lightL = SampleLight(hitPos, worldToSurface, bsdf, w_out, closestRst.texcoord, SampleLightMode::RandomOne);
+	const Ubpa::rgbf lightL = SampleLight(hitPos, worldToSurface, bsdf, w_out, closestRst.texcoord, SampleLightMode::RandomOne);
 
-	const RGBf matL = SampleBSDF(bsdf, mode, w_out, surfaceToWorld, closestRst.texcoord, hitPos, depth, pathThroughput);
+	const Ubpa::rgbf matL = SampleBSDF(bsdf, mode, w_out, surfaceToWorld, closestRst.texcoord, hitPos, depth, pathThroughput);
 
 	return emitL + lightL + matL;
 }
 
-const RGBf PathTracer::SampleLightImpl(
+const Ubpa::rgbf PathTracer::SampleLightImpl(
 	const int lightID,
-	const Point3 & posInWorldSpace,
-	const Point3 & posInLightSpace,
-	const Mat3f & worldToSurface,
+	const Ubpa::pointf3 & posInWorldSpace,
+	const Ubpa::pointf3 & posInLightSpace,
+	const Ubpa::matf3 & worldToSurface,
 	const Basic::Ptr<BSDF> bsdf,
-	const Normalf & w_out,
-	const Point2 & texcoord,
+	const Ubpa::normalf & w_out,
+	const Ubpa::pointf2 & texcoord,
 	float factorPD
 ) const
 {
@@ -111,66 +111,67 @@ const RGBf PathTracer::SampleLightImpl(
 
 	float dist_ToLight;
 	float PD;// 概率密度
-	Normalf dir_ToLight;
+	Ubpa::normalf dir_ToLight;
 	// dir_ToLight 是单位向量
-	const RGBf lightL = light->Sample_L(posInLightSpace, dir_ToLight, dist_ToLight, PD);
+	const Ubpa::rgbf lightL = light->Sample_L(posInLightSpace, dir_ToLight, dist_ToLight, PD);
 	PD *= factorPD;
 	if (PD == 0)
-		return RGBf(0.f);
+		return Ubpa::rgbf(0.f);
 
-	const Normalf dirInWorld = lightToWorld(dir_ToLight).Normalize();
+	const Ubpa::normalf dirInWorld = (lightToWorld * dir_ToLight).normalize();
 
 	// w_in 处于表面坐标系，应该是单位向量
-	const Normalf w_in = (worldToSurface * dirInWorld).Normalize();
+	// const Ubpa::normalf w_in = (worldToSurface * dirInWorld).normalize();
+	const Ubpa::normalf w_in = (Ubpa::transformf(worldToSurface) * dirInWorld).normalize();
 
 	// evaluate surface bsdf
-	const RGBf f = bsdf->F(w_out, w_in, texcoord);
-	if (f.IsZero())
-		return RGBf(0.f);
+	const Ubpa::rgbf f = bsdf->F(w_out, w_in, texcoord);
+	if (f.rmv_epsilon().is_all_zero())
+		return Ubpa::rgbf(0.f);
 
 	// shadow ray 处于世界坐标
-	ERay shadowRay(posInWorldSpace, dirInWorld);
+	ERay shadowRay(posInWorldSpace, dirInWorld.cast_to<Ubpa::vecf3>());
 	visibilityChecker->Init(shadowRay, dist_ToLight - 0.001f);
 	bvhAccel->Accept(visibilityChecker);
 	auto shadowRst = visibilityChecker->GetRst();
 	if (shadowRst.IsIntersect())
-		return RGBf(0);
+		return Ubpa::rgbf(0.f);
 
 	// 多重重要性采样 Multiple Importance Sampling (MIS)
 	if (!light->IsDelta()) {
 		for (int k = 0; k < lightNum; k++) {
 			if (k != lightID && !lights[k]->IsDelta()) {
-				const auto dirInLight = worldToLightVec[k](dirInWorld).Normalize();
+				const auto dirInLight = (worldToLightVec[k] * dirInWorld).normalize();
 				PD += lights[k]->PDF(posInLightSpace, dirInLight) * factorPD;
 			}
 		}
 		PD += bsdf->PDF(w_out, w_in, texcoord);
 	}
 
-	auto weight = (abs(w_in.z) / PD) * f;
+	auto weight = (abs(w_in[2]) / PD) * f;
 	return weight * lightL;
 }
 
-const RGBf PathTracer::SampleLight(
-	const Point3 & posInWorldSpace,
-	const Mat3f & worldToSurface,
+const Ubpa::rgbf PathTracer::SampleLight(
+	const Ubpa::pointf3 & posInWorldSpace,
+	const Ubpa::matf3 & worldToSurface,
 	const Basic::Ptr<BSDF> bsdf,
-	const Normalf & w_out,
-	const Point2 & texcoord,
+	const Ubpa::normalf & w_out,
+	const Ubpa::pointf2 & texcoord,
 	const SampleLightMode mode
 ) const
 {
 	if (bsdf->IsDelta())
-		return RGBf(0.f);
+		return Ubpa::rgbf(0.f);
 
 	int lightNum = static_cast<int>(lights.size());
-	RGBf rst(0.f);
+	Ubpa::rgbf rst(0.f);
 
 	switch (mode)
 	{
 	case SampleLightMode::ALL: {
 		for (int i = 0; i < lightNum; i++) {
-			auto posInLightSpace = worldToLightVec[i](posInWorldSpace);
+			auto posInLightSpace = worldToLightVec[i] * posInWorldSpace;
 			rst += SampleLightImpl(i, posInWorldSpace, posInLightSpace, worldToSurface, bsdf, w_out, texcoord, 1.f);
 		}
 
@@ -178,7 +179,7 @@ const RGBf PathTracer::SampleLight(
 	}
 	case SampleLightMode::RandomOne: {
 		int lightID = Math::Rand_I() % lightNum;
-		auto posInLightSpace = worldToLightVec[lightID](posInWorldSpace);
+		auto posInLightSpace = worldToLightVec[lightID] * posInWorldSpace;
 		rst = SampleLightImpl(lightID, posInWorldSpace, posInLightSpace, worldToSurface, bsdf, w_out, texcoord, 1.f / lightNum);
 		break;
 	}
@@ -187,27 +188,27 @@ const RGBf PathTracer::SampleLight(
 	return rst;
 }
 
-const RGBf PathTracer::SampleBSDF(
+const Ubpa::rgbf PathTracer::SampleBSDF(
 	const Basic::Ptr<BSDF> bsdf,
 	const SampleLightMode mode,
-	const Normalf & w_out,
-	const Mat3f & surfaceToWorld,
-	const Point2 & texcoord,
-	const Point3 & hitPos,
+	const Ubpa::normalf & w_out,
+	const Ubpa::matf3 & surfaceToWorld,
+	const Ubpa::pointf2 & texcoord,
+	const Ubpa::pointf3 & hitPos,
 	const int depth,
-	RGBf pathThroughput
+	Ubpa::rgbf pathThroughput
 )
 {
 	if (depth + 1 >= maxDepth)
-		return RGBf(0.f);
+		return Ubpa::rgbf(0.f);
 
-	Normalf mat_w_in;
+	Ubpa::normalf mat_w_in;
 	float matPD;
-	const RGBf matF = bsdf->Sample_f(w_out, texcoord, mat_w_in, matPD);
+	const Ubpa::rgbf matF = bsdf->Sample_f(w_out, texcoord, mat_w_in, matPD);
 	if (matPD <= 0)
-		return RGBf(0);
+		return Ubpa::rgbf(0.f);
 
-	const Normalf matRayDirInWorld = (surfaceToWorld * mat_w_in).Normalize();
+	const Ubpa::normalf matRayDirInWorld = (Ubpa::transformf(surfaceToWorld) * mat_w_in).normalize();
 	const int lightNum = static_cast<int>(lights.size());
 
 	// MSI
@@ -228,23 +229,24 @@ const RGBf PathTracer::SampleBSDF(
 			if (lights[i]->IsDelta())
 				continue;
 
-			auto posInLightSpace = worldToLightVec[i](hitPos);
-			Normalf dirInLight = worldToLightVec[i](matRayDirInWorld);
+			auto posInLightSpace = worldToLightVec[i] * hitPos;
+			Ubpa::normalf dirInLight = worldToLightVec[i] * matRayDirInWorld;
 			sumPD += lights[i]->PDF(posInLightSpace, dirInLight) * scaleFactor;
 		}
 	}
 
 	// material ray
-	ERay matRay(hitPos, matRayDirInWorld);
+	ERay matRay(hitPos, matRayDirInWorld.cast_to<Ubpa::vecf3>());
 
 	// Russian Roulette
-	const RGBf matWeight = abs(mat_w_in.z) / sumPD * matF;
+	const Ubpa::rgbf matWeight = abs(mat_w_in[2]) / sumPD * matF;
 	pathThroughput *= matWeight;
-	float continueP = bsdf->IsDelta() ? 1.f : min(1.f, pathThroughput.Illumination());
+	//float continueP = bsdf->IsDelta() ? 1.f : std::min(1.f, pathThroughput.illumination());
+	float continueP = bsdf->IsDelta() ? 1.f : std::min(1.f, (pathThroughput[0]+ pathThroughput[1]+ pathThroughput[2])/3.f);
 	if (Math::Rand_F() > continueP)
-		return RGBf(0.f);
+		return Ubpa::rgbf(0.f);
 
-	const RGBf matRayColor = Trace(matRay, depth + 1, pathThroughput / continueP);
+	const Ubpa::rgbf matRayColor = Trace(matRay, depth + 1, pathThroughput / continueP);
 
 	return matWeight / continueP * matRayColor;
 }

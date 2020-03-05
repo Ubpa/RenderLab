@@ -7,32 +7,32 @@ using namespace CppUtil;
 using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
 
-const RGBf BSDF_Diffuse::F(const Normalf & wo, const Normalf & wi, const Point2 & texcoord) {
-	if (wo.z <= 0 || wi.z <= 0)
-		return RGBf(0.f);
+const Ubpa::rgbf BSDF_Diffuse::F(const Ubpa::normalf & wo, const Ubpa::normalf & wi, const Ubpa::pointf2 & texcoord) {
+	if (wo[2] <= 0 || wi[2] <= 0)
+		return Ubpa::rgbf(0.f);
 	
-	return GetAlbedo(texcoord) / Math::PI;
+	return GetAlbedo(texcoord) / Ubpa::PI<float>;
 }
 
-const RGBf BSDF_Diffuse::Sample_f(const Normalf & wo, const Point2 & texcoord, Normalf & wi, float & PD) {
-	if (wo.z <= 0) {
+const Ubpa::rgbf BSDF_Diffuse::Sample_f(const Ubpa::normalf & wo, const Ubpa::pointf2 & texcoord, Ubpa::normalf & wi, float & PD) {
+	if (wo[2] <= 0) {
 		PD = 0;
-		wi = Normalf(0.f);
-		return RGBf(0.f);
+		wi = Ubpa::normalf(0.f);
+		return Ubpa::rgbf(0.f);
 	}
 
-	wi = sampler.GetSample(PD);
+	wi = sampler.GetSample(PD).cast_to<Ubpa::normalf>();
 
-	return GetAlbedo(texcoord) / Math::PI;
+	return GetAlbedo(texcoord) / Ubpa::PI<float>;
 }
 
-float BSDF_Diffuse::PDF(const Normalf & wo, const Normalf & wi, const Point2 & texcoord) {
-	return wi.z > 0 && wo.z > 0 ? wi.z / Math::PI : 0;
+float BSDF_Diffuse::PDF(const Ubpa::normalf & wo, const Ubpa::normalf & wi, const Ubpa::pointf2 & texcoord) {
+	return wi[2] > 0 && wo[2] > 0 ? wi[2] / Ubpa::PI<float> : 0;
 }
 
-const RGBf BSDF_Diffuse::GetAlbedo(const Point2 & texcoord) const {
+const Ubpa::rgbf BSDF_Diffuse::GetAlbedo(const Ubpa::pointf2 & texcoord) const {
 	if (!albedoTexture || !albedoTexture->IsValid())
 		return colorFactor;
 
-	return colorFactor * albedoTexture->Sample(texcoord, Image::Mode::BILINEAR).ToRGB();
+	return colorFactor * albedoTexture->Sample(texcoord, Image::Mode::BILINEAR).to_rgb();
 }

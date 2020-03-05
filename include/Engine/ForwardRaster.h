@@ -6,7 +6,7 @@
 #include <OpenGL/VAO.h>
 #include <OpenGL/Texture.h>
 
-#include <Basic/UGM/Transform.h>
+#include <UGM/transform.h>
 
 namespace CppUtil {
 	namespace Basic {
@@ -90,7 +90,7 @@ namespace CppUtil {
 			OpenGL::Shader shader_basic;
 			OpenGL::Shader shader_skybox;
 
-			std::vector<Transform> modelVec;
+			std::vector<Ubpa::transformf> modelVec;
 
 			std::map<Basic::WPtrC<Basic::Image>, OpenGL::Texture> img2tex;
 

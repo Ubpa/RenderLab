@@ -10,11 +10,11 @@ using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
 using namespace CppUtil::Basic::Math;
 
-void CmptCamera::Coordinate::Init(const Transform & tsfm) {
-	pos = tsfm.Position();
-	front = tsfm(Normalf(0, 0, -1)).Normalize();
-	right = tsfm(Normalf(1, 0, 0)).Normalize();
-	up = tsfm(Normalf(0, 1, 0)).Normalize();
+void CmptCamera::Coordinate::Init(const Ubpa::transformf & tsfm) {
+	pos = tsfm.decompose_position();
+	front = (tsfm * Ubpa::normalf(0, 0, -1)).normalize();
+	right = (tsfm * Ubpa::normalf(1, 0, 0)).normalize();
+	up = (tsfm * Ubpa::normalf(0, 1, 0)).normalize();
 }
 
 CmptCamera::CmptCamera(Basic::Ptr<SObj> sobj, float fov, float ar, float near, float far)
@@ -42,7 +42,7 @@ void CmptCamera::SetAspectRatio(float ar) {
 
 bool CmptCamera::InitCoordinate() {
 	if (!GetSObj()) {
-		coordinate.Init(Transform(1));
+		coordinate.Init(Ubpa::transformf::eye());
 		return false;
 	}
 
@@ -53,5 +53,5 @@ bool CmptCamera::InitCoordinate() {
 const ERay CmptCamera::GenRay(float u, float v) const {
 	const auto R = w * (u - 0.5f) * coordinate.right;
 	const auto U = h * (v - 0.5f) * coordinate.up;
-	return ERay(coordinate.pos, coordinate.front + R + U);
+	return ERay(coordinate.pos, (coordinate.front + R + U).cast_to<Ubpa::vecf3>());
 }

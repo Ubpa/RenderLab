@@ -46,7 +46,7 @@ bool LoopSubdivision::Init(Basic::Ptr<TriMesh> triMesh) {
 
 	for (int i = 0; i < nV; i++) {
 		auto v = heMesh->Vertices().at(i);
-		v->pos = triMesh->GetPositions()[i];
+		v->pos = triMesh->GetPositions()[i].cast_to<Ubpa::vecf3>();
 	}
 
 	if (!heMesh->IsTriMesh()) {
@@ -79,15 +79,15 @@ bool LoopSubdivision::Run(size_t n) {
 
 	size_t nV = heMesh->NumVertices();
 	size_t nF = heMesh->NumPolygons();
-	vector<Point3> positions;
-	vector<uint> indice;
+	vector<Ubpa::pointf3> positions;
+	vector<unsigned> indice;
 	positions.reserve(nV);
 	indice.reserve(3 * nF);
 	for (auto v : heMesh->Vertices())
-		positions.push_back(v->pos);
+		positions.push_back(v->pos.cast_to<Ubpa::pointf3>());
 	for (auto triangle : heMesh->Export()) {
 		for (auto idx : triangle)
-			indice.push_back(static_cast<uint>(idx));
+			indice.push_back(static_cast<unsigned>(idx));
 	}
 
 	triMesh->Init(indice, positions);
@@ -101,7 +101,7 @@ void LoopSubdivision::Kernel() {
 	auto step1 = [](V* v) {
 		auto adjVs = v->AdjVertices();
 		if (v->IsBoundary()) {
-			Vec3 sumPos;
+			Ubpa::vecf3 sumPos;
 			for (auto adjV : adjVs) {
 				if (adjV->IsBoundary())
 					sumPos += adjV->pos;
@@ -111,7 +111,7 @@ void LoopSubdivision::Kernel() {
 		else {
 			size_t n = adjVs.size();
 			float u = n == 3 ? 3.f / 16.f : 3.f / (8.f * n);
-			Vec3 sumPos;
+			Ubpa::vecf3 sumPos;
 			for (auto adjV : adjVs)
 				sumPos += adjV->pos;
 			v->newPos = (1.f - n * u) * v->pos + u * sumPos;

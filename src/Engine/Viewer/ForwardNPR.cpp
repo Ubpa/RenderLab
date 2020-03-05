@@ -44,7 +44,7 @@ void ForwardNPR::InitShaderGooch() {
 void ForwardNPR::Visit(Ptr<Gooch> gooch) {
 	SetCurShader(shaderGooch);
 
-	shaderGooch.SetVec3f("gooch.colorFactor", gooch->colorFactor);
+	shaderGooch.SetVecf3("gooch.colorFactor", gooch->colorFactor.cast_to<Ubpa::valf3>());
 	if (gooch->colorTexture && gooch->colorTexture->IsValid()) {
 		shaderGooch.SetBool("gooch.haveColorTexture", true);
 		pOGLW->GetTex(gooch->colorTexture).Use(0);

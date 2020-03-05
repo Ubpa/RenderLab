@@ -20,13 +20,13 @@ Film::Film(Basic::Ptr<Basic::Image> img, Basic::Ptr<Filter> filter)
 	assert(img->GetChannel() == 3);
 }
 
-const Ptr<FilmTile> Film::GenFilmTile(const Framei & frame) const {
+const Ptr<FilmTile> Film::GenFilmTile(const Ubpa::bboxi2 & frame) const {
 	return FilmTile::New(frame, filter);
 }
 
 void Film::MergeFilmTile(Basic::Ptr<FilmTile> filmTile) {
 	for (const auto pos : filmTile->AllPos()) {
-		pixels[pos.x][pos.y] += filmTile->At(pos);
-		img->SetPixel(pos, pixels[pos.x][pos.y].ToRadiance());
+		pixels[pos[0]][pos[1]] += filmTile->At(pos);
+		img->SetPixel(pos, pixels[pos[0]][pos[1]].ToRadiance());
 	}
 }

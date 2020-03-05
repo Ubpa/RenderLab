@@ -4,7 +4,7 @@
 
 #include <Basic/HeapObj.h>
 #include <Engine/TriMesh.h>
-#include <Basic/UGM/UGM.h>
+#include <UGM/UGM>
 
 namespace CppUtil {
 	namespace Engine {
@@ -13,7 +13,7 @@ namespace CppUtil {
 		public:
 			struct Constraint {
 				size_t id; // vertex id in triMesh
-				Point3 pos; // target position
+				Ubpa::pointf3 pos; // target position
 			};
 
 		public:
@@ -33,7 +33,7 @@ namespace CppUtil {
 			 
 		private:
 			Basic::Ptr<TriMesh> triMesh;
-			std::vector<Point3> origPos;
+			std::vector<Ubpa::pointf3> origPos;
 		};
 	}
 }

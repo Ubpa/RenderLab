@@ -3,7 +3,7 @@
 
 #include <Engine/Component.h>
 
-#include <Basic/UGM/Transform.h>
+#include <UGM/transform.h>
 
 namespace CppUtil {
 	namespace Engine {
@@ -51,12 +51,12 @@ namespace CppUtil {
 			float h;
 
 			struct Coordinate {
-				void Init(const Basic::Transform & tsfm);
+				void Init(const Ubpa::transformf & tsfm);
 
-				Point3 pos;
-				Normalf right;
-				Normalf up;
-				Normalf front;
+				Ubpa::pointf3 pos;
+				Ubpa::normalf right;
+				Ubpa::normalf up;
+				Ubpa::normalf front;
 			};
 			Coordinate coordinate;
 		};

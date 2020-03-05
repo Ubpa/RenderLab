@@ -46,7 +46,7 @@ void DirectIllumRaster::InitShaderMetalWorkflow() {
 
 	shader_metalWorkflow.SetInt("bsdf.albedoTexture", 0);
 	shader_metalWorkflow.SetInt("bsdf.metallicTexture", 1);
-	shader_metalWorkflow.SetInt("bsdf.roughnessTexture", 2);
+	shader_metalWorkflow.SetInt("bsdf[0]oughnessTexture", 2);
 	shader_metalWorkflow.SetInt("bsdf.aoTexture", 3);
 	shader_metalWorkflow.SetInt("bsdf.normalTexture", 4);
 
@@ -57,7 +57,7 @@ void DirectIllumRaster::InitShaderFrostedGlass() {
 	shader_frostedGlass = Shader(ROOT_PATH + str_Basic_P3N3T2T3_vs, ROOT_PATH + "data/shaders/Engine/BSDF_FrostedGlass.fs");
 
 	shader_frostedGlass.SetInt("bsdf.colorTexture", 0);
-	shader_frostedGlass.SetInt("bsdf.roughnessTexture", 1);
+	shader_frostedGlass.SetInt("bsdf[0]oughnessTexture", 1);
 	shader_frostedGlass.SetInt("bsdf.aoTexture", 2);
 	shader_frostedGlass.SetInt("bsdf.normalTexture", 3);
 	
@@ -68,7 +68,7 @@ void DirectIllumRaster::Visit(Ptr<BSDF_Diffuse> bsdf) {
 	SetCurShader(shader_diffuse);
 
 	string strBSDF = "bsdf.";
-	shader_diffuse.SetVec3f(strBSDF + "colorFactor", bsdf->colorFactor);
+	shader_diffuse.SetVecf3(strBSDF + "colorFactor", bsdf->colorFactor.cast_to<Ubpa::valf3>());
 	if (bsdf->albedoTexture && bsdf->albedoTexture->IsValid()) {
 		shader_diffuse.SetBool(strBSDF + "haveAlbedoTexture", true);
 		pOGLW->GetTex(bsdf->albedoTexture).Use(0);
@@ -83,7 +83,7 @@ void DirectIllumRaster::Visit(Ptr<BSDF_MetalWorkflow> bsdf) {
 	SetCurShader(shader_metalWorkflow);
 
 	string strBSDF = "bsdf.";
-	shader_metalWorkflow.SetVec3f(strBSDF + "colorFactor", bsdf->colorFactor);
+	shader_metalWorkflow.SetVecf3(strBSDF + "colorFactor", bsdf->colorFactor.cast_to<Ubpa::valf3>());
 	shader_metalWorkflow.SetFloat(strBSDF + "metallicFactor", bsdf->metallicFactor);
 	shader_metalWorkflow.SetFloat(strBSDF + "roughnessFactor", bsdf->roughnessFactor);
 
@@ -108,7 +108,7 @@ void DirectIllumRaster::Visit(Ptr<BSDF_FrostedGlass> bsdf) {
 	SetCurShader(shader_frostedGlass);
 
 	string strBSDF = "bsdf.";
-	shader_frostedGlass.SetVec3f(strBSDF + "colorFactor", bsdf->colorFactor);
+	shader_frostedGlass.SetVecf3(strBSDF + "colorFactor", bsdf->colorFactor.cast_to<Ubpa::valf3>());
 	shader_frostedGlass.SetFloat(strBSDF + "roughnessFactor", bsdf->roughnessFactor);
 
 	const int texNum = 4;

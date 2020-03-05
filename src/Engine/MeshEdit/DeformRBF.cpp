@@ -64,7 +64,7 @@ bool DeformRBF::Run(const std::vector<Constraint> & constraints, const vector<si
 		for (size_t j = 0; j < m; j++) {
 			auto ci = origPos[constraints[i].id];
 			auto cj = origPos[constraints[j].id];
-			float norm = Point3::Distance(ci, cj);
+			float norm = Ubpa::pointf3::distance(ci, cj);
 			A(i, j) = phi(norm);
 		}
 	}
@@ -72,19 +72,19 @@ bool DeformRBF::Run(const std::vector<Constraint> & constraints, const vector<si
 	// P : m x k
 	// Pij = pj(ci)
 	// [p0, p1, ..., p9] is a basis of the space of trivariate quadratic polunomials
-	// e.g. [1, xx, xy, xz, yx, yy, yz, zx, zy, zz]
+	// e[1]. [1, xx, xy, xz, yx, yy, yz, zx, zy, zz]
 	for (size_t i = 0; i < m; i++) {
 		auto ci = origPos[constraints[i].id];
 		A(m + 0, i) = A(i, m + 0) = 1.f;
-		A(m + 1, i) = A(i, m + 1) = ci.x * ci.x;
-		A(m + 2, i) = A(i, m + 2) = ci.x * ci.y;
-		A(m + 3, i) = A(i, m + 3) = ci.x * ci.z;
-		A(m + 4, i) = A(i, m + 4) = ci.y * ci.x;
-		A(m + 5, i) = A(i, m + 5) = ci.y * ci.y;
-		A(m + 6, i) = A(i, m + 6) = ci.y * ci.z;
-		A(m + 7, i) = A(i, m + 7) = ci.z * ci.x;
-		A(m + 8, i) = A(i, m + 8) = ci.z * ci.y;
-		A(m + 9, i) = A(i, m + 9) = ci.z * ci.z;
+		A(m + 1, i) = A(i, m + 1) = ci[0] * ci[0];
+		A(m + 2, i) = A(i, m + 2) = ci[0] * ci[1];
+		A(m + 3, i) = A(i, m + 3) = ci[0] * ci[2];
+		A(m + 4, i) = A(i, m + 4) = ci[1] * ci[0];
+		A(m + 5, i) = A(i, m + 5) = ci[1] * ci[1];
+		A(m + 6, i) = A(i, m + 6) = ci[1] * ci[2];
+		A(m + 7, i) = A(i, m + 7) = ci[2] * ci[0];
+		A(m + 8, i) = A(i, m + 8) = ci[2] * ci[1];
+		A(m + 9, i) = A(i, m + 9) = ci[2] * ci[2];
 	}
 
 	// 0 : k x k
@@ -99,33 +99,33 @@ bool DeformRBF::Run(const std::vector<Constraint> & constraints, const vector<si
 		b(m + i,0) = b(m + i, 1) = b(m + i, 2) = 0;
 	for (int i = 0; i < m; i++) {
 		auto bi = constraints[i].pos;
-		b(i, 0) = bi.x;
-		b(i, 1) = bi.y;
-		b(i, 2) = bi.z;
+		b(i, 0) = bi[0];
+		b(i, 1) = bi[1];
+		b(i, 2) = bi[2];
 	}
 
 	MatrixXf RBF = A.colPivHouseholderQr().solve(b);
 
 	// compute target pos of vertex
-	vector<Point3> qVec;
+	vector<Ubpa::pointf3> qVec;
 	for (auto id : updateIndice) {
 		auto pos = origPos[id];
 		// compute p
 		MatrixXf p(1, m + k);
 		for (size_t i = 0; i < m; i++) {
 			auto ci = origPos[constraints[i].id];
-			p(i) = phi(Point3::Distance(ci, pos));
+			p(i) = phi(Ubpa::pointf3::distance(ci, pos));
 		}
 		p(0, m + 0) = 1;
-		p(0, m + 1) = pos.x * pos.x;
-		p(0, m + 2) = pos.x * pos.y;
-		p(0, m + 3) = pos.x * pos.z;
-		p(0, m + 4) = pos.y * pos.x;
-		p(0, m + 5) = pos.y * pos.y;
-		p(0, m + 6) = pos.y * pos.z;
-		p(0, m + 7) = pos.z * pos.x;
-		p(0, m + 8) = pos.z * pos.y;
-		p(0, m + 9) = pos.z * pos.z;
+		p(0, m + 1) = pos[0] * pos[0];
+		p(0, m + 2) = pos[0] * pos[1];
+		p(0, m + 3) = pos[0] * pos[2];
+		p(0, m + 4) = pos[1] * pos[0];
+		p(0, m + 5) = pos[1] * pos[1];
+		p(0, m + 6) = pos[1] * pos[2];
+		p(0, m + 7) = pos[2] * pos[0];
+		p(0, m + 8) = pos[2] * pos[1];
+		p(0, m + 9) = pos[2] * pos[2];
 
 		// compute q
 		MatrixXf q = p * RBF;

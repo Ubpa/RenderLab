@@ -129,12 +129,12 @@ void Raster::UpdateUBO_PointLights() {
 
 		pointLight2idx[pointLight] = pointLightIdx;
 
-		Point3 position = cmptLight->GetSObj()->GetWorldPos();
+		Ubpa::pointf3 position = cmptLight->GetSObj()->GetWorldPos();
 
 		int base = 16 + 32 * pointLightIdx;
-		glBufferSubData(GL_UNIFORM_BUFFER, base +  0, 12, position.Data());
+		glBufferSubData(GL_UNIFORM_BUFFER, base +  0, 12, position.data());
 		glBufferSubData(GL_UNIFORM_BUFFER, base + 12,  4, &pointLight->radius);
-		glBufferSubData(GL_UNIFORM_BUFFER, base + 16, 12, pointLight->IlluminancePower().Data());
+		glBufferSubData(GL_UNIFORM_BUFFER, base + 16, 12, pointLight->IlluminancePower().data());
 
 		pointLightIdx++;
 	}
@@ -155,13 +155,13 @@ void Raster::UpdateUBO_DirectionalLights() {
 		directionalLight2idx[directionalLight] = directionalLightIdx;
 
 		// normalized, point to light
-		Vec3f dir = -cmptLight->GetSObj()->GetLocalToWorldMatrix()(Normalf(0, -1, 0)).Normalize();
+		Ubpa::vecf3 dir = -(cmptLight->GetSObj()->GetLocalToWorldMatrix() * Ubpa::vecf3(0, -1, 0)).normalize();
 
 		int base = 16 + 128 * directionalLightIdx;
 		auto lightL = directionalLight->intensity * directionalLight->color;
-		glBufferSubData(GL_UNIFORM_BUFFER, base, 12, lightL.Data());
-		glBufferSubData(GL_UNIFORM_BUFFER, base + 16, 12, dir.Data());
-		glBufferSubData(GL_UNIFORM_BUFFER, base + 32, 64, dldmGenerator->GetProjView(cmptLight).GetMatrix().Data());
+		glBufferSubData(GL_UNIFORM_BUFFER, base, 12, lightL.data());
+		glBufferSubData(GL_UNIFORM_BUFFER, base + 16, 12, dir.data());
+		glBufferSubData(GL_UNIFORM_BUFFER, base + 32, 64, dldmGenerator->GetProjView(cmptLight).data());
 
 		directionalLightIdx++;
 	}
@@ -182,19 +182,19 @@ void Raster::UpdateUBO_SpotLights() {
 		spotLight2idx[spotLight] = spotLightIdx;
 
 		const auto l2w = cmptLight->GetSObj()->GetLocalToWorldMatrix();
-		Point3 pos = l2w(Point3(0.f));
-		Vec3f dir = l2w(Normalf(0, -1, 0)).Normalize();
+		Ubpa::pointf3 pos = l2w * Ubpa::pointf3(0.f);
+		Ubpa::vecf3 dir = (l2w * Ubpa::vecf3(0, -1, 0)).normalize();
 		auto cosHalfAngle = spotLight->CosHalfAngle();
 		auto cosFalloffAngle = spotLight->CosFalloffAngle();
 
 		int base = 16 + 112 * spotLightIdx;
-		glBufferSubData(GL_UNIFORM_BUFFER, base +  0, 12, pos.Data());
+		glBufferSubData(GL_UNIFORM_BUFFER, base +  0, 12, pos.data());
 		glBufferSubData(GL_UNIFORM_BUFFER, base + 12,  4, &spotLight->radius);
-		glBufferSubData(GL_UNIFORM_BUFFER, base + 16, 12, dir.Data());
+		glBufferSubData(GL_UNIFORM_BUFFER, base + 16, 12, dir.data());
 		glBufferSubData(GL_UNIFORM_BUFFER, base + 28,  4, &cosHalfAngle);
-		glBufferSubData(GL_UNIFORM_BUFFER, base + 32, 12, spotLight->IlluminancePower().Data());
+		glBufferSubData(GL_UNIFORM_BUFFER, base + 32, 12, spotLight->IlluminancePower().data());
 		glBufferSubData(GL_UNIFORM_BUFFER, base + 44,  4, &cosFalloffAngle);
-		glBufferSubData(GL_UNIFORM_BUFFER, base + 48, 64, sldmGenerator->GetProjView(cmptLight).GetMatrix().Data());
+		glBufferSubData(GL_UNIFORM_BUFFER, base + 48, 64, sldmGenerator->GetProjView(cmptLight).data());
 
 		spotLightIdx++;
 	}
@@ -207,11 +207,11 @@ void Raster::UpdateUBO_Environment() {
 
 	auto environment = scene->GetInfiniteAreaLight();
 	if (!environment) {
-		auto color = RGBf(0.f);
+		auto color = Ubpa::rgbf(0.f);
 		float intensity = 0;
 		bool haveSkybox = false;
 		bool haveEnvironment = false;
-		glBufferSubData(GL_UNIFORM_BUFFER, 0, 12, color.Data());
+		glBufferSubData(GL_UNIFORM_BUFFER, 0, 12, color.data());
 		glBufferSubData(GL_UNIFORM_BUFFER, 12, 4, &intensity);
 		glBufferSubData(GL_UNIFORM_BUFFER, 16, 1, &haveSkybox);
 		glBufferSubData(GL_UNIFORM_BUFFER, 20, 1, &haveEnvironment);
@@ -219,7 +219,7 @@ void Raster::UpdateUBO_Environment() {
 	else {
 		bool haveSkybox = environment->GetImg() != nullptr;
 		bool haveEnvironment = true;
-		glBufferSubData(GL_UNIFORM_BUFFER, 0, 12, environment->colorFactor.Data());
+		glBufferSubData(GL_UNIFORM_BUFFER, 0, 12, environment->colorFactor.data());
 		glBufferSubData(GL_UNIFORM_BUFFER, 12, 4, &environment->intensity);
 		glBufferSubData(GL_UNIFORM_BUFFER, 16, 1, &haveSkybox);
 		glBufferSubData(GL_UNIFORM_BUFFER, 20, 1, &haveEnvironment);
@@ -240,11 +240,11 @@ void Raster::UpdateUBO_SphereLights() {
 
 		sphereLight2idx[sphereLight] = sphereLightIdx;
 
-		Point3 position = cmptLight->GetSObj()->GetWorldPos();
+		Ubpa::pointf3 position = cmptLight->GetSObj()->GetWorldPos();
 
 		int base = 16 + 32 * sphereLightIdx;
-		glBufferSubData(GL_UNIFORM_BUFFER, base, 12, position.Data());
-		glBufferSubData(GL_UNIFORM_BUFFER, base + 16, 12, sphereLight->Luminance().Data());
+		glBufferSubData(GL_UNIFORM_BUFFER, base, 12, position.data());
+		glBufferSubData(GL_UNIFORM_BUFFER, base + 16, 12, sphereLight->Luminance().data());
 		glBufferSubData(GL_UNIFORM_BUFFER, base + 28, 4, &sphereLight->radius);
 
 		sphereLightIdx++;
@@ -266,13 +266,13 @@ void Raster::UpdateUBO_DiskLights() {
 		diskLight2idx[diskLight] = diskLightIdx;
 
 		const auto l2w = cmptLight->GetSObj()->GetLocalToWorldMatrix();
-		auto pos = l2w(Point3(0.f));
-		auto dir = l2w(Normalf(0, 1, 0));
+		auto pos = l2w * Ubpa::pointf3(0.f);
+		auto dir = l2w * Ubpa::normalf(0, 1, 0);
 
 		int base = 16 + 48 * diskLightIdx;
-		glBufferSubData(GL_UNIFORM_BUFFER, base, 12, pos.Data());
-		glBufferSubData(GL_UNIFORM_BUFFER, base + 16, 12, dir.Data());
-		glBufferSubData(GL_UNIFORM_BUFFER, base + 32, 12, diskLight->Luminance().Data());
+		glBufferSubData(GL_UNIFORM_BUFFER, base, 12, pos.data());
+		glBufferSubData(GL_UNIFORM_BUFFER, base + 16, 12, dir.data());
+		glBufferSubData(GL_UNIFORM_BUFFER, base + 32, 12, diskLight->Luminance().data());
 		glBufferSubData(GL_UNIFORM_BUFFER, base + 44, 4, &diskLight->radius);
 
 		diskLightIdx++;
@@ -294,17 +294,17 @@ void Raster::UpdateUBO_AreaLights() {
 		areaLight2idx[areaLight] = areaLightIdx;
 
 		const auto l2w = cmptLight->GetSObj()->GetLocalToWorldMatrix();
-		auto pos = l2w(Point3(0.f));
-		auto dir = l2w(Normalf(0, 1, 0)).Normalize();
-		auto horizontal = l2w(Normalf(1, 0, 0)).Normalize();
+		auto pos = l2w * Ubpa::pointf3(0.f);
+		auto dir = (l2w * Ubpa::normalf(0, 1, 0)).normalize();
+		auto horizontal = (l2w * Ubpa::normalf(1, 0, 0)).normalize();
 
 		int base = 16 + 64 * areaLightIdx;
-		glBufferSubData(GL_UNIFORM_BUFFER, base, 12, pos.Data());
+		glBufferSubData(GL_UNIFORM_BUFFER, base, 12, pos.data());
 		glBufferSubData(GL_UNIFORM_BUFFER, base + 12, 4, &areaLight->width);
-		glBufferSubData(GL_UNIFORM_BUFFER, base + 16, 12, dir.Data());
+		glBufferSubData(GL_UNIFORM_BUFFER, base + 16, 12, dir.data());
 		glBufferSubData(GL_UNIFORM_BUFFER, base + 28, 4, &areaLight->height);
-		glBufferSubData(GL_UNIFORM_BUFFER, base + 32, 12, horizontal.Data());
-		glBufferSubData(GL_UNIFORM_BUFFER, base + 48, 12, areaLight->Luminance().Data());
+		glBufferSubData(GL_UNIFORM_BUFFER, base + 32, 12, horizontal.data());
+		glBufferSubData(GL_UNIFORM_BUFFER, base + 48, 12, areaLight->Luminance().data());
 
 		areaLightIdx++;
 	}
@@ -325,18 +325,18 @@ void Raster::UpdateUBO_CapsuleLights() {
 		capsuleLight2idx[capsuleLight] = capsuleLightIdx;
 
 		const auto l2w = cmptLight->GetSObj()->GetLocalToWorldMatrix();
-		auto midPos = l2w(Point3(0.f));
-		auto up = l2w(Normalf(0, 1, 0)).Normalize();
-		auto p0 = midPos + 0.5f * capsuleLight->height * Vec3f(up);
-		auto p1 = midPos - 0.5f * capsuleLight->height * Vec3f(up);
-		float height = (p1 - p0).Norm();
+		auto midPos = l2w * Ubpa::pointf3(0.f);
+		auto up = (l2w * Ubpa::normalf(0, 1, 0)).normalize();
+		auto p0 = midPos + 0.5f * capsuleLight->height * up.cast_to<Ubpa::vecf3>();
+		auto p1 = midPos - 0.5f * capsuleLight->height * up.cast_to<Ubpa::vecf3>();
+		float height = (p1 - p0).norm();
 
 		int base = 16 + 48 * capsuleLightIdx;
-		glBufferSubData(GL_UNIFORM_BUFFER, base +  0, 12, p0.Data());
+		glBufferSubData(GL_UNIFORM_BUFFER, base +  0, 12, p0.data());
 		glBufferSubData(GL_UNIFORM_BUFFER, base + 12,  4, &capsuleLight->radius);
-		glBufferSubData(GL_UNIFORM_BUFFER, base + 16, 12, p1.Data());
+		glBufferSubData(GL_UNIFORM_BUFFER, base + 16, 12, p1.data());
 		glBufferSubData(GL_UNIFORM_BUFFER, base + 28,  4, &height);
-		glBufferSubData(GL_UNIFORM_BUFFER, base + 32, 12, capsuleLight->Luminance().Data());
+		glBufferSubData(GL_UNIFORM_BUFFER, base + 32, 12, capsuleLight->Luminance().data());
 
 		capsuleLightIdx++;
 	}

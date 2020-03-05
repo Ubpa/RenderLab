@@ -2,7 +2,7 @@
 #define _ENGINE_INTERSECTOR_VISIBILITY_CHECKER_H_
 
 #include <Engine/Intersector.h>
-#include <Basic/UGM/BBox.h>
+#include <UGM/bbox.h>
 
 #include <Engine/Ray.h>
 
@@ -43,7 +43,7 @@ namespace CppUtil {
 			void Visit(Basic::Ptr<Capsule> capsule);
 
 		private:
-			bool Intersect(const BBoxf & bbox, const Val3f & invDir) const;
+			bool Intersect(const Ubpa::bboxf3 & bbox, const Ubpa::valf3 & invDir) const;
 
 		private:
 			Ray ray;

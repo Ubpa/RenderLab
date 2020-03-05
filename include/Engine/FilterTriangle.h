@@ -7,20 +7,20 @@ namespace CppUtil {
 	namespace Engine {
 		class FilterTriangle : public Filter {
 		public:
-			FilterTriangle(const Vec2 & radius) : Filter(radius) { }
+			FilterTriangle(const Ubpa::vecf2 & radius) : Filter(radius) { }
 
 		protected:
 			virtual ~FilterTriangle() = default;
 
 		public:
-			const Basic::Ptr<FilterTriangle> New(const Vec2 & radius) {
+			const Basic::Ptr<FilterTriangle> New(const Ubpa::vecf2 & radius) {
 				return Basic::New<FilterTriangle>(radius);
 			}
 
 		public:
-			virtual float Evaluate(const Point2f & p) const override {
-				const auto delta = (radius - Vec2(p.Abs())).MaxWith({ 0,0 });
-				return delta.x * delta.y;
+			virtual float Evaluate(const Ubpa::pointf2 & p) const override {
+				const auto delta = (radius - Ubpa::vecf2(p.Abs())).MaxWith({ 0,0 });
+				return delta[0] * delta[1];
 			}
 		};
 	}

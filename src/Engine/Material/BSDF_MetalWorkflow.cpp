@@ -9,7 +9,7 @@ using namespace CppUtil;
 using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
 
-const RGBf BSDF_MetalWorkflow::F(const Normalf & wo, const Normalf & wi, const Point2 & texcoord) {
+const Ubpa::rgbf BSDF_MetalWorkflow::F(const Ubpa::normalf & wo, const Ubpa::normalf & wi, const Ubpa::pointf2 & texcoord) {
 	auto albedo = GetAlbedo(texcoord);
 	auto metallic = GetMetallic(texcoord);
 	auto roughness = GetRoughness(texcoord);
@@ -17,28 +17,28 @@ const RGBf BSDF_MetalWorkflow::F(const Normalf & wo, const Normalf & wi, const P
 
 	sggx.SetAlpha(roughness);
 
-	auto wh = (wo + wi).Normalize();
+	auto wh = (wo + wi).normalize();
 
 	// Lambertian
-	auto diffuse = albedo / Math::PI;
+	auto diffuse = albedo / Ubpa::PI<float>;
 
 	auto D = sggx.D(wh);
 	auto G = sggx.G(wo, wi, wh);
 	auto F = Fr(wo, wh, albedo, metallic);
 	float denominator = 4.f * abs(SurfCoord::CosTheta(wo) * SurfCoord::CosTheta(wi));
 	if (denominator == 0) // 极少发生。所以放在这里虽然性能不是最优，但逻辑顺畅些
-		return RGBf(0.f);
+		return Ubpa::rgbf(0.f);
 	auto specular = D * G * F / denominator;
 
 	auto kS = F;
-	auto kD = (1 - metallic) * (RGBf(1.f) - kS);
+	auto kD = (1 - metallic) * (Ubpa::rgbf(1.f) - kS);
 
 	auto rst = kD * diffuse + specular;
 
 	return rst;
 }
 
-float BSDF_MetalWorkflow::PDF(const Normalf & wo, const Normalf & wi, const Point2 & texcoord) {
+float BSDF_MetalWorkflow::PDF(const Ubpa::normalf & wo, const Ubpa::normalf & wi, const Ubpa::pointf2 & texcoord) {
 	auto roughness = GetRoughness(texcoord);
 	sggx.SetAlpha(roughness);
 
@@ -46,41 +46,41 @@ float BSDF_MetalWorkflow::PDF(const Normalf & wo, const Normalf & wi, const Poin
 	auto pSpecular = 1 / (2 - metallic);
 
 	auto wh = wo + wi;
-	if (wh.IsZero())
+	if (wh.is_all_zero())
 		return 0;
 	
-	wh.NormalizeSelf();
+	wh.normalize_self();
 
 	float pdDiffuse = SurfCoord::CosTheta(wi) * Math::INV_PI;
-	float pdSpecular = sggx.PDF(wh) / (4.f*abs(wo.Dot(wh))); // 根据几何关系以及前边的判 0 结果，这里无需判 0
+	float pdSpecular = sggx.PDF(wh) / (4.f*abs(wo.dot(wh))); // 根据几何关系以及前边的判 0 结果，这里无需判 0
 	return Math::Lerp(pdDiffuse, pdSpecular, pSpecular);
 }
 
-const RGBf BSDF_MetalWorkflow::Sample_f(const Normalf & wo, const Point2 & texcoord, Normalf & wi, float & pd) {
+const Ubpa::rgbf BSDF_MetalWorkflow::Sample_f(const Ubpa::normalf & wo, const Ubpa::pointf2 & texcoord, Ubpa::normalf & wi, float & pd) {
 	auto roughness = GetRoughness(texcoord);
 	sggx.SetAlpha(roughness);
 
 	// 根据 metallic 来分别采样
-	Normalf wh;
+	Ubpa::normalf wh;
 	auto metallic = GetMetallic(texcoord);
 	auto pSpecular = 1 / (2 - metallic);
 	if (Math::Rand_F() < pSpecular) {
 		wh = sggx.Sample_wh();
-		wi = Normalf::Reflect(-wo, wh);
+		wi = Ubpa::normalf::reflect(-wo, wh);
 	}
 	else {
 		CosineWeightedHemisphereSampler3D sampler;
-		wi = sampler.GetSample();
-		wh = (wo + wi).Normalize();
+		wi = sampler.GetSample().cast_to<Ubpa::normalf>();
+		wh = (wo + wi).normalize();
 	}
 
 	if (SurfCoord::CosTheta(wi) <= 0) {
 		pd = 0;
-		return RGBf(0.f);
+		return Ubpa::rgbf(0.f);
 	}
 
 	float pdDiffuse = SurfCoord::CosTheta(wi) * Math::INV_PI;
-	float pdSpecular = sggx.PDF(wh) / (4.f*abs(wo.Dot(wh)));
+	float pdSpecular = sggx.PDF(wh) / (4.f*abs(wo.dot(wh)));
 	pd = Math::Lerp(pdDiffuse, pdSpecular, pSpecular);
 
 	auto albedo = GetAlbedo(texcoord);
@@ -92,14 +92,14 @@ const RGBf BSDF_MetalWorkflow::Sample_f(const Normalf & wo, const Point2 & texco
 	float denominator = 4.f * abs(SurfCoord::CosTheta(wo) * SurfCoord::CosTheta(wi));
 	if (denominator == 0) {// 极少发生。所以放在这里虽然性能不是最优，但逻辑顺畅些
 		pd = 0;
-		wi = Normalf(0.f);
-		return RGBf(0.f);
+		wi = Ubpa::normalf(0.f);
+		return Ubpa::rgbf(0.f);
 	}
 	
 	auto specular = D * G * F / denominator;
 
 	auto kS = F;
-	auto kD = (1 - metallic) * (RGBf(1.f) - kS);
+	auto kD = (1 - metallic) * (Ubpa::rgbf(1.f) - kS);
 
 	auto rst = kD * diffuse + specular;
 
@@ -107,50 +107,50 @@ const RGBf BSDF_MetalWorkflow::Sample_f(const Normalf & wo, const Point2 & texco
 	return rst;
 }
 
-const RGBf BSDF_MetalWorkflow::Fr(const Normalf & w, const Normalf & h, const RGBf & albedo, float metallic) {
+const Ubpa::rgbf BSDF_MetalWorkflow::Fr(const Ubpa::normalf & w, const Ubpa::normalf & h, const Ubpa::rgbf & albedo, float metallic) {
 	// Schlick’s approximation
 	// use a Spherical Gaussian approximation to replace the power.
 	//  slightly more efficient to calculate and the difference is imperceptible
 
-	const RGBf F0 = RGBf(0.04f).LerpWith(albedo, metallic);
-	float HoWi = h.Dot(w);
-	return F0 + pow(2.0f, (-5.55473f * HoWi - 6.98316f) * HoWi) * (RGBf(1.0f) - F0);
+	const Ubpa::rgbf F0 = Ubpa::rgbf(0.04f).lerp(albedo, metallic);
+	float HoWi = h.dot(w);
+	return F0 + pow(2.0f, (-5.55473f * HoWi - 6.98316f) * HoWi) * (Ubpa::rgbf(1.0f) - F0);
 }
 
-const RGBf BSDF_MetalWorkflow::GetAlbedo(const Point2 & texcoord) const {
+const Ubpa::rgbf BSDF_MetalWorkflow::GetAlbedo(const Ubpa::pointf2 & texcoord) const {
 	if (!albedoTexture || !albedoTexture->IsValid())
 		return colorFactor;
 
-	return colorFactor * albedoTexture->Sample(texcoord, Image::Mode::BILINEAR).ToRGB();
+	return colorFactor * albedoTexture->Sample(texcoord, Image::Mode::BILINEAR).to_rgb();
 }
 
-float BSDF_MetalWorkflow::GetMetallic(const Point2 & texcoord) const {
+float BSDF_MetalWorkflow::GetMetallic(const Ubpa::pointf2 & texcoord) const {
 	if (!metallicTexture || !metallicTexture->IsValid())
 		return metallicFactor;
 
-	return metallicFactor * metallicTexture->Sample(texcoord, Image::Mode::BILINEAR).r;
+	return metallicFactor * metallicTexture->Sample(texcoord, Image::Mode::BILINEAR)[0];
 }
 
-float BSDF_MetalWorkflow::GetRoughness(const Point2 & texcoord) const {
+float BSDF_MetalWorkflow::GetRoughness(const Ubpa::pointf2 & texcoord) const {
 	if (!roughnessTexture || !roughnessTexture->IsValid())
 		return roughnessFactor;
 
-	return roughnessFactor * roughnessTexture->Sample(texcoord, Image::Mode::BILINEAR).r;
+	return roughnessFactor * roughnessTexture->Sample(texcoord, Image::Mode::BILINEAR)[0];
 }
 
-float BSDF_MetalWorkflow::GetAO(const Point2 & texcoord) const {
+float BSDF_MetalWorkflow::GetAO(const Ubpa::pointf2 & texcoord) const {
 	if (!aoTexture || !aoTexture->IsValid())
 		return 1.0f;
 
-	return aoTexture->Sample(texcoord, Image::Mode::BILINEAR).r;
+	return aoTexture->Sample(texcoord, Image::Mode::BILINEAR)[0];
 }
 
-void BSDF_MetalWorkflow::ChangeNormal(const Point2 & texcoord, const Normalf & tangent, Normalf & normal) const {
+void BSDF_MetalWorkflow::ChangeNormal(const Ubpa::pointf2 & texcoord, const Ubpa::normalf & tangent, Ubpa::normalf & normal) const {
 	if (!normalTexture || !normalTexture->IsValid())
 		return;
 
-	const auto rgb = normalTexture->Sample(texcoord, Image::Mode::BILINEAR).ToRGB();
-	Normalf tangentSpaceNormal = 2.f * Vec3(rgb.r, rgb.g, rgb.b) - Vec3(1.f);
+	const auto rgb = normalTexture->Sample(texcoord, Image::Mode::BILINEAR).to_rgb();
+	Ubpa::normalf tangentSpaceNormal = 2.f * rgb.cast_to<Ubpa::normalf>() - Ubpa::normalf(1.f);
 
 	normal = TangentSpaceNormalToWorld(tangent, normal, tangentSpaceNormal);
 }

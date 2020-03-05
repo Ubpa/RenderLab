@@ -29,13 +29,13 @@ using namespace CppUtil::OpenGL;
 using namespace CppUtil::Basic;
 using namespace std;
 
-const Transform EnvGenerator::captureViews[6] = {
-	Transform::LookAt(Vec3(0.0f, 0.0f, 0.0f), Vec3(1.0f,  0.0f,  0.0f), Vec3(0.0f, -1.0f,  0.0f)),
-	Transform::LookAt(Vec3(0.0f, 0.0f, 0.0f), Vec3(-1.0f,  0.0f,  0.0f), Vec3(0.0f, -1.0f,  0.0f)),
-	Transform::LookAt(Vec3(0.0f, 0.0f, 0.0f), Vec3(0.0f,  1.0f,  0.0f), Vec3(0.0f,  0.0f,  1.0f)),
-	Transform::LookAt(Vec3(0.0f, 0.0f, 0.0f), Vec3(0.0f, -1.0f,  0.0f), Vec3(0.0f,  0.0f, -1.0f)),
-	Transform::LookAt(Vec3(0.0f, 0.0f, 0.0f), Vec3(0.0f,  0.0f,  1.0f), Vec3(0.0f, -1.0f,  0.0f)),
-	Transform::LookAt(Vec3(0.0f, 0.0f, 0.0f), Vec3(0.0f,  0.0f, -1.0f), Vec3(0.0f, -1.0f,  0.0f))
+const Ubpa::transformf EnvGenerator::captureViews[6] = {
+	Ubpa::transformf::look_at(Ubpa::pointf3(0.0f, 0.0f, 0.0f), Ubpa::pointf3(1.0f,  0.0f,  0.0f), Ubpa::vecf3(0.0f, -1.0f,  0.0f)),
+	Ubpa::transformf::look_at(Ubpa::pointf3(0.0f, 0.0f, 0.0f), Ubpa::pointf3(-1.0f,  0.0f,  0.0f), Ubpa::vecf3(0.0f, -1.0f,  0.0f)),
+	Ubpa::transformf::look_at(Ubpa::pointf3(0.0f, 0.0f, 0.0f), Ubpa::pointf3(0.0f,  1.0f,  0.0f), Ubpa::vecf3(0.0f,  0.0f,  1.0f)),
+	Ubpa::transformf::look_at(Ubpa::pointf3(0.0f, 0.0f, 0.0f), Ubpa::pointf3(0.0f, -1.0f,  0.0f), Ubpa::vecf3(0.0f,  0.0f, -1.0f)),
+	Ubpa::transformf::look_at(Ubpa::pointf3(0.0f, 0.0f, 0.0f), Ubpa::pointf3(0.0f,  0.0f,  1.0f), Ubpa::vecf3(0.0f, -1.0f,  0.0f)),
+	Ubpa::transformf::look_at(Ubpa::pointf3(0.0f, 0.0f, 0.0f), Ubpa::pointf3(0.0f,  0.0f, -1.0f), Ubpa::vecf3(0.0f, -1.0f,  0.0f))
 };
 
 const OpenGL::FBO::TexTarget EnvGenerator::mapper[6] = {
@@ -87,8 +87,8 @@ void EnvGenerator::InitShader_genSkybox() {
 
 	shader_genSkybox.SetInt("equirectangularMap", 0);
 
-	auto captureProjection = Transform::Perspcetive(90.f, 1.0f, 0.1f, 10.0f);
-	shader_genSkybox.SetMat4f("projection", captureProjection);
+	auto captureProjection = Ubpa::transformf::perspective(Ubpa::to_radian(90.f), 1.0f, 0.1f, 10.0f);
+	shader_genSkybox.SetMatf4("projection", captureProjection.data());
 }
 
 void EnvGenerator::InitShader_genIrradiance() {
@@ -98,8 +98,8 @@ void EnvGenerator::InitShader_genIrradiance() {
 
 	shader_genIrradiance.SetInt("equirectangularMap", 0);
 
-	auto captureProjection = Transform::Perspcetive(90.f, 1.0f, 0.1f, 10.0f);
-	shader_genIrradiance.SetMat4f("projection", captureProjection);
+	auto captureProjection = Ubpa::transformf::perspective(Ubpa::to_radian(90.f), 1.0f, 0.1f, 10.0f);
+	shader_genIrradiance.SetMatf4("projection", captureProjection.data());
 }
 
 void EnvGenerator::InitShader_Prefilter() {
@@ -109,8 +109,8 @@ void EnvGenerator::InitShader_Prefilter() {
 
 	shader_prefilter.SetInt("equirectangularMap", 0);
 
-	auto captureProjection = Transform::Perspcetive(90.f, 1.0f, 0.1f, 10.0f);
-	shader_prefilter.SetMat4f("projection", captureProjection);
+	auto captureProjection = Ubpa::transformf::perspective(Ubpa::to_radian(90.f), 1.0f, 0.1f, 10.0f);
+	shader_prefilter.SetMatf4("projection", captureProjection.data());
 }
 
 void EnvGenerator::InitShader_brdf() {
@@ -196,7 +196,7 @@ void EnvGenerator::UpdateSkybox() {
 	imgTex.Use(0);
 
 	for (int i = 0; i < 6; i++) {
-		shader_genSkybox.SetMat4f("view", captureViews[i]);
+		shader_genSkybox.SetMatf4("view", captureViews[i].data());
 		genSkyboxFBO.SetColor(skybox, mapper[i]);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		pOGLW->GetVAO(ShapeType::Cube).Draw(shader_genSkybox);
@@ -214,7 +214,7 @@ void EnvGenerator::UpdateIrradianceMap() {
 	skybox.Use(0);
 
 	for (int i = 0; i < 6; i++) {
-		shader_genIrradiance.SetMat4f("view", captureViews[i]);
+		shader_genIrradiance.SetMatf4("view", captureViews[i].data());
 		genIrradianceFBO.SetColor(irradianceMap, mapper[i]);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		pOGLW->GetVAO(ShapeType::Cube).Draw(shader_genIrradiance);
@@ -239,7 +239,7 @@ void EnvGenerator::UpdatePrefilterMap() {
 		float roughness = (float)mip / (float)(maxMipLevels - 1);
 		shader_prefilter.SetFloat("roughness", roughness);
 		for (int i = 0; i < 6; i++) {
-			shader_prefilter.SetMat4f("view", captureViews[i]);
+			shader_prefilter.SetMatf4("view", captureViews[i].data());
 			prefilterFBOs[mip].SetColor(prefilterMap, mapper[i], mip);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			pOGLW->GetVAO(ShapeType::Cube).Draw(shader_prefilter);

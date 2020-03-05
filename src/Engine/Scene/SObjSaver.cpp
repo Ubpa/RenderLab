@@ -113,7 +113,7 @@ void SObjSaver::Visit(Ptr<CmptCamera> cmpt) {
 	});
 }
 
-// ----------------- Transform -----------------
+// ----------------- Ubpa::transformf -----------------
 
 void SObjSaver::Visit(Ptr<CmptTransform> cmpt) {
 	NewEle(str::CmptTransform::type, [=]() {

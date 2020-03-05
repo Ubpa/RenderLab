@@ -3,8 +3,8 @@
 
 #include <Engine/RayTracer.h>
 
-#include <Basic/UGM/Transform.h>
-#include <Basic/UGM/Mat3x3.h>
+#include <UGM/transform.h>
+#include <UGM/mat.h>
 
 #include <vector>
 #include <map>
@@ -31,13 +31,13 @@ namespace CppUtil {
 			virtual ~PathTracer() = default;
 
 		public:
-			virtual const RGBf Trace(Ray & ray) { return Trace(ray, 0, RGBf(1.f)); }
+			virtual const Ubpa::rgbf Trace(Ray & ray) { return Trace(ray, 0, Ubpa::rgbf(1.f)); }
 
 			virtual void Init(Basic::Ptr<Scene> scene, Basic::Ptr<BVHAccel> bvhAccel) override;
 
 		protected:
 			// ray 处于世界坐标系
-			const RGBf Trace(Ray & ray, int depth, RGBf pathThroughput);
+			const Ubpa::rgbf Trace(Ray & ray, int depth, Ubpa::rgbf pathThroughput);
 
 		private:
 			enum SampleLightMode {
@@ -45,35 +45,35 @@ namespace CppUtil {
 				RandomOne,
 			};
 
-			const RGBf SampleLight(
-				const Point3 & posInWorldSpace,
-				const Mat3f & worldToSurface,
+			const Ubpa::rgbf SampleLight(
+				const Ubpa::pointf3 & posInWorldSpace,
+				const Ubpa::matf3 & worldToSurface,
 				Basic::Ptr<BSDF> bsdf,
-				const Normalf & w_out,
-				const Point2 & texcoord,
+				const Ubpa::normalf & w_out,
+				const Ubpa::pointf2 & texcoord,
 				SampleLightMode mode
 			) const;
 
-			const RGBf SampleLightImpl(
+			const Ubpa::rgbf SampleLightImpl(
 				int lightID,
-				const Point3 & posInWorldSpace,
-				const Point3 & posInLightSpace,
-				const Mat3f & worldToSurface,
+				const Ubpa::pointf3 & posInWorldSpace,
+				const Ubpa::pointf3 & posInLightSpace,
+				const Ubpa::matf3 & worldToSurface,
 				Basic::Ptr<BSDF> bsdf,
-				const Normalf & w_out,
-				const Point2 & texcoord,
+				const Ubpa::normalf & w_out,
+				const Ubpa::pointf2 & texcoord,
 				float factorPD
 			) const;
 
-			const RGBf SampleBSDF(
+			const Ubpa::rgbf SampleBSDF(
 				Basic::Ptr<BSDF> bsdf,
 				SampleLightMode mode,
-				const Normalf & w_out,
-				const Mat3f & surfaceToWorld,
-				const Point2 & texcoord,
-				const Point3 & hitPos,
+				const Ubpa::normalf & w_out,
+				const Ubpa::matf3 & surfaceToWorld,
+				const Ubpa::pointf2 & texcoord,
+				const Ubpa::pointf3 & hitPos,
 				int depth,
-				RGBf pathThroughput
+				Ubpa::rgbf pathThroughput
 			);
 		
 		public:
@@ -82,8 +82,8 @@ namespace CppUtil {
 		private:
 			std::vector<Basic::Ptr<Light>> lights;
 			std::map<Basic::Ptr<Light>, int> lightToIdx;
-			std::vector<Transform> worldToLightVec;
-			std::vector<Transform> lightToWorldVec;
+			std::vector<Ubpa::transformf> worldToLightVec;
+			std::vector<Ubpa::transformf> lightToWorldVec;
 
 			Basic::Ptr<RayIntersector> rayIntersector;
 			Basic::Ptr<VisibilityChecker> visibilityChecker;

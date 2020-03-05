@@ -3,7 +3,7 @@
 
 #include <Engine/Component.h>
 
-#include <Basic/UGM/Transform.h>
+#include <UGM/transform.h>
 
 namespace CppUtil {
 	namespace Engine {
@@ -23,7 +23,7 @@ namespace CppUtil {
 			virtual ~CmptLight() = default;
 
 		public:
-			Basic::Transform GetLightToWorldMatrixWithoutScale() const;
+			Ubpa::transformf GetLightToWorldMatrixWithoutScale() const;
 		
 		public:
 			Basic::Ptr<Light> light;

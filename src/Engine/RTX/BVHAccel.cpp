@@ -35,7 +35,7 @@ public:
 	}
 
 public:
-	unordered_map<Ptr<Shape>, BBoxf> shape2wbbox;
+	unordered_map<Ptr<Shape>, Ubpa::bboxf3> shape2wbbox;
 
 public:
 	static const Ptr<BVHInitVisitor> New(BVHAccel * holder) {
@@ -51,7 +51,7 @@ public:
 		if (!primitive)
 			return;
 
-		const auto w2l = geo->GetSObj()->GetLocalToWorldMatrix().Inverse();
+		const auto w2l = geo->GetSObj()->GetLocalToWorldMatrix().inverse();
 		holder->worldToLocalMatrixes[primitive] = w2l;
 
 		holder->primitive2sobj[geo->primitive] = geo->GetSObj();
@@ -59,42 +59,42 @@ public:
 	}
 
 	void Visit(Ptr<Sphere> sphere) {
-		const auto l2w = holder->GetShapeW2LMat(sphere).Inverse();
+		const auto l2w = holder->GetShapeW2LMat(sphere).inverse();
 		holder->shapes.push_back(sphere);
-		shape2wbbox[sphere] = l2w(sphere->GetBBox());
+		shape2wbbox[sphere] = l2w * sphere->GetBBox();
 	}
 
 	void Visit(Ptr<Plane> plane) {
-		const auto l2w = holder->GetShapeW2LMat(plane).Inverse();
+		const auto l2w = holder->GetShapeW2LMat(plane).inverse();
 		holder->shapes.push_back(plane);
-		shape2wbbox[plane] = l2w(plane->GetBBox());
+		shape2wbbox[plane] = l2w * plane->GetBBox();
 	}
 
 	void Visit(Ptr<TriMesh> mesh) {
-		const auto l2w = holder->GetShapeW2LMat(mesh).Inverse();
+		const auto l2w = holder->GetShapeW2LMat(mesh).inverse();
 		for (auto triangle : mesh->GetTriangles()) {
 			holder->shapes.push_back(triangle);
-			shape2wbbox[triangle] = l2w(triangle->GetBBox());
+			shape2wbbox[triangle] = l2w * triangle->GetBBox();
 		}
 	}
 
 	void Visit(Ptr<Disk> disk) {
-		const auto l2w = holder->GetShapeW2LMat(disk).Inverse();
+		const auto l2w = holder->GetShapeW2LMat(disk).inverse();
 		holder->shapes.push_back(disk);
-		shape2wbbox[disk] = l2w(disk->GetBBox());
+		shape2wbbox[disk] = l2w * disk->GetBBox();
 	}
 
 	void Visit(Ptr<Capsule> capsule) {
-		const auto l2w = holder->GetShapeW2LMat(capsule).Inverse();
+		const auto l2w = holder->GetShapeW2LMat(capsule).inverse();
 		holder->shapes.push_back(capsule);
-		shape2wbbox[capsule] = l2w(capsule->GetBBox());
+		shape2wbbox[capsule] = l2w * capsule->GetBBox();
 	}
 
 private:
 	BVHAccel * holder;
 };
 
-const Transform & BVHAccel::GetShapeW2LMat(Ptr<Shape> shape) const {
+const Ubpa::transformf & BVHAccel::GetShapeW2LMat(Ptr<Shape> shape) const {
 	const auto target = worldToLocalMatrixes.find(shape->GetPrimitive());
 	assert(target != worldToLocalMatrixes.cend());
 

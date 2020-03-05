@@ -7,10 +7,10 @@ namespace CppUtil {
 	namespace Engine {
 		class BSDF_Mirror : public BSDF {
 		public:
-			BSDF_Mirror(const RGBf & reflectance = RGBf(1.f)) : reflectance(reflectance) { }
+			BSDF_Mirror(const Ubpa::rgbf & reflectance = Ubpa::rgbf(1.f)) : reflectance(reflectance) { }
 
 		public:
-			static const Basic::Ptr<BSDF_Mirror> New(const RGBf & reflectance = RGBf(1.f)) {
+			static const Basic::Ptr<BSDF_Mirror> New(const Ubpa::rgbf & reflectance = Ubpa::rgbf(1.f)) {
 				return Basic::New<BSDF_Mirror>(reflectance);
 			}
 
@@ -18,19 +18,19 @@ namespace CppUtil {
 			virtual ~BSDF_Mirror() = default;
 
 		public:
-			virtual const RGBf F(const Normalf & wo, const Normalf & wi, const Point2 & texcoord) override { return RGBf(0.f); };
+			virtual const Ubpa::rgbf F(const Ubpa::normalf & wo, const Ubpa::normalf & wi, const Ubpa::pointf2 & texcoord) override { return Ubpa::rgbf(0.f); };
 
 			// probability density function
-			virtual float PDF(const Normalf & wo, const Normalf & wi, const Point2 & texcoord) override { return 0; }
+			virtual float PDF(const Ubpa::normalf & wo, const Ubpa::normalf & wi, const Ubpa::pointf2 & texcoord) override { return 0; }
 
 			// PD is probability density
 			// return albedo
-			virtual const RGBf Sample_f(const Normalf & wo, const Point2 & texcoord, Normalf & wi, float & PD) override;
+			virtual const Ubpa::rgbf Sample_f(const Ubpa::normalf & wo, const Ubpa::pointf2 & texcoord, Ubpa::normalf & wi, float & PD) override;
 
 			virtual bool IsDelta() const override { return true; }
 
 		public:
-			RGBf reflectance;
+			Ubpa::rgbf reflectance;
 		};
 	}
 }

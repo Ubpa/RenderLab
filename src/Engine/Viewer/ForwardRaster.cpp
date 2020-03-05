@@ -100,7 +100,7 @@ void ForwardRaster::Draw() {
 	UpdateUBO();
 
 	modelVec.clear();
-	modelVec.push_back(Transform(1.f));
+	modelVec.push_back(Ubpa::transformf::eye());
 	scene->GetRoot()->Accept(This());
 
 	if(drawSky)
@@ -120,7 +120,7 @@ void ForwardRaster::InitShaders() {
 
 void ForwardRaster::InitShader_Basic() {
 	shader_basic = Shader(rootPath + str_Basic_P3_vs, rootPath + str_Basic_fs);
-	shader_basic.SetVec3f("color", Val3(1.f,1.f,1.f));
+	shader_basic.SetVecf3("color", Ubpa::valf3(1.f,1.f,1.f));
 	RegShader(shader_basic);
 }
 
@@ -159,17 +159,17 @@ void ForwardRaster::Visit(Ptr<SObj> sobj) {
 }
 
 void ForwardRaster::Visit(Ptr<Engine::Sphere> sphere) {
-	curShader.SetMat4f("model", modelVec.back());
+	curShader.SetMatf4("model", modelVec.back().data());
 	pOGLW->GetVAO(ShapeType::Sphere).Draw(curShader);
 }
 
 void ForwardRaster::Visit(Ptr<Engine::Plane> plane) {
-	curShader.SetMat4f("model", modelVec.back());
+	curShader.SetMatf4("model", modelVec.back().data());
 	pOGLW->GetVAO(ShapeType::Plane).Draw(curShader);
 }
 
 void ForwardRaster::Visit(Ptr<TriMesh> mesh) {
-	curShader.SetMat4f("model", modelVec.back());
+	curShader.SetMatf4("model", modelVec.back().data());
 	pOGLW->GetVAO(mesh).Draw(curShader);
 }
 
@@ -284,37 +284,37 @@ void ForwardRaster::DrawEnvironment() {
 
 void ForwardRaster::Visit(Ptr<BSDF_Diffuse> bsdf) {
 	curShader = shader_basic;
-	curShader.SetVec3f("color", bsdf->colorFactor);
+	curShader.SetVecf3("color", bsdf->colorFactor.cast_to<Ubpa::valf3>());
 }
 void ForwardRaster::Visit(Ptr<BSDF_Glass> bsdf) {
 	curShader = shader_basic;
-	curShader.SetVec3f("color", bsdf->transmittance);
+	curShader.SetVecf3("color", bsdf->transmittance.cast_to<Ubpa::valf3>());
 }
 void ForwardRaster::Visit(Ptr<BSDF_Mirror> bsdf) {
 	curShader = shader_basic;
-	curShader.SetVec3f("color", bsdf->reflectance);
+	curShader.SetVecf3("color", bsdf->reflectance.cast_to<Ubpa::valf3>());
 }
 void ForwardRaster::Visit(Ptr<BSDF_Emission> bsdf) {
 	curShader = shader_basic;
-	curShader.SetVec3f("color", bsdf->color);
+	curShader.SetVecf3("color", bsdf->color.cast_to<Ubpa::valf3>());
 }
 void ForwardRaster::Visit(Ptr<BSDF_CookTorrance> bsdf) {
 	curShader = shader_basic;
-	curShader.SetVec3f("color", bsdf->albedo);
+	curShader.SetVecf3("color", bsdf->albedo.cast_to<Ubpa::valf3>());
 }
 void ForwardRaster::Visit(Ptr<BSDF_MetalWorkflow> bsdf) {
 	curShader = shader_basic;
-	curShader.SetVec3f("color", bsdf->colorFactor);
+	curShader.SetVecf3("color", bsdf->colorFactor.cast_to<Ubpa::valf3>());
 }
 void ForwardRaster::Visit(Ptr<BSDF_FrostedGlass> bsdf) {
 	curShader = shader_basic;
-	curShader.SetVec3f("color", bsdf->colorFactor);
+	curShader.SetVecf3("color", bsdf->colorFactor.cast_to<Ubpa::valf3>());
 }
 void ForwardRaster::Visit(Ptr<BSDF_Frostbite> bsdf) {
 	curShader = shader_basic;
-	curShader.SetVec3f("color", bsdf->colorFactor);
+	curShader.SetVecf3("color", bsdf->colorFactor.cast_to<Ubpa::valf3>());
 }
 void ForwardRaster::Visit(Ptr<Gooch> gooch) {
 	curShader = shader_basic;
-	curShader.SetVec3f("color", gooch->colorFactor);
+	curShader.SetVecf3("color", gooch->colorFactor.cast_to<Ubpa::valf3>());
 }

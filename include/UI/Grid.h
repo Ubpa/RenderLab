@@ -3,11 +3,7 @@
 
 #include <Basic/HeapObj.h>
 
-#include <UGM/rgb.h>
-
-#include <UGM/val.h>
-#include <UGM/val.h>
-#include <UGM/Ubpa::valf4.h>
+#include <UGM/UGM>
 
 #include <qstring.h>
 
@@ -69,8 +65,8 @@ namespace Ui {
 			AddEditVal(text, val, minVal, maxVal, stepNum, [&val](double v) {val = v; });
 		}
 
-		void AddEditVal(const std::vector<std::string> & texts, const Ubpa::valf3 & val, const Ubpa::valf3 & minVal, const Ubpa::valf3 & maxVal, const Ubpa::valf3i & stepNum, const std::function<void(const Ubpa::valf3 &)> & slot);
-		void AddEditVal(const std::vector<std::string> & texts, Ubpa::valf3 & val, const Ubpa::valf3 & minVal, const Ubpa::valf3 & maxVal, const Ubpa::valf3i & stepNum) {
+		void AddEditVal(const std::vector<std::string> & texts, const Ubpa::valf3 & val, const Ubpa::valf3 & minVal, const Ubpa::valf3 & maxVal, const Ubpa::vali3 & stepNum, const std::function<void(const Ubpa::valf3 &)> & slot);
+		void AddEditVal(const std::vector<std::string> & texts, Ubpa::valf3 & val, const Ubpa::valf3 & minVal, const Ubpa::valf3 & maxVal, const Ubpa::vali3 & stepNum) {
 			AddEditVal(texts, val, minVal, maxVal, stepNum, [&](const Ubpa::valf3 & newVal) {val = newVal; });
 		}
 

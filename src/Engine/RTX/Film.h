@@ -3,11 +3,12 @@
 
 #include <Basic/HeapObj.h>
 
-#include <Basic/UGM/RGB.h>
-#include <Basic/UGM/Point2.h>
+#include <UGM/rgb.h>
+#include <UGM/point.h>
+#include <UGM/val.h>
 
 #include <Basic/Array2D.h>
-#include <Basic/UGM/Frame.h>
+#include <UGM/bbox.h>
 #include <vector>
 
 namespace CppUtil {
@@ -32,7 +33,7 @@ namespace CppUtil {
 			}
 
 		public:
-			const Basic::Ptr<FilmTile> GenFilmTile(const Framei & frame) const;
+			const Basic::Ptr<FilmTile> GenFilmTile(const Ubpa::bboxi2 & frame) const;
 			void MergeFilmTile(Basic::Ptr<FilmTile> filmTile);
 
 		private:
@@ -41,7 +42,7 @@ namespace CppUtil {
 			struct Pixel {
 				Pixel() : weightRadianceSum(0.f), filterWeightSum(0.f) { }
 
-				RGBf weightRadianceSum;
+				Ubpa::rgbf weightRadianceSum;
 				float filterWeightSum;
 
 				Pixel & operator+=(const Pixel & pixel) {
@@ -50,9 +51,9 @@ namespace CppUtil {
 					return *this;
 				}
 
-				const RGBf ToRadiance() const {
+				const Ubpa::rgbf ToRadiance() const {
 					if (filterWeightSum == 0)
-						return RGBf(0.f);
+						return Ubpa::rgbf(0.f);
 
 					return weightRadianceSum / filterWeightSum;
 				}
@@ -60,10 +61,10 @@ namespace CppUtil {
 
 		private:
 			Basic::Ptr<Basic::Image> img;
-			const Point2i resolution;
+			const Ubpa::vali2 resolution;
 			std::vector<std::vector<Pixel>> pixels;
 
-			const Framei frame; // 不包括右上的边界
+			const Ubpa::bboxi2 frame; // 不包括右上的边界
 			Basic::Ptr<Filter> filter;
 		};
 	}

@@ -1,4 +1,5 @@
 #include <Engine/FilterSinc.h>
+#include <Basic/Math.h>
 
 using namespace CppUtil;
 using namespace CppUtil::Basic;

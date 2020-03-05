@@ -35,8 +35,8 @@ const std::vector<Ptr<Component>> SObj::GetAllComponents() const {
 	return rst;
 }
 
-const Transform SObj::GetLocalToWorldMatrix() {
-	Transform tsfm(1.0f);
+const Ubpa::transformf SObj::GetLocalToWorldMatrix() {
+	auto tsfm = Ubpa::transformf::eye();
 
 	auto getMatVisitor = Visitor::New();
 	getMatVisitor->Reg([&](Ptr<SObj> sobj) {

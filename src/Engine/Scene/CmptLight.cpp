@@ -10,8 +10,8 @@ using namespace CppUtil::Engine;
 using namespace CppUtil::Basic;
 using namespace std;
 
-Transform CmptLight::GetLightToWorldMatrixWithoutScale() const {
-	Transform tsfm(1.0f);
+Ubpa::transformf CmptLight::GetLightToWorldMatrixWithoutScale() const {
+	auto tsfm = Ubpa::transformf::eye();
 	auto sobj = GetSObj();
 	if (!sobj)
 		return tsfm;
@@ -25,7 +25,7 @@ Transform CmptLight::GetLightToWorldMatrixWithoutScale() const {
 		auto pos = cmptTransform->GetPosition();
 		auto rotation = cmptTransform->GetRotation();
 		// tsfm = T * R * tsfm
-		tsfm = Transform::Translate(pos) * Transform::Rotate(rotation) * tsfm;
+		tsfm = Ubpa::transformf(pos.cast_to<Ubpa::vecf3>()) * Ubpa::transformf(rotation) * tsfm;
 	});
 	sobj->AscendAccept(visitor);
 

@@ -2,22 +2,22 @@
 #define _CPPUTIL_ENGINE_FILTER_FILTER_H_
 
 #include <Basic/HeapObj.h>
-#include <Basic/UGM/Point2.h>
+#include <UGM/point.h>
 
 namespace CppUtil {
 	namespace Engine {
 		class Filter : public Basic::HeapObj {
 		protected:
-			Filter(const Vec2 & radius) :
-				radius(radius), invRadius(1.0f / radius.x, 1.0f / radius.y) { }
+			Filter(const Ubpa::vecf2 & radius) :
+				radius(radius), invRadius(1.0f / radius[0], 1.0f / radius[1]) { }
 			virtual ~Filter() = default;
 
 		public:
-			virtual float Evaluate(const Point2f & p) const = 0;
+			virtual float Evaluate(const Ubpa::pointf2 & p) const = 0;
 
 		public:
-			const Vec2 radius;
-			const Vec2 invRadius;
+			const Ubpa::vecf2 radius;
+			const Ubpa::vecf2 invRadius;
 		};
 	}
 }

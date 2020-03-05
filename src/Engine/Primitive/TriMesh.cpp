@@ -18,8 +18,8 @@ using namespace CppUtil::Basic;
 using namespace std;
 using namespace Ubpa;
 
-TriMesh::TriMesh(uint triNum, uint vertexNum,
-	const uint * indice,
+TriMesh::TriMesh(unsigned triNum, unsigned vertexNum,
+	const unsigned * indice,
 	const float * positions,
 	const float * normals,
 	const float * texcoords,
@@ -33,19 +33,19 @@ TriMesh::TriMesh(uint triNum, uint vertexNum,
 		return;
 	}
 
-	for (uint i = 0; i < vertexNum; i++) {
-		this->positions.push_back(Point3(positions[3 * i], positions[3 * i + 1], positions[3 * i + 2]));
+	for (unsigned i = 0; i < vertexNum; i++) {
+		this->positions.push_back(Ubpa::pointf3(positions[3 * i], positions[3 * i + 1], positions[3 * i + 2]));
 		if(normals)
-			this->normals.push_back(Normalf(normals[3 * i], normals[3 * i + 1], normals[3 * i + 2]));
+			this->normals.push_back(Ubpa::normalf(normals[3 * i], normals[3 * i + 1], normals[3 * i + 2]));
 		if(texcoords)
-			this->texcoords.push_back(Point2(texcoords[2 * i], texcoords[2 * i + 1]));
+			this->texcoords.push_back(Ubpa::pointf2(texcoords[2 * i], texcoords[2 * i + 1]));
 		if(tangents)
 			this->tangents.push_back({ tangents[3 * i],tangents[3 * i + 1],tangents[3 * i + 2] });
 	}
 
 	// traingel 的 mesh 在 init 的时候设置
 	// 因为现在还没有生成 share_ptr
-	for (uint i = 0; i < triNum; i++) {
+	for (unsigned i = 0; i < triNum; i++) {
 		this->indice.push_back(indice[3 * i]);
 		this->indice.push_back(indice[3 * i + 1]);
 		this->indice.push_back(indice[3 * i + 2]);
@@ -67,11 +67,11 @@ TriMesh::TriMesh(uint triNum, uint vertexNum,
 	}
 }
 
-void TriMesh::Init(bool creator, const std::vector<uint> & indice,
-	const std::vector<Point3> & positions,
-	const std::vector<Normalf> & normals,
-	const std::vector<Point2> & texcoords,
-	const std::vector<Normalf> & tangents,
+void TriMesh::Init(bool creator, const std::vector<unsigned> & indice,
+	const std::vector<Ubpa::pointf3> & positions,
+	const std::vector<Ubpa::normalf> & normals,
+	const std::vector<Ubpa::pointf2> & texcoords,
+	const std::vector<Ubpa::normalf> & tangents,
 	ENUM_TYPE type)
 {
 	this->indice.clear();
@@ -123,7 +123,7 @@ void TriMesh::Init(bool creator, const std::vector<uint> & indice,
 		Init_AfterGenPtr();
 }
 
-bool TriMesh::Update(const std::vector<Point3> & positions) {
+bool TriMesh::Update(const std::vector<Ubpa::pointf3> & positions) {
 	if (type == INVALID) {
 		printf("ERROR::TriMesh::Update:\n"
 			"\t""type == INVALID\n");
@@ -141,7 +141,7 @@ bool TriMesh::Update(const std::vector<Point3> & positions) {
 	return true;
 }
 
-bool TriMesh::Update(const vector<Point2> & texcoords) {
+bool TriMesh::Update(const vector<Ubpa::pointf2> & texcoords) {
 	if (type == INVALID) {
 		printf("ERROR::TriMesh::Update:\n"
 			"\t""type == INVALID\n");
@@ -165,12 +165,12 @@ void TriMesh::Init_AfterGenPtr() {
 		triangle->mesh = triMesh;
 
 	for (auto triangle : triangles)
-		box.UnionWith(triangle->GetBBox());
+		box.combine_with(triangle->GetBBox());
 }
 
 void TriMesh::GenNormals() {
 	normals.clear();
-	normals.resize(positions.size(), Normalf(0.f));
+	normals.resize(positions.size(), Ubpa::normalf(0.f));
 
 	vector<mutex> vertexMutexes(positions.size());
 	auto calSWN = [&](Ptr<Triangle> triangle) {
@@ -180,16 +180,16 @@ void TriMesh::GenNormals() {
 		
 		auto d10 = positions[v0] - positions[v1];
 		auto d12 = positions[v2] - positions[v1];
-		auto wN = d12.Cross(d10);
+		auto wN = d12.cross(d10);
 		
 		for (size_t i = 0; i < 3; i++) {
 			auto v = triangle->idx[i];
 			vertexMutexes[v].lock();
-			normals[v] += wN;
+			normals[v] += wN.cast_to<Ubpa::normalf>();
 			vertexMutexes[v].unlock();
 		}
 	};
-	auto calN = [&](size_t v) { normals[v].NormalizeSelf(); };
+	auto calN = [&](size_t v) { normals[v].normalize_self(); };
 	Parallel::Instance().Run(calSWN, triangles);
 	Parallel::Instance().Run(calN, positions.size());
 }
@@ -198,39 +198,39 @@ void TriMesh::GenTangents() {
 	const size_t vertexNum = positions.size();
 	const size_t triangleCount = indice.size() / 3;
 
-	vector<Normalf> tanS(vertexNum);
-	vector<Normalf> tanT(vertexNum);
+	vector<Ubpa::normalf> tanS(vertexNum);
+	vector<Ubpa::normalf> tanT(vertexNum);
 	vector<mutex> vertexMutexes(vertexNum);
 	auto calST = [&](Ptr<Triangle> triangle) {
 		auto i1 = triangle->idx[0];
 		auto i2 = triangle->idx[1];
 		auto i3 = triangle->idx[2];
 
-		const Point3& v1 = positions[i1];
-		const Point3& v2 = positions[i2];
-		const Point3& v3 = positions[i3];
+		const Ubpa::pointf3& v1 = positions[i1];
+		const Ubpa::pointf3& v2 = positions[i2];
+		const Ubpa::pointf3& v3 = positions[i3];
 
-		const Point2& w1 = texcoords[i1];
-		const Point2& w2 = texcoords[i2];
-		const Point2& w3 = texcoords[i3];
+		const Ubpa::pointf2& w1 = texcoords[i1];
+		const Ubpa::pointf2& w2 = texcoords[i2];
+		const Ubpa::pointf2& w3 = texcoords[i3];
 
-		float x1 = v2.x - v1.x;
-		float x2 = v3.x - v1.x;
-		float y1 = v2.y - v1.y;
-		float y2 = v3.y - v1.y;
-		float z1 = v2.z - v1.z;
-		float z2 = v3.z - v1.z;
+		float x1 = v2[0] - v1[0];
+		float x2 = v3[0] - v1[0];
+		float y1 = v2[1] - v1[1];
+		float y2 = v3[1] - v1[1];
+		float z1 = v2[2] - v1[2];
+		float z2 = v3[2] - v1[2];
 
-		float s1 = w2.x - w1.x;
-		float s2 = w3.x - w1.x;
-		float t1 = w2.y - w1.y;
-		float t2 = w3.y - w1.y;
+		float s1 = w2[0] - w1[0];
+		float s2 = w3[0] - w1[0];
+		float t1 = w2[1] - w1[1];
+		float t2 = w3[1] - w1[1];
 
 		float denominator = s1 * t2 - s2 * t1;
 		float r = denominator == 0.f ? 1.f : 1.f / denominator;
-		Normalf sdir((t2 * x1 - t1 * x2) * r, (t2 * y1 - t1 * y2) * r,
+		Ubpa::normalf sdir((t2 * x1 - t1 * x2) * r, (t2 * y1 - t1 * y2) * r,
 			(t2 * z1 - t1 * z2) * r);
-		Normalf tdir((s1 * x2 - s2 * x1) * r, (s1 * y2 - s2 * y1) * r,
+		Ubpa::normalf tdir((s1 * x2 - s2 * x1) * r, (s1 * y2 - s2 * y1) * r,
 			(s1 * z2 - s2 * z1) * r);
 
 		for (size_t i = 0; i < 3; i++) {
@@ -245,15 +245,15 @@ void TriMesh::GenTangents() {
 
 	tangents.resize(vertexNum);
 	auto calTan = [&](size_t i) {
-		const Normalf& n = normals[i];
-		const Normalf& t = tanS[i];
+		const Ubpa::normalf& n = normals[i];
+		const Ubpa::normalf& t = tanS[i];
 
 		// Gram-Schmidt orthogonalize
-		auto projT = t - n * n.Dot(t);
-		tangents[i] = projT.Norm2() == 0.f ? BasicSampler::UniformOnSphere() : projT.Normalize();
+		auto projT = t - n * n.dot(t);
+		tangents[i] = projT.norm2() == 0.f ? BasicSampler::UniformOnSphere().cast_to<Ubpa::normalf>() : projT.normalize();
 
 		// Calculate handedness
-		tangents[i] *= (n.Cross(t).Dot(tanT[i]) < 0.0F) ? -1.0F : 1.0F;
+		tangents[i] *= (n.cross(t).dot(tanT[i]) < 0.0F) ? -1.0F : 1.0F;
 	};
 	Parallel::Instance().Run(calTan, vertexNum);
 }

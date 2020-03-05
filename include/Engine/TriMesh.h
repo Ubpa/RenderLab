@@ -4,8 +4,10 @@
 #include <Engine/Primitive.h>
 #include <Engine/Triangle.h>
 
-#include <Basic/UGM/Normal.h>
-#include <Basic/UGM/Point2.h>
+#include <UGM/normal.h>
+#include <UGM/point.h>
+
+#include <vector>
 
 namespace CppUtil {
 	namespace Engine {
@@ -21,18 +23,18 @@ namespace CppUtil {
 				DISK,
 			};
 		public:
-			TriMesh(const std::vector<uint> & indice,
-				const std::vector<Point3> & positions,
-				const std::vector<Normalf> & normals,
-				const std::vector<Point2> & texcoords,
-				const std::vector<Normalf> & tangents = std::vector<Normalf>(),
+			TriMesh(const std::vector<unsigned> & indice,
+				const std::vector<Ubpa::pointf3> & positions,
+				const std::vector<Ubpa::normalf> & normals,
+				const std::vector<Ubpa::pointf2> & texcoords,
+				const std::vector<Ubpa::normalf> & tangents = std::vector<Ubpa::normalf>(),
 				ENUM_TYPE type = ENUM_TYPE::CODE)
 			{
 				Init(true, indice, positions, normals, texcoords, tangents, type);
 			}
 
-			TriMesh(uint triNum, uint vertexNum,
-				const uint * indice,
+			TriMesh(unsigned triNum, unsigned vertexNum,
+				const unsigned * indice,
 				const float * positions,
 				const float * normals,
 				const float * texcoords,
@@ -40,17 +42,17 @@ namespace CppUtil {
 				ENUM_TYPE type = ENUM_TYPE::CODE);
 
 		public:
-			static const Basic::Ptr<TriMesh> New(const std::vector<uint> & indice,
-				const std::vector<Point3> & positions,
-				const std::vector<Normalf> & normals = std::vector<Normalf>(),
-				const std::vector<Point2> & texcoords = std::vector<Point2>(),
-				const std::vector<Normalf> & tangents = std::vector<Normalf>(),
+			static const Basic::Ptr<TriMesh> New(const std::vector<unsigned> & indice,
+				const std::vector<Ubpa::pointf3> & positions,
+				const std::vector<Ubpa::normalf> & normals = std::vector<Ubpa::normalf>(),
+				const std::vector<Ubpa::pointf2> & texcoords = std::vector<Ubpa::pointf2>(),
+				const std::vector<Ubpa::normalf> & tangents = std::vector<Ubpa::normalf>(),
 				ENUM_TYPE type = ENUM_TYPE::CODE) {
 				return Basic::New<TriMesh>(indice, positions, normals, texcoords, tangents, type);
 			}
 
-			static const Basic::Ptr<TriMesh> New(uint triNum, uint vertexNum,
-				const uint * indice,
+			static const Basic::Ptr<TriMesh> New(unsigned triNum, unsigned vertexNum,
+				const unsigned * indice,
 				const float * positions,
 				const float * normals,
 				const float * texcoords,
@@ -60,25 +62,25 @@ namespace CppUtil {
 			}
 
 		public:
-			void Init(const std::vector<uint> & indice,
-				const std::vector<Point3> & positions,
-				const std::vector<Normalf> & normals = std::vector<Normalf>(),
-				const std::vector<Point2> & texcoords = std::vector<Point2>(),
-				const std::vector<Normalf> & tangents = std::vector<Normalf>(),
+			void Init(const std::vector<unsigned> & indice,
+				const std::vector<Ubpa::pointf3> & positions,
+				const std::vector<Ubpa::normalf> & normals = std::vector<Ubpa::normalf>(),
+				const std::vector<Ubpa::pointf2> & texcoords = std::vector<Ubpa::pointf2>(),
+				const std::vector<Ubpa::normalf> & tangents = std::vector<Ubpa::normalf>(),
 				ENUM_TYPE type = ENUM_TYPE::CODE)
 			{
 				Init(false, indice, positions, normals, texcoords, tangents, type);
 			}
 
-			bool Update(const std::vector<Point3> & positions);
-			bool Update(const std::vector<Point2> & texcoords);
+			bool Update(const std::vector<Ubpa::pointf3> & positions);
+			bool Update(const std::vector<Ubpa::pointf2> & texcoords);
 
 		private:
-			void Init(bool creator, const std::vector<uint> & indice,
-				const std::vector<Point3> & positions,
-				const std::vector<Normalf> & normals = std::vector<Normalf>(),
-				const std::vector<Point2> & texcoords = std::vector<Point2>(),
-				const std::vector<Normalf> & tangents = std::vector<Normalf>(),
+			void Init(bool creator, const std::vector<unsigned> & indice,
+				const std::vector<Ubpa::pointf3> & positions,
+				const std::vector<Ubpa::normalf> & normals = std::vector<Ubpa::normalf>(),
+				const std::vector<Ubpa::pointf2> & texcoords = std::vector<Ubpa::pointf2>(),
+				const std::vector<Ubpa::normalf> & tangents = std::vector<Ubpa::normalf>(),
 				ENUM_TYPE type = ENUM_TYPE::CODE);
 
 		private:
@@ -90,21 +92,21 @@ namespace CppUtil {
 		public:
 			ENUM_TYPE GetType() const { return type; }
 
-			const std::vector<Point3> & GetPositions() const { return positions; }
-			const std::vector<Normalf> & GetNormals() const { return normals; }
-			const std::vector<Point2> & GetTexcoords() const { return texcoords; }
-			const std::vector<Normalf> & GetTangents() const { return tangents; }
-			const std::vector<uint> & GetIndice() const { return indice; }
+			const std::vector<Ubpa::pointf3> & GetPositions() const { return positions; }
+			const std::vector<Ubpa::normalf> & GetNormals() const { return normals; }
+			const std::vector<Ubpa::pointf2> & GetTexcoords() const { return texcoords; }
+			const std::vector<Ubpa::normalf> & GetTangents() const { return tangents; }
+			const std::vector<unsigned> & GetIndice() const { return indice; }
 			const std::vector<Basic::Ptr<Triangle>> & GetTriangles() const { return triangles; }
-			std::vector<Point3> & GetPositions() { return positions; }
-			std::vector<Normalf> & GetNormals() { return normals; }
-			std::vector<Point2> & GetTexcoords() { return texcoords; }
-			std::vector<Normalf> & GetTangents() { return tangents; }
-			std::vector<uint> & GetIndice() { return indice; }
+			std::vector<Ubpa::pointf3> & GetPositions() { return positions; }
+			std::vector<Ubpa::normalf> & GetNormals() { return normals; }
+			std::vector<Ubpa::pointf2> & GetTexcoords() { return texcoords; }
+			std::vector<Ubpa::normalf> & GetTangents() { return tangents; }
+			std::vector<unsigned> & GetIndice() { return indice; }
 			std::vector<Basic::Ptr<Triangle>> & GetTriangles() { return triangles; }
 
 		public:
-			virtual const BBoxf GetBBox() const override {
+			virtual const Ubpa::bboxf3 GetBBox() const override {
 				return box;
 			}
 
@@ -121,15 +123,15 @@ namespace CppUtil {
 		private:
 			ENUM_TYPE type;
 
-			std::vector<uint> indice;
-			std::vector<Point3> positions;
-			std::vector<Normalf> normals;
-			std::vector<Point2> texcoords;
-			std::vector<Normalf> tangents;
+			std::vector<unsigned> indice;
+			std::vector<Ubpa::pointf3> positions;
+			std::vector<Ubpa::normalf> normals;
+			std::vector<Ubpa::pointf2> texcoords;
+			std::vector<Ubpa::normalf> tangents;
 
 			std::vector<Basic::Ptr<Triangle>> triangles;
 
-			BBoxf box;
+			Ubpa::bboxf3 box;
 		};
 	}
 }

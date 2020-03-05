@@ -9,11 +9,11 @@ namespace CppUtil {
 	namespace Engine {
 		class BSDF_Diffuse final : public BSDF {
 		public:
-			BSDF_Diffuse(const RGBf & colorFactor = RGBf(1))
+			BSDF_Diffuse(const Ubpa::rgbf & colorFactor = Ubpa::rgbf(1.f))
 				: colorFactor(colorFactor), albedoTexture(nullptr) { }
 
 		public:
-			static const Basic::Ptr<BSDF_Diffuse> New(const RGBf & colorFactor = RGBf(1)) {
+			static const Basic::Ptr<BSDF_Diffuse> New(const Ubpa::rgbf & colorFactor = Ubpa::rgbf(1.f)) {
 				return Basic::New<BSDF_Diffuse>(colorFactor);
 			}
 
@@ -21,20 +21,20 @@ namespace CppUtil {
 			virtual ~BSDF_Diffuse() = default;
 
 		public:
-			virtual const RGBf F(const Normalf & wo, const Normalf & wi, const Point2 & texcoord) override;
+			virtual const Ubpa::rgbf F(const Ubpa::normalf & wo, const Ubpa::normalf & wi, const Ubpa::pointf2 & texcoord) override;
 
 			// probability density function
-			virtual float PDF(const Normalf & wo, const Normalf & wi, const Point2 & texcoord) override;
+			virtual float PDF(const Ubpa::normalf & wo, const Ubpa::normalf & wi, const Ubpa::pointf2 & texcoord) override;
 
 			// PD is probability density
 			// return albedo
-			virtual const RGBf Sample_f(const Normalf & wo, const Point2 & texcoord, Normalf & wi, float & PD) override;
+			virtual const Ubpa::rgbf Sample_f(const Ubpa::normalf & wo, const Ubpa::pointf2 & texcoord, Ubpa::normalf & wi, float & PD) override;
 
 		private:
-			const RGBf GetAlbedo(const Point2 & texcoord) const;
+			const Ubpa::rgbf GetAlbedo(const Ubpa::pointf2 & texcoord) const;
 
 		public:
-			RGBf colorFactor;
+			Ubpa::rgbf colorFactor;
 			Basic::Ptr<Basic::Image> albedoTexture;
 
 		private:

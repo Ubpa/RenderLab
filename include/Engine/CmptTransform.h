@@ -2,7 +2,7 @@
 #define _ENGINE_COMPONENT_CMPT_TRANSFORM_H_
 
 #include <Engine/Component.h>
-#include <Basic/UGM/Transform.h>
+#include <UGM/transform.h>
 
 namespace CppUtil {
 	namespace Engine {
@@ -10,9 +10,9 @@ namespace CppUtil {
 		public:
 			CmptTransform(
 				Basic::Ptr<SObj> sobj,
-				const Point3 & pos = Point3(0),
-				const Scalef & scale = Scalef(1.0f),
-				const Quatf & rot = Quatf()
+				const Ubpa::pointf3 & pos = Ubpa::pointf3(0.f),
+				const Ubpa::scalef3 & scale = Ubpa::scalef3(1.0f),
+				const Ubpa::quatf & rot = Ubpa::quatf()
 			) :
 				Component(sobj),
 				position(pos),
@@ -22,42 +22,42 @@ namespace CppUtil {
 
 			CmptTransform(
 				Basic::Ptr<SObj> sobj,
-				const Point3 & pos,
-				const Scalef & scale,
-				const Vec3 & axis,
+				const Ubpa::pointf3 & pos,
+				const Ubpa::scalef3 & scale,
+				const Ubpa::vecf3 & axis,
 				float theta
-			) : CmptTransform(sobj, pos, scale, Quatf(axis, theta)) { }
+			) : CmptTransform(sobj, pos, scale, Ubpa::quatf(axis, theta)) { }
 
 			CmptTransform(
 				Basic::Ptr<SObj> sobj,
-				const Point3 & pos,
-				const Scalef & scale,
-				const EulerYXZf euler
-			) : CmptTransform(sobj, pos, scale, euler.ToQuat()) { }
+				const Ubpa::pointf3 & pos,
+				const Ubpa::scalef3 & scale,
+				const Ubpa::eulerf euler
+			) : CmptTransform(sobj, pos, scale, euler.to_quat()) { }
 
 		public:
 			static const Basic::Ptr<CmptTransform> New(
 				Basic::Ptr<SObj> sobj,
-				const Point3 & pos = Point3(0),
-				const Scalef & scale = Scalef(1.0f),
-				const Quatf & rot = Quatf())
+				const Ubpa::pointf3 & pos = Ubpa::pointf3(0.f),
+				const Ubpa::scalef3 & scale = Ubpa::scalef3(1.0f),
+				const Ubpa::quatf & rot = Ubpa::quatf())
 			{
 				return Basic::New<CmptTransform>(sobj, pos, scale, rot);
 			}
 			static const Basic::Ptr<CmptTransform> New(
 				Basic::Ptr<SObj> sobj,
-				const Point3 & pos,
-				const Scalef & scale,
-				const Vec3 & axis,
+				const Ubpa::pointf3 & pos,
+				const Ubpa::scalef3 & scale,
+				const Ubpa::vecf3 & axis,
 				float theta)
 			{
 				return Basic::New<CmptTransform>(sobj, pos, scale, axis, theta);
 			}
 			static const Basic::Ptr<CmptTransform> New(
 				Basic::Ptr<SObj> sobj,
-				const Point3 & pos,
-				const Scalef & scale,
-				const EulerYXZf euler)
+				const Ubpa::pointf3 & pos,
+				const Ubpa::scalef3 & scale,
+				const Ubpa::eulerf euler)
 			{
 				return Basic::New<CmptTransform>(sobj, pos, scale, euler);
 			}
@@ -66,63 +66,63 @@ namespace CppUtil {
 			virtual ~CmptTransform() = default;
 
 		public:
-			void Init(const Point3 & pos = Point3(0), const Scalef & scale = Scalef(1.0f), const Quatf & rot = Quatf());
-			void Init(const Point3 & pos, const Scalef & scale, const Vec3 & axis, float theta) {
-				Init(pos, scale, Quatf(axis, theta));
+			void Init(const Ubpa::pointf3 & pos = Ubpa::pointf3(0.f), const Ubpa::scalef3 & scale = Ubpa::scalef3(1.0f), const Ubpa::quatf & rot = Ubpa::quatf());
+			void Init(const Ubpa::pointf3 & pos, const Ubpa::scalef3 & scale, const Ubpa::vecf3 & axis, float theta) {
+				Init(pos, scale, Ubpa::quatf(axis, theta));
 			}
-			void Init(const Point3 & pos, const Scalef & scale, const EulerYXZf euler) {
-				Init(pos, scale, euler.ToQuat());
+			void Init(const Ubpa::pointf3 & pos, const Ubpa::scalef3 & scale, const Ubpa::eulerf euler) {
+				Init(pos, scale, euler.to_quat());
 			}
 
 		public:
-			const Point3 & GetPosition() const { return position; }
-			const Quatf & GetRotation() const { return rotation; }
-			const EulerYXZf GetRotationEuler() const;
-			const Scalef & GetScale() const { return scale; }
-			const Basic::Transform & GetTransform() const;
+			const Ubpa::pointf3 & GetPosition() const { return position; }
+			const Ubpa::quatf & GetRotation() const { return rotation; }
+			const Ubpa::eulerf GetRotationEuler() const;
+			const Ubpa::scalef3 & GetScale() const { return scale; }
+			const Ubpa::transformf & GetTransform() const;
 
 		public:
-			void SetPosition(const Point3 & position);
-			void Translate(const Vec3 & delta) {
+			void SetPosition(const Ubpa::pointf3 & position);
+			void Translate(const Ubpa::vecf3 & delta) {
 				SetPosition(position + delta);
 			}
 
-			void SetRotation(const Quatf & rotation);
-			void SetRotation(const Vec3 & axis, float angle) {
-				SetRotation(Quatf(axis, angle));
+			void SetRotation(const Ubpa::quatf & rotation);
+			void SetRotation(const Ubpa::vecf3 & axis, float angle) {
+				SetRotation(Ubpa::quatf(axis, angle));
 			}
-			void SetRotation(const EulerYXZf & euler) {
-				SetRotation(euler.ToQuat());
+			void SetRotation(const Ubpa::eulerf & euler) {
+				SetRotation(euler.to_quat());
 			}
-			void Rotate(const Quatf & rot) {
+			void Rotate(const Ubpa::quatf & rot) {
 				SetRotation(rot * rotation);
 			}
-			void Rotate(const Vec3 & axis, float angle) {
-				Rotate(Quatf(axis, angle));
+			void Rotate(const Ubpa::vecf3 & axis, float angle) {
+				Rotate(Ubpa::quatf(axis, angle));
 			}
-			void Rotate(const EulerYXZf & euler) {
-				Rotate(euler.ToQuat() * rotation);
+			void Rotate(const Ubpa::eulerf & euler) {
+				Rotate(euler.to_quat() * rotation);
 			}
 
-			void SetScale(const Vec3 & xyz);
-			void Scale(const Scalef & scale) {
+			void SetScale(const Ubpa::scalef3& xyz);
+			void Scale(const Ubpa::scalef3 & scale) {
 				SetScale(this->scale * scale);
 			}
 
-			void SetTransform(const Basic::Transform & transform);
-			void LookAt(const Point3 &pos, const Point3 &target, const Vec3 &up = Vec3(0, 1, 0)) {
-				SetTransform(Transform::LookAt(pos, target, up).Inverse());
+			void SetTransform(const Ubpa::transformf & transform);
+			void look_at(const Ubpa::pointf3 &pos, const Ubpa::pointf3 &target, const Ubpa::vecf3 &up = Ubpa::vecf3(0, 1, 0)) {
+				SetTransform(Ubpa::transformf::look_at(pos, target, up).inverse());
 			}
 
 		private:
 			void UpdateMat() const;
 
-			Point3 position;
-			Quatf rotation;
-			Scalef scale;
+			Ubpa::pointf3 position;
+			Ubpa::quatf rotation;
+			Ubpa::scalef3 scale;
 
 			mutable bool dirtyTransform;
-			mutable Basic::Transform transform;
+			mutable Ubpa::transformf transform;
 		};
 	}
 }

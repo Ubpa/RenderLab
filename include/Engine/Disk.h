@@ -18,7 +18,7 @@ namespace CppUtil {
 			virtual ~Disk() = default;
 
 		public:
-			virtual const BBoxf GetBBox() const override {
+			virtual const Ubpa::bboxf3 GetBBox() const override {
 				return { {-1,-0.001,-1}, {1,0.001,1} };
 			}
 		};

@@ -38,7 +38,7 @@ namespace CppUtil {
 		const string str_PointLight_prefix = "data/shaders/Engine/PointLight/";
 		const string str_genDepth = "genDepth";
 		const string str_genDepth_vs = str_PointLight_prefix + str_genDepth + ".vs";
-		const string str_genDepth_gs = str_PointLight_prefix + str_genDepth + ".gs";
+		const string str_genDepth_gs = str_PointLight_prefix + str_genDepth + "[1]s";
 		const string str_genDepth_fs = str_PointLight_prefix + str_genDepth + ".fs";
 	}
 }
@@ -75,7 +75,7 @@ void DLDM_Generator::Visit(Ptr<Scene> scene) {
 	glGetIntegerv(GL_VIEWPORT, origViewport);
 
 	modelVec.clear();
-	modelVec.push_back(Transform(1.f));
+	modelVec.push_back(Ubpa::transformf::eye());
 
 	// regist
 	for (auto cmptLight : scene->GetCmptLights()) {
@@ -92,7 +92,10 @@ void DLDM_Generator::Visit(Ptr<Scene> scene) {
 	}
 
 	const auto corners = camera->Corners();
-	const auto center = Point3::Mean(corners);
+	Ubpa::vecf3 sum{ 0.f };
+	for (auto p : corners)
+		sum += p.cast_to<Ubpa::vecf3>();
+	const auto center = (sum/corners.size()).cast_to<Ubpa::pointf3>();
 
 	light2pv.clear();
 	auto nextIt = lightMap.begin();
@@ -111,12 +114,12 @@ void DLDM_Generator::Visit(Ptr<Scene> scene) {
 		glViewport(0, 0, depthMapSize, depthMapSize);
 		glClear(GL_DEPTH_BUFFER_BIT);
 
-		auto nDir = lightComponent->GetSObj()->GetLocalToWorldMatrix()(Vec3f(0, -1, 0)).Normalize();
+		auto nDir = (lightComponent->GetSObj()->GetLocalToWorldMatrix() * Ubpa::vecf3(0, -1, 0)).normalize();
 		float minD = FLT_MAX;
 		float maxD = -FLT_MAX;
 		for (auto corner : corners) {
 			auto diff = corner - center;
-			auto d = diff.Dot(nDir);
+			auto d = diff.dot(nDir);
 			if (d < minD)
 				minD = d;
 			if (d > maxD)
@@ -126,22 +129,22 @@ void DLDM_Generator::Visit(Ptr<Scene> scene) {
 		float extent = maxD - minD;
 		auto pos = center + (minD - extent * backRatio ) * nDir;
 
-		auto view = Transform::LookAt(pos, center);
+		auto view = Ubpa::transformf::look_at(pos, center);
 		
 		float maxX = 0.f;
 		float maxY = 0.f;
 		for (auto corner : corners) {
-			auto cornerInCam = view(corner);
-			auto absCornerInCam = cornerInCam.AbsSelf();
-			if (absCornerInCam.x > maxX)
-				maxX = absCornerInCam.x;
-			if (absCornerInCam.y > maxY)
-				maxY = absCornerInCam.y;
+			auto cornerInCam = view * corner;
+			auto absCornerInCam = cornerInCam.abs();
+			if (absCornerInCam[0] > maxX)
+				maxX = absCornerInCam[0];
+			if (absCornerInCam[1] > maxY)
+				maxY = absCornerInCam[1];
 		}
-		auto proj = Transform::Orthographic(2 * maxX, 2 * maxY, 0, extent * (1 + backRatio));
+		auto proj = Ubpa::transformf::orthographic(2 * maxX, 2 * maxY, 0, extent * (1 + backRatio));
 
-		shader_genDepth.SetMat4f("view", view.GetMatrix().Data());
-		shader_genDepth.SetMat4f("proj", proj.GetMatrix().Data());
+		shader_genDepth.SetMatf4("view", view.data());
+		shader_genDepth.SetMatf4("proj", proj.data());
 
 		light2pv[lightComponent] = proj * view;
 
@@ -177,28 +180,28 @@ void DLDM_Generator::Visit(Ptr<SObj> sobj) {
 
 
 void DLDM_Generator::Visit(Ptr<Sphere> sphere) {
-	shader_genDepth.SetMat4f("model", modelVec.back());
+	shader_genDepth.SetMatf4("model", modelVec.back().data());
 	pOGLW->GetVAO(ShapeType::Sphere).Draw(shader_genDepth);
 }
 
 void DLDM_Generator::Visit(Ptr<Plane> plane) {
-	shader_genDepth.SetMat4f("model", modelVec.back());
+	shader_genDepth.SetMatf4("model", modelVec.back().data());
 	pOGLW->GetVAO(ShapeType::Plane).Draw(shader_genDepth);
 }
 
 void DLDM_Generator::Visit(Ptr<TriMesh> mesh) {
-	shader_genDepth.SetMat4f("model", modelVec.back());
+	shader_genDepth.SetMatf4("model", modelVec.back().data());
 	pOGLW->GetVAO(mesh).Draw(shader_genDepth);
 }
 
 void DLDM_Generator::Visit(Ptr<Disk> disk) {
-	shader_genDepth.SetMat4f("model", modelVec.back());
+	shader_genDepth.SetMatf4("model", modelVec.back().data());
 	shader_genDepth.SetBool("isOffset", false);
 	pOGLW->GetVAO(ShapeType::Disk).Draw(shader_genDepth);
 }
 
 void DLDM_Generator::Visit(Ptr<Capsule> capsule) {
-	shader_genDepth.SetMat4f("model", modelVec.back());
+	shader_genDepth.SetMatf4("model", modelVec.back().data());
 	shader_genDepth.SetBool("isOffset", true);
 	shader_genDepth.SetFloat("offset", capsule->height / 2 - 1);
 	pOGLW->GetVAO(ShapeType::Capsule).Draw(shader_genDepth);
@@ -212,10 +215,10 @@ const Texture DLDM_Generator::GetDepthMap(PtrC<CmptLight> light) const {
 	return target->second.tex;
 }
 
-const Transform DLDM_Generator::GetProjView(PtrC<CmptLight> light) const {
+const Ubpa::transformf DLDM_Generator::GetProjView(PtrC<CmptLight> light) const {
 	auto target = light2pv.find(light);
 	if (target == light2pv.cend())
-		return Transform();
+		return Ubpa::transformf();
 
 	return target->second;
 }

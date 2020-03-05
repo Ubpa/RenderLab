@@ -3,13 +3,13 @@
 
 #include <Basic/Visitor.h>
 #include <3rdParty/tinyxml2.h>
-#include <Basic/UGM/Transform.h>
+#include <UGM/transform.h>
 
-#include <Basic/UGM/Point.h>
-#include <Basic/UGM/Vector.h>
-#include <Basic/UGM/Normal.h>
-#include <Basic/UGM/RGB.h>
-#include <Basic/UGM/RGBA.h>
+#include <UGM/point.h>
+#include <UGM/vec.h>
+#include <UGM/normal.h>
+#include <UGM/rgb.h>
+#include <UGM/rgba.h>
 
 #include <stack>
 #include <functional>
@@ -64,7 +64,7 @@ namespace CppUtil {
 				return Basic::New<SObjSaver>();
 			}
 
-			void Init(const std::string & path);
+			void Init(const std::string& path);
 
 		private:
 			void Visit(Basic::PtrC<Basic::Image> img);
@@ -104,10 +104,10 @@ namespace CppUtil {
 			void Visit(Basic::Ptr<CmptTransform> transform);
 
 		private:
-			tinyxml2::XMLText* NewText(const char * text) {
+			tinyxml2::XMLText* NewText(const char* text) {
 				return NewText(std::string(text));
 			}
-			tinyxml2::XMLText * NewText(const std::string & text) {
+			tinyxml2::XMLText* NewText(const std::string& text) {
 				return doc.NewText(text.c_str());
 			}
 
@@ -115,83 +115,98 @@ namespace CppUtil {
 			// unsigned, unsigned long, unsigned long long
 			// float, double, long double
 			template<typename numT>
-			tinyxml2::XMLText * NewText(numT val) {
+			tinyxml2::XMLText* NewText(numT val) {
 				return NewText(std::to_string(val));
 			}
 
-			tinyxml2::XMLElement * NewEle(tinyxml2::XMLElement * parent, const char * const name) {
+			tinyxml2::XMLElement* NewEle(tinyxml2::XMLElement* parent, const char* const name) {
 				auto ele = doc.NewElement(name);
 				parent->InsertEndChild(ele);
 				return ele;
 			}
 
-			tinyxml2::XMLElement * NewEle(const char * const name) {
+			tinyxml2::XMLElement* NewEle(const char* const name) {
 				return NewEle(parentEleStack.back(), name);
 			}
 
-			void NewEle(tinyxml2::XMLElement * parent, const char * const name, const std::string & text) {
+			void NewEle(tinyxml2::XMLElement* parent, const char* const name, const std::string& text) {
 				auto ele = NewEle(parent, name);
 				ele->InsertEndChild(NewText(text));
 			}
 
-			void NewEle(const char * const name, const std::string & text) {
+			void NewEle(const char* const name, const std::string& text) {
 				NewEle(parentEleStack.back(), name, text);
 			}
 
-			void NewEle(const char * const name, float val) {
+			void NewEle(const char* const name, float val) {
 				NewEle(parentEleStack.back(), name, std::to_string(val));
 			}
 
-			void NewEle(const char * const name, int val) {
+			void NewEle(const char* const name, int val) {
 				NewEle(parentEleStack.back(), name, std::to_string(val));
 			}
-			
-			template<int N, typename T>
-			void NewEle(const char * const name, const Val<N, T> & val) {
+
+			template<size_t N, typename T>
+			void NewEle(const char* const name, const Ubpa::val<T, N>& val) {
 				std::stringstream ss;
 				for (int i = 0; i < N - 1; i++)
 					ss << val[i] << " ";
-				ss << val[N-1];
+				ss << val[N - 1];
 				NewEle(name, ss.str());
 			}
 
-			template<int N, typename T>
-			void NewEle(const char * const name, const Point<N, T> & val) {
-				NewEle(name, static_cast<Val<N, T>>(val));
+			template<size_t N, typename T>
+			void NewEle(const char* const name, const Ubpa::point<T, N>& val) {
+				NewEle(name, val.cast_to<Ubpa::val<T, N>>());
 			}
 
-			template<int N, typename T>
-			void NewEle(const char * const name, const Vector<N, T> & val) {
-				NewEle(name, static_cast<Val<N, T>>(val));
+			template<size_t N, typename T>
+			void NewEle(const char* const name, const Ubpa::vec<T, N>& val) {
+				NewEle(name, val.cast_to<Ubpa::val<T, N>>());
 			}
 
-			template<typename T>
-			void NewEle(const char * const name, const Normal<T> & val) {
-				NewEle(name, static_cast<Val<3, T>>(val));
-			}
-
-			template<typename T>
-			void NewEle(const char * const name, const RGB<T> & val) {
-				NewEle(name, static_cast<Val<3, T>>(val));
+			template<size_t N, typename T>
+			void NewEle(const char* const name, const Ubpa::scale<T, N>& val) {
+				NewEle(name, val.cast_to<Ubpa::val<T, N>>());
 			}
 
 			template<typename T>
-			void NewEle(const char * const name, const RGBA<T> & val) {
-				NewEle(name, static_cast<Val<4, T>>(val));
+			void NewEle(const char* const name, const Ubpa::normal<T>& val) {
+				NewEle(name, val.cast_to<Ubpa::val<T, 3>>());
 			}
 
-			void Member(tinyxml2::XMLElement * parent, const std::function<void()> & func);
+			template<typename T>
+			void NewEle(const char* const name, const Ubpa::euler<T>& val) {
+				NewEle(name, val.cast_to<Ubpa::val<T, 3>>());
+			}
 
-			void NewEle(const char * const name, const std::function<void()> & func) {
+			template<typename T>
+			void NewEle(const char* const name, const Ubpa::rgb<T>& val) {
+				NewEle(name, val.cast_to<Ubpa::val<T, 3>>());
+			}
+
+			template<typename T>
+			void NewEle(const char* const name, const Ubpa::quat<T>& val) {
+				NewEle(name, val.cast_to<Ubpa::val<T, 4>>());
+			}
+
+			template<typename T>
+			void NewEle(const char* const name, const Ubpa::rgba<T>& val) {
+				NewEle(name, val.cast_to<Ubpa::val<T, 4>>());
+			}
+
+			void Member(tinyxml2::XMLElement* parent, const std::function<void()>& func);
+
+			void NewEle(const char* const name, const std::function<void()>& func) {
 				Member(NewEle(name), func);
 			}
 
-			void NewEle(const char * const name, Basic::PtrC<Basic::Image> img);
+			void NewEle(const char* const name, Basic::PtrC<Basic::Image> img);
 
 		private:
 			tinyxml2::XMLDocument doc;
-			std::map<Basic::Ptr<SObj>, tinyxml2::XMLElement *> sobj2ele;
-			std::vector<tinyxml2::XMLElement *> parentEleStack;
+			std::map<Basic::Ptr<SObj>, tinyxml2::XMLElement*> sobj2ele;
+			std::vector<tinyxml2::XMLElement*> parentEleStack;
 			std::string path;
 		};
 	}

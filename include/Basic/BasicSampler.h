@@ -5,7 +5,7 @@
 #include <UGM/point.h>
 #include <UGM/vec.h>
 #include <UGM/vec.h>
-#include <UGM/Normal.h>
+#include <UGM/normal.h>
 
 namespace CppUtil {
 	namespace Basic {

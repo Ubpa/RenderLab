@@ -16,16 +16,16 @@ bool Glue::Run() {
 	}
 
 	auto & positions = triMesh->GetPositions();
-	vector<uint> indice;
-	vector<Point3> uniquePos;
-	map<Point3, uint> pos2idx;
+	vector<unsigned> indice;
+	vector<Ubpa::pointf3> uniquePos;
+	map<Ubpa::pointf3, unsigned> pos2idx;
 
 	for (auto triangle : triMesh->GetTriangles()) {
 		for (int i = 0; i < 3; i++) {
 			auto pos = positions[triangle->idx[i]];
 			auto target = pos2idx.find(pos);
 			if (target == pos2idx.end()) {
-				pos2idx[pos] = static_cast<uint>(uniquePos.size());
+				pos2idx[pos] = static_cast<unsigned>(uniquePos.size());
 				uniquePos.push_back(pos);
 				target = pos2idx.find(pos);
 			}

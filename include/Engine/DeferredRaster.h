@@ -6,7 +6,7 @@
 #include <OpenGL/FBO.h>
 #include <OpenGL/Texture.h>
 
-#include <Basic/UGM/Transform.h>
+#include <UGM/transform.h>
 #include <Basic/TypeMap.h>
 
 #include <set>
@@ -78,7 +78,7 @@ namespace CppUtil{
 			OpenGL::FBO gbufferFBO;
 			OpenGL::FBO windowFBO;
 
-			std::vector<Transform> modelVec;
+			std::vector<Ubpa::transformf> modelVec;
 
 			OpenGL::Shader metalShader;
 			OpenGL::Shader diffuseShader;

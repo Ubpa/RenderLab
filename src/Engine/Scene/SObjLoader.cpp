@@ -2,7 +2,7 @@
 
 #include "SL_Common.h"
 
-#include <Basic/UGM/Transform.h>
+#include <UGM/transform.h>
 #include <Basic/StrAPI.h>
 
 using namespace CppUtil;
@@ -32,22 +32,22 @@ const Ptr<Image> SObjLoader::To(const Key & key) {
 }
 
 template<>
-const vector<uint> SObjLoader::To(const Key& key) {
-	vector<uint> triangles;
+const vector<unsigned> SObjLoader::To(const Key& key) {
+	vector<unsigned> triangles;
 	auto triangleStrs = StrAPI::Spilt(key, '\n');
 	for (const auto& triangleStr : triangleStrs) {
 		if (triangleStr.empty())
 			continue;
 		auto idxStrs = StrAPI::Spilt(triangleStr, ' ');
 		for (const auto& idxStr : idxStrs)
-			triangles.push_back(static_cast<uint>(stoi(idxStr)));
+			triangles.push_back(static_cast<unsigned>(stoi(idxStr)));
 	}
 	return triangles;
 }
 
 template<>
-const vector<Point3> SObjLoader::To(const Key& key) {
-	vector<Point3> positions;
+const vector<Ubpa::pointf3> SObjLoader::To(const Key& key) {
+	vector<Ubpa::pointf3> positions;
 	auto positionStrs = StrAPI::Spilt(key, '\n');
 	for (const auto& positionStr : positionStrs) {
 		if (positionStr.empty())
@@ -227,10 +227,10 @@ static Ptr<TriMesh> SObjLoader::Load(XMLElement * ele) {
 	};
 	funcMap[str::TriMesh::ENUM_TYPE::CODE::type] = [&](XMLElement * ele) {
 		FuncMap innerFuncMap;
-		vector<Point3> positions;
-		vector<uint> indices;
-		Reg_Text_val<vector<Point3>>(innerFuncMap, str::TriMesh::ENUM_TYPE::CODE::position, positions);
-		Reg_Text_val<vector<uint>>(innerFuncMap, str::TriMesh::ENUM_TYPE::CODE::triangle, indices);
+		vector<Ubpa::pointf3> positions;
+		vector<unsigned> indices;
+		Reg_Text_val<vector<Ubpa::pointf3>>(innerFuncMap, str::TriMesh::ENUM_TYPE::CODE::position, positions);
+		Reg_Text_val<vector<unsigned>>(innerFuncMap, str::TriMesh::ENUM_TYPE::CODE::triangle, indices);
 		LoadNode(ele, innerFuncMap);
 		triMesh = TriMesh::New(indices, positions);
 	};
@@ -603,7 +603,7 @@ static Ptr<BSDF_Frostbite> SObjLoader::Load(XMLElement * ele) {
 	return bsdf;
 }
 
-// ------------ Transform ----------------
+// ------------ Ubpa::transformf ----------------
 
 template<>
 static Ptr<CmptTransform> SObjLoader::Load(XMLElement * ele){
@@ -611,7 +611,7 @@ static Ptr<CmptTransform> SObjLoader::Load(XMLElement * ele){
 
 	FuncMap funcMap;
 	Reg_Text_setVal(funcMap, str::CmptTransform::Position, cmpt, &CmptTransform::SetPosition);
-	void (CmptTransform::*func)(const Quatf &) = &CmptTransform::SetRotation;
+	void (CmptTransform::*func)(const Ubpa::quatf &) = &CmptTransform::SetRotation;
 	Reg_Text_setVal(funcMap, str::CmptTransform::Rotation, cmpt, func);
 	Reg_Text_setVal(funcMap, str::CmptTransform::Scale, cmpt, &CmptTransform::SetScale);
 

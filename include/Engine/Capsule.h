@@ -17,8 +17,8 @@ namespace CppUtil {
 			virtual ~Capsule() = default;
 
 		public:
-			virtual const BBoxf GetBBox() const override {
-				return BBoxf({ -1, -2, -1 }, { 1, 2, 1 });
+			virtual const Ubpa::bboxf3 GetBBox() const override {
+				return Ubpa::bboxf3({ -1, -2, -1 }, { 1, 2, 1 });
 			}
 
 		public:

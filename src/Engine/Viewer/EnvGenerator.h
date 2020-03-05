@@ -7,7 +7,7 @@
 #include <OpenGL/VAO.h>
 #include <OpenGL/Shader.h>
 
-#include <Basic/UGM/Transform.h>
+#include <UGM/transform.h>
 
 namespace CppUtil {
 	namespace Basic {
@@ -93,7 +93,7 @@ namespace CppUtil {
 			OpenGL::Texture irradianceMap;
 			OpenGL::Texture prefilterMap;
 
-			static const Transform captureViews[6];
+			static const Ubpa::transformf captureViews[6];
 			static const OpenGL::FBO::TexTarget mapper[6];
 		};
 	}

@@ -108,7 +108,7 @@ void DeferredRaster::InitShader_GBuffer_MetalWorkflow() {
 
 	metalShader.SetInt("metal.albedoTexture", 0);
 	metalShader.SetInt("metal.metallicTexture", 1);
-	metalShader.SetInt("metal.roughnessTexture", 2);
+	metalShader.SetInt("metal[0]oughnessTexture", 2);
 	metalShader.SetInt("metal.aoTexture", 3);
 	metalShader.SetInt("metal.normalTexture", 4);
 
@@ -132,7 +132,7 @@ void DeferredRaster::InitShader_GBuffer_Frostbite() {
 
 	frostbiteShader.SetInt("bsdf.albedoTexture", 0);
 	frostbiteShader.SetInt("bsdf.metallicTexture", 1);
-	frostbiteShader.SetInt("bsdf.roughnessTexture", 2);
+	frostbiteShader.SetInt("bsdf[0]oughnessTexture", 2);
 	frostbiteShader.SetInt("bsdf.aoTexture", 3);
 	frostbiteShader.SetInt("bsdf.normalTexture", 4);
 
@@ -240,7 +240,7 @@ void DeferredRaster::Pass_GBuffer() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	modelVec.clear();
-	modelVec.push_back(Transform(1.f));
+	modelVec.push_back(Ubpa::transformf::eye());
 	scene->GetRoot()->Accept(This());
 }
 
@@ -387,7 +387,7 @@ void DeferredRaster::Visit(Ptr<SObj> sobj) {
 
 void DeferredRaster::Visit(Ptr<BSDF_MetalWorkflow> metal) {
 	string strBSDF = "metal.";
-	metalShader.SetVec3f(strBSDF + "colorFactor", metal->colorFactor);
+	metalShader.SetVecf3(strBSDF + "colorFactor", metal->colorFactor.cast_to<Ubpa::valf3>());
 	metalShader.SetFloat(strBSDF + "metallicFactor", metal->metallicFactor);
 	metalShader.SetFloat(strBSDF + "roughnessFactor", metal->roughnessFactor);
 
@@ -410,7 +410,7 @@ void DeferredRaster::Visit(Ptr<BSDF_MetalWorkflow> metal) {
 
 void DeferredRaster::Visit(Ptr<BSDF_Diffuse> diffuse) {
 	string strBSDF = "diffuse.";
-	diffuseShader.SetVec3f(strBSDF + "colorFactor", diffuse->colorFactor);
+	diffuseShader.SetVecf3(strBSDF + "colorFactor", diffuse->colorFactor.cast_to<Ubpa::valf3>());
 	if (diffuse->albedoTexture && diffuse->albedoTexture->IsValid()) {
 		diffuseShader.SetBool(strBSDF + "haveAlbedoTexture", true);
 		pOGLW->GetTex(diffuse->albedoTexture).Use(0);
@@ -423,7 +423,7 @@ void DeferredRaster::Visit(Ptr<BSDF_Diffuse> diffuse) {
 
 void DeferredRaster::Visit(Ptr<BSDF_Frostbite> bsdf) {
 	string strBSDF = "bsdf.";
-	frostbiteShader.SetVec3f(strBSDF + "colorFactor", bsdf->colorFactor);
+	frostbiteShader.SetVecf3(strBSDF + "colorFactor", bsdf->colorFactor.cast_to<Ubpa::valf3>());
 	frostbiteShader.SetFloat(strBSDF + "metallicFactor", bsdf->metallicFactor);
 	frostbiteShader.SetFloat(strBSDF + "roughnessFactor", bsdf->roughnessFactor);
 
@@ -445,7 +445,7 @@ void DeferredRaster::Visit(Ptr<BSDF_Frostbite> bsdf) {
 }
 
 void DeferredRaster::Visit(Ptr<BSDF_Emission> emission) {
-	emissionShader.SetVec3f("emission.L", emission->intensity * emission->color);
+	emissionShader.SetVecf3("emission.L", (emission->intensity * emission->color).cast_to<Ubpa::valf3>());
 
 	curMaterialShader = emissionShader;
 }
@@ -454,7 +454,7 @@ void DeferredRaster::Visit(Ptr<Sphere> sphere) {
 	if (!curMaterialShader.IsValid())
 		return;
 
-	curMaterialShader.SetMat4f("model", modelVec.back());
+	curMaterialShader.SetMatf4("model", modelVec.back().data());
 	curMaterialShader.SetBool("isOffset", false);
 	pOGLW->GetVAO(ShapeType::Sphere).Draw(curMaterialShader);
 }
@@ -463,7 +463,7 @@ void DeferredRaster::Visit(Ptr<Plane> plane) {
 	if (!curMaterialShader.IsValid())
 		return;
 
-	curMaterialShader.SetMat4f("model", modelVec.back());
+	curMaterialShader.SetMatf4("model", modelVec.back().data());
 	curMaterialShader.SetBool("isOffset", false);
 	pOGLW->GetVAO(ShapeType::Plane).Draw(curMaterialShader);
 }
@@ -472,7 +472,7 @@ void DeferredRaster::Visit(Ptr<TriMesh> mesh) {
 	if (!curMaterialShader.IsValid())
 		return;
 
-	curMaterialShader.SetMat4f("model", modelVec.back());
+	curMaterialShader.SetMatf4("model", modelVec.back().data());
 	curMaterialShader.SetBool("isOffset", false);
 	pOGLW->GetVAO(mesh).Draw(curMaterialShader);
 }
@@ -481,7 +481,7 @@ void DeferredRaster::Visit(Ptr<Disk> disk) {
 	if (!curMaterialShader.IsValid())
 		return;
 
-	curMaterialShader.SetMat4f("model", modelVec.back());
+	curMaterialShader.SetMatf4("model", modelVec.back().data());
 	curMaterialShader.SetBool("isOffset", false);
 	pOGLW->GetVAO(ShapeType::Disk).Draw(curMaterialShader);
 }
@@ -490,7 +490,7 @@ void DeferredRaster::Visit(Ptr<Capsule> capsule) {
 	if (!curMaterialShader.IsValid())
 		return;
 
-	curMaterialShader.SetMat4f("model", modelVec.back());
+	curMaterialShader.SetMatf4("model", modelVec.back().data());
 	curMaterialShader.SetBool("isOffset", true);
 	curMaterialShader.SetFloat("offset", capsule->height / 2 - 1);
 	pOGLW->GetVAO(ShapeType::Capsule).Draw(curMaterialShader);

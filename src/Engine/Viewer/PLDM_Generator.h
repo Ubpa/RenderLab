@@ -7,7 +7,7 @@
 #include <OpenGL/VAO.h>
 #include <OpenGL/Shader.h>
 
-#include <Basic/UGM/Transform.h>
+#include <UGM/transform.h>
 
 namespace CppUtil {
 	namespace QT {
@@ -74,7 +74,7 @@ namespace CppUtil {
 
 			OpenGL::Shader shader_genDepth;
 
-			std::vector<Transform> modelVec;
+			std::vector<Ubpa::transformf> modelVec;
 		};
 	}
 }

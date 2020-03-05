@@ -1,20 +1,20 @@
 #ifndef _ENGINE_PRIMITIVE_RAY_H_
 #define _ENGINE_PRIMITIVE_RAY_H_
 
-#include <Basic/UGM/Ray.h>
+#include <UGM/ray.h>
 
 namespace CppUtil {
 	namespace Engine {
-		class Ray : public Basic::Ray {
+		class Ray : public Ubpa::rayf3 {
 		public:
-			Ray(const Point3 & origin = Point3(0), const Point3 & dir = Point3(1), float tMin = 0.001f, float tMax = FLT_MAX)
-				: Basic::Ray(origin, dir), tMin(tMin), tMax(tMax) { }
+			Ray(const Ubpa::pointf3 & origin = Ubpa::pointf3(0.f,0.f,0.f), const Ubpa::vecf3& dir = Ubpa::vecf3(1.f,1.f,1.f), float tMin = 0.001f, float tMax = FLT_MAX)
+				: Ubpa::rayf3(origin, dir), tMin(tMin), tMax(tMax) { }
 
 		public:
-			const Point3 StartPos() const { return (*this)(tMin); }
-			const Point3 EndPos() const { return (*this)(tMax); }
+			const Ubpa::pointf3 StartPos() const { return (*this)(tMin); }
+			const Ubpa::pointf3 EndPos() const { return (*this)(tMax); }
 
-			const Val3f InvDir() const { return Val3f(1.f / d.x, 1.f / d.y, 1.f / d.z); }
+			const Ubpa::valf3 InvDir() const { return{ 1.f / d[0], 1.f / d[1], 1.f / d[2] }; }
 		
 		public:
 			float tMin;

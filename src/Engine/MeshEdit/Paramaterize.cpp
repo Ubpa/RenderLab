@@ -54,10 +54,10 @@ bool Paramaterize::Run() {
 		return false;
 	}
 
-	vector<Point2> texcoords;
+	vector<Ubpa::pointf2> texcoords;
 	// order remain, so we can directly get correct order
 	for (auto v : minSurf->heMesh->Vertices())
-		texcoords.push_back({ v->pos.x,v->pos.y });
+		texcoords.push_back({ v->pos[0],v->pos[1] });
 
 	minSurf->triMesh->Update(texcoords);
 
@@ -79,7 +79,7 @@ void Paramaterize::SetBoundPos() {
 		auto next = (i + 1) % n;
 		auto pos0 = vertices[i]->pos;
 		auto pos1 = vertices[next]->pos;
-		float dis = (pos1 - pos0).Norm();
+		float dis = (pos1 - pos0).norm();
 		disVec.push_back(dis);
 		sumDis += dis;
 	}
@@ -89,25 +89,25 @@ void Paramaterize::SetBoundPos() {
 	for (size_t i = 0; i < n; i++) {
 		float s = accDis / sumDis;
 
-		Point2 pos;
+		Ubpa::pointf2 pos;
 		if (s < 0.25f) {
 			float t = 4.f * s;
-			pos = Point2(0.f, t);
+			pos = Ubpa::pointf2(0.f, t);
 		}
 		else if (s < 0.50f) {
 			float t = 4.f * (s - 0.25f);
-			pos = Point2(t, 1.f);
+			pos = Ubpa::pointf2(t, 1.f);
 		}
 		else if (s < 0.75f) {
 			float t = 4.f * (s - 0.50f);
-			pos = Point2(1.f, 1.f - t);
+			pos = Ubpa::pointf2(1.f, 1.f - t);
 		}
 		else {
 			float t = 4.f * (s - 0.75f);
-			pos = Point2(1.f - t, 0.f);
+			pos = Ubpa::pointf2(1.f - t, 0.f);
 		}
 
-		vertices[i]->pos = Point3(pos, 0.f);
+		vertices[i]->pos = Ubpa::vecf3(pos[0], pos[1], 0.f);
 
 		accDis += disVec[i];
 	}

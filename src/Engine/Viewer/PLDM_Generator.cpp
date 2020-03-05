@@ -34,7 +34,7 @@ namespace CppUtil {
 		const string str_PointLight_prefix = "data/shaders/Engine/PointLight/";
 		const string str_genDepth = "genDepth";
 		const string str_genDepth_vs = str_PointLight_prefix + str_genDepth + ".vs";
-		const string str_genDepth_gs = str_PointLight_prefix + str_genDepth + ".gs";
+		const string str_genDepth_gs = str_PointLight_prefix + str_genDepth + "[1]s";
 		const string str_genDepth_fs = str_PointLight_prefix + str_genDepth + ".fs";
 	}
 }
@@ -73,7 +73,7 @@ void PLDM_Generator::Visit(Ptr<Scene> scene) {
 	glGetIntegerv(GL_VIEWPORT, origViewport);
 
 	modelVec.clear();
-	modelVec.push_back(Transform(1.f));
+	modelVec.push_back(Ubpa::transformf::eye());
 
 	// regist
 	for (auto cmptLight : scene->GetCmptLights()) {
@@ -89,7 +89,7 @@ void PLDM_Generator::Visit(Ptr<Scene> scene) {
 		lightMap[cmptLight] = FBO_Tex(FBO_DepthMap, depthMap);
 	}
 
-	auto shadowProj = Transform::Perspcetive(90.f, 1.f, lightNear, lightFar);
+	auto shadowProj = Ubpa::transformf::perspective(Ubpa::to_radian(90.f), 1.f, lightNear, lightFar);
 	auto nextIt = lightMap.begin();
 	while (nextIt != lightMap.end()) {
 		auto curIt = nextIt;
@@ -107,23 +107,23 @@ void PLDM_Generator::Visit(Ptr<Scene> scene) {
 		glClear(GL_DEPTH_BUFFER_BIT);
 
 		auto lightPos = lightComponent->GetSObj()->GetWorldPos();
-		shader_genDepth.SetVec3f("lightPos", lightPos);
+		shader_genDepth.SetVecf3("lightPos", lightPos.cast_to<Ubpa::valf3>());
 
-		std::vector<Transform> shadowTransforms;
+		std::vector<Ubpa::transformf> shadowTransforms;
 		shadowTransforms.push_back(shadowProj *
-			Transform::LookAt(lightPos, lightPos + Vec3(1.0, 0.0, 0.0), Vec3(0.0, -1.0, 0.0)));
+			Ubpa::transformf::look_at(lightPos, lightPos + Ubpa::vecf3(1.0, 0.0, 0.0), Ubpa::vecf3(0.0, -1.0, 0.0)));
 		shadowTransforms.push_back(shadowProj *
-			Transform::LookAt(lightPos, lightPos + Vec3(-1.0, 0.0, 0.0), Vec3(0.0, -1.0, 0.0)));
+			Ubpa::transformf::look_at(lightPos, lightPos + Ubpa::vecf3(-1.0, 0.0, 0.0), Ubpa::vecf3(0.0, -1.0, 0.0)));
 		shadowTransforms.push_back(shadowProj *
-			Transform::LookAt(lightPos, lightPos + Vec3(0.0, 1.0, 0.0), Vec3(0.0, 0.0, 1.0)));
+			Ubpa::transformf::look_at(lightPos, lightPos + Ubpa::vecf3(0.0, 1.0, 0.0), Ubpa::vecf3(0.0, 0.0, 1.0)));
 		shadowTransforms.push_back(shadowProj *
-			Transform::LookAt(lightPos, lightPos + Vec3(0.0, -1.0, 0.0), Vec3(0.0, 0.0, -1.0)));
+			Ubpa::transformf::look_at(lightPos, lightPos + Ubpa::vecf3(0.0, -1.0, 0.0), Ubpa::vecf3(0.0, 0.0, -1.0)));
 		shadowTransforms.push_back(shadowProj *
-			Transform::LookAt(lightPos, lightPos + Vec3(0.0, 0.0, 1.0), Vec3(0.0, -1.0, 0.0)));
+			Ubpa::transformf::look_at(lightPos, lightPos + Ubpa::vecf3(0.0, 0.0, 1.0), Ubpa::vecf3(0.0, -1.0, 0.0)));
 		shadowTransforms.push_back(shadowProj *
-			Transform::LookAt(lightPos, lightPos + Vec3(0.0, 0.0, -1.0), Vec3(0.0, -1.0, 0.0)));
+			Ubpa::transformf::look_at(lightPos, lightPos + Ubpa::vecf3(0.0, 0.0, -1.0), Ubpa::vecf3(0.0, -1.0, 0.0)));
 		for (size_t i = 0; i < 6; ++i)
-			shader_genDepth.SetMat4f("shadowMatrices[" + to_string(i) + "]", shadowTransforms[i].GetMatrix());
+			shader_genDepth.SetMatf4("shadowMatrices[" + to_string(i) + "]", shadowTransforms[i].data());
 
 		scene->GetRoot()->Accept(This());
 	}
@@ -157,31 +157,31 @@ void PLDM_Generator::Visit(Ptr<SObj> sobj) {
 
 
 void PLDM_Generator::Visit(Ptr<Sphere> sphere) {
-	shader_genDepth.SetMat4f("model", modelVec.back());
+	shader_genDepth.SetMatf4("model", modelVec.back().data());
 	shader_genDepth.SetBool("isOffset", false);
 	pOGLW->GetVAO(ShapeType::Sphere).Draw(shader_genDepth);
 }
 
 void PLDM_Generator::Visit(Ptr<Plane> plane) {
-	shader_genDepth.SetMat4f("model", modelVec.back());
+	shader_genDepth.SetMatf4("model", modelVec.back().data());
 	shader_genDepth.SetBool("isOffset", false);
 	pOGLW->GetVAO(ShapeType::Plane).Draw(shader_genDepth);
 }
 
 void PLDM_Generator::Visit(Ptr<TriMesh> mesh) {
-	shader_genDepth.SetMat4f("model", modelVec.back());
+	shader_genDepth.SetMatf4("model", modelVec.back().data());
 	shader_genDepth.SetBool("isOffset", false);
 	pOGLW->GetVAO(mesh).Draw(shader_genDepth);
 }
 
 void PLDM_Generator::Visit(Ptr<Disk> disk) {
-	shader_genDepth.SetMat4f("model", modelVec.back());
+	shader_genDepth.SetMatf4("model", modelVec.back().data());
 	shader_genDepth.SetBool("isOffset", false);
 	pOGLW->GetVAO(ShapeType::Disk).Draw(shader_genDepth);
 }
 
 void PLDM_Generator::Visit(Ptr<Capsule> capsule) {
-	shader_genDepth.SetMat4f("model", modelVec.back());
+	shader_genDepth.SetMatf4("model", modelVec.back().data());
 	shader_genDepth.SetBool("isOffset", true);
 	shader_genDepth.SetFloat("offset", capsule->height / 2 - 1);
 	pOGLW->GetVAO(ShapeType::Capsule).Draw(shader_genDepth);

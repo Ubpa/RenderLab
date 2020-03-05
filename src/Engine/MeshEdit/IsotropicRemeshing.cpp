@@ -57,7 +57,7 @@ bool IsotropicRemeshing::Init(Ptr<TriMesh> triMesh) {
 
 	for (int i = 0; i < nV; i++) {
 		auto v = heMesh->Vertices().at(i);
-		v->pos = triMesh->GetPositions()[i];
+		v->pos = triMesh->GetPositions()[i].cast_to<Ubpa::vecf3>();
 	}
 
 	this->triMesh = triMesh;
@@ -86,15 +86,15 @@ bool IsotropicRemeshing::Run(size_t n) {
 
 	size_t nV = heMesh->NumVertices();
 	size_t nF = heMesh->NumPolygons();
-	vector<Point3> positions;
-	vector<uint> indice;
+	vector<Ubpa::pointf3> positions;
+	vector<unsigned> indice;
 	positions.reserve(nV);
 	indice.reserve(3 * nF);
 	for (auto v : heMesh->Vertices())
-		positions.push_back(v->pos);
+		positions.push_back(v->pos.cast_to<Ubpa::pointf3>());
 	for (auto triangle : heMesh->Export()) {
 		for (auto idx : triangle)
-			indice.push_back(static_cast<uint>(idx));
+			indice.push_back(static_cast<unsigned>(idx));
 	}
 
 	triMesh->Init(indice, positions);
@@ -213,9 +213,9 @@ bool IsotropicRemeshing::Kernel(size_t n) {
 				if (sumFlipedCost >= sumCost)
 					break;
 
-				vector<Point3> positions;
+				vector<Ubpa::pointf3> positions;
 				for (auto v : vertices)
-					positions.push_back(v->pos);
+					positions.push_back(v->pos.cast_to<Ubpa::pointf3>());
 				if (!Geometry::IsConvexPolygon(positions))
 					break;
 
@@ -232,20 +232,20 @@ bool IsotropicRemeshing::Kernel(size_t n) {
 
 		// 5. vertex normal
 		printf("5. vertex normal\n");
-		vector<Vec3> triWNs(heMesh->NumPolygons(), Vec3(0.f)); // triangle weighted normals
+		vector<Ubpa::vecf3> triWNs(heMesh->NumPolygons(), Ubpa::vecf3(0.f)); // triangle weighted normals
 		vector<float> triAreas(heMesh->NumPolygons(), 0.f); // triangle areas
-		vector<Vec3> sWNs(heMesh->NumVertices()); // sum Weighted Normal
+		vector<Ubpa::vecf3> sWNs(heMesh->NumVertices()); // sum Weighted Normal
 		auto step5_tri = [&](HEMesh<V>::P* triangle) {
 			auto vertices = triangle->BoundaryVertice();
 			assert(vertices.size() == 3);
 
 			auto d10 = vertices[0]->pos - vertices[1]->pos;
 			auto d12 = vertices[2]->pos - vertices[1]->pos;
-			auto wN = d12.Cross(d10);
+			auto wN = d12.cross(d10);
 
 			size_t idx = heMesh->Index(triangle);
 			triWNs[idx] = wN;
-			triAreas[idx] = wN.Norm();
+			triAreas[idx] = wN.norm();
 		};
 		auto step5_v = [&](V* v) {
 			size_t idx = heMesh->Index(v);
@@ -270,7 +270,7 @@ bool IsotropicRemeshing::Kernel(size_t n) {
 			}
 
 			// gravity-weighted offset
-			Vec3 gravityCentroid;
+			Ubpa::vecf3 gravityCentroid;
 			float sumArea = 0.f;
 			for (auto outHE : v->OutHEs()) {
 				auto p0 = outHE->Polygon();
@@ -281,37 +281,37 @@ bool IsotropicRemeshing::Kernel(size_t n) {
 				gravityCentroid += area * outHE->End()->pos;
 			}
 			gravityCentroid /= sumArea;
-			Vec3 offset = gravityCentroid - v->pos;
+			Ubpa::vecf3 offset = gravityCentroid - v->pos;
 
 			// normal
-			Vec3 normal = sWNs[heMesh->Index(v)].Normalize();
+			Ubpa::vecf3 normal = sWNs[heMesh->Index(v)].normalize();
 
 			// tangent offset
-			Vec3 tangentOffset = offset - offset.Dot(normal) * normal;
+			Ubpa::vecf3 tangentOffset = offset - offset.dot(normal) * normal;
 			auto newPos = v->pos + w * tangentOffset;
 
 			// project back
-			v->newPos = v->Project(newPos, normal);
+			v->newPos = v->Project(newPos, normal.cast_to<Ubpa::normalf>());
 		};
 		Parallel::Instance().Run(step6, heMesh->Vertices());
 
 		// 7. update pos
 		printf("7. update pos\n");
-		auto step7 = [](V* v) { assert(!v->newPos.HasNaN()); v->pos = v->newPos; };
+		auto step7 = [](V* v) { assert(!v->newPos.has_nan()); v->pos = v->newPos; };
 		Parallel::Instance().Run(step7, heMesh->Vertices());
 	}
 
 	return true;
 }
 
-const Vec3 IsotropicRemeshing::V::Project(const Vec3& p, const Normalf& norm) const {
-	Ray ray(p, -norm);
+const Ubpa::vecf3 IsotropicRemeshing::V::Project(const Ubpa::vecf3& p, const Ubpa::normalf& norm) const {
+	Ubpa::rayf3 ray(p.cast_to<Ubpa::pointf3>(), -norm.cast_to<Ubpa::vecf3>());
 	const auto adjVs = AdjVertices();
 	for (size_t i = 0; i < adjVs.size(); i++) {
 		size_t next = (i + 1) % adjVs.size();
-		auto rst = ray.IntersectTriangle(pos, adjVs[i]->pos, adjVs[next]->pos);
+		auto rst = ray.intersect_triangle(pos.cast_to<Ubpa::pointf3>(), adjVs[i]->pos.cast_to<Ubpa::pointf3>(), adjVs[next]->pos.cast_to<Ubpa::pointf3>());
 		if (get<0>(rst)) // isIntersect
-			return ray.At(get<2>(rst));
+			return ray.at(get<2>(rst)).cast_to<Ubpa::vecf3>();
 	}
 	return p;
 }
@@ -338,7 +338,7 @@ bool IsotropicRemeshing::E::IsCanCollapse(float min, float maxL) const {
 
 	const auto c = Centroid();
 	for (auto adjV : AdjVertices()) {
-		if (Point3::Distance(adjV->pos, c) > maxL)
+		if (Ubpa::vecf3::distance(adjV->pos, c) > maxL)
 			return false;
 	}
 

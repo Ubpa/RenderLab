@@ -3,7 +3,7 @@
 #define _CPPUTIL_ENGINE_MESHEDIT_LOOP_SUBDIVISION_H_
 
 #include <Basic/HeapObj.h>
-#include <Basic/UGM/UGM.h>
+#include <UGM/UGM>
 #include <UHEMesh/HEMesh.h>
 
 namespace CppUtil {
@@ -32,13 +32,13 @@ namespace CppUtil {
 			class E;
 			class V : public Ubpa::TVertex<V, E> {
 			public:
-				Vec3 pos;
+				Ubpa::vecf3 pos;
 				bool isNew = false;
-				Vec3 newPos;
+				Ubpa::vecf3 newPos;
 			};
 			class E : public Ubpa::TEdge<V, E> {
 			public:
-				Vec3 newPos;
+				Ubpa::vecf3 newPos;
 			};
 		private:
 			Basic::Ptr<TriMesh> triMesh;

@@ -5,7 +5,7 @@
 
 #include <Engine/Ray.h>
 
-#include <Basic/UGM/RGB.h>
+#include <UGM/rgb.h>
 
 namespace CppUtil {
 	namespace Engine {
@@ -19,7 +19,7 @@ namespace CppUtil {
 
 		public:
 			// ray 处于世界坐标系
-			virtual const RGBf Trace(Ray & ray) = 0;
+			virtual const Ubpa::rgbf Trace(Ray & ray) = 0;
 			virtual void Init(Basic::Ptr<Scene> scene, Basic::Ptr<BVHAccel> bvhAccel) {
 				this->bvhAccel = bvhAccel;
 			}

@@ -1,8 +1,6 @@
 #ifndef _ENGINE_PRIMITIVE_TRIANGLE_H_
 #define _ENGINE_PRIMITIVE_TRIANGLE_H_
 
-typedef unsigned int uint;
-
 #include <Engine/Shape.h>
 
 namespace CppUtil {
@@ -14,11 +12,11 @@ namespace CppUtil {
 		class Triangle final : public Shape {
 			friend class TriMesh;
 		public:
-			Triangle(uint idx0, uint idx1, uint idx2)
+			Triangle(unsigned idx0, unsigned idx1, unsigned idx2)
 				: mesh(Basic::Ptr<TriMesh>(nullptr)), idx{ idx0, idx1, idx2 } { }
 
 		public:
-			static const Basic::Ptr<Triangle> New(uint idx0, uint idx1, uint idx2) {
+			static const Basic::Ptr<Triangle> New(unsigned idx0, unsigned idx1, unsigned idx2) {
 				return Basic::New<Triangle>(idx0, idx1, idx2);
 			}
 
@@ -27,7 +25,7 @@ namespace CppUtil {
 
 		public:
 			const Basic::Ptr<TriMesh> GetMesh() const { return mesh.lock(); }
-			virtual const BBoxf GetBBox() const override;
+			virtual const Ubpa::bboxf3 GetBBox() const override;
 			virtual const Basic::Ptr<Primitive> GetPrimitive() override {
 				return Basic::CastTo<Primitive>(mesh.lock());
 			}
@@ -36,7 +34,7 @@ namespace CppUtil {
 			float GetArea() const;
 
 		public:
-			uint idx[3]; // index into the mesh attribute arrays
+			unsigned idx[3]; // index into the mesh attribute arrays
 
 		private:
 			Basic::WPtr<TriMesh> mesh;

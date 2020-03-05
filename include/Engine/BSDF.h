@@ -12,24 +12,24 @@ namespace CppUtil {
 			virtual ~BSDF() = default;
 
 		public:
-			virtual const RGBf F(const Normalf & wo, const Normalf & wi, const Point2 & texcoord) = 0;
+			virtual const Ubpa::rgbf F(const Ubpa::normalf & wo, const Ubpa::normalf & wi, const Ubpa::pointf2 & texcoord) = 0;
 
 			// probability density function
-			virtual float PDF(const Normalf & wo, const Normalf & wi, const Point2 & texcoord) = 0;
+			virtual float PDF(const Ubpa::normalf & wo, const Ubpa::normalf & wi, const Ubpa::pointf2 & texcoord) = 0;
 
 			// PD is probability density
 			// return albedo
-			virtual const RGBf Sample_f(const Normalf & wo, const Point2 & texcoord, Normalf & wi, float & PD) = 0;
+			virtual const Ubpa::rgbf Sample_f(const Ubpa::normalf & wo, const Ubpa::pointf2 & texcoord, Ubpa::normalf & wi, float & PD) = 0;
 
 			virtual bool IsDelta() const { return false; }
 
-			virtual void ChangeNormal(const Point2 & texcoord, const Normalf & tangent, Normalf & normal) const { return; };
+			virtual void ChangeNormal(const Ubpa::pointf2 & texcoord, const Ubpa::normalf & tangent, Ubpa::normalf & normal) const { return; };
 
 			// Luminance
-			virtual const RGBf Emission(const Normalf & wo) const { return RGBf(0.f); }
+			virtual const Ubpa::rgbf Emission(const Ubpa::normalf & wo) const { return Ubpa::rgbf(0.f); }
 
 		protected:
-			static const Normalf TangentSpaceNormalToWorld(const Normalf & worldTangent, const Normalf & worldNormal, const Normalf & tangentSpaceNormal);
+			static const Ubpa::normalf TangentSpaceNormalToWorld(const Ubpa::normalf & worldTangent, const Ubpa::normalf & worldNormal, const Ubpa::normalf & tangentSpaceNormal);
 		};
 	}
 }

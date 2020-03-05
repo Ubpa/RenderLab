@@ -288,7 +288,7 @@ const Ubpa::vali2 Image::idx2xy(int idx) const {
 	return { x, y };
 }
 
-Ptr<Image> Image::Inverse() {
+Ptr<Image> Image::inverse() {
 	if (!IsValid()) {
 		printf("ERROR::Image::Clear:\n"
 			"\t""img is invalid\n");

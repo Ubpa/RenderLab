@@ -2,7 +2,7 @@
 #define _CPPUTIL_ENGINE_MESHEDIT_ISOTROPICREMESHING_H_
 
 #include <Basic/HeapObj.h>
-#include <Basic/UGM/UGM.h>
+#include <UGM/UGM>
 
 #include <UHEMesh/HEMesh.h>
 
@@ -32,17 +32,17 @@ namespace CppUtil {
 			class E;
 			class V : public Ubpa::TVertex<V, E> {
 			public:
-				V(const Vec3 pos = 0.f) : pos(pos) {}
+				V(const Ubpa::vecf3 pos = 0.f) : pos(pos) {}
 			public:
-				const Vec3 Project(const Vec3& p, const Normalf & norm) const;
+				const Ubpa::vecf3 Project(const Ubpa::vecf3& p, const Ubpa::normalf & norm) const;
 			public:
-				Vec3 pos;
-				Vec3 newPos;
+				Ubpa::vecf3 pos;
+				Ubpa::vecf3 newPos;
 			};
 			class E : public Ubpa::TEdge<V, E> {
 			public:
-				float Length() const { return (HalfEdge()->Origin()->pos - HalfEdge()->End()->pos).Norm(); }
-				Vec3 Centroid() const { return (HalfEdge()->Origin()->pos + HalfEdge()->End()->pos) / 2.f; }
+				float Length() const { return (HalfEdge()->Origin()->pos - HalfEdge()->End()->pos).norm(); }
+				Ubpa::vecf3 Centroid() const { return (HalfEdge()->Origin()->pos + HalfEdge()->End()->pos) / 2.f; }
 				bool IsCanCollapse(float min, float maxL) const;
 			};
 		private:

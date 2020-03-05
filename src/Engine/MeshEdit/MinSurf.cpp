@@ -44,7 +44,7 @@ bool MinSurf::Init(Basic::Ptr<TriMesh> triMesh) {
 
 	for (int i = 0; i < nV; i++) {
 		auto v = heMesh->Vertices().at(i);
-		v->pos = triMesh->GetPositions()[i];
+		v->pos = triMesh->GetPositions()[i].cast_to<Ubpa::vecf3>();
 	}
 
 	if (!heMesh->IsTriMesh() || !heMesh->HaveBoundary()) {
@@ -75,15 +75,15 @@ bool MinSurf::Run() {
 
 	size_t nV = heMesh->NumVertices();
 	size_t nF = heMesh->NumPolygons();
-	vector<Point3> positions;
-	vector<uint> indice;
+	vector<Ubpa::pointf3> positions;
+	vector<unsigned> indice;
 	positions.reserve(nV);
 	indice.reserve(3 * nF);
 	for (auto v : heMesh->Vertices())
-		positions.push_back(v->pos);
+		positions.push_back(v->pos.cast_to<Ubpa::pointf3>());
 	for (auto f : heMesh->Polygons()) {
 		for (auto v : f->BoundaryVertice())
-			indice.push_back(static_cast<uint>(heMesh->Index(v)));
+			indice.push_back(static_cast<unsigned>(heMesh->Index(v)));
 	}
 
 	triMesh->Init(indice, positions);
@@ -109,9 +109,9 @@ void MinSurf::Minimize() {
 	for (auto v : heMesh->Vertices()) {
 		auto vIdx = static_cast<int>(heMesh->Index(v));
 		if (v->IsBoundary()) {
-			Ex(vIdx) = v->pos.x;
-			Ey(vIdx) = v->pos.y;
-			Ez(vIdx) = v->pos.z;
+			Ex(vIdx) = v->pos[0];
+			Ey(vIdx) = v->pos[1];
+			Ez(vIdx) = v->pos[2];
 			triplets.push_back({ vIdx, vIdx, 1.f });		// 初始化非零元素
 		}
 		else {
@@ -140,7 +140,7 @@ void MinSurf::Minimize() {
 	for (auto v : heMesh->Vertices()) {
 		if (!v->IsBoundary()) {
 			auto id = heMesh->Index(v);
-			v->pos = Vec3(newX(id), newY(id), newZ(id));
+			v->pos = Ubpa::vecf3(newX(id), newY(id), newZ(id));
 		}
 	}
 }

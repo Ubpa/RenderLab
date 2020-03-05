@@ -3,7 +3,7 @@
 
 #include <Basic/HeapObj.h>
 #include <Engine/MeshEdit/DeformRBF.h>
-#include <Basic/UGM/UGM.h>
+#include <UGM/UGM>
 
 namespace CppUtil {
 	namespace Engine {
@@ -36,8 +36,8 @@ namespace CppUtil {
 			std::vector<DeformRBF::Constraint> cons;
 			std::vector<size_t> deformIndice;
 			bool isInDeform = false;
-			Point3 origPos;
-			Vec3 dir;
+			Ubpa::pointf3 origPos;
+			Ubpa::vecf3 dir;
 			int y;
 			int lastY;
 		};

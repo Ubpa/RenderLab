@@ -102,7 +102,7 @@ void RTX_Renderer::Run(Ptr<Scene> scene, Ptr<Image> img) {
 
 	// init rst image
 
-	auto film = Film::New(img, FilterMitchell::New(Vec2(2.f), 1.f / 3.f, 1.f / 3.f));
+	auto film = Film::New(img, FilterMitchell::New(Ubpa::vecf2(2.f), 1.f / 3.f, 1.f / 3.f));
 	int w = img->GetWidth();
 	int h = img->GetHeight();
 
@@ -139,7 +139,7 @@ void RTX_Renderer::Run(Ptr<Scene> scene, Ptr<Image> img) {
 
 	// init float image
 	int imgSize = w * h;
-	vector<vector<RGBf>> imgTiles(tileNum, vector<RGBf>(tileSize*tileSize, RGBf(0.f)));
+	vector<vector<Ubpa::rgbf>> imgTiles(tileNum, vector<Ubpa::rgbf>(tileSize*tileSize, Ubpa::rgbf(0.f)));
 
 	auto renderPartImg = [&](int id) {
 		auto & rayTracer = rayTracers[id];
@@ -154,24 +154,24 @@ void RTX_Renderer::Run(Ptr<Scene> scene, Ptr<Image> img) {
 			int baseX = tileCol * tileSize;
 			int baseY = tileRow * tileSize;
 
-			auto filmTile = film->GenFilmTile(Framei({ baseX, baseY }, { baseX + tileSize, baseY + tileSize }));
+			auto filmTile = film->GenFilmTile(Ubpa::bboxi2({ baseX, baseY }, { baseX + tileSize, baseY + tileSize }));
 
 			for (const auto pos : filmTile->AllPos()) {
-				auto posf = Point2f(pos) + Vec2(Math::Rand_F(), Math::Rand_F());
-				const float u = posf.x / w;
-				const float v = posf.y / h;
+				auto posf = pos.cast_to<Ubpa::pointf2>() + Ubpa::vecf2(Math::Rand_F(), Math::Rand_F());
+				const float u = posf[0] / w;
+				const float v = posf[1] / h;
 
 				auto ray = camera->GenRay(u, v);
-				RGBf radiance = rayTracer->Trace(ray);
+				Ubpa::rgbf radiance = rayTracer->Trace(ray);
 
-				if (radiance.HasNaN()) {
+				if (radiance.has_nan()) {
 					printf("WARNING::RTX_Renderer::Run:\n"
 						"\t""radiance is NaN\n");
 					continue;
 				}
 
 				// 这一步可以极大的减少白噪点（特别是由点光源产生）
-				//float illum = radiance.Illumination();
+				//float illum = radiance.illumination();
 				//if (illum > lightNum)
 				//	radiance *= lightNum / illum;
 

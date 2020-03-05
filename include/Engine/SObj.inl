@@ -4,7 +4,7 @@ const CppUtil::Basic::Ptr<T> SObj::GetComponent() const {
 	if (target == components.end())
 		return nullptr;
 
-	return CastTo<T>(target->second);
+	return Basic::CastTo<T>(target->second);
 }
 
 template<typename T, typename>

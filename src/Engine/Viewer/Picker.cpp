@@ -40,11 +40,11 @@ void Picker::Init() {
 		int y = pOGWL->y;
 
 		// y 需要反过来
-		Point3 posOnScreen(x / float(pOGWL->w), 1 - y / float(pOGWL->h), 1);
-		Point3 posInNorm = Vec3(posOnScreen) * 2.0f - Vec3(1.0f);
-		Point3 posInWorld = (camera->GetProjectionMatrix() * camera->GetViewMatrix()).Inverse()(posInNorm);
+		Ubpa::pointf3 posOnScreen(2 * x / float(pOGWL->w), 2 * (1 - y / float(pOGWL->h)), 2);
+		Ubpa::pointf3 posInNorm = posOnScreen - Ubpa::vecf3(1.0f);
+		Ubpa::pointf3 posInWorld = (camera->GetProjectionMatrix() * camera->GetViewMatrix()).inverse() * posInNorm;
 
-		Vec3 dir = (posInWorld - camera->GetPos()).Normalize();
+		Ubpa::vecf3 dir = (posInWorld - camera->GetPos()).normalize();
 		Ray ray(camera->GetPos(), dir);
 		rayIntersector->Init(&ray);
 		viewer->GetScene()->GetRoot()->Accept(rayIntersector);
@@ -62,8 +62,8 @@ void Picker::Init() {
 				auto pos = positions[closestRst.idx];
 				origPos = pos;
 				size_t idx = static_cast<size_t>(closestRst.idx);
-				this->dir = triMesh->GetNormals()[idx];
-				printf("hit triMesh, idx:%d, pos: (%f,%f,%f)\n", closestRst.idx, pos.x, pos.y, pos.z);
+				this->dir = triMesh->GetNormals()[idx].cast_to<Ubpa::vecf3>();
+				printf("hit triMesh, idx:%d, pos: (%f,%f,%f)\n", closestRst.idx, pos[0], pos[1], pos[2]);
 				
 				deformRBF = DeformRBF::New(triMesh);
 
@@ -90,7 +90,7 @@ void Picker::Init() {
 						if (inner.find(u) != inner.end())
 							continue;
 
-						if (Point3::Distance(pos, positions[u]) < r)
+						if (Ubpa::pointf3::distance(pos, positions[u]) < r)
 							pool.push_back(u);
 						else
 							boundary.insert(u);
@@ -113,9 +113,10 @@ void Picker::Init() {
 	auto changeDeform = LambdaOp_New([this]() {
 		Viewer * viewer = this->GetViewer();
 		auto pOGWL = viewer->GetOGLW();
-		if (isInDeform && Math::Abs(lastY-pOGWL->y)>2) {
+		if (isInDeform && std::abs(lastY-pOGWL->y)>2) {
 			auto con = cons.back();
-			cons.push_back({con.id, origPos + 0.04f * (y - pOGWL->y) * dir });
+			DeformRBF::Constraint c = { con.id, origPos + 0.04f * (y - pOGWL->y) * dir };
+			cons.push_back(c);
 			deformRBF->Run(cons, deformIndice);
 			pOGWL->DirtyVAO(deformRBF->GetMesh());
 			lastY = pOGWL->y;

@@ -16,7 +16,7 @@
 #include <Engine/Capsule.h>
 
 #include <Basic/Math.h>
-#include <Basic/UGM/Transform.h>
+#include <UGM/transform.h>
 
 #include <stack>
 
@@ -43,7 +43,7 @@ void RayIntersector::Init(ERay * ray) {
 	rst.isIntersect = false;
 }
 
-bool RayIntersector::Intersect(const BBoxf & bbox, const Val3f & invDir) const {
+bool RayIntersector::Intersect(const Ubpa::bboxf3 & bbox, const Ubpa::valf3 & invDir) const {
 	const auto & origin = ray->o;
 
 	float tMin = ray->tMin;
@@ -51,8 +51,8 @@ bool RayIntersector::Intersect(const BBoxf & bbox, const Val3f & invDir) const {
 
 	for (int i = 0; i < 3; i++) {
 		float invD = invDir[i];
-		float t0 = (bbox.minP[i] - origin[i]) * invD;
-		float t1 = (bbox.maxP[i] - origin[i]) * invD;
+		float t0 = (bbox.minP()[i] - origin[i]) * invD;
+		float t1 = (bbox.maxP()[i] - origin[i]) * invD;
 		if (invD < 0.0f)
 			swap(t0, t1);
 
@@ -71,7 +71,7 @@ void RayIntersector::Visit(Ptr<BVHAccel> bvhAccel) {
 	const auto origin = ray->o;
 	const auto dir = ray->d;
 	const auto invDir = ray->InvDir();
-	const bool dirIsNeg[3] = { invDir.x < 0,invDir.y < 0,invDir.z < 0 };
+	const bool dirIsNeg[3] = { invDir[0] < 0,invDir[1] < 0,invDir[2] < 0 };
 
 	stack<int> nodeIdxStack;
 	nodeIdxStack.push(0);
@@ -87,7 +87,9 @@ void RayIntersector::Visit(Ptr<BVHAccel> bvhAccel) {
 			for (auto shapeIdx : node.ShapesIdx()) {
 				const auto shape = bvhAccel->GetShape(shapeIdx);
 
-				bvhAccel->GetShapeW2LMat(shape).ApplyTo(*ray);
+				auto bray = bvhAccel->GetShapeW2LMat(shape) * (*ray);
+				ray->o = bray.o;
+				ray->d = bray.d;
 				shape->Accept(visitor);
 				ray->o = origin;
 				ray->d = dir;
@@ -114,9 +116,9 @@ void RayIntersector::Visit(Ptr<BVHAccel> bvhAccel) {
 
 	if (rst.closestSObj) {
 		const Ptr<Shape> shape = rst.closestSObj->GetComponent<CmptGeometry>()->primitive;
-		const auto l2w = bvhAccel->GetShapeW2LMat(shape).Inverse();
-		rst.n = l2w(rst.n).Normalize();
-		rst.tangent = l2w(rst.tangent).Normalize();
+		const auto l2w = bvhAccel->GetShapeW2LMat(shape).inverse();
+		rst.n = (l2w * rst.n).normalize();
+		rst.tangent = (l2w * rst.tangent).normalize();
 	}
 }
 
@@ -129,8 +131,11 @@ void RayIntersector::Visit(Ptr<SObj> sobj) {
 
 	auto origSObj = rst.closestSObj;
 	auto cmptTransform = sobj->GetComponent<CmptTransform>();
-	if (cmptTransform)
-		cmptTransform->GetTransform().Inverse().ApplyTo(*ray);
+	if (cmptTransform) {
+		auto bray = cmptTransform->GetTransform().inverse() * (*ray);
+		ray->o = bray.o;
+		ray->d = bray.d;
+	}
 
 	if (geometry && geometry->primitive) {
 		geometry->primitive->Accept(This());
@@ -142,10 +147,13 @@ void RayIntersector::Visit(Ptr<SObj> sobj) {
 		child->Accept(This());
 
 	if (cmptTransform) {
-		cmptTransform->GetTransform().ApplyTo(*ray);
+		auto& tsfm = cmptTransform->GetTransform();
+		auto bray = tsfm.inverse() * (*ray);
+		ray->o = bray.o;
+		ray->d = bray.d;
 		if (rst.closestSObj != origSObj) {
-			cmptTransform->GetTransform().ApplyTo(rst.n).NormalizeSelf();
-			cmptTransform->GetTransform().ApplyTo(rst.tangent).NormalizeSelf();
+			rst.n = (tsfm * rst.n).normalize();
+			rst.tangent = (tsfm * rst.tangent).normalize();
 		}
 	}
 }
@@ -154,10 +162,10 @@ void RayIntersector::Visit(Ptr<Sphere> sphere) {
 	const auto & dir = ray->d;
 	const auto & origin = ray->o;
 
-	const Vec3 oc = origin;
-	const float a = dir.Dot(dir);
-	const float b = oc.Dot(dir);
-	const float c = oc.Dot(oc) - 1;
+	const Ubpa::vecf3 oc = origin.cast_to<Ubpa::vecf3>();
+	const float a = dir.dot(dir);
+	const float b = oc.dot(dir);
+	const float c = oc.dot(oc) - 1;
 	const float discriminant = b * b - a * c;
 
 	if (discriminant < 0) {
@@ -181,30 +189,30 @@ void RayIntersector::Visit(Ptr<Sphere> sphere) {
 
 	rst.isIntersect = true;
 	ray->tMax = t;
-	rst.n = ray->At(t);
+	rst.n = ray->at(t).cast_to<Ubpa::normalf>();
 	rst.texcoord = Sphere::TexcoordOf(rst.n);
 	rst.tangent = Sphere::TangentOf(rst.n);
 }
 
 void RayIntersector::Visit(Ptr<Plane> plane) {
-	const float t = -ray->o.y / ray->d.y;
+	const float t = -ray->o[1] / ray->d[1];
 	if (t<ray->tMin || t > ray->tMax) {
 		rst.isIntersect = false;
 		return;
 	}
 
-	const auto pos = ray->At(t);
-	if (pos.x<-0.5 || pos.x>0.5 || pos.z<-0.5 || pos.z>0.5) {
+	const auto pos = ray->at(t);
+	if (pos[0]<-0.5 || pos[0]>0.5 || pos[2]<-0.5 || pos[2]>0.5) {
 		rst.isIntersect = false;
 		return;
 	}
 
 	rst.isIntersect = true;
 	ray->tMax = t;
-	//rst.n = Normalf(0, -Math::sgn(ray->d.y), 0);
-	rst.n = Normalf(0, 1, 0);
-	rst.texcoord = Point2(pos.x + 0.5f, pos.z + 0.5f);
-	rst.tangent = Normalf(1, 0, 0);
+	//rst.n = Ubpa::normalf(0, -Math::sgn(ray->d[1]), 0);
+	rst.n = Ubpa::normalf(0, 1, 0);
+	rst.texcoord = Ubpa::pointf2(pos[0] + 0.5f, pos[2] + 0.5f);
+	rst.tangent = Ubpa::normalf(1, 0, 0);
 }
 
 void RayIntersector::Visit(Ptr<Triangle> triangle) {
@@ -223,8 +231,8 @@ void RayIntersector::Visit(Ptr<Triangle> triangle) {
 	const auto e1 = p2 - p1;
 	const auto e2 = p3 - p1;
 
-	const auto e1_x_d = e1.Cross(dir);
-	const float denominator = e1_x_d.Dot(e2);
+	const auto e1_x_d = e1.cross(dir);
+	const float denominator = e1_x_d.dot(e2);
 
 	if (denominator == 0) {
 		rst.isIntersect = false;
@@ -235,15 +243,15 @@ void RayIntersector::Visit(Ptr<Triangle> triangle) {
 
 	const auto s = ray->o - p1;
 
-	const auto e2_x_s = e2.Cross(s);
-	const float r1 = e2_x_s.Dot(dir);
+	const auto e2_x_s = e2.cross(s);
+	const float r1 = e2_x_s.dot(dir);
 	const float u = r1 * inv_denominator;
 	if (u < 0 || u > 1) {
 		rst.isIntersect = false;
 		return;
 	}
 
-	const float r2 = e1_x_d.Dot(s);
+	const float r2 = e1_x_d.dot(s);
 	const float v = r2 * inv_denominator;
 	if (v < 0 || v > 1) {
 		rst.isIntersect = false;
@@ -256,7 +264,7 @@ void RayIntersector::Visit(Ptr<Triangle> triangle) {
 		return;
 	}
 
-	const float r3 = e2_x_s.Dot(e1);
+	const float r3 = e2_x_s.dot(e1);
 	const float t = r3 * inv_denominator;
 
 	if (t < ray->tMin || t > ray->tMax) {
@@ -276,7 +284,7 @@ void RayIntersector::Visit(Ptr<Triangle> triangle) {
 	const auto & n2 = normals[idx2];
 	const auto & n3 = normals[idx3];
 
-	rst.n = (w * n1 + u * n2 + v * n3).Normalize();
+	rst.n = (w * n1 + u * n2 + v * n3).normalize();
 
 	// texcoord
 	const auto & texcoords = mesh->GetTexcoords();
@@ -284,8 +292,8 @@ void RayIntersector::Visit(Ptr<Triangle> triangle) {
 	const auto & tc2 = texcoords[idx2];
 	const auto & tc3 = texcoords[idx3];
 
-	rst.texcoord.x = w * tc1.x + u * tc2.x + v * tc3.x;
-	rst.texcoord.y = w * tc1.y + u * tc2.y + v * tc3.y;
+	rst.texcoord[0] = w * tc1[0] + u * tc2[0] + v * tc3[0];
+	rst.texcoord[1] = w * tc1[1] + u * tc2[1] + v * tc3[1];
 
 	// tangent
 	const auto & tangents = mesh->GetTangents();
@@ -293,7 +301,7 @@ void RayIntersector::Visit(Ptr<Triangle> triangle) {
 	const auto & tg2 = tangents[idx2];
 	const auto & tg3 = tangents[idx3];
 
-	rst.tangent = (w * tg1 + u * tg2 + v * tg3).Normalize();
+	rst.tangent = (w * tg1 + u * tg2 + v * tg3).normalize();
 
 	rst.triangle = triangle;
 	if (w < u) {
@@ -321,24 +329,24 @@ void RayIntersector::Visit(Ptr<TriMesh> mesh) {
 }
 
 void RayIntersector::Visit(Ptr<Disk> disk) {
-	const float t = -ray->o.y / ray->d.y;
+	const float t = -ray->o[1] / ray->d[1];
 	if (t < ray->tMin || t > ray->tMax) {
 		rst.isIntersect = false;
 		return;
 	}
 
-	const auto pos = ray->At(t);
-	if (Vec3f(pos).Norm2() >= 1.f) {
+	const auto pos = ray->at(t);
+	if (pos.cast_to<Ubpa::vecf3>().norm2() >= 1.f) {
 		rst.isIntersect = false;
 		return;
 	}
 
 	rst.isIntersect = true;
 	ray->tMax = t;
-	//rst.n = Normalf(0, -Math::sgn(ray->d.y), 0);
-	rst.n = Normalf(0, 1, 0);
-	rst.texcoord = Point2((1+pos.x)/2, (1+pos.z)/2);
-	rst.tangent = Normalf(1, 0, 0);
+	//rst.n = Ubpa::normalf(0, -Math::sgn(ray->d[1]), 0);
+	rst.n = Ubpa::normalf(0, 1, 0);
+	rst.texcoord = Ubpa::pointf2((1+pos[0])/2, (1+pos[2])/2);
+	rst.tangent = Ubpa::normalf(1, 0, 0);
 }
 
 void RayIntersector::Visit(Ptr<Capsule> capsule) {
@@ -348,9 +356,9 @@ void RayIntersector::Visit(Ptr<Capsule> capsule) {
 	float halfH = capsule->height / 2;
 
 	do{ // ‘≤÷˘
-		float a = d.x * d.x + d.z * d.z;
-		float b = d.x * o.x + d.z * o.z;
-		float c = o.x * o.x + o.z * o.z - 1;
+		float a = d[0] * d[0] + d[2] * d[2];
+		float b = d[0] * o[0] + d[2] * o[2];
+		float c = o[0] * o[0] + o[2] * o[2] - 1;
 
 		float discriminant = b * b - a * c;
 		if (discriminant <= 0) {
@@ -366,25 +374,25 @@ void RayIntersector::Visit(Ptr<Capsule> capsule) {
 				break;
 		}
 
-		auto pos = ray->At(t);
-		if (pos.y <= -halfH || pos.y >= halfH)
+		auto pos = ray->at(t);
+		if (pos[1] <= -halfH || pos[1] >= halfH)
 			break;
 
 		rst.isIntersect = true;
 		ray->tMax = t;
-		rst.n = Normalf(pos.x, 0, pos.z);
-		rst.texcoord = Sphere::TexcoordOf(Vec3f(pos));
-		rst.tangent = Sphere::TangentOf(Vec3f(pos));
+		rst.n = Ubpa::normalf(pos[0], 0, pos[2]);
+		rst.texcoord = Sphere::TexcoordOf(pos.cast_to<Ubpa::normalf>());
+		rst.tangent = Sphere::TangentOf(pos.cast_to<Ubpa::normalf>());
 		return;
 	} while (false);
 
-	float a = d.Dot(d);
+	float a = d.dot(d);
 
 	do{// …œ∞Î«Ú
-		Point3 center(0, halfH, 0);
+		Ubpa::pointf3 center(0, halfH, 0);
 		auto oc = o - center;
-		float b = d.Dot(oc);
-		float c = oc.Norm2() - 1;
+		float b = d.dot(oc);
+		float c = oc.norm2() - 1;
 
 		float discriminant = b * b - a * c;
 		if (discriminant <= 0)
@@ -392,27 +400,27 @@ void RayIntersector::Visit(Ptr<Capsule> capsule) {
 
 		float sqrtDiscriminant = sqrt(discriminant);
 		float t = -(b + sqrtDiscriminant) / a;
-		auto pos = ray->At(t);
-		if (t < ray->tMin || t > ray->tMax || pos.y <= halfH) {
+		auto pos = ray->at(t);
+		if (t < ray->tMin || t > ray->tMax || pos[1] <= halfH) {
 			t = (sqrtDiscriminant - b) / a;
-			pos = ray->At(t);
-			if (t < ray->tMin || t > ray->tMax || pos.y <= halfH)
+			pos = ray->at(t);
+			if (t < ray->tMin || t > ray->tMax || pos[1] <= halfH)
 				break;
 		}
 		
 		rst.isIntersect = true;
 		ray->tMax = t;
-		rst.n = pos - center;
-		rst.texcoord = Sphere::TexcoordOf(Vec3f(pos));
-		rst.tangent = Sphere::TangentOf(Vec3f(pos));
+		rst.n = (pos - center).cast_to<Ubpa::normalf>();
+		rst.texcoord = Sphere::TexcoordOf(pos.cast_to<Ubpa::normalf>());
+		rst.tangent = Sphere::TangentOf(pos.cast_to<Ubpa::normalf>());
 		return;
 	} while (false);
 
 	do {// œ¬∞Î«Ú
-		Point3 center(0, -halfH, 0);
+		Ubpa::pointf3 center(0, -halfH, 0);
 		auto oc = o - center;
-		float b = d.Dot(oc);
-		float c = oc.Norm2() - 1;
+		float b = d.dot(oc);
+		float c = oc.norm2() - 1;
 
 		float discriminant = b * b - a * c;
 		if (discriminant <= 0)
@@ -420,19 +428,19 @@ void RayIntersector::Visit(Ptr<Capsule> capsule) {
 
 		float sqrtDiscriminant = sqrt(discriminant);
 		float t = -(b + sqrtDiscriminant) / a;
-		auto pos = ray->At(t);
-		if (t < ray->tMin || t > ray->tMax || pos.y >= -halfH) {
+		auto pos = ray->at(t);
+		if (t < ray->tMin || t > ray->tMax || pos[1] >= -halfH) {
 			t = (sqrtDiscriminant - b) / a;
-			pos = ray->At(t);
-			if (t < ray->tMin || t > ray->tMax || pos.y >= -halfH)
+			pos = ray->at(t);
+			if (t < ray->tMin || t > ray->tMax || pos[1] >= -halfH)
 				break;
 		}
 
 		rst.isIntersect = true;
 		ray->tMax = t;
-		rst.n = pos - center;
-		rst.texcoord = Sphere::TexcoordOf(Vec3f(pos));
-		rst.tangent = Sphere::TangentOf(Vec3f(pos));
+		rst.n = (pos - center).cast_to<Ubpa::normalf>();
+		rst.texcoord = Sphere::TexcoordOf(pos.cast_to<Ubpa::normalf>());
+		rst.tangent = Sphere::TangentOf(pos.cast_to<Ubpa::normalf>());
 		return;
 	} while (false);
 
