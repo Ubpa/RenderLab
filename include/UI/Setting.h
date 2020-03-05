@@ -1,5 +1,4 @@
-#ifndef _UI_SETTING_SETTING_H_
-#define _UI_SETTING_SETTING_H_
+#pragma once
 
 #include <UI/Grid.h>
 
@@ -18,5 +17,3 @@ namespace Ui {
 		}
 	};
 }
-
-#endif//!_UI_SETTING_SETTING_H_

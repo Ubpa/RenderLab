@@ -1,6 +1,4 @@
 #pragma once
-#ifndef _CPPUTIL_ENGINE_MESHEDIT_MIN_SURF_H_
-#define _CPPUTIL_ENGINE_MESHEDIT_MIN_SURF_H_
 
 #include <Basic/HeapObj.h>
 #include <UHEMesh/HEMesh.h>
@@ -45,5 +43,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif // !_CPPUTIL_ENGINE_MESHEDIT_MIN_SURF_H_

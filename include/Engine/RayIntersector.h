@@ -1,5 +1,4 @@
-#ifndef _ENGINE_INTERSECTOR_RAY_INTERSECTOR_H_
-#define _ENGINE_INTERSECTOR_RAY_INTERSECTOR_H_
+#pragma once
 
 #include <Engine/Intersector.h>
 #include <UGM/point.h>
@@ -71,5 +70,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif//!_ENGINE_INTERSECTOR_RAY_INTERSECTOR_H_

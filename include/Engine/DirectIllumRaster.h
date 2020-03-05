@@ -1,5 +1,4 @@
-#ifndef _ENGINE_VIEWER_DIRECT_ILLUM_RASTER_H_
-#define _ENGINE_VIEWER_DIRECT_ILLUM_RASTER_H_
+#pragma once
 
 #include <Engine/ForwardRaster.h>
 
@@ -39,5 +38,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif//!_ENGINE_VIEWER_DIRECT_ILLUM_RASTER_H_

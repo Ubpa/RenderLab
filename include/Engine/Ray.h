@@ -1,5 +1,4 @@
-#ifndef _ENGINE_PRIMITIVE_RAY_H_
-#define _ENGINE_PRIMITIVE_RAY_H_
+#pragma once
 
 #include <UGM/ray.h>
 
@@ -24,5 +23,3 @@ namespace CppUtil {
 	}
 	using ERay = Engine::Ray;
 }
-
-#endif//!_ENGINE_PRIMITIVE_RAY_H_

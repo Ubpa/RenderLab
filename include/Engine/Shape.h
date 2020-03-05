@@ -1,5 +1,4 @@
-#ifndef _CPPUTIL_ENGINE_PRIMITIVE_SHAPE_H_
-#define _CPPUTIL_ENGINE_PRIMITIVE_SHAPE_H_
+#pragma once
 
 #include <Basic/Element.h>
 #include <UGM/bbox.h>
@@ -21,5 +20,3 @@ namespace CppUtil {
 
 	using EShape = Engine::Shape;
 }
-
-#endif // !_CPPUTIL_ENGINE_PRIMITIVE_SHAPE_H_

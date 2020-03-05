@@ -1,5 +1,4 @@
-#ifndef _QT_PAINT_IMG_OP_CREATOR_PAINT_IMG_OP_CREATOR_H_
-#define _QT_PAINT_IMG_OP_CREATOR_PAINT_IMG_OP_CREATOR_H_
+#pragma once
 
 #include <Basic/HeapObj.h>
 
@@ -53,6 +52,3 @@ namespace CppUtil {
 
 	}
 }
-
-
-#endif // !_QT_PAINT_IMG_OP_CREATOR_PAINT_IMG_OP_CREATOR_H_

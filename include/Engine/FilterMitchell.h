@@ -1,5 +1,4 @@
-#ifndef _CPPUTIL_ENGINE_FILTER_FILTER_MITCHELL_H_
-#define _CPPUTIL_ENGINE_FILTER_FILTER_MITCHELL_H_
+#pragma once
 
 #include <Engine/Filter.h>
 
@@ -31,5 +30,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif // !_CPPUTIL_ENGINE_FILTER_FILTER_MITCHELL_H_

@@ -1,5 +1,4 @@
-#ifndef _ENGINE_LIGHT_LIGHT_H_
-#define _ENGINE_LIGHT_LIGHT_H_
+#pragma once
 
 #include <Engine/Ray.h>
 
@@ -37,5 +36,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif//!_ENGINE_LIGHT_LIGHT_H_

@@ -1,5 +1,4 @@
-#ifndef _CPPUTIL_ENGINE_MATERIAL_BSDF_FROSTED_GLASS_H_
-#define _CPPUTIL_ENGINE_MATERIAL_BSDF_FROSTED_GLASS_H_
+#pragma once
 
 #include <Engine/BSDF.h>
 #include <Engine/GGX.h>
@@ -59,5 +58,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif//!_CPPUTIL_ENGINE_MATERIAL_BSDF_FROSTED_GLASS_H_

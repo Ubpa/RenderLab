@@ -1,5 +1,4 @@
-#ifndef _BASIC_HEADER_RAND_SET_
-#define _BASIC_HEADER_RAND_SET_
+#pragma once
 
 #include <random>
 #include <vector>
@@ -64,5 +63,3 @@ namespace CppUtil {
 		}
 	}
 }
-
-#endif // !_BASIC_HEADER_RAND_SET_

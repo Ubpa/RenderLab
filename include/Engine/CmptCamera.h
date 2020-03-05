@@ -1,5 +1,4 @@
-#ifndef _ENGINE_COMPONENT_CMPT_CAMERA_H_
-#define _ENGINE_COMPONENT_CMPT_CAMERA_H_
+#pragma once
 
 #include <Engine/Component.h>
 
@@ -62,5 +61,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif//!_ENGINE_COMPONENT_CMPT_CAMERA_H_

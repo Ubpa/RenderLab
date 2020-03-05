@@ -101,7 +101,7 @@ void LoopSubdivision::Kernel() {
 	auto step1 = [](V* v) {
 		auto adjVs = v->AdjVertices();
 		if (v->IsBoundary()) {
-			Ubpa::vecf3 sumPos;
+			Ubpa::vecf3 sumPos{ 0.f };
 			for (auto adjV : adjVs) {
 				if (adjV->IsBoundary())
 					sumPos += adjV->pos;
@@ -111,7 +111,7 @@ void LoopSubdivision::Kernel() {
 		else {
 			size_t n = adjVs.size();
 			float u = n == 3 ? 3.f / 16.f : 3.f / (8.f * n);
-			Ubpa::vecf3 sumPos;
+			Ubpa::vecf3 sumPos{ 0.f };
 			for (auto adjV : adjVs)
 				sumPos += adjV->pos;
 			v->newPos = (1.f - n * u) * v->pos + u * sumPos;

@@ -1,5 +1,4 @@
-#ifndef _BASIC_SHAPE_PLANE_H_
-#define _BASIC_SHAPE_PLANE_H_
+#pragma once
 
 #include <Basic/Shape.h>
 
@@ -21,5 +20,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif//!_BASIC_SHAPE_PLANE_H_

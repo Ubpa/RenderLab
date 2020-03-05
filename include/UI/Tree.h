@@ -1,5 +1,4 @@
-#ifndef _UI_HIERARCHY_TREE_H_
-#define _UI_HIERARCHY_TREE_H_
+#pragma once
 
 #include <qtreewidget.h>
 
@@ -35,5 +34,3 @@ namespace Ui {
 		QTreeWidgetItem * needDragItem;
 	};
 }
-
-#endif//!_UI_HIERARCHY_TREE_H_

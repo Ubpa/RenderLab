@@ -1,5 +1,4 @@
-#ifndef _BASIC_NODE_ELEMENT_H_
-#define _BASIC_NODE_ELEMENT_H_
+#pragma once
 
 #include <Basic/HeapObj.h>
 
@@ -17,5 +16,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif // !_BASIC_NODE_ELEMENT_H_

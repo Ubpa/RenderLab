@@ -1,5 +1,4 @@
-#ifndef _CPPUTIL_ENGINE_FILTER_FILTER_H_
-#define _CPPUTIL_ENGINE_FILTER_FILTER_H_
+#pragma once
 
 #include <Basic/HeapObj.h>
 #include <UGM/point.h>
@@ -21,5 +20,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif // !_CPPUTIL_ENGINE_FILTER_FILTER_H_

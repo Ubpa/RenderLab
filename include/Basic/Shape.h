@@ -1,5 +1,4 @@
-#ifndef _BASIC_SHAPE_SHAPE_H_
-#define _BASIC_SHAPE_SHAPE_H_
+#pragma once
 
 #include <UGM/vec.h>
 
@@ -22,5 +21,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif // !_BASIC_SHAPE_SHAPE_H_

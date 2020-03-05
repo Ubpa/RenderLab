@@ -1,5 +1,4 @@
-#ifndef _OPENGL_MODEL_MODEL_H_
-#define _OPENGL_MODEL_MODEL_H_
+#pragma once
 
 #include <3rdParty/assimp/Importer.hpp>
 #include <3rdParty/assimp/scene.h>
@@ -42,5 +41,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif// !_OPENGL_MODEL_MODEL_H_

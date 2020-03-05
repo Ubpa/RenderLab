@@ -1,5 +1,4 @@
-#ifndef _OPENGL_TEXTURE_TEXTURE_H_
-#define _OPENGL_TEXTURE_TEXTURE_H_
+#pragma once
 
 #include <Basic/Ptr.h>
 
@@ -61,5 +60,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif // !_OPENGL_TEXTURE_TEXTURE_H_

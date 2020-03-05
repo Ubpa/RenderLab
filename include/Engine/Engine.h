@@ -1,5 +1,4 @@
-#ifndef _CPPUTIL_ENGINE_H_
-#define _CPPUTIL_ENGINE_H_
+#pragma once
 
 #include <Engine/Scene.h>
 #include <Engine/SObj.h>
@@ -17,5 +16,3 @@
 
 #include <Engine/PathTracer.h>
 #include <Engine/RTX_Renderer.h>
-
-#endif//!_CPPUTIL_ENGINE_H_

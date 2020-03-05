@@ -1,5 +1,4 @@
-#ifndef _ENGINE_ALL_BSDFS_H_
-#define _ENGINE_ALL_BSDFS_H_
+#pragma once
 
 #include <Engine/BSDF_Diffuse.h>
 #include <Engine/BSDF_Emission.h>
@@ -9,5 +8,3 @@
 #include <Engine/BSDF_MetalWorkflow.h>
 #include <Engine/BSDF_FrostedGlass.h>
 #include <Engine/BSDF_Frostbite.h>
-
-#endif//!_ENGINE_ALL_BSDFS_H_

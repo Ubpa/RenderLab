@@ -1,5 +1,4 @@
-#ifndef _CPPUTIL_ENGINE_VIEWER_FORWARD_NPR_H_
-#define _CPPUTIL_ENGINE_VIEWER_FORWARD_NPR_H_
+#pragma once
 
 #include <Engine/ForwardRaster.h>
 
@@ -33,5 +32,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif // !_CPPUTIL_ENGINE_VIEWER_FORWARD_NPR_H_

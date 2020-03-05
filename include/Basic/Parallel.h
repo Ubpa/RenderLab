@@ -1,6 +1,4 @@
 #pragma once
-#ifndef _UBPA_CPPUTIL_BASIC_PARALLEL_H_
-#define _UBPA_CPPUTIL_BASIC_PARALLEL_H_
 
 #include <Basic/FunctionTraits.h>
 
@@ -117,5 +115,3 @@ namespace Ubpa {
 		return RunSum(works);
 	}
 }
-
-#endif // !_UBPA_CPPUTIL_BASIC_PARALLEL_H_

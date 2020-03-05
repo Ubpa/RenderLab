@@ -1,5 +1,4 @@
-#ifndef _OPTIX_AI_DENOISER_H_
-#define _OPTIX_AI_DENOISER_H_
+#pragma once
 
 #include <Basic/Ptr.h>
 
@@ -20,5 +19,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif // !_OPTIX_AI_DENOISER_H_

@@ -1,9 +1,6 @@
-#ifndef _CPPUTIL_BASIC_SAMPLER_BASIC_SAMPLER_H_
-#define _CPPUTIL_BASIC_SAMPLER_BASIC_SAMPLER_H_
+#pragma once
 
 #include <UGM/point.h>
-#include <UGM/point.h>
-#include <UGM/vec.h>
 #include <UGM/vec.h>
 #include <UGM/normal.h>
 
@@ -29,5 +26,3 @@ namespace CppUtil {
 		}
 	}
 }
-
-#endif // !_CPPUTIL_BASIC_SAMPLER_BASIC_SAMPLER_H_

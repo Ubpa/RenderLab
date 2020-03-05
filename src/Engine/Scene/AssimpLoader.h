@@ -1,5 +1,4 @@
-#ifndef _CPPUITL_ENGINE_SCENE_ASSIMP_LOADER_H_
-#define _CPPUITL_ENGINE_SCENE_ASSIMP_LOADER_H_
+#pragma once
 
 #include <3rdParty/assimp/Importer.hpp>
 #include <3rdParty/assimp/scene.h>
@@ -29,5 +28,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif // !_CPPUITL_ENGINE_SCENE_ASSIMP_LOADER_H_

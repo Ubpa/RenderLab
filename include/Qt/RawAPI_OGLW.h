@@ -1,5 +1,4 @@
-#ifndef _QT_RAW_API_OGLW_RAW_API_OGLW_H_
-#define _QT_RAW_API_OGLW_RAW_API_OGLW_H_
+#pragma once
 
 #include <OpenGL/VAO.h>
 #include <OpenGL/Texture.h>
@@ -111,5 +110,3 @@ namespace CppUtil {
 		}
 	}
 }
-
-#endif // !_QT_RAW_API_OGLW_RAW_API_OGLW_H_

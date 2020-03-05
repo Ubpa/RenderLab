@@ -1,6 +1,4 @@
 #pragma once
-#ifndef _CPPUTIL_ENGINE_MESHEDIT_LOOP_SUBDIVISION_H_
-#define _CPPUTIL_ENGINE_MESHEDIT_LOOP_SUBDIVISION_H_
 
 #include <Basic/HeapObj.h>
 #include <UGM/UGM>
@@ -46,5 +44,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif // !_CPPUTIL_ENGINE_MESHEDIT_LOOP_SUBDIVISION_H_

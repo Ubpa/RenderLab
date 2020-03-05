@@ -1,5 +1,4 @@
-#ifndef _CPPUTIL_ENGINE_VIEWER_SLDM_GENERATOR_H_
-#define _CPPUTIL_ENGINE_VIEWER_SLDM_GENERATOR_H_
+#pragma once
 
 #include <Basic/Visitor.h>
 #include <OpenGL/FBO.h>
@@ -80,5 +79,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif//!_CPPUTIL_ENGINE_VIEWER_SLDM_GENERATOR_H_

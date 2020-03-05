@@ -1,5 +1,4 @@
-#ifndef _CPPUTIL_BASIC_CSV_CSVSaver_H_
-#define _CPPUTIL_BASIC_CSV_CSVSaver_H_
+#pragma once
 
 #include <Basic/File.h>
 
@@ -63,5 +62,3 @@ namespace CppUtil {
 
 	}
 }
-
-#endif//!_CPPUTIL_BASIC_CSV_CSVSaver_H_

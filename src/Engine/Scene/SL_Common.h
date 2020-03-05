@@ -1,5 +1,4 @@
-#ifndef _CPPUTIL_ENGINE_SCENE_SL_COMMON_H_
-#define _CPPUTIL_ENGINE_SCENE_SL_COMMON_H_
+#pragma once
 
 #include <Engine/SObj.h>
 
@@ -274,5 +273,3 @@ namespace str {
 		const char * const colorTexture = "colorTexture";
 	}
 }
-
-#endif//!_CPPUTIL_ENGINE_SCENE_SL_COMMON_H_

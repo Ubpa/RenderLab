@@ -1,5 +1,4 @@
-#ifndef _ENGINE_RTX_PATH_TRACER_H_
-#define _ENGINE_RTX_PATH_TRACER_H_
+#pragma once
 
 #include <Engine/RayTracer.h>
 
@@ -90,5 +89,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif//!_ENGINE_PATH_TRACER_H_

@@ -1,5 +1,4 @@
-#ifndef _COMMOM_DEFINE_H_
-#define _COMMOM_DEFINE_H_
+#pragma once
 
 #include <string>
 
@@ -86,5 +85,3 @@ namespace Define{
 		 1.0f,  1.0f,  1.0f, 0.0f
 	};
 }
-
-#endif// !_COMMOM_DEFINE_H_

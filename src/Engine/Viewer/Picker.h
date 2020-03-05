@@ -1,5 +1,4 @@
-#ifndef _ENGINE_VIEWER_PICKER_H_
-#define _ENGINE_VIEWER_PICKER_H_
+#pragma once
 
 #include <Basic/HeapObj.h>
 #include <Engine/MeshEdit/DeformRBF.h>
@@ -43,5 +42,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif//!_ENGINE_VIEWER_PICKER_H_

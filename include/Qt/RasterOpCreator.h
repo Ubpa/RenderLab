@@ -1,5 +1,4 @@
-#ifndef _QT_RASTER_SCENE_CREATOR_RASTER_SCENE_CREATOR_H_
-#define _QT_RASTER_SCENE_CREATOR_RASTER_SCENE_CREATOR_H_
+#pragma once
 
 #include <Basic/HeapObj.h>
 
@@ -50,6 +49,3 @@ namespace CppUtil {
 
 	}
 }
-
-
-#endif // !_QT_RASTER_SCENE_CREATOR_RASTER_SCENE_CREATOR_H_

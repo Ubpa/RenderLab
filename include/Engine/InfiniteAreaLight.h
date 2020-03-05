@@ -1,5 +1,4 @@
-#ifndef _CPPUTIL_ENGINE_INFINITE_AREA_LIGHT_H_
-#define _CPPUTIL_ENGINE_INFINITE_AREA_LIGHT_H_
+#pragma once
 
 #include <Engine/Light.h>
 #include <Basic/AliasMethod.h>
@@ -55,5 +54,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif // !_CPPUTIL_ENGINE_INFINITE_AREA_LIGHT_H_

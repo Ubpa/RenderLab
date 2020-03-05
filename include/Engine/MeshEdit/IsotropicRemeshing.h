@@ -1,5 +1,4 @@
-#ifndef _CPPUTIL_ENGINE_MESHEDIT_ISOTROPICREMESHING_H_
-#define _CPPUTIL_ENGINE_MESHEDIT_ISOTROPICREMESHING_H_
+#pragma once
 
 #include <Basic/HeapObj.h>
 #include <UGM/UGM>
@@ -51,5 +50,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif // !_CPPUTIL_ENGINE_MESHEDIT_ISOTROPICREMESHING_H_

@@ -1,5 +1,4 @@
-#ifndef _CPPUTIL_ENGINE_PRIMITIVE_BVH_NODE_H_
-#define _CPPUTIL_ENGINE_PRIMITIVE_BVH_NODE_H_
+#pragma once
 
 #include <Engine/Shape.h>
 #include <UGM/bbox.h>
@@ -46,5 +45,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif//!_CPPUTIL_ENGINE_PRIMITIVE_BVH_NODE_H_

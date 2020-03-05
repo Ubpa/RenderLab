@@ -1,5 +1,4 @@
-#ifndef _BASIC_EVENT_MANAGER_EVENT_MANAGER_H_
-#define _BASIC_EVENT_MANAGER_EVENT_MANAGER_H_
+#pragma once
 
 #include <Basic/Ptr.h>
 
@@ -69,4 +68,3 @@ namespace CppUtil {
 		};
 	}
 }
-#endif // !_BASIC_EVENT_MANAGER_EVENT_MANAGER_H_

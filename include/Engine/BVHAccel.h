@@ -1,5 +1,4 @@
-#ifndef _ENGINE_RTX_BVH_ACCEL_H_
-#define _ENGINE_RTX_BVH_ACCEL_H_
+#pragma once
 
 #include <Basic/Element.h>
 
@@ -109,5 +108,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif//!_ENGINE_RTX_BVH_ACCEL_H_

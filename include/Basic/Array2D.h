@@ -1,5 +1,4 @@
-#ifndef _BASIC_HEADER_ARRAY_2D_H_
-#define _BASIC_HEADER_ARRAY_2D_H_
+#pragma once
 
 #include <array>
 
@@ -28,5 +27,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif // !_BASIC_HEADER_ARRAY_2D_H_

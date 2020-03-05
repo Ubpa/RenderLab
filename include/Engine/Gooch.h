@@ -1,5 +1,4 @@
-#ifndef _CPPUTIL_ENGINE_MATERIAL_GOOCH_H_
-#define _CPPUTIL_ENGINE_MATERIAL_GOOCH_H_
+#pragma once
 
 #include <Engine/Material.h>
 
@@ -23,5 +22,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif // !_CPPUTIL_ENGINE_MATERIAL_GOOCH_H_

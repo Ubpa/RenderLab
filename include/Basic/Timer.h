@@ -1,5 +1,4 @@
-#ifndef _BASIC_TIMER_TIMER_H_
-#define _BASIC_TIMER_TIMER_H_
+#pragma once
 
 #include <deque>
 #include <iostream>
@@ -44,5 +43,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif // !_TIMER_H_

@@ -1,5 +1,4 @@
-#ifndef _ENGINE_VIEWER_ROAMER_H_
-#define _ENGINE_VIEWER_ROAMER_H_
+#pragma once
 
 #include <Basic/HeapObj.h>
 
@@ -46,5 +45,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif//!_ENGINE_VIEWER_ROAMER_H_

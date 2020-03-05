@@ -1,5 +1,4 @@
-#ifndef _CPPUTIL_ENGINE_RTX_FILM_H_
-#define _CPPUTIL_ENGINE_RTX_FILM_H_
+#pragma once
 
 #include <Basic/HeapObj.h>
 
@@ -69,5 +68,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif // !_CPPUTIL_ENGINE_RTX_FILM_H_

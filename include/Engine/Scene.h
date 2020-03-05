@@ -1,5 +1,4 @@
-#ifndef _ENGINE_SCENE_SCENE_H_
-#define _ENGINE_SCENE_SCENE_H_
+#pragma once
 
 #include <Basic/Element.h>
 
@@ -62,5 +61,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif//!_ENGINE_SCENE_SCENE_H_

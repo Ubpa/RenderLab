@@ -1,5 +1,4 @@
-#ifndef _CPPUTIL_ENGINE_VIEWER_FORWARD_RASTER_H_
-#define _CPPUTIL_ENGINE_VIEWER_FORWARD_RASTER_H_
+#pragma once
 
 #include <Engine/Raster.h>
 
@@ -105,5 +104,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif//!_CPPUTIL_ENGINE_VIEWER_FORWARD_RASTER_H_

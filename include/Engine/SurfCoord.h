@@ -1,5 +1,4 @@
-#ifndef _CPPUTIL_ENGINE_MATERIAL_SURF_COORD_H_
-#define _CPPUTIL_ENGINE_MATERIAL_SURF_COORD_H_
+#pragma once
 
 #include <UGM/normal.h>
 #include <Basic/Math.h>
@@ -70,5 +69,3 @@ namespace CppUtil {
 		}
 	}
 }
-
-#endif // !_CPPUTIL_ENGINE_MATERIAL_SURF_COORD_H_

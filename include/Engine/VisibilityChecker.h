@@ -1,5 +1,4 @@
-#ifndef _ENGINE_INTERSECTOR_VISIBILITY_CHECKER_H_
-#define _ENGINE_INTERSECTOR_VISIBILITY_CHECKER_H_
+#pragma once
 
 #include <Engine/Intersector.h>
 #include <UGM/bbox.h>
@@ -51,5 +50,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif//!_ENGINE_INTERSECTOR_VISIBILITY_CHECKER_H_

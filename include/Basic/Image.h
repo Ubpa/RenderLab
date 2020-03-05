@@ -1,5 +1,4 @@
-#ifndef _BASIC_IMAGE_IMAGE_H_
-#define _BASIC_IMAGE_IMAGE_H_
+#pragma once
 
 #include <Basic/HeapObj.h>
 #include <UGM/rgb.h>
@@ -138,5 +137,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif // !_IMAGE_H_

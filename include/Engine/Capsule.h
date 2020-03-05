@@ -1,5 +1,4 @@
-#ifndef _CPPUTIL_ENGINE_CAPSULE_H_
-#define _CPPUTIL_ENGINE_CAPSULE_H_
+#pragma once
 
 #include <Engine/Primitive.h>
 
@@ -26,5 +25,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif // !_CPPUTIL_ENGINE_CAPSULE_H_

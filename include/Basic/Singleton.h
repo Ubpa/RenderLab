@@ -1,5 +1,4 @@
-#ifndef _BASIC_HEADER_SINGLETON_H_
-#define _BASIC_HEADER_SINGLETON_H_
+#pragma once
 
 namespace CppUtil {
 	namespace Basic {
@@ -18,5 +17,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif// !_BASIC_HEADER_SINGLETON_H_

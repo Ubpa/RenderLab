@@ -1,5 +1,4 @@
-#ifndef _BASIC_MATH_MATH_H_
-#define _BASIC_MATH_MATH_H_
+#pragma once
 
 #include <vector>
 #include <sstream>
@@ -127,5 +126,3 @@ namespace CppUtil {
 }
 
 #include <Basic/Math.inl>
-
-#endif // !_BASIC_MATH_MATH_H_

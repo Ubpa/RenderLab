@@ -1,5 +1,4 @@
-#ifndef _CPPUTIL_BASIC_HEADER_FUNCTION_TRAITS_H_
-#define _CPPUTIL_BASIC_HEADER_FUNCTION_TRAITS_H_
+#pragma once
 
 #include <tuple>
 
@@ -60,6 +59,3 @@ namespace CppUtil {
 		using RetT = typename FunctionTraits<T>::result_type;
 	}
 }
-
-
-#endif//!_CPPUTIL_BASIC_HEADER_FUNCTION_TRAITS_H_

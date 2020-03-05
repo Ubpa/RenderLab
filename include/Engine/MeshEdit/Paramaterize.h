@@ -1,6 +1,4 @@
 #pragma once
-#ifndef _CPPUTIL_ENGINE_MESHEDIT_PARAMATERIZE_H_
-#define _CPPUTIL_ENGINE_MESHEDIT_PARAMATERIZE_H_
 
 #include <Basic/HeapObj.h>
 
@@ -32,5 +30,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif // !_CPPUTIL_ENGINE_MESHEDIT_PARAMATERIZE_H_

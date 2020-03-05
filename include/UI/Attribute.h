@@ -1,5 +1,4 @@
-#ifndef _UI_ATTRIBUTE_H_
-#define _UI_ATTRIBUTE_H_
+#pragma once
 
 #include <Basic/TypeMap.h>
 
@@ -66,5 +65,3 @@ namespace Ui {
 		CppUtil::QT::RawAPI_OGLW * pOGLW;
 	};
 }
-
-#endif//!_UI_ATTRIBUTE_H_

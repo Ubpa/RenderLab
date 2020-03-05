@@ -1,5 +1,4 @@
-#ifndef _BASIC_ARG_MANAGER_ARG_MANAGER_H_
-#define _BASIC_ARG_MANAGER_ARG_MANAGER_H_
+#pragma once
 
 #include <string>
 #include <vector>
@@ -17,4 +16,3 @@ namespace CppUtil {
 		};
 	};
 }
-#endif//! _BASIC_ARG_MANAGER_ARG_MANAGER_H_

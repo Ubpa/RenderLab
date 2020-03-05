@@ -1,5 +1,4 @@
-#ifndef _QT_OP_THREAD_OP_THREAD_H_
-#define _QT_OP_THREAD_OP_THREAD_H_
+#pragma once
 
 #include <Basic/HeapObj.h>
 
@@ -48,5 +47,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif // !_QT_OP_THREAD_OP_THREAD_H_

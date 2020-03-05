@@ -1,5 +1,4 @@
-#ifndef _CPPUTIL_ENGINE_MATERIAL_MICROFACET_DISTRIBUTION_H_
-#define _CPPUTIL_ENGINE_MATERIAL_MICROFACET_DISTRIBUTION_H_
+#pragma once
 
 #include <UGM/normal.h>
 #include <Engine/SurfCoord.h>
@@ -44,5 +43,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif // !_CPPUTIL_ENGINE_MATERIAL_MICROFACET_DISTRIBUTION_H_

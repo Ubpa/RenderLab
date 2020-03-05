@@ -1,3 +1,5 @@
+#pragma once
+
 #include <Engine/Light.h>
 
 namespace CppUtil {

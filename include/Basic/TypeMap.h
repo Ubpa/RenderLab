@@ -1,5 +1,4 @@
-#ifndef _BASIC_HEADER_TYPE_MAP_H_
-#define _BASIC_HEADER_TYPE_MAP_H_
+#pragma once
 
 #include <typeinfo>
 #include <unordered_map>
@@ -26,5 +25,3 @@ namespace CppUtil {
 		using TypeMap = std::unordered_map<TypeInfoRef, T, Hasher, EqualTo>;
 	}
 }
-
-#endif//!_BASIC_HEADER_TYPE_MAP_H_

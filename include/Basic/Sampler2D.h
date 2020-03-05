@@ -1,5 +1,4 @@
-#ifndef _BASIC_SAMPLER_SAMPLER_2D_H_
-#define _BASIC_SAMPLER_SAMPLER_2D_H_
+#pragma once
 
 #include <UGM/val.h>
 
@@ -12,5 +11,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif//!_BASIC_SAMPLER_SAMPLER_2D_H_

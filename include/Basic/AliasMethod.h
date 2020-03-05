@@ -1,5 +1,4 @@
-#ifndef _CPPUTIL_BASIC_SAMPLER_ALIAS_METHOD_H_
-#define _CPPUTIL_BASIC_SAMPLER_ALIAS_METHOD_H_
+#pragma once
 
 #include <vector>
 
@@ -35,5 +34,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif // !_CPPUTIL_BASIC_SAMPLER_ALIAS_METHOD_H_

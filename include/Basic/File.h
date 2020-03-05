@@ -1,5 +1,4 @@
-#ifndef _BASIC_FILE_FILE_H_
-#define _BASIC_FILE_FILE_H_
+#pragma once
 
 #include <string>
 #include <vector>
@@ -48,4 +47,3 @@ namespace CppUtil {
 		};
 	};
 }
-#endif//! _BASIC_FILE_FILE_H_

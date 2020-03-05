@@ -1,5 +1,4 @@
-#ifndef _CPPUTIL_BASIC_STR_API_H_
-#define _CPPUTIL_BASIC_STR_API_H_
+#pragma once
 
 #include <string>
 #include <vector>
@@ -33,5 +32,3 @@ namespace CppUtil {
 		}
 	}
 }
-
-#endif // !_CPPUTIL_BASIC_STR_API_H_

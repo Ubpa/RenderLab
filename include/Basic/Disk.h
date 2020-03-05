@@ -1,5 +1,4 @@
-#ifndef _CPPUTIL_BASIC_SHAPE_DISK_H_
-#define _CPPUTIL_BASIC_SHAPE_DISK_H_
+#pragma once
 
 #include <Basic/Shape.h>
 #include <UGM/val.h>
@@ -25,6 +24,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-
-#endif // !_CPPUTIL_BASIC_SHAPE_DISK_H_

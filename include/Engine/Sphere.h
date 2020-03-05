@@ -1,5 +1,4 @@
-#ifndef _ENGINE_PRIMITIVE_SPHERE_H_
-#define _ENGINE_PRIMITIVE_SPHERE_H_
+#pragma once
 
 #include <Engine/Primitive.h>
 #include <UGM/point.h>
@@ -45,5 +44,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif//!_ENGINE_PRIMITIVE_SPHERE_H_

@@ -1,6 +1,4 @@
 #pragma once
-#ifndef _CPPUTIL_ENGINE_MESHEDIT_DEFORMRBF_H_
-#define _CPPUTIL_ENGINE_MESHEDIT_DEFORMRBF_H_
 
 #include <Basic/HeapObj.h>
 #include <Engine/TriMesh.h>
@@ -37,5 +35,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif // !_CPPUTIL_ENGINE_MESHEDIT_DEFORMRBF_H_

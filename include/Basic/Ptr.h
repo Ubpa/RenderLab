@@ -1,5 +1,4 @@
-#ifndef _BASIC_HEADER_PTR_H_
-#define _BASIC_HEADER_PTR_H_
+#pragma once
 
 #include <memory>
 #include <typeinfo>
@@ -80,5 +79,3 @@ namespace CppUtil {
 		}
 	}
 }
-
-#endif // !_BASIC_HEADER_PTR_H_

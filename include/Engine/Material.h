@@ -1,5 +1,4 @@
-#ifndef _ENGINE_MATERIAL_MATERIAL_H_
-#define _ENGINE_MATERIAL_MATERIAL_H_
+#pragma once
 
 #include <Basic/Element.h>
 #include <UGM/point.h>
@@ -23,5 +22,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif//!_ENGINE_MATERIAL_MATERIAL_H_

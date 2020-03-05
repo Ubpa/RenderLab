@@ -1,5 +1,4 @@
-#ifndef _BASIC_SAMPLER_UNIFORM_GRID_SAMPLER_2D_H_
-#define _BASIC_SAMPLER_UNIFORM_GRID_SAMPLER_2D_H_
+#pragma once
 
 #include <Basic/Sampler2D.h>
 
@@ -11,5 +10,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif//!_BASIC_SAMPLER_UNIFORM_GRID_SAMPLER_2D_H_

@@ -1,5 +1,4 @@
-#ifndef _OPENGL_CAMERA_CAMERA_H_
-#define _OPENGL_CAMERA_CAMERA_H_
+#pragma once
 
 #include <UGM/transform.h>
 
@@ -92,4 +91,3 @@ namespace CppUtil {
 		};
 	}
 }
-#endif//! _OPENGL_CAMERA_CAMERA_H_

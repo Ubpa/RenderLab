@@ -1,5 +1,4 @@
-#ifndef _CPPUTIL_ENGINE_SCENE_SOBJ_SAVER_H_
-#define _CPPUTIL_ENGINE_SCENE_SOBJ_SAVER_H_
+#pragma once
 
 #include <Basic/Visitor.h>
 #include <3rdParty/tinyxml2.h>
@@ -211,5 +210,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif//!_CPPUTIL_ENGINE_SCENE_SOBJ_SAVER_H_

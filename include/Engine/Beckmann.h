@@ -1,5 +1,4 @@
-#ifndef _CPPUTIL_ENGINE_MATERIAL_BECKMANN_H_
-#define _CPPUTIL_ENGINE_MATERIAL_BECKMANN_H_
+#pragma once
 
 #include <Engine/MicrofacetDistribution.h>
 
@@ -34,5 +33,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif // !_CPPUTIL_ENGINE_MATERIAL_BECKMANN_H_

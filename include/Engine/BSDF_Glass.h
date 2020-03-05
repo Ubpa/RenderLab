@@ -1,5 +1,4 @@
-#ifndef _ENGINE_MATERIAL_BSDF_GLASS_H_
-#define _ENGINE_MATERIAL_BSDF_GLASS_H_
+#pragma once
 
 #include <Engine/BSDF.h>
 
@@ -37,5 +36,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif//!_ENGINE_MATERIAL_BSDF_GLASS_H_

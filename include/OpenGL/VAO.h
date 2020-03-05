@@ -1,5 +1,4 @@
-#ifndef _OPENGL_VAO_VAO_H_
-#define _OPENGL_VAO_VAO_H_
+#pragma once
 
 #include <vector>
 
@@ -40,5 +39,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif // !_OPENGL_VAO_VAO_H_

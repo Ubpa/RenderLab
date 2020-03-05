@@ -1,5 +1,4 @@
-#ifndef _BASIC_MATH_PERLIN_H_
-#define _BASIC_MATH_PERLIN_H_
+#pragma once
 
 #include <UGM/vec.h>
 
@@ -27,5 +26,3 @@ namespace CppUtil {
 		}
 	}
 }
-
-#endif//!_BASIC_MATH_PERLIN_H_

@@ -1,5 +1,4 @@
-#ifndef _ENGINE_MATERIAL_BSDF_H_
-#define _ENGINE_MATERIAL_BSDF_H_
+#pragma once
 
 #include <Engine/Material.h>
 #include <Engine/SurfCoord.h>
@@ -33,5 +32,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif//!_ENGINE_MATERIAL_BSDF_H_

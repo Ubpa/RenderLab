@@ -1,5 +1,4 @@
-#ifndef _ENGINE_VIEWER_VIEWER_H_
-#define _ENGINE_VIEWER_VIEWER_H_
+#pragma once
 
 #include <Basic/HeapObj.h>
 #include <enum.h>
@@ -52,5 +51,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif//!_ENGINE_VIEWER_VIEWER_H_

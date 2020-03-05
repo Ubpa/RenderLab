@@ -1,5 +1,4 @@
-#ifndef _CPPUTIL_ENGINE_MATERIAL_GGX_H_
-#define _CPPUTIL_ENGINE_MATERIAL_GGX_H_
+#pragma once
 
 #include <Engine/MicrofacetDistribution.h>
 
@@ -35,5 +34,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif // !_CPPUTIL_ENGINE_MATERIAL_GGX_H_

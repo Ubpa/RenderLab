@@ -1,5 +1,4 @@
-#ifndef _CPPUTIL_ENGINE_POINT_LIGHT_H_
-#define _CPPUTIL_ENGINE_POINT_LIGHT_H_
+#pragma once
 
 #include <Engine/Light.h>
 
@@ -47,5 +46,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif//!_CPPUTIL_ENGINE_POINT_LIGHT_H_

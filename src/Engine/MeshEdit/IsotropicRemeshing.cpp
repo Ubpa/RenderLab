@@ -234,7 +234,7 @@ bool IsotropicRemeshing::Kernel(size_t n) {
 		printf("5. vertex normal\n");
 		vector<Ubpa::vecf3> triWNs(heMesh->NumPolygons(), Ubpa::vecf3(0.f)); // triangle weighted normals
 		vector<float> triAreas(heMesh->NumPolygons(), 0.f); // triangle areas
-		vector<Ubpa::vecf3> sWNs(heMesh->NumVertices()); // sum Weighted Normal
+		vector<Ubpa::vecf3> sWNs(heMesh->NumVertices(), Ubpa::vecf3(0.f)); // sum Weighted Normal
 		auto step5_tri = [&](HEMesh<V>::P* triangle) {
 			auto vertices = triangle->BoundaryVertice();
 			assert(vertices.size() == 3);
@@ -270,7 +270,7 @@ bool IsotropicRemeshing::Kernel(size_t n) {
 			}
 
 			// gravity-weighted offset
-			Ubpa::vecf3 gravityCentroid;
+			Ubpa::vecf3 gravityCentroid{ 0.f };
 			float sumArea = 0.f;
 			for (auto outHE : v->OutHEs()) {
 				auto p0 = outHE->Polygon();

@@ -1,5 +1,4 @@
-#ifndef _CPPUTIL_ENGINE_LTC_TEX_H_
-#define _CPPUTIL_ENGINE_LTC_TEX_H_
+#pragma once
 
 namespace CppUtil {
 	namespace Engine {
@@ -32784,5 +32783,3 @@ namespace CppUtil {
 		}
 	}
 }
-
-#endif // !_CPPUTIL_ENGINE_LTC_TEX_H_

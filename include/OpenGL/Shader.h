@@ -1,5 +1,4 @@
-#ifndef _OPENGL_SHADER_SHADER_H_
-#define _OPENGL_SHADER_SHADER_H_
+#pragma once
 
 #include <UGM/val.h>
 #include <UGM/transform.h>
@@ -68,5 +67,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif // !_OPENGL_SHADER_SHADER_H_

@@ -1,5 +1,4 @@
-#ifndef _ENGINE_PRIMITIVE_TRIANGLE_H_
-#define _ENGINE_PRIMITIVE_TRIANGLE_H_
+#pragma once
 
 #include <Engine/Shape.h>
 
@@ -41,5 +40,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif//!_ENGINE_PRIMITIVE_TRIANGLE_H_

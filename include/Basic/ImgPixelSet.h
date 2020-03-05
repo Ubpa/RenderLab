@@ -1,5 +1,4 @@
-#ifndef _BASIC_IMAGE_IMG_PIXEL_SET_H_
-#define _BASIC_IMAGE_IMG_PIXEL_SET_H_
+#pragma once
 
 #include <Basic/RandSet.h>
 #include <UGM/val.h>
@@ -17,5 +16,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif // !_IMG_PIXEL_SET_H_

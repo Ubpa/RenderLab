@@ -1,5 +1,4 @@
-#ifndef _BASIC_SHAPE_SPHERE_H_
-#define _BASIC_SHAPE_SPHERE_H_
+#pragma once
 
 #include <Basic/Shape.h>
 #include <UGM/val.h>
@@ -25,5 +24,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif // !_BASIC_SHAPE_SPHERE_H_

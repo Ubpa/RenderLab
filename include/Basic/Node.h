@@ -1,5 +1,4 @@
-#ifndef _BASIC_NODE_NODE_H_
-#define _BASIC_NODE_NODE_H_
+#pragma once
 
 #include <Basic/Element.h>
 
@@ -76,5 +75,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif // !_BASIC_NODE_NODE_H_

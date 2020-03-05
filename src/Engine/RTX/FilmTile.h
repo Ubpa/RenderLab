@@ -1,5 +1,4 @@
-#ifndef _CPPUTIL_ENGINE_RTX_FILM_TILE_H_
-#define _CPPUTIL_ENGINE_RTX_FILM_TILE_H_
+#pragma once
 
 #include "Film.h"
 
@@ -51,5 +50,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif // !_CPPUTIL_ENGINE_RTX_FILM_TILE_H_

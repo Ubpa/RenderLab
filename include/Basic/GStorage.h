@@ -1,5 +1,4 @@
-#ifndef _BASIC_HEADER_GSTORAGE_H_
-#define _BASIC_HEADER_GSTORAGE_H_
+#pragma once
 
 #include <Basic/Singleton.h>
 #include <Basic/LStorage.h>
@@ -113,5 +112,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif//!_BASIC_HEADER_GSTORAGE_H_

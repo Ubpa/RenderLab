@@ -1,5 +1,4 @@
-#ifndef _UI_GRID_H_
-#define _UI_GRID_H_
+#pragma once
 
 #include <Basic/HeapObj.h>
 
@@ -126,5 +125,3 @@ namespace Ui {
 		QGridLayout * gridLayout;
 	};
 }
-
-#endif//!_UI_GRID_H_

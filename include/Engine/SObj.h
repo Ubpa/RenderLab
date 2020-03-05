@@ -1,5 +1,4 @@
-#ifndef _ENGINE_SCENE_SOBJ_H_
-#define _ENGINE_SCENE_SOBJ_H_ 
+#pragma once
 
 #include <Basic/LStorage.h>
 #include <Basic/Node.h>
@@ -77,4 +76,3 @@ namespace CppUtil {
 #include <Engine/SObj.inl>
 	}
 }
-#endif//!_ENGINE_SCENE_SOBJ_H_

@@ -1,5 +1,4 @@
-#ifndef _CPPUTIL_ENGINE_SCENE_SOBJ_LOADER_H_
-#define _CPPUTIL_ENGINE_SCENE_SOBJ_LOADER_H_
+#pragma once
 
 #include <3rdParty/tinyxml2.h>
 #include <Basic/Ptr.h>
@@ -153,5 +152,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif//!_CPPUTIL_ENGINE_SCENE_SOBJ_SAVER_H_

@@ -1,5 +1,4 @@
-#ifndef _OPENGL_MESH_MESH_H_
-#define _OPENGL_MESH_MESH_H_
+#pragma once
 
 typedef unsigned int unsigned;
 
@@ -58,5 +57,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif// !_MESH_H_

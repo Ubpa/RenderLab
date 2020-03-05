@@ -1,5 +1,4 @@
-#ifndef _UI_HIERARCHY_HIERARCHY_H_
-#define _UI_HIERARCHY_HIERARCHY_H_
+#pragma once
 
 #include <Basic/HeapObj.h>
 
@@ -53,5 +52,3 @@ namespace Ui {
 		QTreeWidget * tree;
 	};
 }
-
-#endif//!_UI_HIERARCHY_HIERARCHY_H_

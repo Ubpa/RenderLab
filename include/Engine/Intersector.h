@@ -1,5 +1,4 @@
-#ifndef _ENGINE_INTERSECTOR_INTERSECTOR_H_
-#define _ENGINE_INTERSECTOR_INTERSECTOR_H_
+#pragma once
 
 #include <Basic/Visitor.h>
 
@@ -22,5 +21,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif//!_ENGINE_INTERSECTOR_INTERSECTOR_H_

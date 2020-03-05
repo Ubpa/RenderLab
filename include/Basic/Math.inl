@@ -1,5 +1,4 @@
-#ifndef _CPPUTIL_BASIC_MATH_MATH_INL_
-#define _CPPUTIL_BASIC_MATH_MATH_INL_
+#pragma once
 
 namespace CppUtil {
 	namespace Basic {
@@ -63,5 +62,3 @@ namespace CppUtil {
 		}
 	}
 }
-
-#endif // !_CPPUTIL_BASIC_MATH_MATH_INL_

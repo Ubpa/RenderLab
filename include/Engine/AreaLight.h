@@ -1,5 +1,4 @@
-#ifndef _ENGINE_LIGHT_AREA_LIGHT_H_
-#define _ENGINE_LIGHT_AREA_LIGHT_H_
+#pragma once
 
 #include <Engine/Light.h>
 #include <Basic/UniformGridSampler2D.h>
@@ -51,5 +50,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif//!_ENGINE_LIGHT_AREA_LIGHT_H_

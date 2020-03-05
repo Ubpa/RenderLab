@@ -1,5 +1,4 @@
-#ifndef _CPPUTIL_ENGINE_MATERIAL_SCHLICK_GGX_H_
-#define _CPPUTIL_ENGINE_MATERIAL_SCHLICK_GGX_H_
+#pragma once
 
 #include <Engine/GGX.h>
 
@@ -24,5 +23,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif // !_CPPUTIL_ENGINE_MATERIAL_SCHLICK_GGX_H_

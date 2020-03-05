@@ -1,5 +1,4 @@
-#ifndef _CPPUTIL_BASIC_OPERATION_OP_QUEUE_H_
-#define _CPPUTIL_BASIC_OPERATION_OP_QUEUE_H_
+#pragma once
 
 #include <Basic/Op.h>
 
@@ -33,5 +32,3 @@ namespace CppUtil {
 		};
 	}
 }
-
-#endif // !_CPPUTIL_BASIC_OPERATION_OP_QUEUE_H_
