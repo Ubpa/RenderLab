@@ -53,6 +53,13 @@ include(UbpaTool)
 Ubpa_QtInit(COMPONENTS Core Gui Widgets OpenGL)
 
 message(STATUS "----------")
+find_package(assimp)
+if(TARGET assimp::assimp)
+	message(STATUS "assimp_FOUND: ${assimp_FOUND}")
+	message(STATUS "assimp_DIR: ${assimp_DIR}")
+endif()
+
+message(STATUS "----------")
 # https://eigen.tuxfamily.org/dox/TopicCMakeGuide.html
 # https://gitlab.com/libeigen/eigen/-/blob/master/cmake/Eigen3Config.cmake.in
 # https://gitlab.com/libeigen/eigen/-/blob/master/cmake/UseEigen3.cmake

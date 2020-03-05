@@ -76,7 +76,7 @@ const Ptr<SObj> SObj::Load(const string & path) {
 
 	if (!sobj) {
 		printf("WARNING::SObj::Load:\n"
-			"\t""loaded sobj is null");
+			"\t""loaded sobj is null\n");
 	}
 
 	return sobj;

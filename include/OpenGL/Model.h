@@ -1,8 +1,8 @@
 #pragma once
 
-#include <3rdParty/assimp/Importer.hpp>
-#include <3rdParty/assimp/scene.h>
-#include <3rdParty/assimp/postprocess.h>
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
 
 #include <OpenGL/Mesh.h>
 

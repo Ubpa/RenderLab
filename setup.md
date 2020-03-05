@@ -7,10 +7,10 @@
   - 链接：https://pan.baidu.com/s/1D2dIBmN2Ub8dKYjO6LsV3w 
   - 提取码：amiw
 
-- 下载 QT 5.12.0 64 位
+- 下载 QT 5.12.2 64 位
 
   - 选择 Open Source 下载
-  - 选择 5.12.0 MSVC 2017 64-bit 和 Sources
+  - 选择 5.12.2 MSVC 2017 64-bit 和 Sources
   - 将 `YOUR_PATH_TO/Qt5/msvc 2017 64/bin` 加入环境变量 `Path` 中
 
 
@@ -47,4 +47,9 @@
     - 选择 `CMakePredefinedTargets` 里的 `ALLBUILD`，右键**生成**。（`INSTALL` 会将可执行文件安装到 `bin` 目录，将静态库安装到 `lib` 目录）
   
   - 直接运行 `App` 下的 `RenderLab` 和 `RTGIwRRF`。其余需要提供命令行参数。
+
+## 可选项
+
+- assimp
+- OptiX AI Denoisor
 

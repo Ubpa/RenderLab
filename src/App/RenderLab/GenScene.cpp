@@ -651,7 +651,12 @@ Ptr<Scene> GenScene11() {
 	auto lightObj = SObj::New(sobjRoot, "light");
 	lightObj->AddComponent<CmptLight>(InfiniteAreaLight::New(Image::New(ROOT_PATH+"data/textures/newport_loft.hdr")));
 	auto ball = SObj::Load(ROOT_PATH + "data/objects/Balls.obj");
-	sobjRoot->AddChild(ball);
+	if(ball)
+		sobjRoot->AddChild(ball);
+	else {
+		cout << "WARNING::GenScene11:" << endl
+			<< "\t" << "load fail: data/objects/Balls.obj" << endl;
+	}
 
 	return Scene::New(sobjRoot);
 }

@@ -1,14 +1,16 @@
 #pragma once
 
-#include <3rdParty/assimp/Importer.hpp>
-#include <3rdParty/assimp/scene.h>
-#include <3rdParty/assimp/postprocess.h>
-
 #include <Basic/Ptr.h>
 
 #include <string>
 #include <map>
 #include <array>
+
+struct aiNode;
+struct aiMesh;
+struct aiScene;
+struct aiMaterial;
+enum aiTextureType;
 
 namespace Ubpa {
 	class Image;

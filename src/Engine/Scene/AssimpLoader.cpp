@@ -1,6 +1,11 @@
 #include "AssimpLoader.h"
 
-#include <3rdParty/assimp/pbrmaterial.h>
+#if defined(USE_ASSIMP) && USE_ASSIMP
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+#include <assimp/pbrmaterial.h>
+#endif
 
 #include <Engine/SObj.h>
 
@@ -23,6 +28,7 @@ using namespace Ubpa;
 using namespace std;
 
 const Ptr<SObj> AssimpLoader::Load(const std::string & path) {
+#if defined(USE_ASSIMP) && USE_ASSIMP
 	bool isSupport = false;
 	const string support[2]= { ".obj", ".fbx"};
 	auto lowerCasePath = StrAPI::LowerCase(path);
@@ -50,9 +56,15 @@ const Ptr<SObj> AssimpLoader::Load(const std::string & path) {
 	// process ASSIMP's root node recursively
 	Str2Img str2img;
 	return LoadNode(str2img, dir, scene->mRootNode, scene);
+#else
+	cout << "ERROR::ASSIMP:"<< endl <<
+		"\t" << "no assimp because not found it when cmake, read setup.md for more details" << endl;
+	return nullptr;
+#endif
 }
 
 const Ptr<SObj> AssimpLoader::LoadNode(Str2Img & str2img, const string & dir, aiNode *node, const aiScene *scene) {
+#if defined(USE_ASSIMP) && USE_ASSIMP
 	auto sobj = SObj::New(nullptr, node->mName.C_Str());
 	CmptTransform::New(sobj);
 
@@ -74,9 +86,15 @@ const Ptr<SObj> AssimpLoader::LoadNode(Str2Img & str2img, const string & dir, ai
 	}
 
 	return sobj;
+#else
+	cout << "ERROR::ASSIMP:" << endl <<
+		"\t" << "no assimp because not found it when cmake, read setup.md for more details" << endl;
+	return nullptr;
+#endif
 }
 
 void AssimpLoader::LoadMesh(Str2Img & str2img, const string & dir, aiMesh *mesh, const aiScene *scene, Ptr<SObj> sobj) {
+#if defined(USE_ASSIMP) && USE_ASSIMP
 	// data to fill
 	vector<pointf3> poses;
 	vector<pointf2> texcoords;
@@ -155,10 +173,10 @@ void AssimpLoader::LoadMesh(Str2Img & str2img, const string & dir, aiMesh *mesh,
 	// process materials
 	aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 
-	for (int i = 0; i <= 12; i++) {
+	/*for (int i = 0; i <= 12; i++) {
 		auto n = material->GetTextureCount(static_cast<aiTextureType>(i));
 		printf("%d : %d\n", i, n);
-	}
+	}*/
 
 	bsdf->albedoTexture = LoadTexture(str2img, dir, material, aiTextureType_DIFFUSE);
 	bsdf->metallicTexture = LoadTexture(str2img, dir, material, aiTextureType_SPECULAR);
@@ -167,9 +185,14 @@ void AssimpLoader::LoadMesh(Str2Img & str2img, const string & dir, aiMesh *mesh,
 		bsdf->roughnessTexture = shininess->inverse();
 	bsdf->normalTexture = LoadTexture(str2img, dir, material, aiTextureType_NORMALS);
 	bsdf->aoTexture = LoadTexture(str2img, dir, material, aiTextureType_AMBIENT);
+#else
+	cout << "ERROR::ASSIMP:" << endl <<
+		"\t" << "no assimp because not found it when cmake, read setup.md for more details" << endl;
+#endif
 }
 
 Ptr<Image> AssimpLoader::LoadTexture(Str2Img & str2img, const string & dir, aiMaterial* material, aiTextureType type) {
+#if defined(USE_ASSIMP) && USE_ASSIMP
 	auto num = material->GetTextureCount(type);
 	if (num == 0)
 		return nullptr;
@@ -195,4 +218,9 @@ Ptr<Image> AssimpLoader::LoadTexture(Str2Img & str2img, const string & dir, aiMa
 	}
 	str2img[path] = img;
 	return img;
+#else
+	cout << "ERROR::ASSIMP:" << endl <<
+		"\t" << "no assimp because not found it when cmake, read setup.md for more details" << endl;
+	return nullptr;
+#endif
 }
