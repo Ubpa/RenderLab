@@ -2,8 +2,6 @@
 
 #include <Basic/HeapObj.h>
 
-#include <3rdParty/enum.h>
-
 #include <functional>
 #include <vector>
 #include <mutex>
@@ -15,7 +13,9 @@ namespace Ubpa {
 	class RayTracer;
 	class BVHAccel;
 
-	BETTER_ENUM(RendererState, int, Running, Stop)
+	enum class RendererState {
+		Running, Stop
+	};
 
 	class RTX_Renderer : public HeapObj {
 	public:

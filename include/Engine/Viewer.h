@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Basic/HeapObj.h>
-#include <enum.h>
 
 namespace Ubpa {
 	class RawAPI_OGLW;
@@ -12,10 +11,12 @@ namespace Ubpa {
 	class Roamer;
 	class Picker;
 
-	BETTER_ENUM(RasterType, int, DirectIllum, DeferredPipeline, ForwardNPR, WireframeRaster);
-
 	class Viewer final : public HeapObj {
 	public:
+		enum class RasterType {
+			DirectIllum, DeferredPipeline, ForwardNPR, WireframeRaster
+		};
+
 		Viewer(RawAPI_OGLW* pOGLW, Ptr<Scene> scene, RasterType rasterType);
 
 	public:

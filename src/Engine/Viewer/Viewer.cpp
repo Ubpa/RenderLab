@@ -59,7 +59,7 @@ void Viewer::SetRaster(RasterType rasterType) {
 		break;
 	default:
 		printf("ERROR::Viewer::Viewer:\n"
-			"\t""not support RasterType(%s)\n", rasterType._to_string());
+			"\t""not support RasterType\n");
 		break;
 	}
 

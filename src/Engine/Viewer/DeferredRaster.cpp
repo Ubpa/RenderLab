@@ -293,7 +293,7 @@ void DeferredRaster::Pass_DirectLight() {
 	ltcTex1.Use(ltcBase);
 	ltcTex2.Use(ltcBase + 1);
 
-	pOGLW->GetVAO(ShapeType::Screen).Draw(directLightShader);
+	pOGLW->GetVAO(RawAPI_OGLW::ShapeType::Screen).Draw(directLightShader);
 }
 
 void DeferredRaster::Pass_AmbientLight() {
@@ -325,7 +325,7 @@ void DeferredRaster::Pass_AmbientLight() {
 		brdfLUT.Use(environmentBase + 2);
 	}
 
-	pOGLW->GetVAO(ShapeType::Screen).Draw(ambientLightShader);
+	pOGLW->GetVAO(RawAPI_OGLW::ShapeType::Screen).Draw(ambientLightShader);
 
 	glDisable(GL_BLEND);
 }
@@ -344,14 +344,14 @@ void DeferredRaster::Pass_Skybox() {
 		envGenerator->GetSkybox(img).Use(0);
 
 	glDepthFunc(GL_LEQUAL);
-	pOGLW->GetVAO(ShapeType::Cube).Draw(skyboxShader);
+	pOGLW->GetVAO(RawAPI_OGLW::ShapeType::Cube).Draw(skyboxShader);
 	glDepthFunc(GL_LESS);
 }
 
 void DeferredRaster::Pass_PostProcess() {
 	FBO::UseDefault();
 	windowFBO.GetColorTexture(0).Use(0);
-	pOGLW->GetVAO(ShapeType::Screen).Draw(postProcessShader);
+	pOGLW->GetVAO(RawAPI_OGLW::ShapeType::Screen).Draw(postProcessShader);
 }
 
 void DeferredRaster::Visit(Ptr<SObj> sobj) {
@@ -454,7 +454,7 @@ void DeferredRaster::Visit(Ptr<Sphere> sphere) {
 
 	curMaterialShader.SetMatf4("model", modelVec.back().data());
 	curMaterialShader.SetBool("isOffset", false);
-	pOGLW->GetVAO(ShapeType::Sphere).Draw(curMaterialShader);
+	pOGLW->GetVAO(RawAPI_OGLW::ShapeType::Sphere).Draw(curMaterialShader);
 }
 
 void DeferredRaster::Visit(Ptr<Plane> plane) {
@@ -463,7 +463,7 @@ void DeferredRaster::Visit(Ptr<Plane> plane) {
 
 	curMaterialShader.SetMatf4("model", modelVec.back().data());
 	curMaterialShader.SetBool("isOffset", false);
-	pOGLW->GetVAO(ShapeType::Plane).Draw(curMaterialShader);
+	pOGLW->GetVAO(RawAPI_OGLW::ShapeType::Plane).Draw(curMaterialShader);
 }
 
 void DeferredRaster::Visit(Ptr<TriMesh> mesh) {
@@ -481,7 +481,7 @@ void DeferredRaster::Visit(Ptr<Disk> disk) {
 
 	curMaterialShader.SetMatf4("model", modelVec.back().data());
 	curMaterialShader.SetBool("isOffset", false);
-	pOGLW->GetVAO(ShapeType::Disk).Draw(curMaterialShader);
+	pOGLW->GetVAO(RawAPI_OGLW::ShapeType::Disk).Draw(curMaterialShader);
 }
 
 void DeferredRaster::Visit(Ptr<Capsule> capsule) {
@@ -491,5 +491,5 @@ void DeferredRaster::Visit(Ptr<Capsule> capsule) {
 	curMaterialShader.SetMatf4("model", modelVec.back().data());
 	curMaterialShader.SetBool("isOffset", true);
 	curMaterialShader.SetFloat("offset", capsule->height / 2 - 1);
-	pOGLW->GetVAO(ShapeType::Capsule).Draw(curMaterialShader);
+	pOGLW->GetVAO(RawAPI_OGLW::ShapeType::Capsule).Draw(curMaterialShader);
 }

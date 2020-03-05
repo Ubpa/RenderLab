@@ -167,6 +167,25 @@ int Shader::CheckCompileErrors(unsigned shader, CompileType type){
 
 	char infoLog[1024];
 
+	string shaderName;
+	switch (type)
+	{
+	case Ubpa::Shader::CompileType::VERTEX:
+		shaderName = "VERTEX";
+		break;
+	case Ubpa::Shader::CompileType::GEOMETRY:
+		shaderName = "GEOMETRY";
+		break;
+	case Ubpa::Shader::CompileType::FRAGMENT:
+		shaderName = "FRAGMENT";
+		break;
+	case Ubpa::Shader::CompileType::PROGRAM:
+		shaderName = "PROGRAM";
+		break;
+	default:
+		break;
+	}
+
 	switch (type)
 	{
 	case CompileType::VERTEX:
@@ -174,7 +193,7 @@ int Shader::CheckCompileErrors(unsigned shader, CompileType type){
 	case CompileType::FRAGMENT: {
 		if (!success) {
 			glGetShaderInfoLog(shader, 1024, NULL, infoLog);
-			cout << "ERROR::SHADER_COMPILATION_ERROR of type: " << type._to_string() << endl
+			cout << "ERROR::SHADER_COMPILATION_ERROR of type: " << shaderName << endl
 				<< infoLog
 				<< "\n -- --------------------------------------------------- -- " << endl;
 		}
@@ -185,7 +204,7 @@ int Shader::CheckCompileErrors(unsigned shader, CompileType type){
 		if (!success)
 		{
 			glGetProgramInfoLog(shader, 1024, NULL, infoLog);
-			cout << "ERROR::PROGRAM_LINKING_ERROR of type: " << type << endl
+			cout << "ERROR::PROGRAM_LINKING_ERROR of type: " << shaderName << endl
 				<< infoLog
 				<< "\n -- --------------------------------------------------- -- " << endl;
 		}

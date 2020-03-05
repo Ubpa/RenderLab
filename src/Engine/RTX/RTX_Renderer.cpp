@@ -142,7 +142,7 @@ void RTX_Renderer::Run(Ptr<Scene> scene, Ptr<Image> img) {
 		auto & rayTracer = rayTracers[id];
 
 		for (auto task = tileTask.GetTask(); task.hasTask; task = tileTask.GetTask()) {
-			if (state._value == RendererState::Stop)
+			if (state == RendererState::Stop)
 				return;
 
 			int tileID = task.tileID;

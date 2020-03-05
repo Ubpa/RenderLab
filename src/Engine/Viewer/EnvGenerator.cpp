@@ -139,7 +139,7 @@ void EnvGenerator::InitBRDF_LUT() {
 	brdfFBO.Use();
 	glViewport(0, 0, brdfSize, brdfSize);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	pOGLW->GetVAO(ShapeType::Screen).Draw(shader_brdf);
+	pOGLW->GetVAO(RawAPI_OGLW::ShapeType::Screen).Draw(shader_brdf);
 
 	isInitBrdfFBO = true;
 
@@ -196,7 +196,7 @@ void EnvGenerator::UpdateSkybox() {
 		shader_genSkybox.SetMatf4("view", captureViews[i].data());
 		genSkyboxFBO.SetColor(skybox, mapper[i]);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		pOGLW->GetVAO(ShapeType::Cube).Draw(shader_genSkybox);
+		pOGLW->GetVAO(RawAPI_OGLW::ShapeType::Cube).Draw(shader_genSkybox);
 	}
 	skybox.GenMipmap();
 }
@@ -214,7 +214,7 @@ void EnvGenerator::UpdateIrradianceMap() {
 		shader_genIrradiance.SetMatf4("view", captureViews[i].data());
 		genIrradianceFBO.SetColor(irradianceMap, mapper[i]);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		pOGLW->GetVAO(ShapeType::Cube).Draw(shader_genIrradiance);
+		pOGLW->GetVAO(RawAPI_OGLW::ShapeType::Cube).Draw(shader_genIrradiance);
 	}
 }
 
@@ -239,7 +239,7 @@ void EnvGenerator::UpdatePrefilterMap() {
 			shader_prefilter.SetMatf4("view", captureViews[i].data());
 			prefilterFBOs[mip].SetColor(prefilterMap, mapper[i], mip);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			pOGLW->GetVAO(ShapeType::Cube).Draw(shader_prefilter);
+			pOGLW->GetVAO(RawAPI_OGLW::ShapeType::Cube).Draw(shader_prefilter);
 		}
 	}
 }

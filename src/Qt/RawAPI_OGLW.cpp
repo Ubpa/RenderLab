@@ -142,7 +142,7 @@ void RawAPI_OGLW::InitShapeVAOs() {
 	VAO_P3N3T2T3_Capsule = VAO(P3_Capsule_Vec_VBO_Data_Patch, capsule.GetIndexArr(), capsule.GetIndexArrSize());
 }
 
-const VAO RawAPI_OGLW::GetVAO(ShapeType shapeType){
+const VAO RawAPI_OGLW::GetVAO(RawAPI_OGLW::ShapeType shapeType){
 	switch (shapeType)
 	{
 	case ShapeType::Sphere:
@@ -159,7 +159,7 @@ const VAO RawAPI_OGLW::GetVAO(ShapeType shapeType){
 		return VAO_P3N3T2T3_Capsule;
 	default:
 		printf("ERROR::MgrVAO::GetShapeVAO:\n"
-			"\t""not support shape(%s)\n", shapeType._to_string());
+			"\t""not support shape\n");
 		return VAO::inValid;
 	}
 }

@@ -4,12 +4,13 @@
 #include <UGM/transform.h>
 
 #include <string>
-#include <enum.h>
 
 namespace Ubpa {
-	BETTER_ENUM(CompileType, int, VERTEX, GEOMETRY, FRAGMENT, PROGRAM);
-
 	class Shader {
+		enum class CompileType {
+			VERTEX, GEOMETRY, FRAGMENT, PROGRAM
+		};
+
 	public:
 		// constructor generates the shader on the fly
 		Shader();

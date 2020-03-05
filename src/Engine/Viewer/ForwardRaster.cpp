@@ -155,12 +155,12 @@ void ForwardRaster::Visit(Ptr<SObj> sobj) {
 
 void ForwardRaster::Visit(Ptr<Sphere> sphere) {
 	curShader.SetMatf4("model", modelVec.back().data());
-	pOGLW->GetVAO(ShapeType::Sphere).Draw(curShader);
+	pOGLW->GetVAO(RawAPI_OGLW::ShapeType::Sphere).Draw(curShader);
 }
 
 void ForwardRaster::Visit(Ptr<Plane> plane) {
 	curShader.SetMatf4("model", modelVec.back().data());
-	pOGLW->GetVAO(ShapeType::Plane).Draw(curShader);
+	pOGLW->GetVAO(RawAPI_OGLW::ShapeType::Plane).Draw(curShader);
 }
 
 void ForwardRaster::Visit(Ptr<TriMesh> mesh) {
@@ -272,7 +272,7 @@ void ForwardRaster::DrawEnvironment() {
 	glDepthFunc(GL_LEQUAL);
 	UseLightTex(shader_skybox);
 	shader_skybox.SetBool("needGamma", true);
-	pOGLW->GetVAO(ShapeType::Cube).Draw(shader_skybox);
+	pOGLW->GetVAO(RawAPI_OGLW::ShapeType::Cube).Draw(shader_skybox);
 	glDepthFunc(GL_LESS);
 }
 

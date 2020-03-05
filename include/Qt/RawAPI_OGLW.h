@@ -6,8 +6,6 @@
 #include <Basic/GStorage.h>
 #include <Basic/Ptr.h>
 
-#include <3rdParty/enum.h>
-
 #include <qopenglwidget.h>
 #include <qopenglfunctions_3_3_core.h>
 #include <qopenglcontext.h>
@@ -20,16 +18,23 @@ namespace Ubpa {
 	class Image;
 	class TriMesh;
 
-	BETTER_ENUM(ShapeType, int, Sphere, Plane, Cube, Screen, Disk, Capsule);
-
 	class RawAPI_OGLW : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core {
 		Q_OBJECT
 	public:
 		explicit RawAPI_OGLW(QWidget* parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
 		~RawAPI_OGLW();
 
+		enum class ShapeType {
+			Sphere,
+			Plane,
+			Cube,
+			Screen,
+			Disk,
+			Capsule
+		};
+
 	public:
-		const VAO GetVAO(ShapeType shapeType);
+		const VAO GetVAO(RawAPI_OGLW::ShapeType shapeType);
 		const VAO GetVAO(PtrC<TriMesh> mesh);
 		void DirtyVAO(PtrC<TriMesh> mesh);
 		const Texture GetTex(PtrC<Image> img);
