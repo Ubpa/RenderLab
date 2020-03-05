@@ -34,7 +34,7 @@ namespace CppUtil {
 		const string str_PointLight_prefix = "data/shaders/Engine/PointLight/";
 		const string str_genDepth = "genDepth";
 		const string str_genDepth_vs = str_PointLight_prefix + str_genDepth + ".vs";
-		const string str_genDepth_gs = str_PointLight_prefix + str_genDepth + "[1]s";
+		const string str_genDepth_gs = str_PointLight_prefix + str_genDepth + ".gs";
 		const string str_genDepth_fs = str_PointLight_prefix + str_genDepth + ".fs";
 	}
 }

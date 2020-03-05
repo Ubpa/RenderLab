@@ -140,7 +140,7 @@ void RRF_Raster::Visit(Ptr<BSDF_FrostedGlass> bsdf) {
 	SetCurShader(shader);
 
 	string strBSDF = "bsdf.";
-	shader.SetVec3f(strBSDF + "colorFactor", bsdf->colorFactor);
+	shader.SetVecf3(strBSDF + "colorFactor", bsdf->colorFactor.cast_to<Ubpa::valf3>());
 	shader.SetFloat(strBSDF + "roughnessFactor", bsdf->roughnessFactor);
 
 	const int texNum = 4;

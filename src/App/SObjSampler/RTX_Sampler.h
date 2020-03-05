@@ -3,7 +3,8 @@
 
 #include <Basic/HeapObj.h>
 
-#include <Basic/UGM/Point2.h>
+#include <UGM/point.h>
+#include <UGM/val.h>
 
 #include <functional>
 #include <vector>
@@ -39,13 +40,13 @@ namespace App {
 	public:
 		void Run(CppUtil::Basic::Ptr<CppUtil::Engine::Scene> scene, CppUtil::Basic::Ptr<CppUtil::Basic::Image> img);
 
-		const std::vector<std::vector<CppUtil::Point2ui>> & GetJobs() const { return jobs; }
+		const std::vector<std::vector<Ubpa::valu2>> & GetJobs() const { return jobs; }
 
 	private:
 		std::function<CppUtil::Basic::Ptr<CppUtil::Engine::RayTracer>()> generator;
 		std::vector<CppUtil::Basic::Ptr<CppUtil::Engine::RayTracer>> rayTracers;
 
-		std::vector<std::vector<CppUtil::Point2ui>> jobs;
+		std::vector<std::vector<Ubpa::valu2>> jobs;
 
 		int maxLoop;
 		int sampleNum;

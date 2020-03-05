@@ -26,7 +26,7 @@ namespace Define{
 	//------------ common shader
 	const std::string str_ShadersCommon_Prefix = "/data/shaders/Common/";
 	const std::string str_VsPostfix = ".vs";
-	const std::string str_GsPostfix = "[1]s";
+	const std::string str_GsPostfix = ".gs";
 	const std::string str_FsPostfix = ".fs";
 
 	const std::string str_Basic_P3N3T2T3_vs = str_ShadersCommon_Prefix + "basic_P3N3T2T3" + str_VsPostfix;

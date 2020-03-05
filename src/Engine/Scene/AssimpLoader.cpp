@@ -14,6 +14,8 @@
 #include <Basic/StrAPI.h>
 #include <Basic/Image.h>
 
+#include <limits>
+
 #include <iostream>
 
 using namespace CppUtil;
@@ -134,7 +136,8 @@ void AssimpLoader::LoadMesh(Str2Img & str2img, const string & dir, aiMesh *mesh,
 	}
 
 	// offset, scale
-	Ubpa::pointf3 minP, maxP;
+	Ubpa::pointf3 minP(std::numeric_limits<float>::max());
+	Ubpa::pointf3 maxP(-std::numeric_limits<float>::max());
 	for (const auto & pos : poses) {
 		minP = Ubpa::pointf3::min(minP, pos);
 		maxP = Ubpa::pointf3::max(maxP, pos);

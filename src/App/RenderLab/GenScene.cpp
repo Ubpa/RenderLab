@@ -26,20 +26,20 @@ Ptr<SObj> GenBox() {
 		SObj::New(sobj_Box, "wall back")
 	};
 
-	Point3 posArr[wallNum] = {
-		Point3(0, 1.5f, 0),
-		Point3(0, 0, 0),
-		Point3(-1, 0.75f, 0),
-		Point3(1, 0.75f, 0),
-		Point3(0, 0.75f, -1),
+	Ubpa::pointf3 posArr[wallNum] = {
+		Ubpa::pointf3(0, 1.5f, 0),
+		Ubpa::pointf3(0, 0, 0),
+		Ubpa::pointf3(-1, 0.75f, 0),
+		Ubpa::pointf3(1, 0.75f, 0),
+		Ubpa::pointf3(0, 0.75f, -1),
 	};
 
-	Vec3 axisArr[wallNum] = {
-		Vec3(0, 0, 1),
-		Vec3(0, 1, 0),
-		Vec3(0, 0, 1),
-		Vec3(0, 0, 1),
-		Vec3(1, 0, 0),
+	Ubpa::vecf3 axisArr[wallNum] = {
+		Ubpa::vecf3(0, 0, 1),
+		Ubpa::vecf3(0, 1, 0),
+		Ubpa::vecf3(0, 0, 1),
+		Ubpa::vecf3(0, 0, 1),
+		Ubpa::vecf3(1, 0, 0),
 	};
 
 	float degreeArr[wallNum] = {
@@ -50,20 +50,20 @@ Ptr<SObj> GenBox() {
 		90,
 	};
 
-	Vec3 scaleArr[wallNum] = {
-		Vec3(2, 1, 2),
-		Vec3(2, 1, 2),
-		Vec3(1.5f, 1, 2),
-		Vec3(1.5f, 1, 2),
-		Vec3(2, 1, 1.5f),
+	Ubpa::scalef3 scaleArr[wallNum] = {
+		Ubpa::scalef3(2, 1, 2),
+		Ubpa::scalef3(2, 1, 2),
+		Ubpa::scalef3(1.5f, 1, 2),
+		Ubpa::scalef3(1.5f, 1, 2),
+		Ubpa::scalef3(2, 1, 1.5f),
 	};
 
-	RGBf colorArr[wallNum] = {
-		RGBf(0.6f),
-		RGBf(0.6f),
-		RGBf(0.6f, 0.2f, 0.2f),
-		RGBf(0.2f, 0.2f, 0.6f),
-		RGBf(0.6f),
+	Ubpa::rgbf colorArr[wallNum] = {
+		Ubpa::rgbf(0.6f),
+		Ubpa::rgbf(0.6f),
+		Ubpa::rgbf(0.6f, 0.2f, 0.2f),
+		Ubpa::rgbf(0.2f, 0.2f, 0.6f),
+		Ubpa::rgbf(0.6f),
 	};
 
 	for (int i = 0; i < wallNum; i++) {
@@ -81,14 +81,14 @@ Ptr<SObj> GenBox() {
 
 	// light
 	auto sobj_AreaLight = SObj::New(sobj_Box, "area light");
-	auto areaLight = AreaLight::New(RGBf(1), 15, 0.8f, 0.6f);
+	auto areaLight = AreaLight::New(Ubpa::rgbf(1.f), 15, 0.8f, 0.6f);
 	auto light = CmptLight::New(sobj_AreaLight, areaLight);
 	auto lightTransform = CmptTransform::New(sobj_AreaLight);
-	lightTransform->SetPosition(Point3(0, 1.49f, 0));
-	lightTransform->SetScale(Vec3(0.8f, 1.0f, 0.6f));
+	lightTransform->SetPosition(Ubpa::pointf3(0, 1.49f, 0));
+	lightTransform->SetScale(Ubpa::scalef3(0.8f, 1.0f, 0.6f));
 	auto lightPlane = Plane::New();
 	auto lightGeo = CmptGeometry::New(sobj_AreaLight, lightPlane);
-	auto bsdfEmission = BSDF_Emission::New(RGBf(2));
+	auto bsdfEmission = BSDF_Emission::New(Ubpa::rgbf(2.f));
 	auto materailEmission = CmptMaterial::New(sobj_AreaLight, bsdfEmission);
 
 	return sobj_Box;
@@ -99,7 +99,7 @@ Ptr<SObj> GenGound() {
 	auto material = CmptMaterial::New(sobj_ground, BSDF_Diffuse::New());
 	auto plane = CmptGeometry::New(sobj_ground, Plane::New());
 	auto transform = CmptTransform::New(sobj_ground);
-	transform->SetScale(Vec3(100, 1, 100));
+	transform->SetScale(Ubpa::scalef3(100, 1, 100));
 	return sobj_ground;
 }
 
@@ -121,17 +121,17 @@ Ptr<Scene> GenScene00() {
 	// camera
 	auto camera = CmptCamera::New(sobj_Camera, 50.0f);
 	auto cameraTransform = CmptTransform::New(sobj_Camera);
-	cameraTransform->SetPosition(Point3(0, 0.75f, 2.4f));
+	cameraTransform->SetPosition(Ubpa::pointf3(0, 0.75f, 2.4f));
 
 	// light
-	auto areaLight = AreaLight::New(RGBf(1), 15, 0.8f, 0.6f);
+	auto areaLight = AreaLight::New(Ubpa::rgbf(1.f), 15, 0.8f, 0.6f);
 	auto light = CmptLight::New(sobj_AreaLight, areaLight);
 	auto lightTransform = CmptTransform::New(sobj_AreaLight);
-	lightTransform->SetPosition(Point3(0, 1.49f, 0));
-	lightTransform->SetScale(Vec3(0.8f, 1.0f, 0.6f));
+	lightTransform->SetPosition(Ubpa::pointf3(0, 1.49f, 0));
+	lightTransform->SetScale(Ubpa::scalef3(0.8f, 1.0f, 0.6f));
 	auto lightPlane = Plane::New();
 	auto lightGeo = CmptGeometry::New(sobj_AreaLight, lightPlane);
-	auto bsdfEmission = BSDF_Emission::New(RGBf(2));
+	auto bsdfEmission = BSDF_Emission::New(Ubpa::rgbf(2.f));
 	auto materailEmission = CmptMaterial::New(sobj_AreaLight, bsdfEmission);
 
 	// mirror sphere
@@ -139,8 +139,8 @@ Ptr<Scene> GenScene00() {
 	auto materialMirror = CmptMaterial::New(sobj_MirrorSphere, bsdfMirror);
 
 	auto mirrorSphereTransform = CmptTransform::New(sobj_MirrorSphere);
-	mirrorSphereTransform->SetPosition(Point3(-0.4f, 0.3f, -0.3f));
-	mirrorSphereTransform->SetScale(Vec3(0.3f));
+	mirrorSphereTransform->SetPosition(Ubpa::pointf3(-0.4f, 0.3f, -0.3f));
+	mirrorSphereTransform->SetScale(Ubpa::scalef3(0.3f));
 
 	auto geoMetalSphere = CmptGeometry::New(sobj_MirrorSphere, Sphere::New());
 
@@ -149,8 +149,8 @@ Ptr<Scene> GenScene00() {
 	auto materialGlass = CmptMaterial::New(sobj_GlassSphere, bsdfGlass);
 
 	auto glassSphereTransform = CmptTransform::New(sobj_GlassSphere);
-	glassSphereTransform->SetPosition(Point3(0.4f, 0.3f, 0.3f));
-	glassSphereTransform->SetScale(Vec3(0.3f));
+	glassSphereTransform->SetPosition(Ubpa::pointf3(0.4f, 0.3f, 0.3f));
+	glassSphereTransform->SetScale(Ubpa::scalef3(0.3f));
 
 	auto geoGlassSphere = CmptGeometry::New(sobj_GlassSphere, Sphere::New());
 
@@ -160,11 +160,11 @@ Ptr<Scene> GenScene00() {
 	auto cubeMesh = TriMesh::New(cube.GetTriNum(), cube.GetVertexNum(),
 		cube.GetIndexArr(), cube.GetPosArr(), cube.GetNormalArr(), cube.GetTexCoordsArr());
 	auto cubeG = CmptGeometry::New(sobj_Cube, cubeMesh);
-	auto blueGlass = BSDF_Glass::New(1.5f, RGBf(0.f, 0.794f, 0.916f));
+	auto blueGlass = BSDF_Glass::New(1.5f, Ubpa::rgbf(0.f, 0.794f, 0.916f));
 	auto materialCube = CmptMaterial::New(sobj_Cube, blueGlass);
 	auto cubeTransform = CmptTransform::New(sobj_Cube);
-	cubeTransform->SetScale(Vec3(0.2f));
-	cubeTransform->SetPosition(Point3(0, 0.15f, 0));
+	cubeTransform->SetScale(Ubpa::scalef3(0.2f));
+	cubeTransform->SetPosition(Ubpa::pointf3(0, 0.15f, 0));
 
 	sobj_Root->AddChild(GenBox());
 
@@ -179,16 +179,16 @@ Ptr<Scene> GenScene01() {
 
 	auto camera = CmptCamera::New(sobjRoot);
 
-	auto sphere0Transform = CmptTransform::New(sobj0, Point3(0,0,-2), Vec3(0.5f));
+	auto sphere0Transform = CmptTransform::New(sobj0, Ubpa::pointf3(0,0,-2), Ubpa::scalef3(0.5f));
 	auto sphere0 = Sphere::New();
-	auto sphere1Transform = CmptTransform::New(sobj0, Point3(0, -100, -2), Vec3(99.5f));
+	auto sphere1Transform = CmptTransform::New(sobj0, Ubpa::pointf3(0, -100, -2), Ubpa::scalef3(99.5f));
 	auto sphere1 = Sphere::New();
 
 	auto g0 = CmptGeometry::New(sobj0, sphere0);
 	auto g1 = CmptGeometry::New(sobj1, sphere1);
 
-	auto pink = BSDF_Diffuse::New(RGBf(1.0f, 0.686f, 0.788f));
-	auto gray = BSDF_Diffuse::New(RGBf(0.8f));
+	auto pink = BSDF_Diffuse::New(Ubpa::rgbf(1.0f, 0.686f, 0.788f));
+	auto gray = BSDF_Diffuse::New(Ubpa::rgbf(0.8f));
 
 	auto material0 = CmptMaterial::New(sobj0, pink);
 	auto material1 = CmptMaterial::New(sobj1, gray);
@@ -204,16 +204,16 @@ Ptr<Scene> GenScene02() {
 
 	auto camera = CmptCamera::New(sobjRoot);
 
-	auto sphere0Transform = CmptTransform::New(sobj0, Point3(0, 0, -2), Vec3(0.5f));
+	auto sphere0Transform = CmptTransform::New(sobj0, Ubpa::pointf3(0, 0, -2), Ubpa::scalef3(0.5f));
 	auto sphere0 = Sphere::New();
-	auto sphere1Transform = CmptTransform::New(sobj0, Point3(0, -100, -2), Vec3(99.5f));
+	auto sphere1Transform = CmptTransform::New(sobj0, Ubpa::pointf3(0, -100, -2), Ubpa::scalef3(99.5f));
 	auto sphere1 = Sphere::New();
 
 	auto g0 = CmptGeometry::New(sobj0, sphere0);
 	auto g1 = CmptGeometry::New(sobj1, sphere1);
 
-	auto white = BSDF_Mirror::New(RGBf(1.0f));
-	auto pink = BSDF_Diffuse::New(RGBf(1.0f, 0.686f, 0.788f));
+	auto white = BSDF_Mirror::New(Ubpa::rgbf(1.0f));
+	auto pink = BSDF_Diffuse::New(Ubpa::rgbf(1.0f, 0.686f, 0.788f));
 
 	auto material0 = CmptMaterial::New(sobj0, white);
 	auto material1 = CmptMaterial::New(sobj1, pink);
@@ -229,16 +229,16 @@ Ptr<Scene> GenScene03(){
 
 	auto camera = CmptCamera::New(sobjRoot);
 
-	auto sphere0Transform = CmptTransform::New(sobj0, Point3(0, 0, -2), Vec3(0.5f));
+	auto sphere0Transform = CmptTransform::New(sobj0, Ubpa::pointf3(0, 0, -2), Ubpa::scalef3(0.5f));
 	auto sphere0 = Sphere::New();
-	auto sphere1Transform = CmptTransform::New(sobj0, Point3(0, -100, -2), Vec3(99.5f));
+	auto sphere1Transform = CmptTransform::New(sobj0, Ubpa::pointf3(0, -100, -2), Ubpa::scalef3(99.5f));
 	auto sphere1 = Sphere::New();
 
 	auto g0 = CmptGeometry::New(sobj0, sphere0);
 	auto g1 = CmptGeometry::New(sobj1, sphere1);
 
 	auto glass = BSDF_Glass::New(1.5f);
-	auto pink = BSDF_Diffuse::New(RGBf(1.0f, 0.686f, 0.788f));
+	auto pink = BSDF_Diffuse::New(Ubpa::rgbf(1.0f, 0.686f, 0.788f));
 
 	auto material0 = CmptMaterial::New(sobj0, glass);
 	auto material1 = CmptMaterial::New(sobj1, pink);
@@ -254,19 +254,19 @@ Ptr<Scene> GenScene04() {
 	auto sobj_ground = SObj::New(sobjRoot, "sobj_ground");
 
 	auto cameraTransform = CmptTransform::New(sobj_camera);
-	cameraTransform->SetPosition(Point3(0, 0, 3));
+	cameraTransform->SetPosition(Ubpa::pointf3(0, 0, 3));
 	auto camera = CmptCamera::New(sobj_camera);
 
-	auto sphere0Transform = CmptTransform::New(sobj_sphere, Point3(0, 0, 0), Vec3(1, 0.5,0.5), Vec3(0,1,0), 45);
+	auto sphere0Transform = CmptTransform::New(sobj_sphere, Ubpa::pointf3(0, 0, 0), Ubpa::scalef3(1, 0.5,0.5), Ubpa::vecf3(0,1,0), Ubpa::to_radian(45.f));
 	auto sphere0 = Sphere::New();
-	auto sphere1Transform = CmptTransform::New(sobj_ground, Point3(0, -100, 0), Vec3(99.5f));
+	auto sphere1Transform = CmptTransform::New(sobj_ground, Ubpa::pointf3(0, -100, 0), Ubpa::scalef3(99.5f));
 	auto sphere1 = Sphere::New();
 
 	auto g0 = CmptGeometry::New(sobj_sphere, sphere0);
 	auto g1 = CmptGeometry::New(sobj_ground, sphere1);
 
 	auto glass = BSDF_Glass::New(1.2f);
-	auto pink = BSDF_Diffuse::New(RGBf(1.0f, 0.686f, 0.788f));
+	auto pink = BSDF_Diffuse::New(Ubpa::rgbf(1.0f, 0.686f, 0.788f));
 
 	auto material0 = CmptMaterial::New(sobj_sphere, glass);
 	auto material1 = CmptMaterial::New(sobj_ground, pink);
@@ -282,21 +282,21 @@ Ptr<Scene> GenScene05() {
 	auto sobj_ground = SObj::New(sobjRoot, "sobj_ground");
 
 	auto cameraTransform = CmptTransform::New(sobj_camera);
-	cameraTransform->SetPosition(Point3(0, 0.1f, 3));
+	cameraTransform->SetPosition(Ubpa::pointf3(0, 0.1f, 3));
 	auto camera = CmptCamera::New(sobj_camera);
 
-	auto sphereTransform = CmptTransform::New(sobj_sphere, Point3(0, 0, -2), Vec3(0.5f), Vec3(0,1,0), 30);
+	auto sphereTransform = CmptTransform::New(sobj_sphere, Ubpa::pointf3(0, 0, -2), Ubpa::scalef3(0.5f), Ubpa::vecf3(0,1,0), Ubpa::to_radian(30.f));
 	auto sphere = Sphere::New();
 	auto plane = Plane::New();
 
 	auto planeTransform = CmptTransform::New(sobj_ground);
-	planeTransform->SetScale(Vec3(10.0f, 1.f, 10.0f));
+	planeTransform->SetScale(Ubpa::scalef3(10.0f, 1.f, 10.0f));
 
 	auto g0 = CmptGeometry::New(sobj_sphere, sphere);
 	auto g1 = CmptGeometry::New(sobj_ground, plane);
 
 	auto glass = BSDF_Glass::New(1.2f);
-	auto pink = BSDF_Diffuse::New(RGBf(1.0f, 0.686f, 0.788f));
+	auto pink = BSDF_Diffuse::New(Ubpa::rgbf(1.0f, 0.686f, 0.788f));
 
 	auto material0 = CmptMaterial::New(sobj_sphere, glass);
 	auto material1 = CmptMaterial::New(sobj_ground, pink);
@@ -314,23 +314,23 @@ Ptr<Scene> GenScene06() {
 	auto sobj_ground = SObj::New(sobjRoot, "sobj_ground");
 
 	auto cameraTransform = CmptTransform::New(sobj_camera);
-	cameraTransform->SetPosition(Point3(0, 0.5f, 3));
+	cameraTransform->SetPosition(Ubpa::pointf3(0, 0.5f, 3));
 	auto camera = CmptCamera::New(sobj_camera);
 
-	auto skySphereTransform = CmptTransform::New(sobj_sphere, Point3(0), Vec3(4));
+	auto skySphereTransform = CmptTransform::New(sobj_sphere, Ubpa::pointf3(0.f), Ubpa::scalef3(4.f));
 	auto skySphere = Sphere::New();
-	auto sphereTransform = CmptTransform::New(sobj_sphere, Point3(0), Vec3(0.5f));
+	auto sphereTransform = CmptTransform::New(sobj_sphere, Ubpa::pointf3(0.f), Ubpa::scalef3(0.5f));
 	auto sphere = Sphere::New();
 	auto plane = Plane::New();
 	auto lightPlane = Plane::New();
-	auto areaLight = AreaLight::New(RGBf(1), 10);
+	auto areaLight = AreaLight::New(Ubpa::rgbf(1.f), 10);
 
 	auto planeTransform = CmptTransform::New(sobj_ground);
-	planeTransform->SetScale(Vec3(100.0f, 1.f, 100.0f));
-	planeTransform->SetPosition(Point3(0, -1, 0));
+	planeTransform->SetScale(Ubpa::scalef3(100.0f, 1.f, 100.0f));
+	planeTransform->SetPosition(Ubpa::pointf3(0, -1, 0));
 
 	auto lightTransform = CmptTransform::New(sobj_light);
-	lightTransform->SetPosition(Point3(0, 2.f, 0));
+	lightTransform->SetPosition(Ubpa::pointf3(0, 2.f, 0));
 
 	auto light = CmptLight::New(sobj_light, areaLight);
 
@@ -339,10 +339,10 @@ Ptr<Scene> GenScene06() {
 	auto g2 = CmptGeometry::New(sobj_sphere, sphere);
 	auto g3 = CmptGeometry::New(sobj_light, lightPlane);
 
-	auto sky = BSDF_Diffuse::New(RGBf(0));
+	auto sky = BSDF_Diffuse::New(Ubpa::rgbf(0.f));
 	auto glass = BSDF_Glass::New(1.5f);
-	auto pink = BSDF_Diffuse::New(RGBf(1.0f, 0.686f, 0.788f));
-	auto emission = BSDF_Emission::New(RGBf(1));
+	auto pink = BSDF_Diffuse::New(Ubpa::rgbf(1.0f, 0.686f, 0.788f));
+	auto emission = BSDF_Emission::New(Ubpa::rgbf(1.f));
 
 	auto material0 = CmptMaterial::New(sobj_skySphere, sky);
 	auto material1 = CmptMaterial::New(sobj_ground, pink);
@@ -359,25 +359,25 @@ Ptr<Scene> GenScene07() {
 	auto sobj_Camera = SObj::New(sobjRoot, "camera");
 	auto camera = CmptCamera::New(sobj_Camera, 20.0f);
 	auto cameraTransform = CmptTransform::New(sobj_Camera);
-	cameraTransform->LookAt(Point3(13, 2, 3), Point3(0));
+	cameraTransform->look_at(Ubpa::pointf3(13, 2, 3), Ubpa::pointf3(0.f));
 
 	auto balls = SObj::New(sobjRoot, "balls");
 	for (int a = -11, id = 0; a < 11; a++) {
 		for (int b = -11; b < 11; b++, id++) {
 			auto ball = SObj::New(balls, "ball " + to_string(id));
-			Point3 center(a + 0.9*Math::Rand_F(), 0.2, b + 0.9*Math::Rand_F());
-			CmptTransform::New(ball, center, Vec3(0.2f));
+			Ubpa::pointf3 center(a + 0.9*Math::Rand_F(), 0.2, b + 0.9*Math::Rand_F());
+			CmptTransform::New(ball, center, Ubpa::scalef3(0.2f));
 
 			CmptGeometry::New(ball, Sphere::New());
 
 			Ptr<BSDF> bsdf;
 			float choose_mat = Math::Rand_F();
 			if (choose_mat < 0.8) {  // diffuse
-				RGBf color(Math::Rand_F()*Math::Rand_F(), Math::Rand_F()*Math::Rand_F(), Math::Rand_F()*Math::Rand_F());
+				Ubpa::rgbf color(Math::Rand_F()*Math::Rand_F(), Math::Rand_F()*Math::Rand_F(), Math::Rand_F()*Math::Rand_F());
 				bsdf = BSDF_Diffuse::New(color);
 			}
 			else if (choose_mat < 0.95) { // metal
-				RGBf color(0.5f*(1 + Math::Rand_F()), 0.5f*(1 + Math::Rand_F()), 0.5f*(1 + Math::Rand_F()));
+				Ubpa::rgbf color(0.5f*(1 + Math::Rand_F()), 0.5f*(1 + Math::Rand_F()), 0.5f*(1 + Math::Rand_F()));
 				bsdf = BSDF_Mirror::New(color);
 			}
 			else {  // glass
@@ -389,26 +389,26 @@ Ptr<Scene> GenScene07() {
 	}
 
 
-	Point3 center[6] = {
-		Point3(0, -1000, 0),
-		Point3(6, 1, 0),
-		Point3(2, 1, 0),
-		Point3(2, 1, 0),
-		Point3(-2, 1, 0),
-		Point3(-6, 1, 0),
+	Ubpa::pointf3 center[6] = {
+		Ubpa::pointf3(0, -1000, 0),
+		Ubpa::pointf3(6, 1, 0),
+		Ubpa::pointf3(2, 1, 0),
+		Ubpa::pointf3(2, 1, 0),
+		Ubpa::pointf3(-2, 1, 0),
+		Ubpa::pointf3(-6, 1, 0),
 	};
 	float radius[6] = { 1000.f,1.f,1.f,-0.8f,1.f,1.f };
 	Ptr<BSDF> bsdf[6] = {
-		BSDF_Diffuse::New(RGBf(0.5f)),
-		BSDF_Mirror::New(RGBf(0.7f, 0.6f, 0.5f)),
+		BSDF_Diffuse::New(Ubpa::rgbf(0.5f)),
+		BSDF_Mirror::New(Ubpa::rgbf(0.7f, 0.6f, 0.5f)),
 		BSDF_Glass::New(1.5f),
 		BSDF_Glass::New(1.5f),
-		BSDF_Diffuse::New(RGBf(0.4f,0.2f,0.1f)),
+		BSDF_Diffuse::New(Ubpa::rgbf(0.4f,0.2f,0.1f)),
 		BSDF_Glass::New(2.5f),
 	};
 	for (int i = 0; i < 6; i++) {
 		auto sobj = SObj::New(sobjRoot, "sphere" + to_string(i));
-		CmptTransform::New(sobj, center[i], Vec3(radius[i]));
+		CmptTransform::New(sobj, center[i], Ubpa::scalef3(radius[i]));
 		CmptGeometry::New(sobj, Sphere::New());
 		CmptMaterial::New(sobj, bsdf[i]);
 	}
@@ -423,18 +423,18 @@ Ptr<Scene> GenScene08() {
 	auto sobj_Camera = SObj::New(sobj_Root, "camera");
 	auto camera = CmptCamera::New(sobj_Camera, 50.0f);
 	auto cameraTransform = CmptTransform::New(sobj_Camera);
-	cameraTransform->SetPosition(Point3(0, 0.75f, 2.4f));
+	cameraTransform->SetPosition(Ubpa::pointf3(0, 0.75f, 2.4f));
 
 	// light
 	auto sobj_AreaLight = SObj::New(sobj_Root, "area light");
-	auto areaLight = AreaLight::New(RGBf(1), 15, 0.8f, 0.6f);
+	auto areaLight = AreaLight::New(Ubpa::rgbf(1.f), 15, 0.8f, 0.6f);
 	auto light = CmptLight::New(sobj_AreaLight, areaLight);
 	auto lightTransform = CmptTransform::New(sobj_AreaLight);
-	lightTransform->SetPosition(Point3(0, 1.49f, 0));
-	lightTransform->SetScale(Vec3(0.8f, 1.0f, 0.6f));
+	lightTransform->SetPosition(Ubpa::pointf3(0, 1.49f, 0));
+	lightTransform->SetScale(Ubpa::scalef3(0.8f, 1.0f, 0.6f));
 	auto lightPlane = Plane::New();
 	auto lightGeo = CmptGeometry::New(sobj_AreaLight, lightPlane);
-	auto bsdfEmission = BSDF_Emission::New(RGBf(2));
+	auto bsdfEmission = BSDF_Emission::New(Ubpa::rgbf(2.f));
 	auto materailEmission = CmptMaterial::New(sobj_AreaLight, bsdfEmission);
 
 	// wall
@@ -448,20 +448,20 @@ Ptr<Scene> GenScene08() {
 		SObj::New(sobj_Root, "wall back")
 	};
 
-	Point3 posArr[wallNum] = {
-		Point3(0, 1.5f, 0),
-		Point3(0, 0, 0),
-		Point3(-1, 0.75f, 0),
-		Point3(1, 0.75f, 0),
-		Point3(0, 0.75f, -1),
+	Ubpa::pointf3 posArr[wallNum] = {
+		Ubpa::pointf3(0, 1.5f, 0),
+		Ubpa::pointf3(0, 0, 0),
+		Ubpa::pointf3(-1, 0.75f, 0),
+		Ubpa::pointf3(1, 0.75f, 0),
+		Ubpa::pointf3(0, 0.75f, -1),
 	};
 
-	Vec3 axisArr[wallNum] = {
-		Vec3(0, 1, 0),
-		Vec3(0, 1, 0),
-		Vec3(0, 0, 1),
-		Vec3(0, 0, 1),
-		Vec3(1, 0, 0),
+	Ubpa::vecf3 axisArr[wallNum] = {
+		Ubpa::vecf3(0, 1, 0),
+		Ubpa::vecf3(0, 1, 0),
+		Ubpa::vecf3(0, 0, 1),
+		Ubpa::vecf3(0, 0, 1),
+		Ubpa::vecf3(1, 0, 0),
 	};
 
 	float degreeArr[wallNum] = {
@@ -472,20 +472,20 @@ Ptr<Scene> GenScene08() {
 		90,
 	};
 
-	Vec3 scaleArr[wallNum] = {
-		Vec3(2, 1, 2),
-		Vec3(2, 1, 2),
-		Vec3(1.5f, 1, 2),
-		Vec3(1.5f, 1, 2),
-		Vec3(2, 1, 1.5f),
+	Ubpa::scalef3 scaleArr[wallNum] = {
+		Ubpa::scalef3(2, 1, 2),
+		Ubpa::scalef3(2, 1, 2),
+		Ubpa::scalef3(1.5f, 1, 2),
+		Ubpa::scalef3(1.5f, 1, 2),
+		Ubpa::scalef3(2, 1, 1.5f),
 	};
 
-	RGBf colorArr[wallNum] = {
-		RGBf(0.6f),
-		RGBf(0.6f),
-		RGBf(0.6f, 0.2f, 0.2f),
-		RGBf(0.2f, 0.2f, 0.6f),
-		RGBf(0.6f),
+	Ubpa::rgbf colorArr[wallNum] = {
+		Ubpa::rgbf(0.6f),
+		Ubpa::rgbf(0.6f),
+		Ubpa::rgbf(0.6f, 0.2f, 0.2f),
+		Ubpa::rgbf(0.2f, 0.2f, 0.6f),
+		Ubpa::rgbf(0.6f),
 	};
 
 	for (int i = 0; i < wallNum; i++) {
@@ -495,26 +495,26 @@ Ptr<Scene> GenScene08() {
 		auto plane = Plane::New();
 		auto geo = CmptGeometry::New(sobj_walls[i], plane);
 
-		auto transform = CmptTransform::New(sobj_walls[i], posArr[i], scaleArr[i], axisArr[i], degreeArr[i]);
+		auto transform = CmptTransform::New(sobj_walls[i], posArr[i], scaleArr[i], axisArr[i], Ubpa::to_radian(degreeArr[i]));
 	}
 
 	// cook torrance sphere
 	auto sobj_CTSphere = SObj::New(sobj_Root, "cook torrance sphere");
 
-	auto bsdfCookTorrance = BSDF_CookTorrance::New(10.f, 0.4f, RGBf(0.1f), RGBf(1.0f,0.3f,0.5f));
+	auto bsdfCookTorrance = BSDF_CookTorrance::New(10.f, 0.4f, Ubpa::rgbf(0.1f), Ubpa::rgbf(1.0f,0.3f,0.5f));
 	auto materialCookTorrance = CmptMaterial::New(sobj_CTSphere, bsdfCookTorrance);
 
 	auto CTSphereTransform = CmptTransform::New(sobj_CTSphere);
-	CTSphereTransform->SetPosition(Point3(0, 0.3f, 0));
-	CTSphereTransform->SetScale(Vec3(0.3f));
+	CTSphereTransform->SetPosition(Ubpa::pointf3(0, 0.3f, 0));
+	CTSphereTransform->SetScale(Ubpa::scalef3(0.3f));
 
 	auto geoCTSphere = CmptGeometry::New(sobj_CTSphere, Sphere::New());
 
 	// sky sphere
 	auto sobj_skySphere = SObj::New(sobj_Root, "sky");
-	auto skyTsfm = CmptTransform::New(sobj_skySphere, Point3(0), Vec3(100));
+	auto skyTsfm = CmptTransform::New(sobj_skySphere, Ubpa::pointf3(0.f), Ubpa::scalef3(100.f));
 	auto geoSky = CmptGeometry::New(sobj_skySphere, Sphere::New());
-	auto dark = BSDF_Diffuse::New(RGBf(0));
+	auto dark = BSDF_Diffuse::New(Ubpa::rgbf(0.f));
 	auto materialSky = CmptMaterial::New(sobj_skySphere, dark);
 
 	return Scene::New(sobj_Root, "scene 08");
@@ -526,13 +526,13 @@ Ptr<Scene> GenScene09() {
 	// metal workflow sphere
 	auto sobj_MWSphere = SObj::New(sobj_Root, "metal workflow sphere");
 
-	RGBf gold(1.00, 0.71, 0.29);
+	Ubpa::rgbf gold(1.00, 0.71, 0.29);
 	auto bsdfGold = BSDF_MetalWorkflow::New(gold, 0.2f);
 	auto materialGold = CmptMaterial::New(sobj_MWSphere, bsdfGold);
 
 	auto MWSphereTransform = CmptTransform::New(sobj_MWSphere);
-	MWSphereTransform->SetPosition(Point3(0, 0.3f, 0));
-	MWSphereTransform->SetScale(Vec3(0.3f));
+	MWSphereTransform->SetPosition(Ubpa::pointf3(0, 0.3f, 0));
+	MWSphereTransform->SetScale(Ubpa::scalef3(0.3f));
 
 	auto geoMWSphere = CmptGeometry::New(sobj_MWSphere, Sphere::New());
 
@@ -551,13 +551,13 @@ Ptr<Scene> GenScene09() {
 	auto sobj_Camera = SObj::New(sobj_Root, "camera");
 	auto camera = CmptCamera::New(sobj_Camera, 50.0f);
 	auto cameraTransform = CmptTransform::New(sobj_Camera);
-	cameraTransform->SetPosition(Point3(0, 0.75f, 2.4f));
+	cameraTransform->SetPosition(Ubpa::pointf3(0, 0.75f, 2.4f));
 
 	// sky sphere
 	auto sobj_skySphere = SObj::New(sobj_Root, "sky");
-	auto skyTsfm = CmptTransform::New(sobj_skySphere, Point3(0), Vec3(100));
+	auto skyTsfm = CmptTransform::New(sobj_skySphere, Ubpa::pointf3(0.f), Ubpa::scalef3(100.f));
 	auto geoSky = CmptGeometry::New(sobj_skySphere, Sphere::New());
-	auto dark = BSDF_Diffuse::New(RGBf(0));
+	auto dark = BSDF_Diffuse::New(Ubpa::rgbf(0.f));
 	auto materialSky = CmptMaterial::New(sobj_skySphere, dark);
 
 	return Scene::New(sobj_Root, "scene 09");
@@ -569,7 +569,7 @@ Ptr<Scene> GenScene10() {
 	// rusted iron workflow sphere
 	auto sobj_IronSphere = SObj::New(sobj_Root, "rusted iron sphere");
 
-	auto bsdfIron = BSDF_MetalWorkflow::New(RGBf(1));
+	auto bsdfIron = BSDF_MetalWorkflow::New(Ubpa::rgbf(1.f));
 	bsdfIron->albedoTexture = Image::New((ROOT_PATH+"data/textures/pbr/rusted_iron/albedo.png").c_str());
 	bsdfIron->metallicTexture = Image::New((ROOT_PATH + "data/textures/pbr/rusted_iron/metallic.png").c_str());
 	bsdfIron->roughnessTexture = Image::New((ROOT_PATH + "data/textures/pbr/rusted_iron/roughness.png").c_str());
@@ -577,9 +577,9 @@ Ptr<Scene> GenScene10() {
 	bsdfIron->normalTexture = Image::New((ROOT_PATH + "data/textures/pbr/rusted_iron/normal.png").c_str());
 	auto materialIron = CmptMaterial::New(sobj_IronSphere, bsdfIron);
 
-	auto MWSphereTransform = CmptTransform::New(sobj_IronSphere, Point3(0, 0.3f, 0), Vec3(0.3f));
-	MWSphereTransform->Rotate(Vec3(0, 1, 0), 90.f);
-	MWSphereTransform->Rotate(Vec3(1, 0, 0), 180.f);
+	auto MWSphereTransform = CmptTransform::New(sobj_IronSphere, Ubpa::pointf3(0, 0.3f, 0), Ubpa::scalef3(0.3f));
+	MWSphereTransform->Rotate(Ubpa::vecf3(0, 1, 0), 90.f);
+	MWSphereTransform->Rotate(Ubpa::vecf3(1, 0, 0), 180.f);
 
 	auto geoMWSphere = CmptGeometry::New(sobj_IronSphere, Sphere::New());
 
@@ -597,15 +597,15 @@ Ptr<Scene> GenScene10() {
 	// camera
 	auto sobj_Camera = SObj::New(sobj_Root, "camera");
 	auto camera = CmptCamera::New(sobj_Camera, 50.0f);
-	auto cameraTransform = CmptTransform::New(sobj_Camera, Point3(0, 0.5f, 0.8f));
-	cameraTransform->SetPosition(Point3(0, 0.5f, 0.8f));
-	cameraTransform->Rotate(Vec3(1, 0, 0), -15.f);
+	auto cameraTransform = CmptTransform::New(sobj_Camera, Ubpa::pointf3(0, 0.5f, 0.8f));
+	cameraTransform->SetPosition(Ubpa::pointf3(0, 0.5f, 0.8f));
+	cameraTransform->Rotate(Ubpa::vecf3(1, 0, 0), -15.f);
 
 	// sky sphere
 	auto sobj_skySphere = SObj::New(sobj_Root, "sky");
-	auto skyTsfm = CmptTransform::New(sobj_skySphere, Point3(0), Vec3(100));
+	auto skyTsfm = CmptTransform::New(sobj_skySphere, Ubpa::pointf3(0.f), Ubpa::scalef3(100.f));
 	auto geoSky = CmptGeometry::New(sobj_skySphere, Sphere::New());
-	auto dark = BSDF_Diffuse::New(RGBf(0));
+	auto dark = BSDF_Diffuse::New(Ubpa::rgbf(0.f));
 	auto materialSky = CmptMaterial::New(sobj_skySphere, dark);
 
 	return Scene::New(sobj_Root, "scene 10");
@@ -613,17 +613,17 @@ Ptr<Scene> GenScene10() {
 
 Ptr<Scene> GenScene11() {
 	auto sobjRoot = SObj::New(nullptr, "root");
-	vector<Point3> positions = {
-		Point3(0, 0, 0), // v0
-		Point3(0, 0, 1), // v1
-		Point3(1, 0, 1), // v2
-		Point3(1, 0, 0), // v3
-		Point3(0, 1, 0), // v4
-		Point3(0, 1, 1), // v5
-		Point3(1, 1, 1), // v6
-		Point3(1, 1, 0), // v7
+	vector<Ubpa::pointf3> positions = {
+		Ubpa::pointf3(0, 0, 0), // v0
+		Ubpa::pointf3(0, 0, 1), // v1
+		Ubpa::pointf3(1, 0, 1), // v2
+		Ubpa::pointf3(1, 0, 0), // v3
+		Ubpa::pointf3(0, 1, 0), // v4
+		Ubpa::pointf3(0, 1, 1), // v5
+		Ubpa::pointf3(1, 1, 1), // v6
+		Ubpa::pointf3(1, 1, 0), // v7
 	};
-	vector<uint> indice = {
+	vector<unsigned> indice = {
 		0, 2, 1,
 		0, 3, 2,
 

@@ -12,7 +12,7 @@ namespace CppUtil {
 				Basic::Ptr<SObj> sobj,
 				const Ubpa::pointf3 & pos = Ubpa::pointf3(0.f),
 				const Ubpa::scalef3 & scale = Ubpa::scalef3(1.0f),
-				const Ubpa::quatf & rot = Ubpa::quatf()
+				const Ubpa::quatf & rot = Ubpa::quatf::imag_real({0.f,0.f,0.f},1.f)
 			) :
 				Component(sobj),
 				position(pos),
@@ -20,6 +20,7 @@ namespace CppUtil {
 				rotation(rot),
 				dirtyTransform(true) { }
 
+			// theta is in radian
 			CmptTransform(
 				Basic::Ptr<SObj> sobj,
 				const Ubpa::pointf3 & pos,
@@ -40,10 +41,11 @@ namespace CppUtil {
 				Basic::Ptr<SObj> sobj,
 				const Ubpa::pointf3 & pos = Ubpa::pointf3(0.f),
 				const Ubpa::scalef3 & scale = Ubpa::scalef3(1.0f),
-				const Ubpa::quatf & rot = Ubpa::quatf())
+				const Ubpa::quatf & rot = Ubpa::quatf::imag_real({0.f,0.f,0.f},1.f))
 			{
 				return Basic::New<CmptTransform>(sobj, pos, scale, rot);
 			}
+			// theta is in radian
 			static const Basic::Ptr<CmptTransform> New(
 				Basic::Ptr<SObj> sobj,
 				const Ubpa::pointf3 & pos,
@@ -66,7 +68,8 @@ namespace CppUtil {
 			virtual ~CmptTransform() = default;
 
 		public:
-			void Init(const Ubpa::pointf3 & pos = Ubpa::pointf3(0.f), const Ubpa::scalef3 & scale = Ubpa::scalef3(1.0f), const Ubpa::quatf & rot = Ubpa::quatf());
+			void Init(const Ubpa::pointf3 & pos = Ubpa::pointf3(0.f), const Ubpa::scalef3 & scale = Ubpa::scalef3(1.0f), const Ubpa::quatf & rot = Ubpa::quatf::imag_real({0.f,0.f,0.f},1.f));
+			// theta is in radian
 			void Init(const Ubpa::pointf3 & pos, const Ubpa::scalef3 & scale, const Ubpa::vecf3 & axis, float theta) {
 				Init(pos, scale, Ubpa::quatf(axis, theta));
 			}

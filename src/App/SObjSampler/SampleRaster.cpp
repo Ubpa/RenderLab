@@ -27,7 +27,7 @@ void SampleRaster::Init() {
 
 	InitShaders();
 
-	vector<uint> dimVec = { 3,3,3,3,3,3 };
+	vector<unsigned> dimVec = { 3,3,3,3,3,3 };
 	gBuffer = FBO(512, 512, dimVec);
 
 	screen = VAO(&(data_ScreenVertices[0]), sizeof(data_ScreenVertices), { 2,2 });
@@ -86,7 +86,7 @@ void SampleRaster::Visit(Ptr<BSDF_FrostedGlass> bsdf) {
 	SetCurShader(shader_sampleFrostedGlass);
 
 	string strBSDF = "bsdf.";
-	shader_sampleFrostedGlass.SetVec3f(strBSDF + "colorFactor", bsdf->colorFactor);
+	shader_sampleFrostedGlass.SetVecf3(strBSDF + "colorFactor", bsdf->colorFactor.cast_to<Ubpa::valf3>());
 	shader_sampleFrostedGlass.SetFloat(strBSDF + "roughnessFactor", bsdf->roughnessFactor);
 
 	const int texNum = 4;

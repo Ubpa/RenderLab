@@ -108,7 +108,7 @@ void DeferredRaster::InitShader_GBuffer_MetalWorkflow() {
 
 	metalShader.SetInt("metal.albedoTexture", 0);
 	metalShader.SetInt("metal.metallicTexture", 1);
-	metalShader.SetInt("metal[0]oughnessTexture", 2);
+	metalShader.SetInt("metal.roughnessTexture", 2);
 	metalShader.SetInt("metal.aoTexture", 3);
 	metalShader.SetInt("metal.normalTexture", 4);
 
@@ -132,7 +132,7 @@ void DeferredRaster::InitShader_GBuffer_Frostbite() {
 
 	frostbiteShader.SetInt("bsdf.albedoTexture", 0);
 	frostbiteShader.SetInt("bsdf.metallicTexture", 1);
-	frostbiteShader.SetInt("bsdf[0]oughnessTexture", 2);
+	frostbiteShader.SetInt("bsdf.roughnessTexture", 2);
 	frostbiteShader.SetInt("bsdf.aoTexture", 3);
 	frostbiteShader.SetInt("bsdf.normalTexture", 4);
 

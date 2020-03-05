@@ -110,7 +110,7 @@ void SObjSampler::InitRaster() {
 	auto camera = scene->GetCmptCamera();
 	auto transform = camera->GetSObj()->GetComponent<CmptTransform>();
 	auto eulerAngle = transform->GetRotationEuler();
-	roamer->GetCamera()->SetPose(transform->GetPosition(), - eulerAngle.y - 90, eulerAngle.x);
+	roamer->GetCamera()->SetPose(transform->GetPosition(), - eulerAngle[1] - 90, eulerAngle[0]);
 
 	ui.OGLW_Raster->AddInitOp(LambdaOp_New([=]() {
 		roamer->Init();
@@ -230,8 +230,8 @@ void SObjSampler::SaveData() {
 	map<int, string> ID2name;
 	for (auto & job : rtxSampler->GetJobs()) {
 		for (auto & pixel : job) {
-			int col = pixel.x;
-			int row = pixel.y;
+			int col = pixel[0];
+			int row = pixel[1];
 
 			vector<float> lineVals;
 			int idx = (row * 512 + col) * 3;
@@ -248,15 +248,15 @@ void SObjSampler::SaveData() {
 			float roughness = dataMap[ENUM_TYPE::IOR_ROUGHNESS_ID][idx + 1];
 			lineVals.push_back(ID);
 
-			RGBf directIllum(
+			Ubpa::rgbf directIllum(
 				dataMap[ENUM_TYPE::DirectIllum][idx + 0],
 				dataMap[ENUM_TYPE::DirectIllum][idx + 1],
 				dataMap[ENUM_TYPE::DirectIllum][idx + 2]
 			);
 
-			lineVals.push_back(directIllum.r);
-			lineVals.push_back(directIllum.g);
-			lineVals.push_back(directIllum.b);
+			lineVals.push_back(directIllum[0]);
+			lineVals.push_back(directIllum[1]);
+			lineVals.push_back(directIllum[2]);
 
 			for (int channel = 0; channel < 3; channel++)
 				lineVals.push_back(dataMap[ENUM_TYPE::POSITION][idx + channel]);
@@ -279,16 +279,16 @@ void SObjSampler::SaveData() {
 			for (int channel = 0; channel < 3; channel++)
 				lineVals.push_back(dataMap[ENUM_TYPE::MAT_COLOR][idx + channel]);
 
-			RGBf globalIllum = paintImgOp->GetImg()->GetPixel(col, row);
+			Ubpa::rgbf globalIllum = paintImgOp->GetImg()->GetPixel(col, row).to_rgb();
 
-			RGBf indirectIllum = (globalIllum - directIllum).MaxWith(RGBf{ 0.f });
+			Ubpa::rgbf indirectIllum = Ubpa::rgbf::max(globalIllum - directIllum, Ubpa::rgbf{ 0.f });
 
 			lineVals.push_back(ior);
 			lineVals.push_back(roughness);
 
-			lineVals.push_back(indirectIllum.x);
-			lineVals.push_back(indirectIllum.y);
-			lineVals.push_back(indirectIllum.z);
+			lineVals.push_back(indirectIllum[0]);
+			lineVals.push_back(indirectIllum[1]);
+			lineVals.push_back(indirectIllum[2]);
 
 			csvSaver.AddLine(lineVals);
 		}

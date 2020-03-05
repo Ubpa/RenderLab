@@ -166,9 +166,10 @@ void Attribute::ComponentVisitor::Visit(Ptr<CmptTransform> transform) {
 	grid->AddEditVal({ "x","y","z" }, transform->GetPosition().cast_to<Ubpa::valf3>(), Ubpa::valf3(0.1f), [=](const Ubpa::valf3 & val) {
 		transform->SetPosition(val.cast_to<Ubpa::pointf3>());
 	});
-
+	 
 	grid->AddText("- Rotation");
-	grid->AddEditVal({"x","y","z"}, transform->GetRotationEuler().cast_to<Ubpa::valf3>(), Ubpa::valf3(-90, -180, -180), Ubpa::valf3(90, 180, 180), Ubpa::vali3(180, 360, 360), [=](const Ubpa::valf3 & val) {
+	auto e = transform->GetRotationEuler().cast_to<Ubpa::vecf3>() / Ubpa::PI<float> * 180;
+	grid->AddEditVal({"x","y","z"}, e.cast_to<Ubpa::valf3>(), Ubpa::valf3(-90, -180, -180), Ubpa::valf3(90, 180, 180), Ubpa::vali3(180, 360, 360), [=](const Ubpa::valf3 & val) {
 		transform->SetRotation(Ubpa::eulerf{ Ubpa::to_radian(val[0]),Ubpa::to_radian(val[1]) ,Ubpa::to_radian(val[2]) });
 	});
 

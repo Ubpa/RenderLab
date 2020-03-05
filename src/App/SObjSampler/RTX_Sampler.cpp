@@ -68,7 +68,7 @@ void RTX_Sampler::Run(Ptr<Scene> scene, Ptr<Image> img) {
 	camera->InitCoordinate();
 
 	// jobs
-	vector<vector<RGBf>> fimg(w, vector<RGBf>(h, RGBf(0)));
+	vector<vector<Ubpa::rgbf>> fimg(w, vector<Ubpa::rgbf>(h, Ubpa::rgbf(0.f)));
 
 	ImgPixelSet pixelsSet(w, h);
 	for (int i = 0; i < threadNum; i++)
@@ -79,24 +79,24 @@ void RTX_Sampler::Run(Ptr<Scene> scene, Ptr<Image> img) {
 		auto & job = jobs[id];
 
 		for (int i = 0; i < job.size(); i++) {
-			int x = job[i].x;
-			int y = job[i].y;
+			int x = job[i][0];
+			int y = job[i][1];
 
 			for (int k = 0; k < maxLoop; ++k) {
 				float u = (x + Math::Rand_F()) / (float)w;
 				float v = (y + Math::Rand_F()) / (float)h;
 
 				auto ray = camera->GenRay(u, v);
-				RGBf rst = rayTracer->Trace(ray);
+				Ubpa::rgbf rst = rayTracer->Trace(ray);
 
 				// 丢弃不合法的结果
-				if (rst.HasNaN()) {
+				if (rst.has_nan()) {
 					k--;
 					continue;
 				}
 
 				// 这一步可以极大的减少白噪点（特别是由点光源产生）
-				float illum = rst.Illumination();
+				float illum = rst.illumination();
 				if (illum > lightNum)
 					rst *= lightNum / illum;
 

@@ -46,7 +46,7 @@ void DirectIllumRaster::InitShaderMetalWorkflow() {
 
 	shader_metalWorkflow.SetInt("bsdf.albedoTexture", 0);
 	shader_metalWorkflow.SetInt("bsdf.metallicTexture", 1);
-	shader_metalWorkflow.SetInt("bsdf[0]oughnessTexture", 2);
+	shader_metalWorkflow.SetInt("bsdf.roughnessTexture", 2);
 	shader_metalWorkflow.SetInt("bsdf.aoTexture", 3);
 	shader_metalWorkflow.SetInt("bsdf.normalTexture", 4);
 
@@ -57,7 +57,7 @@ void DirectIllumRaster::InitShaderFrostedGlass() {
 	shader_frostedGlass = Shader(ROOT_PATH + str_Basic_P3N3T2T3_vs, ROOT_PATH + "data/shaders/Engine/BSDF_FrostedGlass.fs");
 
 	shader_frostedGlass.SetInt("bsdf.colorTexture", 0);
-	shader_frostedGlass.SetInt("bsdf[0]oughnessTexture", 1);
+	shader_frostedGlass.SetInt("bsdf.roughnessTexture", 1);
 	shader_frostedGlass.SetInt("bsdf.aoTexture", 2);
 	shader_frostedGlass.SetInt("bsdf.normalTexture", 3);
 	
