@@ -2,7 +2,7 @@
 
 #include <Engine/SObj.h>
 
-using namespace CppUtil::Engine;
+using namespace Ubpa;
 
 void Component::Init_AfterGenPtr() {
 	auto sobj = GetSObj();

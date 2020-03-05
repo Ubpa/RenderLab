@@ -9,7 +9,7 @@
 #include <functional>
 #include <vector>
 
-namespace CppUtil {
+namespace Ubpa {
 	namespace Basic {
 		class Image;
 	}
@@ -22,29 +22,29 @@ namespace CppUtil {
 }
 
 namespace App {
-	class RTX_Sampler : public CppUtil::Basic::HeapObj {
+	class RTX_Sampler : public HeapObj {
 	public:
-		RTX_Sampler(const std::function<CppUtil::Basic::Ptr<CppUtil::Engine::RayTracer>()> & generator, int maxLoop, int sampleNum);
+		RTX_Sampler(const std::function<Ptr<RayTracer>()> & generator, int maxLoop, int sampleNum);
 
 	public:
-		static const CppUtil::Basic::Ptr<RTX_Sampler> New(
-			const std::function<CppUtil::Basic::Ptr<CppUtil::Engine::RayTracer>()> & generator,
+		static const Ptr<RTX_Sampler> New(
+			const std::function<Ptr<RayTracer>()> & generator,
 			int maxLoop, int sampleNum)
 		{
-			return CppUtil::Basic::New<RTX_Sampler>(generator, maxLoop, sampleNum);
+			return New<RTX_Sampler>(generator, maxLoop, sampleNum);
 		}
 
 	protected:
 		virtual ~RTX_Sampler() = default;
 
 	public:
-		void Run(CppUtil::Basic::Ptr<CppUtil::Engine::Scene> scene, CppUtil::Basic::Ptr<CppUtil::Basic::Image> img);
+		void Run(Ptr<Scene> scene, Ptr<Image> img);
 
 		const std::vector<std::vector<Ubpa::valu2>> & GetJobs() const { return jobs; }
 
 	private:
-		std::function<CppUtil::Basic::Ptr<CppUtil::Engine::RayTracer>()> generator;
-		std::vector<CppUtil::Basic::Ptr<CppUtil::Engine::RayTracer>> rayTracers;
+		std::function<Ptr<RayTracer>()> generator;
+		std::vector<Ptr<RayTracer>> rayTracers;
 
 		std::vector<std::vector<Ubpa::valu2>> jobs;
 

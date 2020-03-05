@@ -4,62 +4,59 @@
 
 #include <Engine/SchlickGGX.h>
 
-namespace CppUtil {
-	namespace Engine {
+namespace Ubpa {
+	// Disney
+	class BSDF_MetalWorkflow : public BSDF {
+	public:
+		BSDF_MetalWorkflow(const rgbf& colorFactor = rgbf(1.f), float roughnessFactor = 1.f, float metallicFactor = 1.f)
+			: colorFactor(colorFactor), roughnessFactor(roughnessFactor), metallicFactor(metallicFactor),
+			albedoTexture(nullptr), metallicTexture(nullptr), aoTexture(nullptr) { }
 
-		// Disney
-		class BSDF_MetalWorkflow : public BSDF {
-		public:
-			BSDF_MetalWorkflow(const Ubpa::rgbf & colorFactor = Ubpa::rgbf(1.f), float roughnessFactor = 1.f, float metallicFactor = 1.f)
-				: colorFactor(colorFactor), roughnessFactor(roughnessFactor), metallicFactor(metallicFactor),
-				albedoTexture(nullptr), metallicTexture(nullptr), aoTexture(nullptr) { }
+	public:
+		static const Ptr<BSDF_MetalWorkflow> New(const rgbf& colorFactor = rgbf(1.f), float roughnessFactor = 1.f, float metallicFactor = 1.f) {
+			return Ubpa::New<BSDF_MetalWorkflow>(colorFactor, roughnessFactor, metallicFactor);
+		}
 
-		public:
-			static const Basic::Ptr<BSDF_MetalWorkflow> New(const Ubpa::rgbf & colorFactor = Ubpa::rgbf(1.f), float roughnessFactor = 1.f, float metallicFactor = 1.f) {
-				return Basic::New<BSDF_MetalWorkflow>(colorFactor, roughnessFactor, metallicFactor);
-			}
+	protected:
+		virtual ~BSDF_MetalWorkflow() = default;
 
-		protected:
-			virtual ~BSDF_MetalWorkflow() = default;
+	public:
+		virtual const rgbf F(const normalf& wo, const normalf& wi, const pointf2& texcoord) override;
 
-		public:
-			virtual const Ubpa::rgbf F(const Ubpa::normalf & wo, const Ubpa::normalf & wi, const Ubpa::pointf2 & texcoord) override;
+		// probability density function
+		virtual float PDF(const normalf& wo, const normalf& wi, const pointf2& texcoord) override;
 
-			// probability density function
-			virtual float PDF(const Ubpa::normalf & wo, const Ubpa::normalf & wi, const Ubpa::pointf2 & texcoord) override;
+		// PD is probability density
+		// return albedo
+		virtual const rgbf Sample_f(const normalf& wo, const pointf2& texcoord, normalf& wi, float& PD) override;
 
-			// PD is probability density
-			// return albedo
-			virtual const Ubpa::rgbf Sample_f(const Ubpa::normalf & wo, const Ubpa::pointf2 & texcoord, Ubpa::normalf & wi, float & PD) override;
+		virtual void ChangeNormal(const pointf2& texcoord, const normalf& tangent, normalf& normal) const override;
 
-			virtual void ChangeNormal(const Ubpa::pointf2 & texcoord, const Ubpa::normalf & tangent, Ubpa::normalf & normal) const override;
+	private:
+		// Fresnel
+		static const rgbf Fr(const normalf& w, const normalf& h, const rgbf& albedo, float metallic);
 
-		private:
-			// Fresnel
-			static const Ubpa::rgbf Fr(const Ubpa::normalf & w, const Ubpa::normalf & h, const Ubpa::rgbf & albedo, float metallic);
+		const rgbf GetAlbedo(const pointf2& texcoord) const;
+		float GetMetallic(const pointf2& texcoord) const;
+		float GetRoughness(const pointf2& texcoord) const;
+		float GetAO(const pointf2& texcoord) const;
 
-			const Ubpa::rgbf GetAlbedo(const Ubpa::pointf2 & texcoord) const;
-			float GetMetallic(const Ubpa::pointf2 & texcoord) const;
-			float GetRoughness(const Ubpa::pointf2 & texcoord) const;
-			float GetAO(const Ubpa::pointf2 & texcoord) const;
+	public:
+		SchlickGGX sggx;
 
-		public:
-			SchlickGGX sggx;
+		rgbf colorFactor;
+		Ptr<Image> albedoTexture;
 
-			Ubpa::rgbf colorFactor;
-			Basic::Ptr<Basic::Image> albedoTexture;
+		// 0--1
+		float metallicFactor;
+		Ptr<Image> metallicTexture;
 
-			// 0--1
-			float metallicFactor;
-			Basic::Ptr<Basic::Image> metallicTexture;
+		// 0--1
+		float roughnessFactor;
+		Ptr<Image> roughnessTexture;
 
-			// 0--1
-			float roughnessFactor;
-			Basic::Ptr<Basic::Image> roughnessTexture;
+		Ptr<Image> aoTexture; // 只用与实时渲染
 
-			Basic::Ptr<Basic::Image> aoTexture; // 只用与实时渲染
-
-			Basic::Ptr<Basic::Image> normalTexture;
-		};
-	}
+		Ptr<Image> normalTexture;
+	};
 }

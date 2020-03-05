@@ -16,21 +16,18 @@ class QGridLayout;
 class QComboBox;
 class QPushButton;
 
-namespace CppUtil {
-	namespace Basic {
-		class Image;
-	}
-}
 
-namespace Ui {
-	class Grid : public CppUtil::Basic::HeapObj {
+namespace Ubpa {
+	class Image;
+
+	class Grid : public HeapObj {
 	public:
 		Grid() : isInit(false), page(nullptr), gridLayout(nullptr) { }
 		Grid(QWidget * page);
 
 	public:
-		static const CppUtil::Basic::Ptr<Grid> New() { return CppUtil::Basic::New<Grid>(); }
-		static const CppUtil::Basic::Ptr<Grid> New(QWidget * page) { return CppUtil::Basic::New<Grid>(page); }
+		static const Ptr<Grid> New() { return Ubpa::New<Grid>(); }
+		static const Ptr<Grid> New(QWidget * page) { return Ubpa::New<Grid>(page); }
 
 	protected:
 		virtual ~Grid() = default;
@@ -97,11 +94,11 @@ namespace Ui {
 			const std::function<void(const std::string &)> & slot);
 
 		// image
-		void AddEditImage(const std::string & text, CppUtil::Basic::PtrC<CppUtil::Basic::Image> img, const std::function<void(CppUtil::Basic::Ptr<CppUtil::Basic::Image>)> & slot);
+		void AddEditImage(const std::string & text, PtrC<Image> img, const std::function<void(Ptr<Image>)> & slot);
 
 		// image
-		void AddEditImage(const std::string & text, CppUtil::Basic::Ptr<CppUtil::Basic::Image> & img) {
-			AddEditImage(text, img, [&](CppUtil::Basic::Ptr<CppUtil::Basic::Image> newImg) {img = newImg; });
+		void AddEditImage(const std::string & text, Ptr<Image> & img) {
+			AddEditImage(text, img, [&](Ptr<Image> newImg) {img = newImg; });
 		}
 
 		void AddButton(const std::string & text, const std::function<void()> & slot);
@@ -116,7 +113,7 @@ namespace Ui {
 		void AddRow(const std::string & text, QWidget * widget = nullptr);
 		void AddRow(QWidget * widgetLeft, QWidget * widgetRight = nullptr);
 
-		static bool SetImgLabel(QLabel * imgLabel, CppUtil::Basic::PtrC<CppUtil::Basic::Image> img);
+		static bool SetImgLabel(QLabel * imgLabel, PtrC<Image> img);
 		static void ClearImgLabel(QLabel * imgLabel);
 
 	private:

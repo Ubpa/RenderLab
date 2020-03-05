@@ -267,6 +267,7 @@ __pycache__/
 *.gif
 *.png
 *.hdr
+*.sobj
 
 *.pdf
 *.zip

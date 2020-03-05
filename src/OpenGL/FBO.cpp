@@ -9,7 +9,8 @@
 
 #include <cstdio>
 
-using namespace CppUtil::OpenGL;
+using namespace Ubpa;
+
 using namespace std;
 
 #if !USE_QT_OPENGL_API
@@ -23,55 +24,55 @@ FBO::FBO(unsigned width, unsigned height, ENUM_TYPE type)
 	: type(type), width(width), height(height) {
 	switch (type)
 	{
-	case OpenGL::FBO::ENUM_TYPE_BASIC:
+	case FBO::ENUM_TYPE_BASIC:
 		if (!GenFBO_BASIC(width, height))
 			printf("GenFBO_BASIC fail\n");
 		break;
-	case OpenGL::FBO::ENUM_TYPE_RGBF1_DEPTH:
-	case OpenGL::FBO::ENUM_TYPE_RGBF2_DEPTH:
-	case OpenGL::FBO::ENUM_TYPE_RGBF3_DEPTH: {
+	case FBO::ENUM_TYPE_RGBF1_DEPTH:
+	case FBO::ENUM_TYPE_RGBF2_DEPTH:
+	case FBO::ENUM_TYPE_RGBF3_DEPTH: {
 		const int colorBufferNum = type - ENUM_TYPE_RGBF1_DEPTH + 1;
 		if (!GenFBO_RGBF_DEPTH(width, height, colorBufferNum))
 			printf("GenFBO_RGBF_DEPTH fail\n");
 		break;
 	}
-	case OpenGL::FBO::ENUM_TYPE_MSAA:
+	case FBO::ENUM_TYPE_MSAA:
 		if (!GenFBO_MSAA(width, height))
 			printf("GenFBO_MSAA fail\n");
 		break;
-	case OpenGL::FBO::ENUM_TYPE_COLOR:
-	case OpenGL::FBO::ENUM_TYPE_COLOR_FLOAT: {
+	case FBO::ENUM_TYPE_COLOR:
+	case FBO::ENUM_TYPE_COLOR_FLOAT: {
 		const bool isFloat = type == ENUM_TYPE_COLOR_FLOAT;
 		if (!GenFBO_COLOR(width, height, isFloat))
 			printf("GenFBO_COLOR fail\n");
 		break;
 	}
-	case OpenGL::FBO::ENUM_TYPE_RED:
+	case FBO::ENUM_TYPE_RED:
 		if (!GenFBO_RED(width, height))
 			printf("GenFBO_RED fail\n");
 		break;
 		break;
-	case OpenGL::FBO::ENUM_TYPE_DEPTH:
+	case FBO::ENUM_TYPE_DEPTH:
 		if (!GenFBO_DEPTH(width, height))
 			printf("GenFBO_DEPTH fail\n");
 		break;
-	case OpenGL::FBO::ENUM_TYPE_CUBE_DEPTH:
+	case FBO::ENUM_TYPE_CUBE_DEPTH:
 		if (!GenFBO_CUBE_DEPTH(width, height))
 			printf("GenFBO_CUBE_DEPTH fail\n");
 		break;
-	case OpenGL::FBO::ENUM_TYPE_GBUFFER:
+	case FBO::ENUM_TYPE_GBUFFER:
 		if (!GenFBO_GBUFFER(width, height))
 			printf("GenFBO_GBUFFER fail\n");
 		break;
-	case OpenGL::FBO::ENUM_TYPE_RAYTRACING:
+	case FBO::ENUM_TYPE_RAYTRACING:
 		if (!GenFBO_RAYTRACING(width, height))
 			printf("GenFBO_RAYTRACING fail\n");
 		break;
-	case OpenGL::FBO::ENUM_TYPE_RTX:
+	case FBO::ENUM_TYPE_RTX:
 		if (!GenFBO_RTX(width, height))
 			printf("GenFBO_RTX fail\n");
 		break;
-	case OpenGL::FBO::ENUM_TYPE_DYNAMIC_COLOR:
+	case FBO::ENUM_TYPE_DYNAMIC_COLOR:
 		if (!GenFBO_DYNAMIC_COLOR(width, height))
 			printf("GenFBO_DYNAMIC_COLOR fail\n");
 		break;
@@ -208,7 +209,6 @@ bool FBO::GenFBO_RGBF_DEPTH(unsigned width, unsigned height, unsigned colorBuffe
 	glBindRenderbuffer(GL_RENDERBUFFER, RBO);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, RBO);
-
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -546,10 +546,10 @@ bool FBO::IsComplete() const {
 unsigned FBO::PassType2GL(ENUM_PASS_TYPE passType) {
 	switch (passType)
 	{
-	case OpenGL::FBO::ENUM_PASS_COLOR:
+	case FBO::ENUM_PASS_COLOR:
 		return GL_COLOR_BUFFER_BIT;
 		break;
-	case OpenGL::FBO::ENUM_PASS_DEPTH:
+	case FBO::ENUM_PASS_DEPTH:
 		return GL_DEPTH_BUFFER_BIT;
 		break;
 	default:

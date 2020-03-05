@@ -2,15 +2,14 @@
 
 #include <Basic/Math.h>
 
-using namespace CppUtil;
-using namespace CppUtil::Basic;
+using namespace Ubpa;
 
-const Ubpa::valf3 CosineWeightedHemisphereSampler3D::GetSample() {
+const valf3 CosineWeightedHemisphereSampler3D::GetSample() {
 	float pd;
 	return GetSample(pd);
 }
 
-const Ubpa::valf3 CosineWeightedHemisphereSampler3D::GetSample(float & pd) {
+const valf3 CosineWeightedHemisphereSampler3D::GetSample(float & pd) {
 	float Xi1 = Math::Rand_F();
 	float Xi2 = Math::Rand_F();
 
@@ -26,5 +25,5 @@ const Ubpa::valf3 CosineWeightedHemisphereSampler3D::GetSample(float & pd) {
 	// pdf 是 p(w)，而不是 p(theta, phi)
 	pd = cosTheta / Math::PI;
 
-	return Ubpa::valf3(xs, ys, zs);
+	return valf3(xs, ys, zs);
 }

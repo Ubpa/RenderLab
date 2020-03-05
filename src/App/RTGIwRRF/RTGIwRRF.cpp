@@ -33,9 +33,9 @@
 #include <synchapi.h>
 
 using namespace App;
-using namespace CppUtil::QT;
-using namespace CppUtil::Engine;
-using namespace CppUtil::Basic;
+using namespace Ubpa;
+using namespace Ubpa;
+
 using namespace std;
 using namespace Ui;
 

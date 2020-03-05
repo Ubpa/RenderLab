@@ -23,9 +23,9 @@ namespace Ubpa {
 		template<typename Func>
 		void Run(const Func& func, size_t n);
 		template<typename Func>
-		typename CppUtil::Basic::FunctionTraitsLambda<Func>::result_type RunSum(const std::vector<Func>& works);
+		typename FunctionTraitsLambda<Func>::result_type RunSum(const std::vector<Func>& works);
 		template<typename Func, typename Data>
-		typename CppUtil::Basic::FunctionTraitsLambda<Func>::result_type RunSum(const Func& func, const std::vector<Data>& datas);
+		typename FunctionTraitsLambda<Func>::result_type RunSum(const Func& func, const std::vector<Data>& datas);
 		
 	private:
 		Parallel();
@@ -74,8 +74,8 @@ namespace Ubpa {
 	}
 
 	template<typename Func>
-	typename CppUtil::Basic::FunctionTraitsLambda<Func>::result_type Parallel::RunSum(const std::vector<Func>& works) {
-		using RstType = typename CppUtil::Basic::FunctionTraitsLambda<Func>::result_type;
+	typename FunctionTraitsLambda<Func>::result_type Parallel::RunSum(const std::vector<Func>& works) {
+		using RstType = typename FunctionTraitsLambda<Func>::result_type;
 		std::vector<RstType> rsts;
 		std::vector<std::thread> workers;
 
@@ -106,8 +106,8 @@ namespace Ubpa {
 	}
 
 	template<typename Func, typename Data>
-	typename CppUtil::Basic::FunctionTraitsLambda<Func>::result_type Parallel::RunSum(const Func& func, const std::vector<Data>& datas) {
-		using RstType = typename CppUtil::Basic::FunctionTraitsLambda<Func>::result_type;
+	typename FunctionTraitsLambda<Func>::result_type Parallel::RunSum(const Func& func, const std::vector<Data>& datas) {
+		using RstType = typename FunctionTraitsLambda<Func>::result_type;
 		std::vector<std::function<RstType()>> works;
 		works.reserve(datas.size());
 		for (auto& data : datas)

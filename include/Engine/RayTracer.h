@@ -6,25 +6,23 @@
 
 #include <UGM/rgb.h>
 
-namespace CppUtil {
-	namespace Engine {
-		class Scene;
-		class BVHAccel;
+namespace Ubpa {
+	class Scene;
+	class BVHAccel;
 
-		class RayTracer : public Basic::HeapObj {
-		protected:
-			RayTracer() = default;
-			virtual ~RayTracer() = default;
+	class RayTracer : public HeapObj {
+	protected:
+		RayTracer() = default;
+		virtual ~RayTracer() = default;
 
-		public:
-			// ray 处于世界坐标系
-			virtual const Ubpa::rgbf Trace(Ray & ray) = 0;
-			virtual void Init(Basic::Ptr<Scene> scene, Basic::Ptr<BVHAccel> bvhAccel) {
-				this->bvhAccel = bvhAccel;
-			}
+	public:
+		// ray 处于世界坐标系
+		virtual const rgbf Trace(Ray& ray) = 0;
+		virtual void Init(Ptr<Scene> scene, Ptr<BVHAccel> bvhAccel) {
+			this->bvhAccel = bvhAccel;
+		}
 
-		protected:
-			Basic::Ptr<BVHAccel> bvhAccel;
-		};
-	}
+	protected:
+		Ptr<BVHAccel> bvhAccel;
+	};
 }

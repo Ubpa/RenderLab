@@ -18,9 +18,8 @@
 
 #include <iostream>
 
-using namespace CppUtil;
-using namespace CppUtil::Basic;
-using namespace CppUtil::Engine;
+using namespace Ubpa;
+
 using namespace std;
 
 const Ptr<SObj> AssimpLoader::Load(const std::string & path) {
@@ -77,20 +76,20 @@ const Ptr<SObj> AssimpLoader::LoadNode(Str2Img & str2img, const string & dir, ai
 	return sobj;
 }
 
-void AssimpLoader::LoadMesh(Str2Img & str2img, const string & dir, aiMesh *mesh, const aiScene *scene, Basic::Ptr<SObj> sobj) {
+void AssimpLoader::LoadMesh(Str2Img & str2img, const string & dir, aiMesh *mesh, const aiScene *scene, Ptr<SObj> sobj) {
 	// data to fill
-	vector<Ubpa::pointf3> poses;
-	vector<Ubpa::pointf2> texcoords;
-	vector<Ubpa::normalf> normals;
+	vector<pointf3> poses;
+	vector<pointf2> texcoords;
+	vector<normalf> normals;
 	vector<unsigned> indices;
-	vector<Ubpa::normalf> tangents;
+	vector<normalf> tangents;
 	//vector<Mesh::TextureInfo> textureInfos;
 
 	// Walk through each of the mesh's vertices
 	for (unsigned i = 0; i < mesh->mNumVertices; i++)
 	{
 		// positions
-		Ubpa::pointf3 pos;
+		pointf3 pos;
 		pos[0] = mesh->mVertices[i][0];
 		pos[1] = mesh->mVertices[i][1];
 		pos[2] = mesh->mVertices[i][2];
@@ -98,7 +97,7 @@ void AssimpLoader::LoadMesh(Str2Img & str2img, const string & dir, aiMesh *mesh,
 
 		// normals
 		if (mesh->mNormals) {
-			Ubpa::normalf normal;
+			normalf normal;
 			normal[0] = mesh->mNormals[i][0];
 			normal[1] = mesh->mNormals[i][1];
 			normal[2] = mesh->mNormals[i][2];
@@ -108,7 +107,7 @@ void AssimpLoader::LoadMesh(Str2Img & str2img, const string & dir, aiMesh *mesh,
 		// texture coordinates
 		if (mesh->mTextureCoords[0]) // does the mesh contain texture coordinates?
 		{
-			Ubpa::pointf2 texcoord;
+			pointf2 texcoord;
 			// a vertex can contain up to 8 different texture coordinates. We thus make the assumption that we won't 
 			// use models where a vertex can have multiple texture coordinates so we always take the first set (0).
 			texcoord[0] = mesh->mTextureCoords[0][i][0];
@@ -136,16 +135,16 @@ void AssimpLoader::LoadMesh(Str2Img & str2img, const string & dir, aiMesh *mesh,
 	}
 
 	// offset, scale
-	Ubpa::pointf3 minP(std::numeric_limits<float>::max());
-	Ubpa::pointf3 maxP(-std::numeric_limits<float>::max());
+	pointf3 minP(std::numeric_limits<float>::max());
+	pointf3 maxP(-std::numeric_limits<float>::max());
 	for (const auto & pos : poses) {
-		minP = Ubpa::pointf3::min(minP, pos);
-		maxP = Ubpa::pointf3::max(maxP, pos);
+		minP = pointf3::min(minP, pos);
+		maxP = pointf3::max(maxP, pos);
 	}
-	auto offset = -Ubpa::pointf3::mid(minP,maxP).cast_to<Ubpa::vecf3>();
+	auto offset = -pointf3::mid(minP,maxP).cast_to<vecf3>();
 	float scale = sqrt(3.f / (maxP - minP).norm2());
 	for (auto & pos : poses)
-		pos = (scale * (pos.cast_to<Ubpa::vecf3>() + offset)).cast_to<Ubpa::pointf3>();
+		pos = (scale * (pos.cast_to<vecf3>() + offset)).cast_to<pointf3>();
 
 	auto triMesh = TriMesh::New(indices, poses, normals, texcoords, tangents);
 	CmptGeometry::New(sobj, triMesh);

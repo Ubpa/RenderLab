@@ -2,11 +2,11 @@
 
 #include <Engine/SurfCoord.h>
 
-using namespace CppUtil;
-using namespace CppUtil::Engine;
-using namespace CppUtil::Basic::Math;
+using namespace Ubpa;
 
-const Ubpa::rgbf BSDF_Glass::Sample_f(const Ubpa::normalf & wo, const Ubpa::pointf2 & texcoord, Ubpa::normalf & wi, float & PD) {
+using namespace Ubpa::Math;
+
+const rgbf BSDF_Glass::Sample_f(const normalf & wo, const pointf2 & texcoord, normalf & wi, float & PD) {
 	// PDF is delta
 
 	if (!SurfCoord::Refract(wo, wi, ior)) {

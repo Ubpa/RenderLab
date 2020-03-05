@@ -2,19 +2,18 @@
 
 #include <Engine/Triangle.h>
 
-#include <Basic/Cube.h>
-#include <Basic/Sphere.h>
-#include <Basic/Plane.h>
-#include <Basic/Disk.h>
+#include <Basic/ShapeMesh/CubeMesh.h>
+#include <Basic/ShapeMesh/SphereMesh.h>
+#include <Basic/ShapeMesh/PlaneMesh.h>
+#include <Basic/ShapeMesh/DiskMesh.h>
 #include <Basic/BasicSampler.h>
 #include <Basic/Parallel.h>
 
 #include <mutex>
 #include <map>
 
-using namespace CppUtil;
-using namespace CppUtil::Engine;
-using namespace CppUtil::Basic;
+using namespace Ubpa;
+
 using namespace std;
 using namespace Ubpa;
 
@@ -34,11 +33,11 @@ TriMesh::TriMesh(unsigned triNum, unsigned vertexNum,
 	}
 
 	for (unsigned i = 0; i < vertexNum; i++) {
-		this->positions.push_back(Ubpa::pointf3(positions[3 * i], positions[3 * i + 1], positions[3 * i + 2]));
+		this->positions.push_back(pointf3(positions[3 * i], positions[3 * i + 1], positions[3 * i + 2]));
 		if(normals)
-			this->normals.push_back(Ubpa::normalf(normals[3 * i], normals[3 * i + 1], normals[3 * i + 2]));
+			this->normals.push_back(normalf(normals[3 * i], normals[3 * i + 1], normals[3 * i + 2]));
 		if(texcoords)
-			this->texcoords.push_back(Ubpa::pointf2(texcoords[2 * i], texcoords[2 * i + 1]));
+			this->texcoords.push_back(pointf2(texcoords[2 * i], texcoords[2 * i + 1]));
 		if(tangents)
 			this->tangents.push_back({ tangents[3 * i],tangents[3 * i + 1],tangents[3 * i + 2] });
 	}
@@ -68,10 +67,10 @@ TriMesh::TriMesh(unsigned triNum, unsigned vertexNum,
 }
 
 void TriMesh::Init(bool creator, const std::vector<unsigned> & indice,
-	const std::vector<Ubpa::pointf3> & positions,
-	const std::vector<Ubpa::normalf> & normals,
-	const std::vector<Ubpa::pointf2> & texcoords,
-	const std::vector<Ubpa::normalf> & tangents,
+	const std::vector<pointf3> & positions,
+	const std::vector<normalf> & normals,
+	const std::vector<pointf2> & texcoords,
+	const std::vector<normalf> & tangents,
 	ENUM_TYPE type)
 {
 	this->indice.clear();
@@ -123,7 +122,7 @@ void TriMesh::Init(bool creator, const std::vector<unsigned> & indice,
 		Init_AfterGenPtr();
 }
 
-bool TriMesh::Update(const std::vector<Ubpa::pointf3> & positions) {
+bool TriMesh::Update(const std::vector<pointf3> & positions) {
 	if (type == INVALID) {
 		printf("ERROR::TriMesh::Update:\n"
 			"\t""type == INVALID\n");
@@ -141,7 +140,7 @@ bool TriMesh::Update(const std::vector<Ubpa::pointf3> & positions) {
 	return true;
 }
 
-bool TriMesh::Update(const vector<Ubpa::pointf2> & texcoords) {
+bool TriMesh::Update(const vector<pointf2> & texcoords) {
 	if (type == INVALID) {
 		printf("ERROR::TriMesh::Update:\n"
 			"\t""type == INVALID\n");
@@ -170,7 +169,7 @@ void TriMesh::Init_AfterGenPtr() {
 
 void TriMesh::GenNormals() {
 	normals.clear();
-	normals.resize(positions.size(), Ubpa::normalf(0.f));
+	normals.resize(positions.size(), normalf(0.f));
 
 	vector<mutex> vertexMutexes(positions.size());
 	auto calSWN = [&](Ptr<Triangle> triangle) {
@@ -185,7 +184,7 @@ void TriMesh::GenNormals() {
 		for (size_t i = 0; i < 3; i++) {
 			auto v = triangle->idx[i];
 			vertexMutexes[v].lock();
-			normals[v] += wN.cast_to<Ubpa::normalf>();
+			normals[v] += wN.cast_to<normalf>();
 			vertexMutexes[v].unlock();
 		}
 	};
@@ -198,21 +197,21 @@ void TriMesh::GenTangents() {
 	const size_t vertexNum = positions.size();
 	const size_t triangleCount = indice.size() / 3;
 
-	vector<Ubpa::normalf> tanS(vertexNum);
-	vector<Ubpa::normalf> tanT(vertexNum);
+	vector<normalf> tanS(vertexNum);
+	vector<normalf> tanT(vertexNum);
 	vector<mutex> vertexMutexes(vertexNum);
 	auto calST = [&](Ptr<Triangle> triangle) {
 		auto i1 = triangle->idx[0];
 		auto i2 = triangle->idx[1];
 		auto i3 = triangle->idx[2];
 
-		const Ubpa::pointf3& v1 = positions[i1];
-		const Ubpa::pointf3& v2 = positions[i2];
-		const Ubpa::pointf3& v3 = positions[i3];
+		const pointf3& v1 = positions[i1];
+		const pointf3& v2 = positions[i2];
+		const pointf3& v3 = positions[i3];
 
-		const Ubpa::pointf2& w1 = texcoords[i1];
-		const Ubpa::pointf2& w2 = texcoords[i2];
-		const Ubpa::pointf2& w3 = texcoords[i3];
+		const pointf2& w1 = texcoords[i1];
+		const pointf2& w2 = texcoords[i2];
+		const pointf2& w3 = texcoords[i3];
 
 		float x1 = v2[0] - v1[0];
 		float x2 = v3[0] - v1[0];
@@ -228,9 +227,9 @@ void TriMesh::GenTangents() {
 
 		float denominator = s1 * t2 - s2 * t1;
 		float r = denominator == 0.f ? 1.f : 1.f / denominator;
-		Ubpa::normalf sdir((t2 * x1 - t1 * x2) * r, (t2 * y1 - t1 * y2) * r,
+		normalf sdir((t2 * x1 - t1 * x2) * r, (t2 * y1 - t1 * y2) * r,
 			(t2 * z1 - t1 * z2) * r);
-		Ubpa::normalf tdir((s1 * x2 - s2 * x1) * r, (s1 * y2 - s2 * y1) * r,
+		normalf tdir((s1 * x2 - s2 * x1) * r, (s1 * y2 - s2 * y1) * r,
 			(s1 * z2 - s2 * z1) * r);
 
 		for (size_t i = 0; i < 3; i++) {
@@ -245,12 +244,12 @@ void TriMesh::GenTangents() {
 
 	tangents.resize(vertexNum);
 	auto calTan = [&](size_t i) {
-		const Ubpa::normalf& n = normals[i];
-		const Ubpa::normalf& t = tanS[i];
+		const normalf& n = normals[i];
+		const normalf& t = tanS[i];
 
 		// Gram-Schmidt orthogonalize
 		auto projT = t - n * n.dot(t);
-		tangents[i] = projT.norm2() == 0.f ? BasicSampler::UniformOnSphere().cast_to<Ubpa::normalf>() : projT.normalize();
+		tangents[i] = projT.norm2() == 0.f ? BasicSampler::UniformOnSphere().cast_to<normalf>() : projT.normalize();
 
 		// Calculate handedness
 		tangents[i] *= (n.cross(t).dot(tanT[i]) < 0.0F) ? -1.0F : 1.0F;
@@ -259,28 +258,28 @@ void TriMesh::GenTangents() {
 }
 
 const Ptr<TriMesh> TriMesh::GenCube() {
-	Cube cube;
+	CubeMesh cube;
 	auto cubeMesh = TriMesh::New(cube.GetTriNum(), cube.GetVertexNum(),
 		cube.GetIndexArr(), cube.GetPosArr(), cube.GetNormalArr(), cube.GetTexCoordsArr(), nullptr, ENUM_TYPE::CUBE);
 	return cubeMesh;
 }
 
 const Ptr<TriMesh> TriMesh::GenSphere() {
-	Sphere sphere(50);
+	SphereMesh sphere(50);
 	auto sphereMesh = TriMesh::New(sphere.GetTriNum(), sphere.GetVertexNum(),
 		sphere.GetIndexArr(), sphere.GetPosArr(), sphere.GetNormalArr(), sphere.GetTexCoordsArr(), sphere.GetTangentArr(), ENUM_TYPE::SPHERE);
 	return sphereMesh;
 }
 
 const Ptr<TriMesh> TriMesh::GenPlane() {
-	Plane plane;
+	PlaneMesh plane;
 	auto planeMesh = TriMesh::New(plane.GetTriNum(), plane.GetVertexNum(),
 		plane.GetIndexArr(), plane.GetPosArr(), plane.GetNormalArr(), plane.GetTexCoordsArr(), nullptr, ENUM_TYPE::PLANE);
 	return planeMesh;
 }
 
 const Ptr<TriMesh> TriMesh::GenDisk() {
-	Disk disk(50);
+	DiskMesh disk(50);
 	auto diskMesh = TriMesh::New(disk.GetTriNum(), disk.GetVertexNum(),
 		disk.GetIndexArr(), disk.GetPosArr(), disk.GetNormalArr(), disk.GetTexCoordsArr(), disk.GetTangentArr(), ENUM_TYPE::DISK);
 	return diskMesh;

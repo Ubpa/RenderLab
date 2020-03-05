@@ -4,46 +4,42 @@
 
 #include <qthread.h>
 
-namespace CppUtil {
-	namespace Basic {
-		class Op;
-	}
+namespace Ubpa {
+	class Op;
 
-	namespace QT {
-		class OpThread : public QThread, public Basic::HeapObj {
-			Q_OBJECT
-		public:
-			OpThread(Basic::Ptr<Basic::Op> op = nullptr);
-			
-		public:
-			static const Basic::Ptr<OpThread> New(Basic::Ptr<Basic::Op> op = nullptr) {
-				return Basic::New<OpThread>(op);
-			}
+	class OpThread : public QThread, public HeapObj {
+		Q_OBJECT
+	public:
+		OpThread(Ptr<Op> op = nullptr);
 
-		protected:
-			virtual ~OpThread() = default;
+	public:
+		static const Ptr<OpThread> New(Ptr<Op> op = nullptr) {
+			return Ubpa::New<OpThread>(op);
+		}
 
-		public:
-			void SetOp(Basic::Ptr<Basic::Op> op) { this->op = op; }
-			void Stop() { isStop = true; }
-			bool IsStop() const { return isStop; }
+	protected:
+		virtual ~OpThread() = default;
 
-		signals:
-			void UI_Op(Basic::Ptr<Basic::Op> op);
+	public:
+		void SetOp(Ptr<Op> op) { this->op = op; }
+		void Stop() { isStop = true; }
+		bool IsStop() const { return isStop; }
 
-		public:
-			template<typename T>
-			void UIConnect(T * obj, void (T::* f)(Basic::Ptr<Basic::Op> op)) {
-				connect(this, &OpThread::UI_Op, obj, f);
-			}
-			void UI_Op_Run(Basic::Ptr<Basic::Op> op);
+	signals:
+		void UI_Op(Ptr<Op> op);
 
-		protected:
-			virtual void run();
+	public:
+		template<typename T>
+		void UIConnect(T* obj, void (T::* f)(Ptr<Op> op)) {
+			connect(this, &OpThread::UI_Op, obj, f);
+		}
+		void UI_Op_Run(Ptr<Op> op);
 
-		private:
-			volatile bool isStop;
-			Basic::Ptr<Basic::Op> op;
-		};
-	}
+	protected:
+		virtual void run();
+
+	private:
+		volatile bool isStop;
+		Ptr<Op> op;
+	};
 }

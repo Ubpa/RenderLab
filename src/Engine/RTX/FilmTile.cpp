@@ -1,19 +1,18 @@
 #include "FilmTile.h"
 
-#include <Engine/Filter.h>
+#include <Engine/ImgFilter.h>
 #include <UGM/val.h>
 
-using namespace CppUtil;
-using namespace CppUtil::Basic;
-using namespace CppUtil::Engine;
+using namespace Ubpa;
 
-const Ubpa::bboxi2 FilmTile::SampleFrame() const {
-	auto minP = (frame[0].cast_to<Ubpa::vecf2>() + Ubpa::vecf2(0.5f) - filter->radius).cast_to<Ubpa::pointi2>();
-	auto maxP = (frame[1].cast_to<Ubpa::vecf2>() + filter->radius).cast_to<Ubpa::pointi2>(); // 因为 frame 不包含上边界，所以这里是减去半像素
-	return Ubpa::bboxi2(minP, maxP);
+
+const bboxi2 FilmTile::SampleFrame() const {
+	auto minP = (frame[0].cast_to<vecf2>() + vecf2(0.5f) - filter->radius).cast_to<pointi2>();
+	auto maxP = (frame[1].cast_to<vecf2>() + filter->radius).cast_to<pointi2>(); // 因为 frame 不包含上边界，所以这里是减去半像素
+	return bboxi2(minP, maxP);
 }
 
-void FilmTile::AddSample(const Ubpa::pointf2 & pos, const Ubpa::rgbf & radiance) {
+void FilmTile::AddSample(const pointf2 & pos, const rgbf & radiance) {
 	if (radiance.has_nan())
 		return;
 
@@ -32,7 +31,7 @@ void FilmTile::AddSample(const Ubpa::pointf2 & pos, const Ubpa::rgbf & radiance)
 		for (int y = y0; y < y1; y++) {
 			int idxY = y - frame.minP()[1];
 
-			const auto weight = filter->Evaluate(pos - (Ubpa::vecf2(x, y) + Ubpa::vecf2(0.5f)));
+			const auto weight = filter->Evaluate(pos - (vecf2(x, y) + vecf2(0.5f)));
 			pixels[idxX][idxY].filterWeightSum += weight;
 			pixels[idxX][idxY].weightRadianceSum += weight * radiance;
 		}

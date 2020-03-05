@@ -1,31 +1,29 @@
 #pragma once
 
-#include <Engine/Filter.h>
+#include <Engine/ImgFilter.h>
 
-namespace CppUtil {
-	namespace Engine {
-		class FilterSinc : public Filter {
-		public:
-			FilterSinc(const Ubpa::vecf2 & radius, float tau) : Filter(radius), tau(tau) { }
+namespace Ubpa {
+	class FilterSinc : public ImgFilter {
+	public:
+		FilterSinc(const vecf2& radius, float tau) : ImgFilter(radius), tau(tau) { }
 
-		protected:
-			virtual ~FilterSinc() = default;
+	protected:
+		virtual ~FilterSinc() = default;
 
-		public:
-			const Basic::Ptr<FilterSinc> New(const Ubpa::vecf2 & radius, float tau) {
-				return Basic::New<FilterSinc>(radius, tau);
-			}
+	public:
+		const Ptr<FilterSinc> New(const vecf2& radius, float tau) {
+			return Ubpa::New<FilterSinc>(radius, tau);
+		}
 
-		public:
-			virtual float Evaluate(const Ubpa::pointf2 & p) const override {
-				return WindowSinc(p[0], radius[0]) * WindowSinc(p[1], radius[1]);
-			}
+	public:
+		virtual float Evaluate(const pointf2& p) const override {
+			return WindowSinc(p[0], radius[0]) * WindowSinc(p[1], radius[1]);
+		}
 
-		private:
-			float WindowSinc(float x, float radius) const;
+	private:
+		float WindowSinc(float x, float radius) const;
 
-		private:
-			const float tau;
-		};
-	}
+	private:
+		const float tau;
+	};
 }

@@ -17,9 +17,8 @@
 
 #include <sstream>
 
-using namespace CppUtil;
-using namespace CppUtil::Basic;
-using namespace Ui;
+using namespace Ubpa;
+
 using namespace std;
 
 Grid::Grid(QWidget * page)

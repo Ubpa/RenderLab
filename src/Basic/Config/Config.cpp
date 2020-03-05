@@ -4,7 +4,8 @@
 #include <iostream>
 #include <vector>
 
-using namespace CppUtil::Basic;
+using namespace Ubpa;
+
 using namespace std;
 
 const string syntax =
@@ -102,7 +103,6 @@ bool Config::DecodeLine(const string & data) {
 		return false;
 	}
 
-
 	if (!regex_match(data, result, pattern)) {
 		printf("ERROR : The format is not correct.\nSyntax is : \n%s\n", syntax.c_str());
 		return false;
@@ -184,7 +184,6 @@ const int * Config::GetIntPtr(const std::string & id) const {
 const unsigned int * Config::GetUnsignedIntPtr(const std::string & id) const {
 	return unsignedIntDirectory.GetP(id);
 }
-
 
 bool Config::GetV(const std::string & id, float & val, float defaultVal) const {
 	auto p = GetFloatPtr(id);

@@ -1,10 +1,11 @@
-#include <Basic/Plane.h>
+#include <Basic/ShapeMesh/PlaneMesh.h>
 
-using namespace CppUtil::Basic;
+using namespace Ubpa;
+
 using namespace std;
 
-Plane::Plane()
-	: Shape(4, 2) {
+PlaneMesh::PlaneMesh()
+	: ShapeMesh(4, 2) {
 	const float vertexData[32] = {
 		// positions          // normals           // texture coords
 		-0.5f,  0.0f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f, //left front
@@ -32,26 +33,26 @@ Plane::Plane()
 	indexArr[1] = { indice[3],indice[4],indice[5] };
 }
 
-float * Plane::GetNormalArr() {
+float * PlaneMesh::GetNormalArr() {
 	return normalArr.front().data();
 }
 
-float * Plane::GetTexCoordsArr() {
+float * PlaneMesh::GetTexCoordsArr() {
 	return texCoordsArr.front().data();
 }
 
-unsigned * Plane::GetIndexArr() {
+unsigned * PlaneMesh::GetIndexArr() {
 	return indexArr.front().data();
 }
 
-unsigned Plane::GetNormalArrSize() {
+unsigned PlaneMesh::GetNormalArrSize() {
 	return static_cast<unsigned>(normalArr.size() * 3 * sizeof(float));
 }
 
-unsigned Plane::GetTexCoordsArrSize() {
+unsigned PlaneMesh::GetTexCoordsArrSize() {
 	return static_cast<unsigned>(texCoordsArr.size() * 2 * sizeof(float));
 }
 
-unsigned Plane::GetIndexArrSize() {
+unsigned PlaneMesh::GetIndexArrSize() {
 	return static_cast<unsigned>(indexArr.size() * 3 * sizeof(unsigned));
 }

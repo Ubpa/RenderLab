@@ -18,9 +18,8 @@
 
 #include <qdebug.h>
 
-using namespace CppUtil::QT;
-using namespace CppUtil::OpenGL;
-using namespace CppUtil::Basic;
+using namespace Ubpa;
+
 using namespace Define;
 using namespace std;
 

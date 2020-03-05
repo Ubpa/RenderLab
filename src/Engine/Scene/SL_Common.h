@@ -177,7 +177,7 @@ namespace str {
 		const char * const material = "material";
 	}
 
-	// ------------- Ubpa::transformf
+	// ------------- transformf
 
 	namespace CmptTransform {
 		const char * const type = "CmptTransform";

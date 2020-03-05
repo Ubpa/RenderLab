@@ -5,48 +5,46 @@
 
 #include <Engine/Ray.h>
 
-namespace CppUtil {
-	namespace Engine {
-		class VisibilityChecker final : public Intersector {
-		public:
-			struct Rst {
-				friend class VisibilityChecker;
+namespace Ubpa {
+	class VisibilityChecker final : public Intersector {
+	public:
+		struct Rst {
+			friend class VisibilityChecker;
 
-				bool IsIntersect() const { return isIntersect; }
-
-			private:
-				bool isIntersect;
-			};
-
-		public:
-			VisibilityChecker();
-
-		public:
-			static const Basic::Ptr<VisibilityChecker> New() { return Basic::New<VisibilityChecker>(); }
-
-		protected:
-			virtual ~VisibilityChecker() = default;
-
-		public:
-			void Init(const Ray & ray, float tMax);
-
-			Rst & GetRst() { return rst; }
+			bool IsIntersect() const { return isIntersect; }
 
 		private:
-			// 设置 rst，如果相交，则会修改 ray.tMax
-			void Visit(Basic::Ptr<BVHAccel> bvhAccel);
-			void Visit(Basic::Ptr<Sphere> sphere);
-			void Visit(Basic::Ptr<Plane> plane);
-			void Visit(Basic::Ptr<Triangle> triangle);
-			void Visit(Basic::Ptr<Disk> disk);
-			void Visit(Basic::Ptr<Capsule> capsule);
-
-		private:
-			bool Intersect(const Ubpa::bboxf3 & bbox, const Ubpa::valf3 & invDir) const;
-
-		private:
-			Ray ray;
-			Rst rst;
+			bool isIntersect;
 		};
-	}
+
+	public:
+		VisibilityChecker();
+
+	public:
+		static const Ptr<VisibilityChecker> New() { return Ubpa::New<VisibilityChecker>(); }
+
+	protected:
+		virtual ~VisibilityChecker() = default;
+
+	public:
+		void Init(const Ray& ray, float tMax);
+
+		Rst& GetRst() { return rst; }
+
+	private:
+		// 设置 rst，如果相交，则会修改 ray.tMax
+		void Visit(Ptr<BVHAccel> bvhAccel);
+		void Visit(Ptr<Sphere> sphere);
+		void Visit(Ptr<Plane> plane);
+		void Visit(Ptr<Triangle> triangle);
+		void Visit(Ptr<Disk> disk);
+		void Visit(Ptr<Capsule> capsule);
+
+	private:
+		bool Intersect(const bboxf3& bbox, const valf3& invDir) const;
+
+	private:
+		Ray ray;
+		Rst rst;
+	};
 }

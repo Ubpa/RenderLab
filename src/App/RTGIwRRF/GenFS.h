@@ -37,22 +37,22 @@ namespace App {
 
 		static const Matf LoadMatrix(const std::string & path);
 
-		static const CppUtil::Basic::Ptr<Layer> LoadLayer(const std::string & path, const Connection & connection, const Activation & activation);
+		static const Ptr<Layer> LoadLayer(const std::string & path, const Connection & connection, const Activation & activation);
 
-		static const CppUtil::Basic::Ptr<Model> LoadModel(
+		static const Ptr<Model> LoadModel(
 			const int ID,
 			const int secID,
 			const std::string & dir,
 			const std::vector<Connection> & connections,
 			const std::vector<Activation> & activations);
 
-		static const CppUtil::Basic::Ptr<ModelKDTree> LoadModelKDTree(
+		static const Ptr<ModelKDTree> LoadModelKDTree(
 			const int id,
 			const std::string & dir,
 			const std::vector<Connection> & connections,
 			const std::vector<Activation> & activations);
 
-		static const CppUtil::Basic::Ptr<ModelKDTree> LoadModelKDTreeFromJson(
+		static const Ptr<ModelKDTree> LoadModelKDTreeFromJson(
 			const int id,
 			const std::string & dir,
 			rapidjson::Value::MemberIterator begin,

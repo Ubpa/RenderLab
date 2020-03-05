@@ -2,7 +2,7 @@
 
 #include <Basic/Visitor.h>
 
-using namespace CppUtil::Basic;
+using namespace Ubpa;
 
 void Element::Accept(Ptr<Visitor> visitor) {
 	visitor->Visit(This<Element>());

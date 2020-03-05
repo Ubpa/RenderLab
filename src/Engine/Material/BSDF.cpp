@@ -4,12 +4,10 @@
 
 #include <Basic/Math.h>
 
-using namespace CppUtil;
-using namespace CppUtil::Basic;
-using namespace CppUtil::Engine;
+using namespace Ubpa;
 
-const Ubpa::normalf BSDF::TangentSpaceNormalToWorld(const Ubpa::normalf & worldTangent, const Ubpa::normalf & worldNormal, const Ubpa::normalf & tangentSpaceNormal) {
-	const Ubpa::normalf bitangent = worldTangent.cross(worldNormal);
-	Ubpa::matf3 TBN(worldTangent.cast_to<Ubpa::vecf3>(), bitangent.cast_to<Ubpa::vecf3>(), worldNormal.cast_to<Ubpa::vecf3>());
-	return (TBN * tangentSpaceNormal.cast_to<Ubpa::vecf3>()).normalize().cast_to<Ubpa::normalf>();
+const normalf BSDF::TangentSpaceNormalToWorld(const normalf & worldTangent, const normalf & worldNormal, const normalf & tangentSpaceNormal) {
+	const normalf bitangent = worldTangent.cross(worldNormal);
+	matf3 TBN(worldTangent.cast_to<vecf3>(), bitangent.cast_to<vecf3>(), worldNormal.cast_to<vecf3>());
+	return (TBN * tangentSpaceNormal.cast_to<vecf3>()).normalize().cast_to<normalf>();
 }

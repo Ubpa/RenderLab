@@ -9,16 +9,16 @@
 namespace App {
 	class Layer;
 
-	class Model : public CppUtil::Basic::HeapObj {
+	class Model : public HeapObj {
 	public:
 		explicit Model(const std::string & name = "",
 			const int inputDim = -1, const int outputDim = -1)
 			: name(name), inputDim(inputDim), outputDim(outputDim) { }
 
 	public:
-		static const CppUtil::Basic::Ptr<Model> New(const std::string & name = "",
+		static const Ptr<Model> New(const std::string & name = "",
 			const int inputDim = -1, const int outputDim = -1) {
-			return CppUtil::Basic::New<Model>(name, inputDim, outputDim);
+			return New<Model>(name, inputDim, outputDim);
 		}
 
 	protected:
@@ -26,18 +26,18 @@ namespace App {
 
 	public:
 		const std::string GetFuncName() const { return name; }
-		const std::vector<CppUtil::Basic::PtrC<Layer>> & GetLayers() const { return layers; }
+		const std::vector<PtrC<Layer>> & GetLayers() const { return layers; }
 		int GetInputDim() const { return inputDim; }
 		int GetOutputDim() const { return outputDim; }
-		int GetIDof(CppUtil::Basic::PtrC<Layer> layer) const;
+		int GetIDof(PtrC<Layer> layer) const;
 		bool IsValid() const;
 
 	public:
-		bool AddLayer(CppUtil::Basic::PtrC<Layer> layer) const;
+		bool AddLayer(PtrC<Layer> layer) const;
 		const std::string GenFunc(bool genLayers = true) const;
 
 	private:
-		mutable std::vector<CppUtil::Basic::PtrC<Layer>> layers;
+		mutable std::vector<PtrC<Layer>> layers;
 
 		int inputDim;
 		int outputDim;

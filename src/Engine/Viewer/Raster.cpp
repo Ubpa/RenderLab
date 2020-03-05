@@ -21,10 +21,7 @@
 #include <Qt/RawAPI_OGLW.h>
 #include <Qt/RawAPI_Define.h>
 
-using namespace CppUtil::Basic;
-using namespace CppUtil::QT;
-using namespace CppUtil::OpenGL;
-using namespace CppUtil::Engine;
+using namespace Ubpa;
 
 const float Raster::lightNear = 0.01f;
 const float Raster::lightFar = 25.f;
@@ -129,7 +126,7 @@ void Raster::UpdateUBO_PointLights() {
 
 		pointLight2idx[pointLight] = pointLightIdx;
 
-		Ubpa::pointf3 position = cmptLight->GetSObj()->GetWorldPos();
+		pointf3 position = cmptLight->GetSObj()->GetWorldPos();
 
 		int base = 16 + 32 * pointLightIdx;
 		glBufferSubData(GL_UNIFORM_BUFFER, base +  0, 12, position.data());
@@ -155,7 +152,7 @@ void Raster::UpdateUBO_DirectionalLights() {
 		directionalLight2idx[directionalLight] = directionalLightIdx;
 
 		// normalized, point to light
-		Ubpa::vecf3 dir = -(cmptLight->GetSObj()->GetLocalToWorldMatrix() * Ubpa::vecf3(0, -1, 0)).normalize();
+		vecf3 dir = -(cmptLight->GetSObj()->GetLocalToWorldMatrix() * vecf3(0, -1, 0)).normalize();
 
 		int base = 16 + 128 * directionalLightIdx;
 		auto lightL = directionalLight->intensity * directionalLight->color;
@@ -182,8 +179,8 @@ void Raster::UpdateUBO_SpotLights() {
 		spotLight2idx[spotLight] = spotLightIdx;
 
 		const auto l2w = cmptLight->GetSObj()->GetLocalToWorldMatrix();
-		Ubpa::pointf3 pos = l2w * Ubpa::pointf3(0.f);
-		Ubpa::vecf3 dir = (l2w * Ubpa::vecf3(0, -1, 0)).normalize();
+		pointf3 pos = l2w * pointf3(0.f);
+		vecf3 dir = (l2w * vecf3(0, -1, 0)).normalize();
 		auto cosHalfAngle = spotLight->CosHalfAngle();
 		auto cosFalloffAngle = spotLight->CosFalloffAngle();
 
@@ -207,7 +204,7 @@ void Raster::UpdateUBO_Environment() {
 
 	auto environment = scene->GetInfiniteAreaLight();
 	if (!environment) {
-		auto color = Ubpa::rgbf(0.f);
+		auto color = rgbf(0.f);
 		float intensity = 0;
 		bool haveSkybox = false;
 		bool haveEnvironment = false;
@@ -240,7 +237,7 @@ void Raster::UpdateUBO_SphereLights() {
 
 		sphereLight2idx[sphereLight] = sphereLightIdx;
 
-		Ubpa::pointf3 position = cmptLight->GetSObj()->GetWorldPos();
+		pointf3 position = cmptLight->GetSObj()->GetWorldPos();
 
 		int base = 16 + 32 * sphereLightIdx;
 		glBufferSubData(GL_UNIFORM_BUFFER, base, 12, position.data());
@@ -266,8 +263,8 @@ void Raster::UpdateUBO_DiskLights() {
 		diskLight2idx[diskLight] = diskLightIdx;
 
 		const auto l2w = cmptLight->GetSObj()->GetLocalToWorldMatrix();
-		auto pos = l2w * Ubpa::pointf3(0.f);
-		auto dir = l2w * Ubpa::normalf(0, 1, 0);
+		auto pos = l2w * pointf3(0.f);
+		auto dir = l2w * normalf(0, 1, 0);
 
 		int base = 16 + 48 * diskLightIdx;
 		glBufferSubData(GL_UNIFORM_BUFFER, base, 12, pos.data());
@@ -294,9 +291,9 @@ void Raster::UpdateUBO_AreaLights() {
 		areaLight2idx[areaLight] = areaLightIdx;
 
 		const auto l2w = cmptLight->GetSObj()->GetLocalToWorldMatrix();
-		auto pos = l2w * Ubpa::pointf3(0.f);
-		auto dir = (l2w * Ubpa::normalf(0, 1, 0)).normalize();
-		auto horizontal = (l2w * Ubpa::normalf(1, 0, 0)).normalize();
+		auto pos = l2w * pointf3(0.f);
+		auto dir = (l2w * normalf(0, 1, 0)).normalize();
+		auto horizontal = (l2w * normalf(1, 0, 0)).normalize();
 
 		int base = 16 + 64 * areaLightIdx;
 		glBufferSubData(GL_UNIFORM_BUFFER, base, 12, pos.data());
@@ -325,10 +322,10 @@ void Raster::UpdateUBO_CapsuleLights() {
 		capsuleLight2idx[capsuleLight] = capsuleLightIdx;
 
 		const auto l2w = cmptLight->GetSObj()->GetLocalToWorldMatrix();
-		auto midPos = l2w * Ubpa::pointf3(0.f);
-		auto up = (l2w * Ubpa::normalf(0, 1, 0)).normalize();
-		auto p0 = midPos + 0.5f * capsuleLight->height * up.cast_to<Ubpa::vecf3>();
-		auto p1 = midPos - 0.5f * capsuleLight->height * up.cast_to<Ubpa::vecf3>();
+		auto midPos = l2w * pointf3(0.f);
+		auto up = (l2w * normalf(0, 1, 0)).normalize();
+		auto p0 = midPos + 0.5f * capsuleLight->height * up.cast_to<vecf3>();
+		auto p1 = midPos - 0.5f * capsuleLight->height * up.cast_to<vecf3>();
 		float height = (p1 - p0).norm();
 
 		int base = 16 + 48 * capsuleLightIdx;

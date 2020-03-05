@@ -13,7 +13,7 @@
 
 #include <map>
 
-namespace CppUtil {
+namespace Ubpa {
 	namespace Basic {
 		class Op;
 	}
@@ -43,9 +43,9 @@ namespace App{
 		virtual ~RTGIwRRF();
 
 	public:
-		CppUtil::Basic::Ptr<CppUtil::Engine::Scene> GetScene()const { return scene; }
+		Ptr<Scene> GetScene()const { return scene; }
 
-		void UI_Op(CppUtil::Basic::Ptr<CppUtil::Basic::Op> op);
+		void UI_Op(Ptr<Op> op);
 
 	private:
 		void Init();
@@ -55,12 +55,12 @@ namespace App{
 
 	private:
 		Ui::RTGIwRRFClass ui;
-		CppUtil::Basic::Ptr<CppUtil::QT::PaintImgOpCreator::PaintImgOp> paintImgOp;
-		CppUtil::Basic::Ptr<CppUtil::Engine::Scene> scene;
-		CppUtil::Basic::Ptr<App::RRF_Raster> rrfRaster;
-		CppUtil::Basic::Ptr<CppUtil::Engine::Roamer> roamer;
+		Ptr<PaintImgOpCreator::PaintImgOp> paintImgOp;
+		Ptr<Scene> scene;
+		Ptr<App::RRF_Raster> rrfRaster;
+		Ptr<Roamer> roamer;
 		QTimer * timer;
-		CppUtil::Basic::Timer timer4fps;
+		Timer timer4fps;
 		int totalFrame;
 		int fps;
 	};

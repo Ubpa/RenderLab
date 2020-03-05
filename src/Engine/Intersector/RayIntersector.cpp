@@ -20,9 +20,8 @@
 
 #include <stack>
 
-using namespace CppUtil;
-using namespace CppUtil::Engine;
-using namespace CppUtil::Basic;
+using namespace Ubpa;
+
 using namespace std;
 
 RayIntersector::RayIntersector() {
@@ -36,14 +35,14 @@ RayIntersector::RayIntersector() {
 	RegMemberFunc<Capsule>(&RayIntersector::Visit);
 }
 
-void RayIntersector::Init(ERay * ray) {
+void RayIntersector::Init(Ray * ray) {
 	this->ray = ray;
 
 	rst.closestSObj = nullptr;
 	rst.isIntersect = false;
 }
 
-bool RayIntersector::Intersect(const Ubpa::bboxf3 & bbox, const Ubpa::valf3 & invDir) const {
+bool RayIntersector::Intersect(const bboxf3 & bbox, const valf3 & invDir) const {
 	const auto & origin = ray->o;
 
 	float tMin = ray->tMin;
@@ -162,7 +161,7 @@ void RayIntersector::Visit(Ptr<Sphere> sphere) {
 	const auto & dir = ray->d;
 	const auto & origin = ray->o;
 
-	const Ubpa::vecf3 oc = origin.cast_to<Ubpa::vecf3>();
+	const vecf3 oc = origin.cast_to<vecf3>();
 	const float a = dir.dot(dir);
 	const float b = oc.dot(dir);
 	const float c = oc.dot(oc) - 1;
@@ -189,7 +188,7 @@ void RayIntersector::Visit(Ptr<Sphere> sphere) {
 
 	rst.isIntersect = true;
 	ray->tMax = t;
-	rst.n = ray->at(t).cast_to<Ubpa::normalf>();
+	rst.n = ray->at(t).cast_to<normalf>();
 	rst.texcoord = Sphere::TexcoordOf(rst.n);
 	rst.tangent = Sphere::TangentOf(rst.n);
 }
@@ -209,10 +208,10 @@ void RayIntersector::Visit(Ptr<Plane> plane) {
 
 	rst.isIntersect = true;
 	ray->tMax = t;
-	//rst.n = Ubpa::normalf(0, -Math::sgn(ray->d[1]), 0);
-	rst.n = Ubpa::normalf(0, 1, 0);
-	rst.texcoord = Ubpa::pointf2(pos[0] + 0.5f, pos[2] + 0.5f);
-	rst.tangent = Ubpa::normalf(1, 0, 0);
+	//rst.n = normalf(0, -Math::sgn(ray->d[1]), 0);
+	rst.n = normalf(0, 1, 0);
+	rst.texcoord = pointf2(pos[0] + 0.5f, pos[2] + 0.5f);
+	rst.tangent = normalf(1, 0, 0);
 }
 
 void RayIntersector::Visit(Ptr<Triangle> triangle) {
@@ -336,17 +335,17 @@ void RayIntersector::Visit(Ptr<Disk> disk) {
 	}
 
 	const auto pos = ray->at(t);
-	if (pos.cast_to<Ubpa::vecf3>().norm2() >= 1.f) {
+	if (pos.cast_to<vecf3>().norm2() >= 1.f) {
 		rst.isIntersect = false;
 		return;
 	}
 
 	rst.isIntersect = true;
 	ray->tMax = t;
-	//rst.n = Ubpa::normalf(0, -Math::sgn(ray->d[1]), 0);
-	rst.n = Ubpa::normalf(0, 1, 0);
-	rst.texcoord = Ubpa::pointf2((1+pos[0])/2, (1+pos[2])/2);
-	rst.tangent = Ubpa::normalf(1, 0, 0);
+	//rst.n = normalf(0, -Math::sgn(ray->d[1]), 0);
+	rst.n = normalf(0, 1, 0);
+	rst.texcoord = pointf2((1+pos[0])/2, (1+pos[2])/2);
+	rst.tangent = normalf(1, 0, 0);
 }
 
 void RayIntersector::Visit(Ptr<Capsule> capsule) {
@@ -380,16 +379,16 @@ void RayIntersector::Visit(Ptr<Capsule> capsule) {
 
 		rst.isIntersect = true;
 		ray->tMax = t;
-		rst.n = Ubpa::normalf(pos[0], 0, pos[2]);
-		rst.texcoord = Sphere::TexcoordOf(pos.cast_to<Ubpa::normalf>());
-		rst.tangent = Sphere::TangentOf(pos.cast_to<Ubpa::normalf>());
+		rst.n = normalf(pos[0], 0, pos[2]);
+		rst.texcoord = Sphere::TexcoordOf(pos.cast_to<normalf>());
+		rst.tangent = Sphere::TangentOf(pos.cast_to<normalf>());
 		return;
 	} while (false);
 
 	float a = d.dot(d);
 
 	do{// …œ∞Î«Ú
-		Ubpa::pointf3 center(0, halfH, 0);
+		pointf3 center(0, halfH, 0);
 		auto oc = o - center;
 		float b = d.dot(oc);
 		float c = oc.norm2() - 1;
@@ -410,14 +409,14 @@ void RayIntersector::Visit(Ptr<Capsule> capsule) {
 		
 		rst.isIntersect = true;
 		ray->tMax = t;
-		rst.n = (pos - center).cast_to<Ubpa::normalf>();
-		rst.texcoord = Sphere::TexcoordOf(pos.cast_to<Ubpa::normalf>());
-		rst.tangent = Sphere::TangentOf(pos.cast_to<Ubpa::normalf>());
+		rst.n = (pos - center).cast_to<normalf>();
+		rst.texcoord = Sphere::TexcoordOf(pos.cast_to<normalf>());
+		rst.tangent = Sphere::TangentOf(pos.cast_to<normalf>());
 		return;
 	} while (false);
 
 	do {// œ¬∞Î«Ú
-		Ubpa::pointf3 center(0, -halfH, 0);
+		pointf3 center(0, -halfH, 0);
 		auto oc = o - center;
 		float b = d.dot(oc);
 		float c = oc.norm2() - 1;
@@ -438,9 +437,9 @@ void RayIntersector::Visit(Ptr<Capsule> capsule) {
 
 		rst.isIntersect = true;
 		ray->tMax = t;
-		rst.n = (pos - center).cast_to<Ubpa::normalf>();
-		rst.texcoord = Sphere::TexcoordOf(pos.cast_to<Ubpa::normalf>());
-		rst.tangent = Sphere::TangentOf(pos.cast_to<Ubpa::normalf>());
+		rst.n = (pos - center).cast_to<normalf>();
+		rst.texcoord = Sphere::TexcoordOf(pos.cast_to<normalf>());
+		rst.tangent = Sphere::TangentOf(pos.cast_to<normalf>());
 		return;
 	} while (false);
 

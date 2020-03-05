@@ -5,9 +5,8 @@
 #include <cstdlib>
 #include <cstdarg>
 
-using namespace CppUtil::Basic;
+using namespace Ubpa;
 using namespace std;
-
 
 ArgManager::ArgManager(int argc, char** argv) {
 	string tag;

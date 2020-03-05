@@ -5,60 +5,58 @@
 #include <vector>
 #include <string>
 
-namespace CppUtil {
-	namespace Basic {
-		template<typename ValT>
-		class CSVSaver {
-		public:
-			CSVSaver(const std::vector<std::string> & keys)
-				: keys(keys) { }
-			
-			size_t GetKeyLength() const {
-				return keys.size();
-			}
+namespace Ubpa {
 
-			bool AddLine(const std::vector<ValT> & lineValues);
-			
-			bool Save(const std::string & path) const;
+	template<typename ValT>
+	class CSVSaver {
+	public:
+		CSVSaver(const std::vector<std::string>& keys)
+			: keys(keys) { }
 
-		public:
-			static std::string GetPlaceholder();
-
-		private:
-			std::vector<std::string> keys;
-			std::vector<std::vector<ValT>> values;
-		};
-
-		template <typename ValT>
-		bool CSVSaver<ValT>::AddLine(const std::vector<ValT> & lineValues) {
-			if (lineValues.size() != keys.size())
-				return false;
-
-			values.push_back(lineValues);
-			return true;
+		size_t GetKeyLength() const {
+			return keys.size();
 		}
 
-		template <typename ValT>
-		bool CSVSaver<ValT>::Save(const std::string & path) const {
-			File file(path, File::WRITE);
-			if (!file.IsValid())
-				return false;
+		bool AddLine(const std::vector<ValT>& lineValues);
 
-			for (int i = 0; i < keys.size() - 1; i++)
-				file.Printf("%s,", keys[i].c_str());
+		bool Save(const std::string& path) const;
 
-			file.Printf("%s\n", keys.back().c_str());
-			
-			std::string format = GetPlaceholder();
-			for (auto & lineVals : values) {
-				for(int i=0;i<lineVals.size()-1;i++)
-					file.Printf((format+",").c_str(), lineVals[i]);
+	public:
+		static std::string GetPlaceholder();
 
-				file.Printf((format+"\n").c_str(), lineVals.back());
-			}
+	private:
+		std::vector<std::string> keys;
+		std::vector<std::vector<ValT>> values;
+	};
 
-			return true;
+	template <typename ValT>
+	bool CSVSaver<ValT>::AddLine(const std::vector<ValT>& lineValues) {
+		if (lineValues.size() != keys.size())
+			return false;
+
+		values.push_back(lineValues);
+		return true;
+	}
+
+	template <typename ValT>
+	bool CSVSaver<ValT>::Save(const std::string& path) const {
+		File file(path, File::WRITE);
+		if (!file.IsValid())
+			return false;
+
+		for (int i = 0; i < keys.size() - 1; i++)
+			file.Printf("%s,", keys[i].c_str());
+
+		file.Printf("%s\n", keys.back().c_str());
+
+		std::string format = GetPlaceholder();
+		for (auto& lineVals : values) {
+			for (int i = 0; i < lineVals.size() - 1; i++)
+				file.Printf((format + ",").c_str(), lineVals[i]);
+
+			file.Printf((format + "\n").c_str(), lineVals.back());
 		}
 
+		return true;
 	}
 }

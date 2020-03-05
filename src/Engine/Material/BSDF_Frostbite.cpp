@@ -4,22 +4,21 @@
 #include <Basic/Math.h>
 #include <Basic/CosineWeightedHemisphereSampler3D.h>
 
-using namespace CppUtil;
-using namespace CppUtil::Engine;
-using namespace CppUtil::Basic;
+using namespace Ubpa;
+
 using namespace std;
 
-const Ubpa::rgbf BSDF_Frostbite::Fr(const Ubpa::normalf & w, const Ubpa::normalf & h, const Ubpa::rgbf & albedo, float metallic) {
+const rgbf BSDF_Frostbite::Fr(const normalf & w, const normalf & h, const rgbf & albedo, float metallic) {
 	// Schlick’s approximation
 	// use a Spherical Gaussian approximation to replace the power.
 	//  slightly more efficient to calculate and the difference is imperceptible
 
-	const Ubpa::rgbf F0 = Ubpa::rgbf(0.04f).lerp(albedo, metallic);
+	const rgbf F0 = rgbf(0.04f).lerp(albedo, metallic);
 	float HoWi = h.dot(w);
-	return F0 + pow(2.0f, (-5.55473f * HoWi - 6.98316f) * HoWi) * (Ubpa::rgbf(1.0f) - F0);
+	return F0 + pow(2.0f, (-5.55473f * HoWi - 6.98316f) * HoWi) * (rgbf(1.0f) - F0);
 }
 
-const float BSDF_Frostbite::Fr_DisneyDiffuse(const Ubpa::normalf & wo, const Ubpa::normalf & wi, float linearRoughness) {
+const float BSDF_Frostbite::Fr_DisneyDiffuse(const normalf & wo, const normalf & wi, float linearRoughness) {
 	auto h = (wo + wi).normalize();
 	float HoWi = h.dot(wi);
 	float HoWi2 = HoWi * HoWi;
@@ -36,7 +35,7 @@ const float BSDF_Frostbite::Fr_DisneyDiffuse(const Ubpa::normalf & wo, const Ubp
 	return lightScatter * viewScatter * energyFactor;
 }
 
-const Ubpa::rgbf BSDF_Frostbite::F(const Ubpa::normalf & wo, const Ubpa::normalf & wi, const Ubpa::pointf2 & texcoord) {
+const rgbf BSDF_Frostbite::F(const normalf & wo, const normalf & wi, const pointf2 & texcoord) {
 	auto albedo = GetAlbedo(texcoord);
 	auto metallic = GetMetallic(texcoord);
 	auto roughness = GetRoughness(texcoord);
@@ -48,14 +47,14 @@ const Ubpa::rgbf BSDF_Frostbite::F(const Ubpa::normalf & wo, const Ubpa::normalf
 	auto wh = (wo + wi).normalize();
 
 	// renormalized Disney
-	auto diffuse = albedo / Ubpa::PI<float> * Fr_DisneyDiffuse(wo, wi, roughness);
+	auto diffuse = albedo / PI<float> * Fr_DisneyDiffuse(wo, wi, roughness);
 
 	auto D = ggx.D(wh);
 	auto G = ggx.G(wo, wi, wh);
 	auto F = Fr(wo, wh, albedo, metallic);
 	float denominator = 4.f * abs(SurfCoord::CosTheta(wo) * SurfCoord::CosTheta(wi));
 	if (denominator == 0) // 极少发生。所以放在这里虽然性能不是最优，但逻辑顺畅些
-		return Ubpa::rgbf(0.f);
+		return rgbf(0.f);
 	auto specular = D * G * F / denominator;
 
 	auto rst = (1 - metallic) * diffuse + specular;
@@ -64,7 +63,7 @@ const Ubpa::rgbf BSDF_Frostbite::F(const Ubpa::normalf & wo, const Ubpa::normalf
 }
 
 // probability density function
-float BSDF_Frostbite::PDF(const Ubpa::normalf & wo, const Ubpa::normalf & wi, const Ubpa::pointf2 & texcoord) {
+float BSDF_Frostbite::PDF(const normalf & wo, const normalf & wi, const pointf2 & texcoord) {
 	auto roughness = GetRoughness(texcoord);
 	float perpRoughness = roughness * roughness;
 	ggx.SetAlpha(perpRoughness);
@@ -85,28 +84,28 @@ float BSDF_Frostbite::PDF(const Ubpa::normalf & wo, const Ubpa::normalf & wi, co
 
 // PD is probability density
 // return albedo
-const Ubpa::rgbf BSDF_Frostbite::Sample_f(const Ubpa::normalf & wo, const Ubpa::pointf2 & texcoord, Ubpa::normalf & wi, float & PD) {
+const rgbf BSDF_Frostbite::Sample_f(const normalf & wo, const pointf2 & texcoord, normalf & wi, float & PD) {
 	auto roughness = GetRoughness(texcoord);
 	float perpRoughness = roughness * roughness;
 	ggx.SetAlpha(perpRoughness);
 
 	// 根据 metallic 来分别采样
-	Ubpa::normalf wh;
+	normalf wh;
 	auto metallic = GetMetallic(texcoord);
 	auto pSpecular = 1 / (2 - metallic);
 	if (Math::Rand_F() < pSpecular) {
 		wh = ggx.Sample_wh();
-		wi = Ubpa::normalf::reflect(-wo, wh);
+		wi = normalf::reflect(-wo, wh);
 	}
 	else {
 		CosineWeightedHemisphereSampler3D sampler;
-		wi = sampler.GetSample().cast_to<Ubpa::normalf>();
+		wi = sampler.GetSample().cast_to<normalf>();
 		wh = (wo + wi).normalize();
 	}
 
 	if (SurfCoord::CosTheta(wi) <= 0) {
 		PD = 0;
-		return Ubpa::rgbf(0.f);
+		return rgbf(0.f);
 	}
 
 	float pdDiffuse = SurfCoord::CosTheta(wi) * Math::INV_PI;
@@ -122,14 +121,14 @@ const Ubpa::rgbf BSDF_Frostbite::Sample_f(const Ubpa::normalf & wo, const Ubpa::
 	float denominator = 4.f * abs(SurfCoord::CosTheta(wo) * SurfCoord::CosTheta(wi));
 	if (denominator == 0) {// 极少发生。所以放在这里虽然性能不是最优，但逻辑顺畅些
 		PD = 0;
-		wi = Ubpa::normalf(0.f);
-		return Ubpa::rgbf(0.f);
+		wi = normalf(0.f);
+		return rgbf(0.f);
 	}
 
 	auto specular = D * G * F / denominator;
 
 	auto kS = F;
-	auto kD = (1 - metallic) * (Ubpa::rgbf(1.f) - kS);
+	auto kD = (1 - metallic) * (rgbf(1.f) - kS);
 
 	auto rst = kD * diffuse + specular;
 
@@ -137,38 +136,38 @@ const Ubpa::rgbf BSDF_Frostbite::Sample_f(const Ubpa::normalf & wo, const Ubpa::
 	return rst;
 }
 
-void BSDF_Frostbite::ChangeNormal(const Ubpa::pointf2 & texcoord, const Ubpa::normalf & tangent, Ubpa::normalf & normal) const {
+void BSDF_Frostbite::ChangeNormal(const pointf2 & texcoord, const normalf & tangent, normalf & normal) const {
 	if (!normalTexture || !normalTexture->IsValid())
 		return;
 
 	const auto rgb = normalTexture->Sample(texcoord, Image::Mode::BILINEAR).to_rgb();
-	Ubpa::normalf tangentSpaceNormal = 2.f * rgb.cast_to<Ubpa::normalf>() - Ubpa::normalf(1.f);
+	normalf tangentSpaceNormal = 2.f * rgb.cast_to<normalf>() - normalf(1.f);
 
 	normal = TangentSpaceNormalToWorld(tangent, normal, tangentSpaceNormal);
 }
 
-const Ubpa::rgbf BSDF_Frostbite::GetAlbedo(const Ubpa::pointf2 & texcoord) const {
+const rgbf BSDF_Frostbite::GetAlbedo(const pointf2 & texcoord) const {
 	if (!albedoTexture || !albedoTexture->IsValid())
 		return colorFactor;
 
 	return colorFactor * albedoTexture->Sample(texcoord, Image::Mode::BILINEAR).to_rgb();
 }
 
-float BSDF_Frostbite::GetMetallic(const Ubpa::pointf2 & texcoord) const {
+float BSDF_Frostbite::GetMetallic(const pointf2 & texcoord) const {
 	if (!metallicTexture || !metallicTexture->IsValid())
 		return metallicFactor;
 
 	return metallicFactor * metallicTexture->Sample(texcoord, Image::Mode::BILINEAR)[0];
 }
 
-float BSDF_Frostbite::GetRoughness(const Ubpa::pointf2 & texcoord) const {
+float BSDF_Frostbite::GetRoughness(const pointf2 & texcoord) const {
 	if (!roughnessTexture || !roughnessTexture->IsValid())
 		return roughnessFactor;
 
 	return roughnessFactor * roughnessTexture->Sample(texcoord, Image::Mode::BILINEAR)[0];
 }
 
-float BSDF_Frostbite::GetAO(const Ubpa::pointf2 & texcoord) const {
+float BSDF_Frostbite::GetAO(const pointf2 & texcoord) const {
 	if (!aoTexture || !aoTexture->IsValid())
 		return 1.0f;
 

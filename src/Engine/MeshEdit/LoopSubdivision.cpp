@@ -4,13 +4,12 @@
 #include <Basic/Math.h>
 #include <Basic/Parallel.h>
 
-using namespace CppUtil;
-using namespace CppUtil::Basic;
-using namespace CppUtil::Engine;
+using namespace Ubpa;
+
 using namespace std;
 using namespace Ubpa;
 
-LoopSubdivision::LoopSubdivision(Basic::Ptr<TriMesh> triMesh)
+LoopSubdivision::LoopSubdivision(Ptr<TriMesh> triMesh)
 	: heMesh(make_shared<HEMesh<V>>()) {
 	Init(triMesh);
 }
@@ -20,7 +19,7 @@ void LoopSubdivision::Clear() {
 	heMesh->Clear();
 }
 
-bool LoopSubdivision::Init(Basic::Ptr<TriMesh> triMesh) {
+bool LoopSubdivision::Init(Ptr<TriMesh> triMesh) {
 	Clear();
 	if (triMesh == nullptr)
 		return true;
@@ -46,7 +45,7 @@ bool LoopSubdivision::Init(Basic::Ptr<TriMesh> triMesh) {
 
 	for (int i = 0; i < nV; i++) {
 		auto v = heMesh->Vertices().at(i);
-		v->pos = triMesh->GetPositions()[i].cast_to<Ubpa::vecf3>();
+		v->pos = triMesh->GetPositions()[i].cast_to<vecf3>();
 	}
 
 	if (!heMesh->IsTriMesh()) {
@@ -79,12 +78,12 @@ bool LoopSubdivision::Run(size_t n) {
 
 	size_t nV = heMesh->NumVertices();
 	size_t nF = heMesh->NumPolygons();
-	vector<Ubpa::pointf3> positions;
+	vector<pointf3> positions;
 	vector<unsigned> indice;
 	positions.reserve(nV);
 	indice.reserve(3 * nF);
 	for (auto v : heMesh->Vertices())
-		positions.push_back(v->pos.cast_to<Ubpa::pointf3>());
+		positions.push_back(v->pos.cast_to<pointf3>());
 	for (auto triangle : heMesh->Export()) {
 		for (auto idx : triangle)
 			indice.push_back(static_cast<unsigned>(idx));
@@ -101,7 +100,7 @@ void LoopSubdivision::Kernel() {
 	auto step1 = [](V* v) {
 		auto adjVs = v->AdjVertices();
 		if (v->IsBoundary()) {
-			Ubpa::vecf3 sumPos{ 0.f };
+			vecf3 sumPos{ 0.f };
 			for (auto adjV : adjVs) {
 				if (adjV->IsBoundary())
 					sumPos += adjV->pos;
@@ -111,7 +110,7 @@ void LoopSubdivision::Kernel() {
 		else {
 			size_t n = adjVs.size();
 			float u = n == 3 ? 3.f / 16.f : 3.f / (8.f * n);
-			Ubpa::vecf3 sumPos{ 0.f };
+			vecf3 sumPos{ 0.f };
 			for (auto adjV : adjVs)
 				sumPos += adjV->pos;
 			v->newPos = (1.f - n * u) * v->pos + u * sumPos;

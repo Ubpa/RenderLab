@@ -2,12 +2,11 @@
 
 #include <Engine/SurfCoord.h>
 
-using namespace CppUtil;
-using namespace CppUtil::Engine;
-using namespace CppUtil::Basic::Math;
+using namespace Ubpa;
 
+using namespace Ubpa::Math;
 
-const Ubpa::rgbf BSDF_Mirror::Sample_f(const Ubpa::normalf & wo, const Ubpa::pointf2 & texcoord, Ubpa::normalf & wi, float & PD) {
+const rgbf BSDF_Mirror::Sample_f(const normalf & wo, const pointf2 & texcoord, normalf & wi, float & PD) {
 	wi = SurfCoord::Reflect(wo);
 
 	// delta

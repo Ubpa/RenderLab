@@ -1,11 +1,12 @@
-#include <Basic/Cube.h>
+#include <Basic/ShapeMesh/CubeMesh.h>
 
 #include <cmath>
 
-using namespace CppUtil::Basic;
+using namespace Ubpa;
+
 using namespace std;
 
-const float Cube::cubeData[192] = {
+const float CubeMesh::CubeMeshData[192] = {
 	// positions          // normals           // texture coords
 	-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 0.0f,
 	-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 1.0f,
@@ -38,16 +39,16 @@ const float Cube::cubeData[192] = {
 	 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 1.0f,
 };
 
-Cube::Cube()
-	: Shape(24, 12) {
+CubeMesh::CubeMesh()
+	: ShapeMesh(24, 12) {
 	normalArr = vector<array<float, 3>>(vertexNum);
 	texCoordsArr = vector<array<float, 2>>(vertexNum);
 	indexArr = vector<array<unsigned, 3>>(triNum);
 	//----------
 	for (unsigned i = 0; i < vertexNum; i++) {
-		posArr[i] = { cubeData[8 * i], cubeData[8 * i + 1], cubeData[8 * i + 2] };
-		normalArr[i] = { cubeData[8 * i + 3], cubeData[8 * i + 4], cubeData[8 * i + 5] };
-		texCoordsArr[i] = { cubeData[8 * i + 6], cubeData[8 * i + 7] };
+		posArr[i] = { CubeMeshData[8 * i], CubeMeshData[8 * i + 1], CubeMeshData[8 * i + 2] };
+		normalArr[i] = { CubeMeshData[8 * i + 3], CubeMeshData[8 * i + 4], CubeMeshData[8 * i + 5] };
+		texCoordsArr[i] = { CubeMeshData[8 * i + 6], CubeMeshData[8 * i + 7] };
 	}
 
 	const unsigned squareIdx[6] = {
@@ -61,26 +62,26 @@ Cube::Cube()
 	}
 }
 
-float * Cube::GetNormalArr() {
+float * CubeMesh::GetNormalArr() {
 	return normalArr.front().data();
 }
 
-float * Cube::GetTexCoordsArr() {
+float * CubeMesh::GetTexCoordsArr() {
 	return texCoordsArr.front().data();
 }
 
-unsigned * Cube::GetIndexArr() {
+unsigned * CubeMesh::GetIndexArr() {
 	return indexArr.front().data();
 }
 
-unsigned Cube::GetNormalArrSize() {
+unsigned CubeMesh::GetNormalArrSize() {
 	return static_cast<unsigned>(normalArr.size() * 3 * sizeof(float));
 }
 
-unsigned Cube::GetTexCoordsArrSize() {
+unsigned CubeMesh::GetTexCoordsArrSize() {
 	return static_cast<unsigned>(texCoordsArr.size() * 2 * sizeof(float));
 }
 
-unsigned Cube::GetIndexArrSize() {
+unsigned CubeMesh::GetIndexArrSize() {
 	return static_cast<unsigned>(indexArr.size() * 3 * sizeof(unsigned));
 }

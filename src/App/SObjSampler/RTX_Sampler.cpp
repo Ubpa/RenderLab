@@ -23,9 +23,9 @@
 #endif //  NDEBUG
 
 using namespace App;
-using namespace CppUtil;
-using namespace CppUtil::Engine;
-using namespace CppUtil::Basic;
+using namespace Ubpa;
+using namespace Ubpa;
+
 using namespace std;
 
 RTX_Sampler::RTX_Sampler(const function<Ptr<RayTracer>()> & generator, int maxLoop, int sampleNum)

@@ -2,25 +2,23 @@
 
 #include <Basic/HeapObj.h>
 
-namespace CppUtil {
-	namespace Engine {
-		class TriMesh;
-		class Glue : public Basic::HeapObj {
-		public:
-			Glue(Basic::Ptr<TriMesh> triMesh) { Init(triMesh); }
+namespace Ubpa {
+	class TriMesh;
+	class Glue : public HeapObj {
+	public:
+		Glue(Ptr<TriMesh> triMesh) { Init(triMesh); }
 
-		public:
-			static const Basic::Ptr<Glue> New(Basic::Ptr<TriMesh> triMesh) {
-				return Basic::New<Glue>(triMesh);
-			}
+	public:
+		static const Ptr<Glue> New(Ptr<TriMesh> triMesh) {
+			return Ubpa::New<Glue>(triMesh);
+		}
 
-		public:
-			void Init(Basic::Ptr<TriMesh> triMesh) { this->triMesh = triMesh; }
-			void Clear() { triMesh = nullptr; }
-			bool Run();
+	public:
+		void Init(Ptr<TriMesh> triMesh) { this->triMesh = triMesh; }
+		void Clear() { triMesh = nullptr; }
+		bool Run();
 
-		private:
-			Basic::Ptr<TriMesh> triMesh;
-		};
-	}
+	private:
+		Ptr<TriMesh> triMesh;
+	};
 }

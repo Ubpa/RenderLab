@@ -37,17 +37,12 @@
 #include <OpenGL/FBO.h>
 
 #include <Basic/LambdaOp.h>
-#include <Basic/Sphere.h>
-#include <Basic/Plane.h>
 #include <Basic/Image.h>
 
 #include <ROOT_PATH.h>
 
-using namespace CppUtil::Engine;
-using namespace CppUtil::QT;
-using namespace CppUtil::OpenGL;
-using namespace CppUtil::Basic;
-using namespace CppUtil;
+using namespace Ubpa;
+
 using namespace Define;
 using namespace std;
 
@@ -57,7 +52,7 @@ const int ForwardRaster::maxSpotLights = 8;
 
 const string rootPath = ROOT_PATH;
 
-bool ForwardRaster::ShaderCompare::operator()(const OpenGL::Shader & lhs, const OpenGL::Shader & rhs) const {
+bool ForwardRaster::ShaderCompare::operator()(const Shader & lhs, const Shader & rhs) const {
 	if (!lhs.IsValid())
 		return true;
 
@@ -72,8 +67,8 @@ ForwardRaster::ForwardRaster(RawAPI_OGLW * pOGLW, Ptr<Scene> scene, Ptr<Camera> 
 	RegMemberFunc<SObj>(&ForwardRaster::Visit);
 
 	// primitive
-	RegMemberFunc<Engine::Sphere>(&ForwardRaster::Visit);
-	RegMemberFunc<Engine::Plane>(&ForwardRaster::Visit);
+	RegMemberFunc<Sphere>(&ForwardRaster::Visit);
+	RegMemberFunc<Plane>(&ForwardRaster::Visit);
 	RegMemberFunc<TriMesh>(&ForwardRaster::Visit);
 
 	// bsdf
@@ -100,7 +95,7 @@ void ForwardRaster::Draw() {
 	UpdateUBO();
 
 	modelVec.clear();
-	modelVec.push_back(Ubpa::transformf::eye());
+	modelVec.push_back(transformf::eye());
 	scene->GetRoot()->Accept(This());
 
 	if(drawSky)
@@ -120,7 +115,7 @@ void ForwardRaster::InitShaders() {
 
 void ForwardRaster::InitShader_Basic() {
 	shader_basic = Shader(rootPath + str_Basic_P3_vs, rootPath + str_Basic_fs);
-	shader_basic.SetVecf3("color", Ubpa::valf3(1.f,1.f,1.f));
+	shader_basic.SetVecf3("color", valf3(1.f,1.f,1.f));
 	RegShader(shader_basic);
 }
 
@@ -158,12 +153,12 @@ void ForwardRaster::Visit(Ptr<SObj> sobj) {
 		modelVec.pop_back();
 }
 
-void ForwardRaster::Visit(Ptr<Engine::Sphere> sphere) {
+void ForwardRaster::Visit(Ptr<Sphere> sphere) {
 	curShader.SetMatf4("model", modelVec.back().data());
 	pOGLW->GetVAO(ShapeType::Sphere).Draw(curShader);
 }
 
-void ForwardRaster::Visit(Ptr<Engine::Plane> plane) {
+void ForwardRaster::Visit(Ptr<Plane> plane) {
 	curShader.SetMatf4("model", modelVec.back().data());
 	pOGLW->GetVAO(ShapeType::Plane).Draw(curShader);
 }
@@ -181,7 +176,6 @@ void ForwardRaster::UseLightTex(const Shader & shader) const {
 		return;
 	}
 	const auto depthmapBase = target->second;
-
 
 	// point light
 	for (auto cmptLight : scene->GetCmptLights()) {
@@ -236,7 +230,7 @@ void ForwardRaster::UseLightTex(const Shader & shader) const {
 	}
 }
 
-void ForwardRaster::RegShader(OpenGL::Shader & shader, int depthmapBase) {
+void ForwardRaster::RegShader(Shader & shader, int depthmapBase) {
 	BindUBO(shader);
 
 	if (depthmapBase < 0) // 无需计算光
@@ -284,37 +278,37 @@ void ForwardRaster::DrawEnvironment() {
 
 void ForwardRaster::Visit(Ptr<BSDF_Diffuse> bsdf) {
 	curShader = shader_basic;
-	curShader.SetVecf3("color", bsdf->colorFactor.cast_to<Ubpa::valf3>());
+	curShader.SetVecf3("color", bsdf->colorFactor.cast_to<valf3>());
 }
 void ForwardRaster::Visit(Ptr<BSDF_Glass> bsdf) {
 	curShader = shader_basic;
-	curShader.SetVecf3("color", bsdf->transmittance.cast_to<Ubpa::valf3>());
+	curShader.SetVecf3("color", bsdf->transmittance.cast_to<valf3>());
 }
 void ForwardRaster::Visit(Ptr<BSDF_Mirror> bsdf) {
 	curShader = shader_basic;
-	curShader.SetVecf3("color", bsdf->reflectance.cast_to<Ubpa::valf3>());
+	curShader.SetVecf3("color", bsdf->reflectance.cast_to<valf3>());
 }
 void ForwardRaster::Visit(Ptr<BSDF_Emission> bsdf) {
 	curShader = shader_basic;
-	curShader.SetVecf3("color", bsdf->color.cast_to<Ubpa::valf3>());
+	curShader.SetVecf3("color", bsdf->color.cast_to<valf3>());
 }
 void ForwardRaster::Visit(Ptr<BSDF_CookTorrance> bsdf) {
 	curShader = shader_basic;
-	curShader.SetVecf3("color", bsdf->albedo.cast_to<Ubpa::valf3>());
+	curShader.SetVecf3("color", bsdf->albedo.cast_to<valf3>());
 }
 void ForwardRaster::Visit(Ptr<BSDF_MetalWorkflow> bsdf) {
 	curShader = shader_basic;
-	curShader.SetVecf3("color", bsdf->colorFactor.cast_to<Ubpa::valf3>());
+	curShader.SetVecf3("color", bsdf->colorFactor.cast_to<valf3>());
 }
 void ForwardRaster::Visit(Ptr<BSDF_FrostedGlass> bsdf) {
 	curShader = shader_basic;
-	curShader.SetVecf3("color", bsdf->colorFactor.cast_to<Ubpa::valf3>());
+	curShader.SetVecf3("color", bsdf->colorFactor.cast_to<valf3>());
 }
 void ForwardRaster::Visit(Ptr<BSDF_Frostbite> bsdf) {
 	curShader = shader_basic;
-	curShader.SetVecf3("color", bsdf->colorFactor.cast_to<Ubpa::valf3>());
+	curShader.SetVecf3("color", bsdf->colorFactor.cast_to<valf3>());
 }
 void ForwardRaster::Visit(Ptr<Gooch> gooch) {
 	curShader = shader_basic;
-	curShader.SetVecf3("color", gooch->colorFactor.cast_to<Ubpa::valf3>());
+	curShader.SetVecf3("color", gooch->colorFactor.cast_to<valf3>());
 }

@@ -11,15 +11,12 @@
 
 #include <QtWidgets/QApplication>
 
-using namespace CppUtil;
-using namespace CppUtil::Basic;
-using namespace CppUtil::Engine;
-using namespace CppUtil::QT;
-using namespace CppUtil::OpenGL;
+using namespace Ubpa;
+
 using namespace std;
 
 Roamer::Roamer(RawAPI_OGLW * pOGLW)
-	: pOGLW(pOGLW), camera(new Camera(Ubpa::pointf3(0,0.75,2.3))), lock(false) {
+	: pOGLW(pOGLW), camera(new Camera(pointf3(0,0.75,2.3))), lock(false) {
 	GS::Reg("Roamer::camera", WPtr<Camera>(camera));
 }
 
@@ -131,7 +128,7 @@ void Roamer::ListenerInit() {
 				return;
 
 			auto pOGLW = this->GetOGLW();
-			this->GetCamera()->ProcessKeyboard(OpenGL::Camera::ENUM_Movement(OpenGL::Camera::MOVE_FORWARD + i), 0.015f);
+			this->GetCamera()->ProcessKeyboard(Camera::ENUM_Movement(Camera::MOVE_FORWARD + i), 0.015f);
 			UpdateCamera();
 		}, true);
 

@@ -3,7 +3,8 @@
 #include <cassert>
 #include <algorithm>
 
-using namespace CppUtil::Basic;
+using namespace Ubpa;
+
 using namespace std;
 
 const string StrAPI::Head(const string & str, int n) {
@@ -90,7 +91,6 @@ const string StrAPI::Between(const string & str, char left, char right) {
 
 	return str.substr(start + 1, end - (start + 1));
 }
-
 
 const string StrAPI::LowerCase(const string & str) {
 	string rst;

@@ -1,26 +1,24 @@
 #pragma once
 
-#include <Engine/Filter.h>
+#include <Engine/ImgFilter.h>
 
-namespace CppUtil {
-	namespace Engine {
-		class FilterTriangle : public Filter {
-		public:
-			FilterTriangle(const Ubpa::vecf2 & radius) : Filter(radius) { }
+namespace Ubpa {
+	class FilterTriangle : public ImgFilter {
+	public:
+		FilterTriangle(const vecf2& radius) : ImgFilter(radius) { }
 
-		protected:
-			virtual ~FilterTriangle() = default;
+	protected:
+		virtual ~FilterTriangle() = default;
 
-		public:
-			const Basic::Ptr<FilterTriangle> New(const Ubpa::vecf2 & radius) {
-				return Basic::New<FilterTriangle>(radius);
-			}
+	public:
+		const Ptr<FilterTriangle> New(const vecf2& radius) {
+			return Ubpa::New<FilterTriangle>(radius);
+		}
 
-		public:
-			virtual float Evaluate(const Ubpa::pointf2 & p) const override {
-				const auto delta = (radius - Ubpa::vecf2(p.Abs())).MaxWith({ 0,0 });
-				return delta[0] * delta[1];
-			}
-		};
-	}
+	public:
+		virtual float Evaluate(const pointf2& p) const override {
+			const auto delta = (radius - vecf2(p.Abs())).MaxWith({ 0,0 });
+			return delta[0] * delta[1];
+		}
+	};
 }

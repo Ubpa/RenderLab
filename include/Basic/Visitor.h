@@ -8,55 +8,54 @@
 
 #include <functional>
 
-namespace CppUtil {
-	namespace Basic {
-		class Element;
-		class Visitor : public HeapObj {
-		public:
-			static const Ptr<Visitor> New() { return Basic::New<Visitor>(); }
+namespace Ubpa {
+	class Element;
 
-		protected:
-			// !!! 不可在构造函数中使用，将初始化任务放到 Init() 中
-			const Ptr<Visitor> This() { return HeapObj::This<Visitor>(); }
-			// !!! 不可在构造函数中使用，将初始化任务放到 Init() 中
-			const PtrC<Visitor> This() const { return HeapObj::This<Visitor>(); }
-			// !!! 不可在构造函数中使用，将初始化任务放到 Init() 中
-			const WPtr<Visitor> WThis() noexcept { return This(); }
-			// !!! 不可在构造函数中使用，将初始化任务放到 Init() 中
-			const WPtrC<Visitor> WThis() const noexcept { return This(); }
+	class Visitor : public HeapObj {
+	public:
+		static const Ptr<Visitor> New() { return Ubpa::New<Visitor>(); }
 
-		protected:
-			virtual ~Visitor() = default;
+	protected:
+		// !!! 不可在构造函数中使用，将初始化任务放到 Init() 中
+		const Ptr<Visitor> This() { return HeapObj::This<Visitor>(); }
+		// !!! 不可在构造函数中使用，将初始化任务放到 Init() 中
+		const PtrC<Visitor> This() const { return HeapObj::This<Visitor>(); }
+		// !!! 不可在构造函数中使用，将初始化任务放到 Init() 中
+		const WPtr<Visitor> WThis() noexcept { return This(); }
+		// !!! 不可在构造函数中使用，将初始化任务放到 Init() 中
+		const WPtrC<Visitor> WThis() const noexcept { return This(); }
 
-		private:// Visit 函数只能让 Element 调用
-			friend class Element;
+	protected:
+		virtual ~Visitor() = default;
 
-			// 动态
-			void Visit(Ptr<Element> ele);
+	private:// Visit 函数只能让 Element 调用
+		friend class Element;
 
-		public:
-			template<typename LambadaExpr>
-			void Reg(LambadaExpr lambdaVisitFunc) {
-				using ptrE = typename FunctionTraitsLambda<LambadaExpr>::template arg<0>::type;
-				using EleType = typename ptrE::element_type;
-				const Func func = [lambdaVisitFunc](Ptr<Element> pEle) {
-					lambdaVisitFunc(CastTo<EleType>(pEle));
-				};
-				visitOps[typeid(EleType)] = func;
-			}
+		// 动态
+		void Visit(Ptr<Element> ele);
 
-		protected:
-			template<typename EleType, typename ImplT>
-			void RegMemberFunc(void (ImplT::*visitFunc)(Ptr<EleType>)) {
-				ImplT * obj = dynamic_cast<ImplT*>(this);
-				visitOps[typeid(EleType)] = [obj, visitFunc](Ptr<Element> pEle) {
-					(obj->*visitFunc)(CastTo<EleType>(pEle));
-				};
-			}
+	public:
+		template<typename LambadaExpr>
+		void Reg(LambadaExpr lambdaVisitFunc) {
+			using ptrE = typename FunctionTraitsLambda<LambadaExpr>::template arg<0>::type;
+			using EleType = typename ptrE::element_type;
+			const Func func = [lambdaVisitFunc](Ptr<Element> pEle) {
+				lambdaVisitFunc(CastTo<EleType>(pEle));
+			};
+			visitOps[typeid(EleType)] = func;
+		}
 
-		private:
-			using Func = std::function< void(Ptr<Element>) >;
-			TypeMap< std::function< void(Ptr<Element>) > > visitOps;
-		};
-	}
+	protected:
+		template<typename EleType, typename ImplT>
+		void RegMemberFunc(void (ImplT::* visitFunc)(Ptr<EleType>)) {
+			ImplT* obj = dynamic_cast<ImplT*>(this);
+			visitOps[typeid(EleType)] = [obj, visitFunc](Ptr<Element> pEle) {
+				(obj->*visitFunc)(CastTo<EleType>(pEle));
+			};
+		}
+
+	private:
+		using Func = std::function< void(Ptr<Element>) >;
+		TypeMap< std::function< void(Ptr<Element>) > > visitOps;
+	};
 }

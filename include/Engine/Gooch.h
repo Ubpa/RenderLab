@@ -4,21 +4,19 @@
 
 #include <Basic/Image.h>
 
-namespace CppUtil {
-	namespace Engine {
-		class Gooch : public Material {
-		public:
-			Gooch(const Ubpa::rgbf & colorFactor = Ubpa::rgbf(1.0f)) :colorFactor(colorFactor) {}
-			virtual ~Gooch() = default;
+namespace Ubpa {
+	class Gooch : public Material {
+	public:
+		Gooch(const rgbf& colorFactor = rgbf(1.0f)) :colorFactor(colorFactor) {}
+		virtual ~Gooch() = default;
 
-		public:
-			static Basic::Ptr<Gooch> New(const Ubpa::rgbf & colorFactor = Ubpa::rgbf(1.0f)) {
-				return Basic::New<Gooch>(colorFactor);
-			}
+	public:
+		static Ptr<Gooch> New(const rgbf& colorFactor = rgbf(1.0f)) {
+			return Ubpa::New<Gooch>(colorFactor);
+		}
 
-		public:
-			Ubpa::rgbf colorFactor;
-			Basic::Ptr<Basic::Image> colorTexture;
-		};
-	}
+	public:
+		rgbf colorFactor;
+		Ptr<Image> colorTexture;
+	};
 }

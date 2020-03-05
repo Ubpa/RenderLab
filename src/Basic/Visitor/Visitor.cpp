@@ -2,7 +2,7 @@
 
 #include <Basic/Element.h>
 
-using namespace CppUtil::Basic;
+using namespace Ubpa;
 
 void Visitor::Visit(Ptr<Element> ele) {
 	// ∂ØÃ¨µ•∑÷≈…

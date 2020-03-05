@@ -67,7 +67,6 @@ USAGE:
       int stbi_write_png_compression_level;    // defaults to 8; set to higher for more compression
       int stbi_write_force_png_filter;         // defaults to -1; set to 0..5 to force a filter mode
 
-
    You can define STBI_WRITE_NO_STDIO to disable the file variant of these
    functions, so the library will not use stdio.h at all. However, this will
    also disable HDR writing, because it requires stdio for formatted output.
@@ -109,7 +108,6 @@ USAGE:
    JPEG baseline (no JPEG progressive).
 
 CREDITS:
-
 
    Sean Barrett           -    PNG/BMP/TGA 
    Baldur Karlsson        -    HDR
@@ -225,11 +223,9 @@ STBIWDEF void stbi_flip_vertically_on_write(int flip_boolean);
 #define STBIW_REALLOC_SIZED(p,oldsz,newsz) STBIW_REALLOC(p,newsz)
 #endif
 
-
 #ifndef STBIW_MEMMOVE
 #define STBIW_MEMMOVE(a,b,sz) memmove(a,b,sz)
 #endif
-
 
 #ifndef STBIW_ASSERT
 #include <assert.h>
@@ -720,7 +716,6 @@ STBIWDEF int stbi_write_hdr(char const *filename, int x, int y, int comp, const 
 }
 #endif // STBI_WRITE_NO_STDIO
 
-
 //////////////////////////////////////////////////////////////////////////////
 //
 // PNG writer
@@ -1135,7 +1130,6 @@ STBIWDEF int stbi_write_png_to_func(stbi_write_func *func, void *context, int x,
    return 1;
 }
 
-
 /* ***************************************************************************
  *
  * JPEG writer
@@ -1465,7 +1459,6 @@ STBIWDEF int stbi_write_jpg_to_func(stbi_write_func *func, void *context, int x,
    stbi__start_write_callbacks(&s, func, context);
    return stbi_write_jpg_core(&s, x, y, comp, (void *) data, quality);
 }
-
 
 #ifndef STBI_WRITE_NO_STDIO
 STBIWDEF int stbi_write_jpg(char const *filename, int x, int y, int comp, const void *data, int quality)

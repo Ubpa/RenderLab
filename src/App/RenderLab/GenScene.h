@@ -1,14 +1,8 @@
-#ifndef _GEN_SCENE_H_
-#define _GEN_SCENE_H_
+#pragma once
 
 #include <Basic/Ptr.h>
 
-namespace CppUtil {
-	namespace Engine {
-		class Scene;
-	}
+namespace Ubpa {
+	class Scene;
+	Ptr<Scene> GenScene(int n);
 }
-
-CppUtil::Basic::Ptr<CppUtil::Engine::Scene> GenScene(int n);
-
-#endif//!_GEN_SCENE_H_

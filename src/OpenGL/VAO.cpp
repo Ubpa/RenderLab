@@ -8,7 +8,7 @@
 #include <glad/glad.h>
 #endif // USE_QT_OPENGL_API
 
-using namespace CppUtil::OpenGL;
+using namespace Ubpa;
 using namespace std;
 
 VAO::VAO() :isValid(false) { }

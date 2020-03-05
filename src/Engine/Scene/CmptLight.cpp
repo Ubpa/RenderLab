@@ -6,12 +6,12 @@
 
 #include <Engine/SObj.h>
 
-using namespace CppUtil::Engine;
-using namespace CppUtil::Basic;
+using namespace Ubpa;
+
 using namespace std;
 
-Ubpa::transformf CmptLight::GetLightToWorldMatrixWithoutScale() const {
-	auto tsfm = Ubpa::transformf::eye();
+transformf CmptLight::GetLightToWorldMatrixWithoutScale() const {
+	auto tsfm = transformf::eye();
 	auto sobj = GetSObj();
 	if (!sobj)
 		return tsfm;
@@ -25,7 +25,7 @@ Ubpa::transformf CmptLight::GetLightToWorldMatrixWithoutScale() const {
 		auto pos = cmptTransform->GetPosition();
 		auto rotation = cmptTransform->GetRotation();
 		// tsfm = T * R * tsfm
-		tsfm = Ubpa::transformf(pos.cast_to<Ubpa::vecf3>()) * Ubpa::transformf(rotation) * tsfm;
+		tsfm = transformf(pos.cast_to<vecf3>()) * transformf(rotation) * tsfm;
 	});
 	sobj->AscendAccept(visitor);
 

@@ -1,8 +1,6 @@
 #include <Engine/FilterMitchell.h>
 
-using namespace CppUtil;
-using namespace CppUtil::Basic;
-using namespace CppUtil::Engine;
+using namespace Ubpa;
 
 float FilterMitchell::Mitchell1D(float x) const {
 	x = std::abs(2 * x);

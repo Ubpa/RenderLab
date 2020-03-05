@@ -23,27 +23,22 @@
 
 #include <ROOT_PATH.h>
 
-using namespace CppUtil;
-using namespace CppUtil::QT;
-using namespace CppUtil::Engine;
-using namespace CppUtil::OpenGL;
-using namespace CppUtil::Basic;
+using namespace Ubpa;
+
 using namespace Define;
 using namespace std;
 
 const string rootPath = ROOT_PATH;
 
-namespace CppUtil {
-	namespace Engine {
-		const string str_PointLight_prefix = "data/shaders/Engine/PointLight/";
-		const string str_genDepth = "genDepth";
-		const string str_genDepth_vs = str_PointLight_prefix + str_genDepth + ".vs";
-		const string str_genDepth_gs = str_PointLight_prefix + str_genDepth + ".gs";
-		const string str_genDepth_fs = str_PointLight_prefix + str_genDepth + ".fs";
-	}
+namespace Ubpa {
+	const string str_PointLight_prefix = "data/shaders/Engine/PointLight/";
+	const string str_genDepth = "genDepth";
+	const string str_genDepth_vs = str_PointLight_prefix + str_genDepth + ".vs";
+	const string str_genDepth_gs = str_PointLight_prefix + str_genDepth + ".gs";
+	const string str_genDepth_fs = str_PointLight_prefix + str_genDepth + ".fs";
 }
 
-SLDM_Generator::SLDM_Generator(QT::RawAPI_OGLW * pOGLW, Ptr<Camera> camera, float lightNear, float lightFar)
+SLDM_Generator::SLDM_Generator(RawAPI_OGLW * pOGLW, Ptr<Camera> camera, float lightNear, float lightFar)
 	: pOGLW(pOGLW), camera(camera), depthMapSize(1024), lightNear(lightNear), lightFar(lightFar)
 {
 	RegMemberFunc<Scene>(&SLDM_Generator::Visit);
@@ -75,7 +70,7 @@ void SLDM_Generator::Visit(Ptr<Scene> scene) {
 	glGetIntegerv(GL_VIEWPORT, origViewport);
 
 	modelVec.clear();
-	modelVec.push_back(Ubpa::transformf::eye());
+	modelVec.push_back(transformf::eye());
 
 	// regist
 	for (auto cmptLight : scene->GetCmptLights()) {
@@ -110,12 +105,12 @@ void SLDM_Generator::Visit(Ptr<Scene> scene) {
 		glClear(GL_DEPTH_BUFFER_BIT);
 
 		auto l2w = lightComponent->GetSObj()->GetLocalToWorldMatrix();
-		auto pos = l2w * Ubpa::pointf3(0.f);
-		auto dir = l2w * Ubpa::normalf(0, -1, 0);
+		auto pos = l2w * pointf3(0.f);
+		auto dir = l2w * normalf(0, -1, 0);
 
-		auto view = Ubpa::transformf::look_at(pos, pos + dir.cast_to<Ubpa::vecf3>());
+		auto view = transformf::look_at(pos, pos + dir.cast_to<vecf3>());
 
-		auto proj = Ubpa::transformf::perspective(spotLight->angle, 1.f, lightNear, lightFar);
+		auto proj = transformf::perspective(spotLight->angle, 1.f, lightNear, lightFar);
 
 		shader_genDepth.SetMatf4("view", view.data());
 		shader_genDepth.SetMatf4("proj", proj.data());
@@ -151,7 +146,6 @@ void SLDM_Generator::Visit(Ptr<SObj> sobj) {
 	if (cmptTransform != nullptr)
 		modelVec.pop_back();
 }
-
 
 void SLDM_Generator::Visit(Ptr<Sphere> sphere) {
 	shader_genDepth.SetMatf4("model", modelVec.back().data());
@@ -192,10 +186,10 @@ const Texture SLDM_Generator::GetDepthMap(PtrC<CmptLight> light) const {
 	return target->second.tex;
 }
 
-const Ubpa::transformf SLDM_Generator::GetProjView(PtrC<CmptLight> light) const {
+const transformf SLDM_Generator::GetProjView(PtrC<CmptLight> light) const {
 	auto target = light2pv.find(light);
 	if (target == light2pv.cend())
-		return Ubpa::transformf();
+		return transformf();
 
 	return target->second;
 }

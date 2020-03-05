@@ -2,12 +2,11 @@
 
 #include <Basic/Math.h>
 
-using namespace CppUtil;
-using namespace CppUtil::Engine;
-using namespace CppUtil::Basic;
+using namespace Ubpa;
+
 using namespace std;
 
-float BSDF_CookTorrance::NDF(const Ubpa::normalf & h) {
+float BSDF_CookTorrance::NDF(const normalf & h) {
 	// backmann
 
 	//float NoH = h[2];
@@ -17,7 +16,7 @@ float BSDF_CookTorrance::NDF(const Ubpa::normalf & h) {
 	return exp((NoH2 - 1) / (m2 * NoH2)) / (m2 * NoH4);
 }
 
-float BSDF_CookTorrance::Fr(const Ubpa::normalf & wi, const Ubpa::normalf & h) {
+float BSDF_CookTorrance::Fr(const normalf & wi, const normalf & h) {
 	// schlick
 
 	float R0 = (ior - 1) / (ior + 1);
@@ -25,7 +24,7 @@ float BSDF_CookTorrance::Fr(const Ubpa::normalf & wi, const Ubpa::normalf & h) {
 	return R0 + (1 - R0)*pow(1 - wi.dot(h), 5);
 }
 
-float BSDF_CookTorrance::G(const Ubpa::normalf & wo, const Ubpa::normalf & wi, const Ubpa::normalf & h){
+float BSDF_CookTorrance::G(const normalf & wo, const normalf & wi, const normalf & h){
 	// Cook-Torrance
 
 	//float NoH = h[2];
@@ -38,21 +37,21 @@ float BSDF_CookTorrance::G(const Ubpa::normalf & wo, const Ubpa::normalf & wi, c
 	return min(min(1.0f, item1), item2);
 }
 
-const Ubpa::rgbf BSDF_CookTorrance::F(const Ubpa::normalf & wo, const Ubpa::normalf & wi, const Ubpa::pointf2 & texcoord) {
-	const Ubpa::normalf h = (wo + wi).normalize();
+const rgbf BSDF_CookTorrance::F(const normalf & wo, const normalf & wi, const pointf2 & texcoord) {
+	const normalf h = (wo + wi).normalize();
 	float fr = Fr(wi, h);
 	float kd = 1 - fr;
-	return kd * albedo / Ubpa::PI<float> + NDF(h) * fr * G(wo, wi, h) / (4 * wo[2] *wi[2]) * refletance;
+	return kd * albedo / PI<float> + NDF(h) * fr * G(wo, wi, h) / (4 * wo[2] *wi[2]) * refletance;
 }
 
-float BSDF_CookTorrance::PDF(const Ubpa::normalf & wo, const Ubpa::normalf & wi, const Ubpa::pointf2 & texcoord) {
+float BSDF_CookTorrance::PDF(const normalf & wo, const normalf & wi, const pointf2 & texcoord) {
 	//vec3 h = normalize(wo + wi);
 	//return NDF(h) / 4.0f;
 
-	return 1.0f / (2.0f * Ubpa::PI<float>);
+	return 1.0f / (2.0f * PI<float>);
 }
 
-const Ubpa::rgbf BSDF_CookTorrance::Sample_f(const Ubpa::normalf & wo, const Ubpa::pointf2 & texcoord, Ubpa::normalf & wi, float & pd) {
+const rgbf BSDF_CookTorrance::Sample_f(const normalf & wo, const pointf2 & texcoord, normalf & wi, float & pd) {
 	/*
 	// 根据 NDF 来进行重要性采样
 	// 有异常，暂时未解决
@@ -60,7 +59,7 @@ const Ubpa::rgbf BSDF_CookTorrance::Sample_f(const Ubpa::normalf & wo, const Ubp
 	float Xi2 = Math::Rand_F();
 
 	float cosTheta = sqrt(1.0f / (1.0f - m * m * log(1 - Xi1)));
-	float phi = 2 * Ubpa::PI<float> * Xi2;
+	float phi = 2 * PI<float> * Xi2;
 	float sinTheta = sqrt(1.0f - cosTheta * cosTheta);
 
 	vec3 h(sinTheta*cos(phi), sinTheta*sin(phi), cosTheta);
@@ -75,12 +74,12 @@ const Ubpa::rgbf BSDF_CookTorrance::Sample_f(const Ubpa::normalf & wo, const Ubp
 	float Xi2 = Math::Rand_F();
 	float cosTheta = Xi1;
 	float sinTheta = sqrt(1 - cosTheta * cosTheta);
-	float phi = 2 * Ubpa::PI<float> * Xi2;
-	wi = Ubpa::normalf(sinTheta*cos(phi), sinTheta*sin(phi), cosTheta);
-	Ubpa::normalf h = (wo + wi).normalize();
-	pd = 1.0f / (2.0f * Ubpa::PI<float>);
+	float phi = 2 * PI<float> * Xi2;
+	wi = normalf(sinTheta*cos(phi), sinTheta*sin(phi), cosTheta);
+	normalf h = (wo + wi).normalize();
+	pd = 1.0f / (2.0f * PI<float>);
 
 	float fr = Fr(wi, h);
 	float kd = 1 - fr;
-	return kd*albedo/Ubpa::PI<float> + NDF(h) * fr * G(wo, wi, h) / (4 * wo[2] *wi[2]) * refletance;
+	return kd*albedo/PI<float> + NDF(h) * fr * G(wo, wi, h) / (4 * wo[2] *wi[2]) * refletance;
 }

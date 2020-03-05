@@ -8,72 +8,68 @@
 
 #include <UGM/transform.h>
 
-namespace CppUtil {
-	namespace QT {
-		class RawAPI_OGLW;
-	}
+namespace Ubpa {
+	class RawAPI_OGLW;
 
-	namespace Engine {
-		class Scene;
-		class SObj;
+	class Scene;
+	class SObj;
 
-		class Sphere;
-		class Plane;
-		class TriMesh;
-		class Disk;
-		class Capsule;
+	class Sphere;
+	class Plane;
+	class TriMesh;
+	class Disk;
+	class Capsule;
 
-		class CmptLight;
+	class CmptLight;
 
-		class PointLight;
-		class DirectionalLight;
-		class SpotLight;
+	class PointLight;
+	class DirectionalLight;
+	class SpotLight;
 
-		// Point Light Depth Map Generator
-		class PLDM_Generator: public Basic::Visitor {
-		public:
-			PLDM_Generator(QT::RawAPI_OGLW * pOGLW, float lightNear, float lightFar);
+	// Point Light Depth Map Generator
+	class PLDM_Generator : public Visitor {
+	public:
+		PLDM_Generator(RawAPI_OGLW* pOGLW, float lightNear, float lightFar);
 
-		public:
-			static const Basic::Ptr<PLDM_Generator> New(QT::RawAPI_OGLW * pOGLW, float lightNear, float lightFar) {
-				return Basic::New<PLDM_Generator>(pOGLW, lightNear, lightFar);
-			}
+	public:
+		static const Ptr<PLDM_Generator> New(RawAPI_OGLW* pOGLW, float lightNear, float lightFar) {
+			return Ubpa::New<PLDM_Generator>(pOGLW, lightNear, lightFar);
+		}
 
-		protected:
-			virtual ~PLDM_Generator() = default;
-			
-		public:
-			void Init();
-			const OpenGL::Texture GetDepthCubeMap(Basic::PtrC<CmptLight> light) const;
+	protected:
+		virtual ~PLDM_Generator() = default;
 
-		private:
-			void Visit(Basic::Ptr<Scene> scene);
-			void Visit(Basic::Ptr<SObj> sobj);
+	public:
+		void Init();
+		const Texture GetDepthCubeMap(PtrC<CmptLight> light) const;
 
-			void Visit(Basic::Ptr<Sphere> sphere);
-			void Visit(Basic::Ptr<Plane> plane);
-			void Visit(Basic::Ptr<TriMesh> mesh);
-			void Visit(Basic::Ptr<Disk> disk);
-			void Visit(Basic::Ptr<Capsule> capsule);
+	private:
+		void Visit(Ptr<Scene> scene);
+		void Visit(Ptr<SObj> sobj);
 
-		private:
-			QT::RawAPI_OGLW * pOGLW;
+		void Visit(Ptr<Sphere> sphere);
+		void Visit(Ptr<Plane> plane);
+		void Visit(Ptr<TriMesh> mesh);
+		void Visit(Ptr<Disk> disk);
+		void Visit(Ptr<Capsule> capsule);
 
-			struct FBO_Tex {
-				FBO_Tex(const OpenGL::FBO & fbo = OpenGL::FBO(), const OpenGL::Texture & tex = OpenGL::Texture())
-					: fbo(fbo), tex(tex) { }
+	private:
+		RawAPI_OGLW* pOGLW;
 
-				OpenGL::FBO fbo;
-				OpenGL::Texture tex;
-			};
-			std::map<Basic::WPtrC<CmptLight>, FBO_Tex> lightMap;
-			int depthMapSize;
-			float lightNear;
-			float lightFar;
+		struct FBO_Tex {
+			FBO_Tex(const FBO& fbo = FBO(), const Texture& tex = Texture())
+				: fbo(fbo), tex(tex) { }
 
-			OpenGL::Shader shader_genDepth;
-
-			std::vector<Ubpa::transformf> modelVec;
+			FBO fbo;
+			Texture tex;
 		};
-	}
+		std::map<WPtrC<CmptLight>, FBO_Tex> lightMap;
+		int depthMapSize;
+		float lightNear;
+		float lightFar;
+
+		Shader shader_genDepth;
+
+		std::vector<transformf> modelVec;
+	};
 }

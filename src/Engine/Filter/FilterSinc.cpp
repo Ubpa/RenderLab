@@ -1,14 +1,12 @@
 #include <Engine/FilterSinc.h>
 #include <Basic/Math.h>
 
-using namespace CppUtil;
-using namespace CppUtil::Basic;
-using namespace CppUtil::Engine;
+using namespace Ubpa;
 
 float FilterSinc::WindowSinc(float x, float radius) const {
 	x = std::abs(x);
 	if (x > radius)
 		return 0;
-	const auto lanczos = Basic::Math::Sinc(x / tau);
-	return Basic::Math::Sinc(x) * lanczos;
+	const auto lanczos = Math::Sinc(x / tau);
+	return Math::Sinc(x) * lanczos;
 }

@@ -3,21 +3,19 @@
 #include <Engine/TriMesh.h>
 #include <UGM/bbox.h>
 
-using namespace CppUtil;
-using namespace CppUtil::Engine;
-using namespace CppUtil::Basic;
+using namespace Ubpa;
 
-const Ubpa::bboxf3 Triangle::GetBBox() const {
+const bboxf3 Triangle::GetBBox() const {
 	const auto & positions = mesh.lock()->GetPositions();
 
-	Ubpa::pointf3 pArr[3] = {
+	pointf3 pArr[3] = {
 		positions[idx[0]],
 		positions[idx[1]],
 		positions[idx[2]]
 	};
 
-	Ubpa::pointf3 minP = Ubpa::pointf3::min(Ubpa::pointf3::min(pArr[0],pArr[1]),pArr[2]);
-	Ubpa::pointf3 maxP = Ubpa::pointf3::max(Ubpa::pointf3::max(pArr[0], pArr[1]), pArr[2]);
+	pointf3 minP = pointf3::min(pointf3::min(pArr[0],pArr[1]),pArr[2]);
+	pointf3 maxP = pointf3::max(pointf3::max(pArr[0], pArr[1]), pArr[2]);
 
 	for (int dim = 0; dim < 3; dim++) {
 		if (minP[dim] == maxP[dim]) {
@@ -26,7 +24,7 @@ const Ubpa::bboxf3 Triangle::GetBBox() const {
 		}
 	}
 
-	return Ubpa::bboxf3(minP, maxP);
+	return bboxf3(minP, maxP);
 }
 
 float Triangle::GetArea() const {

@@ -4,40 +4,38 @@
 
 #include <Basic/CosineWeightedHemisphereSampler3D.h>
 
-namespace CppUtil {
-	namespace Engine {
-		class BSDF_Diffuse final : public BSDF {
-		public:
-			BSDF_Diffuse(const Ubpa::rgbf & colorFactor = Ubpa::rgbf(1.f))
-				: colorFactor(colorFactor), albedoTexture(nullptr) { }
+namespace Ubpa {
+	class BSDF_Diffuse final : public BSDF {
+	public:
+		BSDF_Diffuse(const rgbf& colorFactor = rgbf(1.f))
+			: colorFactor(colorFactor), albedoTexture(nullptr) { }
 
-		public:
-			static const Basic::Ptr<BSDF_Diffuse> New(const Ubpa::rgbf & colorFactor = Ubpa::rgbf(1.f)) {
-				return Basic::New<BSDF_Diffuse>(colorFactor);
-			}
+	public:
+		static const Ptr<BSDF_Diffuse> New(const rgbf& colorFactor = rgbf(1.f)) {
+			return Ubpa::New<BSDF_Diffuse>(colorFactor);
+		}
 
-		protected:
-			virtual ~BSDF_Diffuse() = default;
+	protected:
+		virtual ~BSDF_Diffuse() = default;
 
-		public:
-			virtual const Ubpa::rgbf F(const Ubpa::normalf & wo, const Ubpa::normalf & wi, const Ubpa::pointf2 & texcoord) override;
+	public:
+		virtual const rgbf F(const normalf& wo, const normalf& wi, const pointf2& texcoord) override;
 
-			// probability density function
-			virtual float PDF(const Ubpa::normalf & wo, const Ubpa::normalf & wi, const Ubpa::pointf2 & texcoord) override;
+		// probability density function
+		virtual float PDF(const normalf& wo, const normalf& wi, const pointf2& texcoord) override;
 
-			// PD is probability density
-			// return albedo
-			virtual const Ubpa::rgbf Sample_f(const Ubpa::normalf & wo, const Ubpa::pointf2 & texcoord, Ubpa::normalf & wi, float & PD) override;
+		// PD is probability density
+		// return albedo
+		virtual const rgbf Sample_f(const normalf& wo, const pointf2& texcoord, normalf& wi, float& PD) override;
 
-		private:
-			const Ubpa::rgbf GetAlbedo(const Ubpa::pointf2 & texcoord) const;
+	private:
+		const rgbf GetAlbedo(const pointf2& texcoord) const;
 
-		public:
-			Ubpa::rgbf colorFactor;
-			Basic::Ptr<Basic::Image> albedoTexture;
+	public:
+		rgbf colorFactor;
+		Ptr<Image> albedoTexture;
 
-		private:
-			Basic::CosineWeightedHemisphereSampler3D sampler;
-		};
-	}
+	private:
+		CosineWeightedHemisphereSampler3D sampler;
+	};
 }

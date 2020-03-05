@@ -8,17 +8,12 @@
 #include <UGM/rgb.h>
 #include <Basic/Math.h>
 
-namespace CppUtil {
-	namespace Basic {
-		class Image;
-	}
+namespace Ubpa {
+	class Image;
 
-	namespace Engine {
-
-		class Material : public Basic::Element {
-		protected:
-			Material() = default;
-			virtual ~Material() = default;
-		};
-	}
+	class Material : public Element {
+	protected:
+		Material() = default;
+		virtual ~Material() = default;
+	};
 }

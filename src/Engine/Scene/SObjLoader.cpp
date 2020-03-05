@@ -5,9 +5,8 @@
 #include <UGM/transform.h>
 #include <Basic/StrAPI.h>
 
-using namespace CppUtil;
-using namespace CppUtil::Basic;
-using namespace CppUtil::Engine;
+using namespace Ubpa;
+
 using namespace tinyxml2;
 using namespace std;
 
@@ -46,8 +45,8 @@ const vector<unsigned> SObjLoader::To(const Key& key) {
 }
 
 template<>
-const vector<Ubpa::pointf3> SObjLoader::To(const Key& key) {
-	vector<Ubpa::pointf3> positions;
+const vector<pointf3> SObjLoader::To(const Key& key) {
+	vector<pointf3> positions;
 	auto positionStrs = StrAPI::Spilt(key, '\n');
 	for (const auto& positionStr : positionStrs) {
 		if (positionStr.empty())
@@ -227,9 +226,9 @@ static Ptr<TriMesh> SObjLoader::Load(XMLElement * ele) {
 	};
 	funcMap[str::TriMesh::ENUM_TYPE::CODE::type] = [&](XMLElement * ele) {
 		FuncMap innerFuncMap;
-		vector<Ubpa::pointf3> positions;
+		vector<pointf3> positions;
 		vector<unsigned> indices;
-		Reg_Text_val<vector<Ubpa::pointf3>>(innerFuncMap, str::TriMesh::ENUM_TYPE::CODE::position, positions);
+		Reg_Text_val<vector<pointf3>>(innerFuncMap, str::TriMesh::ENUM_TYPE::CODE::position, positions);
 		Reg_Text_val<vector<unsigned>>(innerFuncMap, str::TriMesh::ENUM_TYPE::CODE::triangle, indices);
 		LoadNode(ele, innerFuncMap);
 		triMesh = TriMesh::New(indices, positions);
@@ -603,7 +602,7 @@ static Ptr<BSDF_Frostbite> SObjLoader::Load(XMLElement * ele) {
 	return bsdf;
 }
 
-// ------------ Ubpa::transformf ----------------
+// ------------ transformf ----------------
 
 template<>
 static Ptr<CmptTransform> SObjLoader::Load(XMLElement * ele){
@@ -611,7 +610,7 @@ static Ptr<CmptTransform> SObjLoader::Load(XMLElement * ele){
 
 	FuncMap funcMap;
 	Reg_Text_setVal(funcMap, str::CmptTransform::Position, cmpt, &CmptTransform::SetPosition);
-	void (CmptTransform::*func)(const Ubpa::quatf &) = &CmptTransform::SetRotation;
+	void (CmptTransform::*func)(const quatf &) = &CmptTransform::SetRotation;
 	Reg_Text_setVal(funcMap, str::CmptTransform::Rotation, cmpt, func);
 	Reg_Text_setVal(funcMap, str::CmptTransform::Scale, cmpt, &CmptTransform::SetScale);
 

@@ -4,28 +4,26 @@
 
 #include <UGM/transform.h>
 
-namespace CppUtil {
-	namespace Engine {
-		class Light;
+namespace Ubpa {
+	class Light;
 
-		class CmptLight final : public Component {
-		public:
-			CmptLight(Basic::Ptr<SObj> sobj, Basic::Ptr<Light> light)
-				: Component(sobj), light(light) { }
+	class CmptLight final : public Component {
+	public:
+		CmptLight(Ptr<SObj> sobj, Ptr<Light> light)
+			: Component(sobj), light(light) { }
 
-		public:
-			static const Basic::Ptr<CmptLight> New(Basic::Ptr<SObj> sobj, Basic::Ptr<Light> light) {
-				return Basic::New<CmptLight>(sobj, light);
-			}
+	public:
+		static const Ptr<CmptLight> New(Ptr<SObj> sobj, Ptr<Light> light) {
+			return Ubpa::New<CmptLight>(sobj, light);
+		}
 
-		protected:
-			virtual ~CmptLight() = default;
+	protected:
+		virtual ~CmptLight() = default;
 
-		public:
-			Ubpa::transformf GetLightToWorldMatrixWithoutScale() const;
-		
-		public:
-			Basic::Ptr<Light> light;
-		};
-	}
+	public:
+		transformf GetLightToWorldMatrixWithoutScale() const;
+
+	public:
+		Ptr<Light> light;
+	};
 }

@@ -11,7 +11,7 @@
 
 #include <map>
 
-namespace CppUtil {
+namespace Ubpa {
 	namespace Basic {
 		class Op;
 	}
@@ -31,10 +31,10 @@ namespace App{
 	class SampleRaster;
 	class RTX_Sampler;
 
-	using namespace CppUtil;
-	using namespace CppUtil::Basic;
-	using namespace CppUtil::Engine;
-	using namespace CppUtil::QT;
+	using namespace Ubpa;
+	
+	using namespace Ubpa;
+	using namespace Ubpa;
 
 	BETTER_ENUM(ENUM_ARG, int,
 		notrootpath,
@@ -88,10 +88,10 @@ namespace App{
 
 	private:
 		Ui::SObjSamplerClass ui;
-		Ptr<CppUtil::QT::PaintImgOpCreator::PaintImgOp> paintImgOp;
+		Ptr<PaintImgOpCreator::PaintImgOp> paintImgOp;
 		Ptr<Scene> scene;
 		Ptr<RTX_Sampler> rtxSampler;
-		Ptr<CppUtil::QT::OpThread> drawImgThread;
+		Ptr<OpThread> drawImgThread;
 		Ptr<SampleRaster> sampleRaster;
 		Ptr<Roamer> roamer;
 		QTimer * timer;

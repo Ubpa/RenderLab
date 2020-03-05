@@ -4,25 +4,23 @@
 #include <UGM/vec.h>
 #include <UGM/normal.h>
 
-namespace CppUtil {
-	namespace Basic {
-		namespace BasicSampler {
-			const Ubpa::pointf2 UniformInSquare();
+namespace Ubpa {
+	namespace BasicSampler {
+		const pointf2 UniformInSquare();
 
-			// Concentric
-			const Ubpa::pointf2 UniformInDisk();
+		// Concentric
+		const pointf2 UniformInDisk();
 
-			const Ubpa::pointf2 UniformOnDisk();
+		const pointf2 UniformOnDisk();
 
-			//const Ubpa::pointf3 UniformInSphere();
+		//const pointf3 UniformInSphereMesh();
 
-			const Ubpa::vecf3 UniformOnSphere();
-			const Ubpa::vecf3 UniformOnSphere(float & pd);
-			float PDofUniformOnSphere();
+		const vecf3 UniformOnSphere();
+		const vecf3 UniformOnSphere(float& pd);
+		float PDofUniformOnSphere();
 
-			const Ubpa::vecf3 CosOnHalfSphere();
+		const vecf3 CosOnHalfSphereMesh();
 
-			const Ubpa::vecf3 CosOnSphere();
-		}
+		const vecf3 CosOnSphereMesh();
 	}
 }

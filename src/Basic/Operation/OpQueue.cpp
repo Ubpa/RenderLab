@@ -2,17 +2,17 @@
 
 #include <stack>
 
-using namespace CppUtil::Basic;
+using namespace Ubpa;
+
 using namespace std;
 
-void OpQueue::Push(CppUtil::Basic::Ptr<Op> op) {
+void OpQueue::Push(Ptr<Op> op) {
 	if (op != nullptr)
 		opList.push_back(op);
 }
 
-
 void OpQueue::Run() {
-	stack< list<CppUtil::Basic::Ptr<Op>>::const_iterator > removeIts;
+	stack< list<Ptr<Op>>::const_iterator > removeIts;
 	for (auto it = opList.cbegin(); it != opList.cend(); ++it) {
 		(*it)->Run();
 		if (!(*it)->isHold)

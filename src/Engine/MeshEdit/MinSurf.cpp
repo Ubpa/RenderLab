@@ -4,12 +4,10 @@
 
 #include <Eigen/Sparse>
 
-using namespace CppUtil;
-using namespace CppUtil::Basic;
-using namespace CppUtil::Engine;
+using namespace Ubpa;
+
 using namespace std;
 using namespace Eigen;
-using namespace Ubpa;
 
 MinSurf::MinSurf(Ptr<TriMesh> triMesh)
 	: heMesh(make_shared<HEMesh<V>>())
@@ -22,7 +20,7 @@ void MinSurf::Clear() {
 	triMesh = nullptr;
 }
 
-bool MinSurf::Init(Basic::Ptr<TriMesh> triMesh) {
+bool MinSurf::Init(Ptr<TriMesh> triMesh) {
 	Clear();
 
 	if (triMesh == nullptr)
@@ -44,7 +42,7 @@ bool MinSurf::Init(Basic::Ptr<TriMesh> triMesh) {
 
 	for (int i = 0; i < nV; i++) {
 		auto v = heMesh->Vertices().at(i);
-		v->pos = triMesh->GetPositions()[i].cast_to<Ubpa::vecf3>();
+		v->pos = triMesh->GetPositions()[i].cast_to<vecf3>();
 	}
 
 	if (!heMesh->IsTriMesh() || !heMesh->HaveBoundary()) {
@@ -75,12 +73,12 @@ bool MinSurf::Run() {
 
 	size_t nV = heMesh->NumVertices();
 	size_t nF = heMesh->NumPolygons();
-	vector<Ubpa::pointf3> positions;
+	vector<pointf3> positions;
 	vector<unsigned> indice;
 	positions.reserve(nV);
 	indice.reserve(3 * nF);
 	for (auto v : heMesh->Vertices())
-		positions.push_back(v->pos.cast_to<Ubpa::pointf3>());
+		positions.push_back(v->pos.cast_to<pointf3>());
 	for (auto f : heMesh->Polygons()) {
 		for (auto v : f->BoundaryVertice())
 			indice.push_back(static_cast<unsigned>(heMesh->Index(v)));
@@ -140,7 +138,7 @@ void MinSurf::Minimize() {
 	for (auto v : heMesh->Vertices()) {
 		if (!v->IsBoundary()) {
 			auto id = heMesh->Index(v);
-			v->pos = Ubpa::vecf3(newX(id), newY(id), newZ(id));
+			v->pos = vecf3(newX(id), newY(id), newZ(id));
 		}
 	}
 }

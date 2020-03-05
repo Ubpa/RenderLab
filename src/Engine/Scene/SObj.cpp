@@ -13,8 +13,8 @@
 
 #include <iostream>
 
-using namespace CppUtil::Engine;
-using namespace CppUtil::Basic;
+using namespace Ubpa;
+
 using namespace std;
 
 void SObj::AttachComponent(Ptr<Component> component) {
@@ -35,8 +35,8 @@ const std::vector<Ptr<Component>> SObj::GetAllComponents() const {
 	return rst;
 }
 
-const Ubpa::transformf SObj::GetLocalToWorldMatrix() {
-	auto tsfm = Ubpa::transformf::eye();
+const transformf SObj::GetLocalToWorldMatrix() {
+	auto tsfm = transformf::eye();
 
 	auto getMatVisitor = Visitor::New();
 	getMatVisitor->Reg([&](Ptr<SObj> sobj) {

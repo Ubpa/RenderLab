@@ -3,7 +3,8 @@
 
 #include <ctime>
 
-using namespace CppUtil::Basic;
+using namespace Ubpa;
+
 using namespace std;
 
 static uniform_int_distribution<unsigned> uiMap;

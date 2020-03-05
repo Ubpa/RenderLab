@@ -8,7 +8,7 @@
 #include <sstream>
 
 using namespace App;
-using namespace CppUtil::Basic;
+
 using namespace std;
 
 void Layer::Init_AfterGenPtr() {

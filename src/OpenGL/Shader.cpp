@@ -13,9 +13,8 @@
 
 #include <iostream>
 
+using namespace Ubpa;
 using namespace std;
-using namespace CppUtil::OpenGL;
-using namespace CppUtil::Basic;
 
 const Shader Shader::InValid = Shader();
 
@@ -133,7 +132,6 @@ void Shader::SetFloats(const string &name, unsigned n, const float * values) con
 	glUniform1fv(glGetUniformLocation(ID, name.c_str()), n, values);
 }
 
-
 void Shader::SetVecf2(const std::string &name, float value0, float value1) const {
 	Use();
 	glUniform2f(glGetUniformLocation(ID, name.c_str()), value0, value1);
@@ -209,7 +207,6 @@ const string Shader::Process(const string & path) {
 
 	string root = StrAPI::DelTailAfter(path, '/') + "/";
 	string name = StrAPI::TailAfter(path, '/');
-
 
 	string rst;
 

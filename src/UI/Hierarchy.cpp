@@ -11,9 +11,8 @@
 
 #include <qlineedit.h>
 
-using namespace CppUtil::Engine;
-using namespace CppUtil::Basic;
-using namespace Ui;
+using namespace Ubpa;
+
 using namespace std;
 
 Hierarchy::Hierarchy()
@@ -110,7 +109,7 @@ void Hierarchy::DeleteSObj() {
 	scene->SetWriteLock(false);
 }
 
-void Hierarchy::SetScene(CppUtil::Basic::Ptr<CppUtil::Engine::Scene> scene) {
+void Hierarchy::SetScene(Ptr<Scene> scene) {
 	if (!tree)
 		return;
 

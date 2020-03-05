@@ -4,13 +4,12 @@
 
 #include <Basic/Image.h>
 #include <Basic/Math.h>
-#include <Basic/Cube.h>
+#include <Basic/ShapeMesh/CubeMesh.h>
 
 #include <ROOT_PATH.h>
 
-using namespace CppUtil;
-using namespace CppUtil::Engine;
-using namespace CppUtil::Basic;
+using namespace Ubpa;
+
 using namespace std;
 
 Ptr<SObj> GenBox() {
@@ -156,7 +155,7 @@ Ptr<Scene> GenScene00() {
 
 	// mesh . cube 
 	auto sobj_Cube = SObj::New(sobj_Root, "cube");
-	Cube cube;
+	CubeMesh cube;
 	auto cubeMesh = TriMesh::New(cube.GetTriNum(), cube.GetVertexNum(),
 		cube.GetIndexArr(), cube.GetPosArr(), cube.GetNormalArr(), cube.GetTexCoordsArr());
 	auto cubeG = CmptGeometry::New(sobj_Cube, cubeMesh);
@@ -657,7 +656,7 @@ Ptr<Scene> GenScene11() {
 	return Scene::New(sobjRoot);
 }
 
-Ptr<Scene> GenScene(int n) {
+Ptr<Scene> Ubpa::GenScene(int n) {
 	const int num = 12;
 	Ptr<Scene>(*f[num])() = {
 		&GenScene00,

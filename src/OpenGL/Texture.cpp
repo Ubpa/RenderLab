@@ -11,8 +11,8 @@
 
 #include <cstdio>
 
-using namespace CppUtil::OpenGL;
-using namespace CppUtil::Basic;
+using namespace Ubpa;
+
 using namespace std;
 
 const Texture Texture::InValid(0, ENUM_TYPE_NOT_VALID);

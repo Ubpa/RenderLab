@@ -3,18 +3,18 @@
 #include <Basic/Math.h>
 #include <UGM/val.h>
 
-using namespace CppUtil;
-using namespace CppUtil::Basic::Math;
+using namespace Ubpa;
+using namespace Math;
 using namespace std;
 
-float Perlin::Noise(const Ubpa::vecf3 & p){
+float Perlin::Noise(const vecf3 & p){
 	// pi 为整数部分
-	const auto pi = p.cast_to<Ubpa::vali3>();
+	const auto pi = p.cast_to<vali3>();
 	// pf 为小数部分
-	const auto pf = p - pi.cast_to<Ubpa::vecf3>();
+	const auto pf = p - pi.cast_to<vecf3>();
 	// 8个位置的向量
 	// 单位立方体8个顶点, 每个顶点一个随机向量
-	Ubpa::vecf3 c[2][2][2];
+	vecf3 c[2][2][2];
 	for (int dx = 0; dx < 2; dx++) {
 		for (int dy = 0; dy < 2; dy++) {
 			for (int dz = 0; dz < 2; dz++) {
@@ -28,7 +28,7 @@ float Perlin::Noise(const Ubpa::vecf3 & p){
 	return PerlinInterp(c, pf[0], pf[1], pf[2]);
 }
 
-float Perlin::PerlinInterp(const Ubpa::vecf3 c[2][2][2], float u, float v, float w) {
+float Perlin::PerlinInterp(const vecf3 c[2][2][2], float u, float v, float w) {
 	float uu = u * u*(3 - 2 * u);
 	float vv = v * v*(3 - 2 * v);
 	float ww = w * w*(3 - 2 * w);
@@ -37,9 +37,9 @@ float Perlin::PerlinInterp(const Ubpa::vecf3 c[2][2][2], float u, float v, float
 		for (size_t j = 0; j < 2; j++) {
 			for (size_t k = 0; k < 2; k++) {
 				// 顶点 到 插值点 的向量
-				Ubpa::vecf3 weightVec(u - i, v - j, w - k);
+				vecf3 weightVec(u - i, v - j, w - k);
 				// 权值 为 插值点 到 [顶点对角] 的 xyz轴向 的 距离(非负) 的乘积
-				//Ubpa::vecf3 absWeightVec = abs(Ubpa::vecf3(u-(1-i),v-(1-j),w-(1-k)));
+				//vecf3 absWeightVec = abs(vecf3(u-(1-i),v-(1-j),w-(1-k)));
 				//float weight = absWeightVec[0] * absWeightVec[1] * absWeightVec[2];
 				float weight = (i*uu + (1 - i)*(1 - uu))
 					* (j*vv + (1 - j)*(1 - vv))
@@ -52,9 +52,9 @@ float Perlin::PerlinInterp(const Ubpa::vecf3 c[2][2][2], float u, float v, float
 	return sum;
 }
 
-float Perlin::Turb(const Ubpa::vecf3 & p, size_t depth){
+float Perlin::Turb(const vecf3 & p, size_t depth){
 	float sum = 0;
-	Ubpa::vecf3 curP = p;
+	vecf3 curP = p;
 	
 	float weight = 1.0;
 	for (size_t i = 0; i < depth; i++) {
@@ -77,10 +77,10 @@ vector<size_t> Perlin::GenPermute(size_t n) {
 	return rst;
 }
 
-vector<Ubpa::vecf3> Perlin::GenRandVec(size_t n) {
-	vector<Ubpa::vecf3> rst(n);
+vector<vecf3> Perlin::GenRandVec(size_t n) {
+	vector<vecf3> rst(n);
 	for (size_t i = 0; i < n; ++i) {
-		// sample in sphere
+		// sample in SphereMesh
 		float Xi1 = Rand_F();
 		float Xi2 = Rand_F();
 		float Xi3 = Rand_F();
@@ -98,8 +98,7 @@ vector<Ubpa::vecf3> Perlin::GenRandVec(size_t n) {
 	return rst;
 }
 
-
-vector<Ubpa::vecf3> Perlin::randVec = Perlin::GenRandVec(256);
+vector<vecf3> Perlin::randVec = Perlin::GenRandVec(256);
 vector<size_t> Perlin::permuteX = Perlin::GenPermute(256);
 vector<size_t> Perlin::permuteY = Perlin::GenPermute(256);
 vector<size_t> Perlin::permuteZ = Perlin::GenPermute(256);

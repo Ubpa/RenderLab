@@ -1,8 +1,7 @@
 #include <Engine/PointLight.h>
 
-using namespace CppUtil;
-using namespace CppUtil::Engine;
-using namespace CppUtil::Basic;
+using namespace Ubpa;
+
 using namespace std;
 
 float PointLight::Fwin(float d, float radius) {
@@ -13,18 +12,18 @@ float PointLight::Fwin(float d, float radius) {
 	return falloff * falloff;
 }
 
-const Ubpa::rgbf PointLight::Sample_L(const Ubpa::pointf3 & p, Ubpa::normalf & wi, float & distToLight, float & PD) const {
-	const auto d = p.cast_to<Ubpa::vecf3>();
+const rgbf PointLight::Sample_L(const pointf3 & p, normalf & wi, float & distToLight, float & PD) const {
+	const auto d = p.cast_to<vecf3>();
 	float dist2 = d.norm2();
 	distToLight = sqrt(dist2);
 
 	float falloff = Fwin(distToLight, radius);
 	if (falloff == 0.f) {
 		PD = 0.f;
-		return Ubpa::rgbf(0.f);
+		return rgbf(0.f);
 	}
 
-	wi = - (d / distToLight).cast_to<Ubpa::normalf>();
+	wi = - (d / distToLight).cast_to<normalf>();
 	PD = 1.0f;
 	return intensity * color / dist2 * falloff;
 }

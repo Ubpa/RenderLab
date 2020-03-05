@@ -11,16 +11,16 @@
 namespace App {
 	class Layer;
 
-	class Unit : public CppUtil::Basic::HeapObj {
+	class Unit : public HeapObj {
 	public:
-		explicit Unit(CppUtil::Basic::PtrC<Layer> layer = nullptr,
+		explicit Unit(PtrC<Layer> layer = nullptr,
 			const std::vector<float> & weights = std::vector<float>())
 			: layer(layer), weights(weights) { }
 
 	public:
-		static const CppUtil::Basic::Ptr<Unit> New(CppUtil::Basic::PtrC<Layer> layer = nullptr,
+		static const Ptr<Unit> New(PtrC<Layer> layer = nullptr,
 			const std::vector<float> & weights = std::vector<float>()) {
-			return CppUtil::Basic::New<Unit>(layer, weights);
+			return New<Unit>(layer, weights);
 		}
 
 	protected:
@@ -31,8 +31,8 @@ namespace App {
 		const std::vector<float> & GetWeights() const { return weights; }
 		const std::string GetFuncName() const;
 		int GetID() const;
-		const CppUtil::Basic::PtrC<Layer> GetLayer() const { return layer.lock(); }
-		bool SetLayer(CppUtil::Basic::PtrC<Layer> layer) const;
+		const PtrC<Layer> GetLayer() const { return layer.lock(); }
+		bool SetLayer(PtrC<Layer> layer) const;
 		bool IsValid() const;
 
 	public:
@@ -42,7 +42,7 @@ namespace App {
 		virtual void Init_AfterGenPtr() override;
 
 	private:
-		mutable CppUtil::Basic::WPtrC<Layer> layer;
+		mutable WPtrC<Layer> layer;
 		std::vector<float> weights;
 	};
 }

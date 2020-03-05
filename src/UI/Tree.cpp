@@ -29,9 +29,8 @@
 #include <qmimedata.h>
 #include <qfiledialog.h>
 
-using namespace Ui;
-using namespace CppUtil::Engine;
-using namespace CppUtil::Basic;
+using namespace Ubpa;
+
 using namespace std;
 
 Tree::Tree(QWidget *parent)

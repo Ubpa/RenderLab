@@ -25,64 +25,61 @@
 //#define THREAD_NUM omp_get_num_procs() - 1
 #endif //  NDEBUG
 
-using namespace CppUtil;
-using namespace CppUtil::Engine;
-using namespace CppUtil::Basic;
+using namespace Ubpa;
+
 using namespace std;
 
-namespace CppUtil {
-	namespace Engine {
-		class TileTask{
-		public:
-			TileTask(int tileNum, int maxLoop)
-				: tileNum(tileNum), maxLoop(maxLoop), curTile(0), curLoop(0) { }
+namespace Ubpa {
+	class TileTask {
+	public:
+		TileTask(int tileNum, int maxLoop)
+			: tileNum(tileNum), maxLoop(maxLoop), curTile(0), curLoop(0) { }
 
-		public:
-			void Init(int tileNum, int maxLoop) {
-				this->tileNum = tileNum;
-				this->maxLoop = maxLoop;
-				curTile = 0;
-				curLoop = 0;
-			}
+	public:
+		void Init(int tileNum, int maxLoop) {
+			this->tileNum = tileNum;
+			this->maxLoop = maxLoop;
+			curTile = 0;
+			curLoop = 0;
+		}
 
-		public:
-			struct Task {
-				Task(bool hasTask, int tileID = -1, int curLoop = -1)
-					: hasTask(hasTask), tileID(tileID), curLoop(curLoop) { }
+	public:
+		struct Task {
+			Task(bool hasTask, int tileID = -1, int curLoop = -1)
+				: hasTask(hasTask), tileID(tileID), curLoop(curLoop) { }
 
-				bool hasTask;
-				int tileID;
-				int curLoop;
-			};
-			static constexpr int ERROR = -1;
-			const Task GetTask() {
-				if (curLoop == maxLoop)
-					return Task(false);
-				
-				m.lock();
-				auto rst = Task(true, curTile, curLoop);
-				curTile++;
-				if (curTile == tileNum) {
-					curTile = 0;
-					curLoop += 1;
-				}
-				m.unlock();
-
-				return rst;
-			}
-
-			int GetCurLoop() const {
-				return curLoop;
-			}
-
-		private:
-			int tileNum;
-			int curTile;
-			int maxLoop;
+			bool hasTask;
+			int tileID;
 			int curLoop;
-			mutex m;
 		};
-	}
+		static constexpr int ERROR = -1;
+		const Task GetTask() {
+			if (curLoop == maxLoop)
+				return Task(false);
+
+			m.lock();
+			auto rst = Task(true, curTile, curLoop);
+			curTile++;
+			if (curTile == tileNum) {
+				curTile = 0;
+				curLoop += 1;
+			}
+			m.unlock();
+
+			return rst;
+		}
+
+		int GetCurLoop() const {
+			return curLoop;
+		}
+
+	private:
+		int tileNum;
+		int curTile;
+		int maxLoop;
+		int curLoop;
+		mutex m;
+	};
 }
 
 RTX_Renderer::RTX_Renderer(const function<Ptr<RayTracer>()> & generator)
@@ -102,7 +99,7 @@ void RTX_Renderer::Run(Ptr<Scene> scene, Ptr<Image> img) {
 
 	// init rst image
 
-	auto film = Film::New(img, FilterMitchell::New(Ubpa::vecf2(2.f), 1.f / 3.f, 1.f / 3.f));
+	auto film = Film::New(img, FilterMitchell::New(vecf2(2.f), 1.f / 3.f, 1.f / 3.f));
 	int w = img->GetWidth();
 	int h = img->GetHeight();
 
@@ -139,7 +136,7 @@ void RTX_Renderer::Run(Ptr<Scene> scene, Ptr<Image> img) {
 
 	// init float image
 	int imgSize = w * h;
-	vector<vector<Ubpa::rgbf>> imgTiles(tileNum, vector<Ubpa::rgbf>(tileSize*tileSize, Ubpa::rgbf(0.f)));
+	vector<vector<rgbf>> imgTiles(tileNum, vector<rgbf>(tileSize*tileSize, rgbf(0.f)));
 
 	auto renderPartImg = [&](int id) {
 		auto & rayTracer = rayTracers[id];
@@ -154,15 +151,15 @@ void RTX_Renderer::Run(Ptr<Scene> scene, Ptr<Image> img) {
 			int baseX = tileCol * tileSize;
 			int baseY = tileRow * tileSize;
 
-			auto filmTile = film->GenFilmTile(Ubpa::bboxi2({ baseX, baseY }, { baseX + tileSize, baseY + tileSize }));
+			auto filmTile = film->GenFilmTile(bboxi2({ baseX, baseY }, { baseX + tileSize, baseY + tileSize }));
 
 			for (const auto pos : filmTile->AllPos()) {
-				auto posf = pos.cast_to<Ubpa::pointf2>() + Ubpa::vecf2(Math::Rand_F(), Math::Rand_F());
+				auto posf = pos.cast_to<pointf2>() + vecf2(Math::Rand_F(), Math::Rand_F());
 				const float u = posf[0] / w;
 				const float v = posf[1] / h;
 
 				auto ray = camera->GenRay(u, v);
-				Ubpa::rgbf radiance = rayTracer->Trace(ray);
+				rgbf radiance = rayTracer->Trace(ray);
 
 				if (radiance.has_nan()) {
 					printf("WARNING::RTX_Renderer::Run:\n"

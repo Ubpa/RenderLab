@@ -4,31 +4,29 @@
 
 #include <list>
 
-namespace CppUtil {
-	namespace Basic {
-		class OpQueue final : public Op {
-		public:
-			OpQueue(bool isHold = true) : Op(isHold) { }
-			
-		public:
-			static const Ptr<OpQueue> New(bool isHold = true) { return Basic::New<OpQueue>(isHold); }
+namespace Ubpa {
+	class OpQueue final : public Op {
+	public:
+		OpQueue(bool isHold = true) : Op(isHold) { }
 
-		public:
-			void Push(Ptr<Op> op);
-			OpQueue & operator<<(Ptr<Op> op) {
-				Push(op);
-				return *this;
-			}
-			
-			virtual void Run() override;
+	public:
+		static const Ptr<OpQueue> New(bool isHold = true) { return Ubpa::New<OpQueue>(isHold); }
 
-			bool IsEmpty() const { return opList.empty(); }
+	public:
+		void Push(Ptr<Op> op);
+		OpQueue& operator<<(Ptr<Op> op) {
+			Push(op);
+			return *this;
+		}
 
-		private:
-			virtual ~OpQueue() = default;
+		virtual void Run() override;
 
-		private:
-			std::list<Ptr<Op>> opList;
-		};
-	}
+		bool IsEmpty() const { return opList.empty(); }
+
+	private:
+		virtual ~OpQueue() = default;
+
+	private:
+		std::list<Ptr<Op>> opList;
+	};
 }

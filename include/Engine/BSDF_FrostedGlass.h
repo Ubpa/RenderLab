@@ -3,58 +3,56 @@
 #include <Engine/BSDF.h>
 #include <Engine/GGX.h>
 
-namespace CppUtil {
-	namespace Engine {
-		class BSDF_FrostedGlass : public BSDF {
-		public:
-			BSDF_FrostedGlass(const Ubpa::rgbf & colorFactor = Ubpa::rgbf(1.f), float roughnessFactor = 1.f, float ior = 1.5f)
-				: colorFactor(colorFactor), roughnessFactor(roughnessFactor), ior(ior),
-				colorTexture(nullptr),
-				roughnessTexture(nullptr),
-				aoTexture(nullptr),
-				normalTexture(nullptr) { }
+namespace Ubpa {
+	class BSDF_FrostedGlass : public BSDF {
+	public:
+		BSDF_FrostedGlass(const rgbf& colorFactor = rgbf(1.f), float roughnessFactor = 1.f, float ior = 1.5f)
+			: colorFactor(colorFactor), roughnessFactor(roughnessFactor), ior(ior),
+			colorTexture(nullptr),
+			roughnessTexture(nullptr),
+			aoTexture(nullptr),
+			normalTexture(nullptr) { }
 
-		public:
-			static const Basic::Ptr<BSDF_FrostedGlass> New(const Ubpa::rgbf & colorFactor = Ubpa::rgbf(1.f), float roughnessFactor = 1.f, float ior = 1.5f) {
-				return Basic::New<BSDF_FrostedGlass>(colorFactor, roughnessFactor, ior);
-			}
+	public:
+		static const Ptr<BSDF_FrostedGlass> New(const rgbf& colorFactor = rgbf(1.f), float roughnessFactor = 1.f, float ior = 1.5f) {
+			return Ubpa::New<BSDF_FrostedGlass>(colorFactor, roughnessFactor, ior);
+		}
 
-		protected:
-			virtual ~BSDF_FrostedGlass() = default;
+	protected:
+		virtual ~BSDF_FrostedGlass() = default;
 
-		public:
-			virtual const Ubpa::rgbf F(const Ubpa::normalf & wo, const Ubpa::normalf & wi, const Ubpa::pointf2 & texcoord) override;
+	public:
+		virtual const rgbf F(const normalf& wo, const normalf& wi, const pointf2& texcoord) override;
 
-			// probability density function
-			virtual float PDF(const Ubpa::normalf & wo, const Ubpa::normalf & wi, const Ubpa::pointf2 & texcoord) override;
+		// probability density function
+		virtual float PDF(const normalf& wo, const normalf& wi, const pointf2& texcoord) override;
 
-			// PD is probability density
-			// return albedo
-			virtual const Ubpa::rgbf Sample_f(const Ubpa::normalf & wo, const Ubpa::pointf2 & texcoord, Ubpa::normalf & wi, float & PD) override;
+		// PD is probability density
+		// return albedo
+		virtual const rgbf Sample_f(const normalf& wo, const pointf2& texcoord, normalf& wi, float& PD) override;
 
-			virtual void ChangeNormal(const Ubpa::pointf2 & texcoord, const Ubpa::normalf & tangent, Ubpa::normalf & normal) const override;
+		virtual void ChangeNormal(const pointf2& texcoord, const normalf& tangent, normalf& normal) const override;
 
-		private:
-			static float Fr(const Ubpa::normalf & v, const Ubpa::normalf & h, float ior);
+	private:
+		static float Fr(const normalf& v, const normalf& h, float ior);
 
-		private:
-			const Ubpa::rgbf GetColor(const Ubpa::pointf2 & texcoord) const;
-			float GetRoughness(const Ubpa::pointf2 & texcoord) const;
-			float GetAO(const Ubpa::pointf2 & texcoord) const;
+	private:
+		const rgbf GetColor(const pointf2& texcoord) const;
+		float GetRoughness(const pointf2& texcoord) const;
+		float GetAO(const pointf2& texcoord) const;
 
-		public:
-			GGX ggx;
+	public:
+		GGX ggx;
 
-			Ubpa::rgbf colorFactor;
-			Basic::Ptr<Basic::Image> colorTexture;
+		rgbf colorFactor;
+		Ptr<Image> colorTexture;
 
-			float roughnessFactor;
-			Basic::Ptr<Basic::Image> roughnessTexture;
+		float roughnessFactor;
+		Ptr<Image> roughnessTexture;
 
-			Basic::Ptr<Basic::Image> aoTexture;
-			Basic::Ptr<Basic::Image> normalTexture;
+		Ptr<Image> aoTexture;
+		Ptr<Image> normalTexture;
 
-			float ior;
-		};
-	}
+		float ior;
+	};
 }

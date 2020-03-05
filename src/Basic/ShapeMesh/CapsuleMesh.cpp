@@ -1,24 +1,25 @@
-#include <Basic/Capsule.h>
+#include <Basic/ShapeMesh/CapsuleMesh.h>
 
 #include <Basic/Math.h>
 
 #include <cmath>
 
-using namespace CppUtil::Basic;
+using namespace Ubpa;
+
 using namespace std;
 
-Capsule::Capsule(unsigned n, float height)
-	: Shape((2*n+1)*(2 * n +2), 4 * n * (2 * n +1)), height(height)
+CapsuleMesh::CapsuleMesh(unsigned n, float height)
+	: ShapeMesh((2*n+1)*(2 * n +2), 4 * n * (2 * n +1)), height(height)
 {
 	// 纵向 2n+1 格，2n+2 个点
 	// 横向 2n 格，2n+1 个点
 	// (2n+2)(2n+1) 个点
 	// 2(2n)(2n+1) == 8n^2 + 4n 个三角形
 
-	normalArr = vector<Ubpa::vecf3>(vertexNum);
-	texCoordsArr = vector<Ubpa::vecf2>(vertexNum);
-	indexArr = vector<Ubpa::valu3>(triNum);
-	tangentArr = vector<Ubpa::vecf3>(vertexNum);
+	normalArr = vector<vecf3>(vertexNum);
+	texCoordsArr = vector<vecf2>(vertexNum);
+	indexArr = vector<valu3>(triNum);
+	tangentArr = vector<vecf3>(vertexNum);
 
 	float halfH = height / 2;
 
@@ -31,8 +32,8 @@ Capsule::Capsule(unsigned n, float height)
 			float x = sinf(theta) * sinf(phi);
 			float y = cosf(theta);
 			float z = sinf(theta) * cosf(phi);
-			posArr[i + j * (2 * n + 1)] = Ubpa::vecf3(x, y + halfH, z);
-			normalArr[i + j * (2 * n + 1)] = Ubpa::vecf3(x, y, z);
+			posArr[i + j * (2 * n + 1)] = vecf3(x, y + halfH, z);
+			normalArr[i + j * (2 * n + 1)] = vecf3(x, y, z);
 		}
 	}
 
@@ -45,8 +46,8 @@ Capsule::Capsule(unsigned n, float height)
 			float x = sinf(theta) * sinf(phi);
 			float y = cosf(theta);
 			float z = sinf(theta) * cosf(phi);
-			posArr[i + j * (2 * n + 1)] = Ubpa::vecf3(x, y - halfH, z);
-			normalArr[i + j * (2 * n + 1)] = Ubpa::vecf3(x, y, z);
+			posArr[i + j * (2 * n + 1)] = vecf3(x, y - halfH, z);
+			normalArr[i + j * (2 * n + 1)] = vecf3(x, y, z);
 		}
 	}
 
@@ -59,8 +60,8 @@ Capsule::Capsule(unsigned n, float height)
 		auto u = phi / (2.f * Math::PI);
 		auto v = theta / Math::PI;
 		
-		texCoordsArr[i] = Ubpa::vecf2(u, v);
-		tangentArr[i] = Ubpa::vecf3(cos(phi), 0, -sin(phi));
+		texCoordsArr[i] = vecf2(u, v);
+		tangentArr[i] = vecf3(cos(phi), 0, -sin(phi));
 	}
 
 	for (unsigned i = 0; i < 2 * n; i++) {
@@ -81,34 +82,34 @@ Capsule::Capsule(unsigned n, float height)
 	}
 }
 
-float * Capsule::GetNormalArr() {
+float * CapsuleMesh::GetNormalArr() {
 	return normalArr.front().data();
 }
 
-float * Capsule::GetTexCoordsArr() {
+float * CapsuleMesh::GetTexCoordsArr() {
 	return texCoordsArr.front().data();
 }
 
-unsigned * Capsule::GetIndexArr() {
+unsigned * CapsuleMesh::GetIndexArr() {
 	return indexArr.front().data();
 }
 
-float * Capsule::GetTangentArr() {
+float * CapsuleMesh::GetTangentArr() {
 	return tangentArr.front().data();
 }
 
-unsigned Capsule::GetNormalArrSize() {
+unsigned CapsuleMesh::GetNormalArrSize() {
 	return static_cast<unsigned>(normalArr.size() * 3 * sizeof(float));
 }
 
-unsigned Capsule::GetTexCoordsArrSize() {
+unsigned CapsuleMesh::GetTexCoordsArrSize() {
 	return static_cast<unsigned>(texCoordsArr.size() * 2 * sizeof(float));
 }
 
-unsigned Capsule::GetIndexArrSize() {
+unsigned CapsuleMesh::GetIndexArrSize() {
 	return static_cast<unsigned>(indexArr.size() * 3 * sizeof(unsigned));
 }
 
-unsigned Capsule::GetTangentArrSize() {
+unsigned CapsuleMesh::GetTangentArrSize() {
 	return static_cast<unsigned>(tangentArr.size() * 3 * sizeof(float));
 }

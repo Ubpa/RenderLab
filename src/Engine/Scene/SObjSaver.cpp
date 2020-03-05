@@ -2,8 +2,8 @@
 
 #include "SL_Common.h"
 
-using namespace CppUtil::Basic;
-using namespace CppUtil::Engine;
+using namespace Ubpa;
+
 using namespace tinyxml2;
 using namespace std;
 
@@ -113,7 +113,7 @@ void SObjSaver::Visit(Ptr<CmptCamera> cmpt) {
 	});
 }
 
-// ----------------- Ubpa::transformf -----------------
+// ----------------- transformf -----------------
 
 void SObjSaver::Visit(Ptr<CmptTransform> cmpt) {
 	NewEle(str::CmptTransform::type, [=]() {

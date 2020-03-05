@@ -1,10 +1,10 @@
 template<typename T, typename>
-const CppUtil::Basic::Ptr<T> SObj::GetComponent() const {
+const Ptr<T> SObj::GetComponent() const {
 	auto target = components.find(typeid(T));
 	if (target == components.end())
 		return nullptr;
 
-	return Basic::CastTo<T>(target->second);
+	return CastTo<T>(target->second);
 }
 
 template<typename T, typename>
@@ -18,11 +18,11 @@ bool SObj::DetachComponent() {
 }
 
 template<typename T, typename>
-const CppUtil::Basic::Ptr<T> SObj::GetComponentInChildren() {
-	auto visitor = Basic::Visitor::New();
+const Ptr<T> SObj::GetComponentInChildren() {
+	auto visitor = Visitor::New();
 
-	Basic::Ptr<T> componentOfT = nullptr;
-	visitor->Reg([&componentOfT, visitor](Basic::Ptr<SObj> sobj) {
+	Ptr<T> componentOfT = nullptr;
+	visitor->Reg([&componentOfT, visitor](Ptr<SObj> sobj) {
 		auto tmpComponent = sobj->GetComponent<T>();
 		if (tmpComponent) {
 			componentOfT = tmpComponent;
@@ -40,12 +40,12 @@ const CppUtil::Basic::Ptr<T> SObj::GetComponentInChildren() {
 }
 
 template<typename T, typename>
-const std::vector<CppUtil::Basic::Ptr<T> > SObj::GetComponentsInChildren() {
-	auto visitor = Basic::Visitor::New();
+const std::vector<Ptr<T> > SObj::GetComponentsInChildren() {
+	auto visitor = Visitor::New();
 
-	std::vector<Basic::Ptr<T>> componentsOfT;
+	std::vector<Ptr<T>> componentsOfT;
 
-	visitor->Reg([&componentsOfT](Basic::Ptr<SObj> sobj) {
+	visitor->Reg([&componentsOfT](Ptr<SObj> sobj) {
 		auto componentOfT = sobj->GetComponent<T>();
 		if (componentOfT)
 			componentsOfT.push_back(componentOfT);
@@ -55,7 +55,7 @@ const std::vector<CppUtil::Basic::Ptr<T> > SObj::GetComponentsInChildren() {
 }
 
 template<typename T, typename ...Args, typename>
-const CppUtil::Basic::Ptr<T> SObj::AddComponent(Args && ... args) {
+const Ptr<T> SObj::AddComponent(Args && ... args) {
 	if (HaveComponent<T>())
 		return nullptr;
 

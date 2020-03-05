@@ -2,7 +2,7 @@
 
 #include <qtreewidget.h>
 
-namespace Ui {
+namespace Ubpa {
 	class Tree : public QTreeWidget {
 		Q_OBJECT
 	public:

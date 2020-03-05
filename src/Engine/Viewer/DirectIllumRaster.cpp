@@ -13,11 +13,8 @@
 
 #include <ROOT_PATH.h>
 
-using namespace CppUtil::Engine;
-using namespace CppUtil::QT;
-using namespace CppUtil::OpenGL;
-using namespace CppUtil::Basic;
-using namespace CppUtil;
+using namespace Ubpa;
+
 using namespace Define;
 using namespace std;
 
@@ -68,7 +65,7 @@ void DirectIllumRaster::Visit(Ptr<BSDF_Diffuse> bsdf) {
 	SetCurShader(shader_diffuse);
 
 	string strBSDF = "bsdf.";
-	shader_diffuse.SetVecf3(strBSDF + "colorFactor", bsdf->colorFactor.cast_to<Ubpa::valf3>());
+	shader_diffuse.SetVecf3(strBSDF + "colorFactor", bsdf->colorFactor.cast_to<valf3>());
 	if (bsdf->albedoTexture && bsdf->albedoTexture->IsValid()) {
 		shader_diffuse.SetBool(strBSDF + "haveAlbedoTexture", true);
 		pOGLW->GetTex(bsdf->albedoTexture).Use(0);
@@ -83,7 +80,7 @@ void DirectIllumRaster::Visit(Ptr<BSDF_MetalWorkflow> bsdf) {
 	SetCurShader(shader_metalWorkflow);
 
 	string strBSDF = "bsdf.";
-	shader_metalWorkflow.SetVecf3(strBSDF + "colorFactor", bsdf->colorFactor.cast_to<Ubpa::valf3>());
+	shader_metalWorkflow.SetVecf3(strBSDF + "colorFactor", bsdf->colorFactor.cast_to<valf3>());
 	shader_metalWorkflow.SetFloat(strBSDF + "metallicFactor", bsdf->metallicFactor);
 	shader_metalWorkflow.SetFloat(strBSDF + "roughnessFactor", bsdf->roughnessFactor);
 
@@ -108,7 +105,7 @@ void DirectIllumRaster::Visit(Ptr<BSDF_FrostedGlass> bsdf) {
 	SetCurShader(shader_frostedGlass);
 
 	string strBSDF = "bsdf.";
-	shader_frostedGlass.SetVecf3(strBSDF + "colorFactor", bsdf->colorFactor.cast_to<Ubpa::valf3>());
+	shader_frostedGlass.SetVecf3(strBSDF + "colorFactor", bsdf->colorFactor.cast_to<valf3>());
 	shader_frostedGlass.SetFloat(strBSDF + "roughnessFactor", bsdf->roughnessFactor);
 
 	const int texNum = 4;

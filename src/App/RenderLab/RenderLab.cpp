@@ -30,9 +30,8 @@
 
 #include <synchapi.h>
 
-using namespace CppUtil::Engine;
-using namespace CppUtil::Basic;
-using namespace CppUtil::QT;
+using namespace Ubpa;
+
 using namespace std;
 using namespace Ui;
 

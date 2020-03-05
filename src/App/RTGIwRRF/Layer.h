@@ -20,51 +20,51 @@ namespace App {
 		ReLU,
 		tanh)
 
-	class Layer : public CppUtil::Basic::HeapObj {
+	class Layer : public HeapObj {
 	public:
-		explicit Layer(CppUtil::Basic::PtrC<Model> model = nullptr,
+		explicit Layer(PtrC<Model> model = nullptr,
 			const int inputDim = -1,
 			const Connection & connection = Connection::Dense,
 			const Activation & activation = Activation::Identity)
 			: model(model), inputDim(inputDim), connection(connection), activation(activation) { }
 
 	public:
-		static const CppUtil::Basic::Ptr<Layer> New(CppUtil::Basic::PtrC<Model> model = nullptr,
+		static const Ptr<Layer> New(PtrC<Model> model = nullptr,
 			const int inputDim = -1,
 			const Connection & connection = Connection::Dense,
 			const Activation & activation = Activation::Identity)
 		{
-			return CppUtil::Basic::New<Layer>(model, inputDim, connection, activation);
+			return New<Layer>(model, inputDim, connection, activation);
 		}
 
 	protected:
 		virtual ~Layer() = default;
 
 	public:
-		const std::vector<CppUtil::Basic::PtrC<Unit>> & GetUnits() const { return units; }
+		const std::vector<PtrC<Unit>> & GetUnits() const { return units; }
 		const Activation & GetActivation() const { return activation; }
 		const Connection & GetConnection() const { return connection; }
 		int GetInputDim() const { return inputDim; }
 		int GetOutputDim() const { return static_cast<int>(units.size()); }
-		const CppUtil::Basic::PtrC<Model> GetModel() const { return model.lock(); }
-		bool SetModel(CppUtil::Basic::PtrC<Model> model) const;
+		const PtrC<Model> GetModel() const { return model.lock(); }
+		bool SetModel(PtrC<Model> model) const;
 
-		int GetIDof(CppUtil::Basic::PtrC<Unit> unit) const;
+		int GetIDof(PtrC<Unit> unit) const;
 		int GetID() const;
 		const std::string GetFuncName() const;
 		
 		bool IsValid() const;
 
 	public:
-		bool AddUnit(CppUtil::Basic::PtrC<Unit> unit) const;
+		bool AddUnit(PtrC<Unit> unit) const;
 		const std::string GenFunc(bool genUnits = true) const;
 
 	private:
 		virtual void Init_AfterGenPtr() override;
 
 	private:
-		mutable CppUtil::Basic::WPtrC<Model> model;
-		mutable std::vector<CppUtil::Basic::PtrC<Unit>> units;
+		mutable WPtrC<Model> model;
+		mutable std::vector<PtrC<Unit>> units;
 
 		int inputDim;
 		Connection connection;

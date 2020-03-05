@@ -19,7 +19,7 @@
 #include <ROOT_PATH.h>
 
 using namespace App;
-using namespace CppUtil::OpenGL;
+
 using namespace Define;
 using namespace std;
 

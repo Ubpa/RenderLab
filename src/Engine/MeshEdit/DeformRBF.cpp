@@ -4,9 +4,8 @@
 
 #include <Eigen/Dense>
 
-using namespace CppUtil;
-using namespace CppUtil::Basic;
-using namespace CppUtil::Engine;
+using namespace Ubpa;
+
 using namespace std;
 using namespace Eigen;
 
@@ -15,7 +14,7 @@ void DeformRBF::Clear() {
 	origPos.clear();
 }
 
-bool DeformRBF::Init(Basic::Ptr<TriMesh> triMesh) {
+bool DeformRBF::Init(Ptr<TriMesh> triMesh) {
 	if (triMesh == this->triMesh)
 		return true;
 
@@ -64,7 +63,7 @@ bool DeformRBF::Run(const std::vector<Constraint> & constraints, const vector<si
 		for (size_t j = 0; j < m; j++) {
 			auto ci = origPos[constraints[i].id];
 			auto cj = origPos[constraints[j].id];
-			float norm = Ubpa::pointf3::distance(ci, cj);
+			float norm = pointf3::distance(ci, cj);
 			A(i, j) = phi(norm);
 		}
 	}
@@ -107,14 +106,14 @@ bool DeformRBF::Run(const std::vector<Constraint> & constraints, const vector<si
 	MatrixXf RBF = A.colPivHouseholderQr().solve(b);
 
 	// compute target pos of vertex
-	vector<Ubpa::pointf3> qVec;
+	vector<pointf3> qVec;
 	for (auto id : updateIndice) {
 		auto pos = origPos[id];
 		// compute p
 		MatrixXf p(1, m + k);
 		for (size_t i = 0; i < m; i++) {
 			auto ci = origPos[constraints[i].id];
-			p(i) = phi(Ubpa::pointf3::distance(ci, pos));
+			p(i) = phi(pointf3::distance(ci, pos));
 		}
 		p(0, m + 0) = 1;
 		p(0, m + 1) = pos[0] * pos[0];

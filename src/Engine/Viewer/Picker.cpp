@@ -23,8 +23,8 @@
 
 #include <deque>
 
-using namespace CppUtil::Engine;
-using namespace CppUtil::Basic;
+using namespace Ubpa;
+
 using namespace std;
 
 Picker::Picker(Viewer * viewer)
@@ -40,11 +40,11 @@ void Picker::Init() {
 		int y = pOGWL->y;
 
 		// y 需要反过来
-		Ubpa::pointf3 posOnScreen(2 * x / float(pOGWL->w), 2 * (1 - y / float(pOGWL->h)), 2);
-		Ubpa::pointf3 posInNorm = posOnScreen - Ubpa::vecf3(1.0f);
-		Ubpa::pointf3 posInWorld = (camera->GetProjectionMatrix() * camera->GetViewMatrix()).inverse() * posInNorm;
+		pointf3 posOnScreen(2 * x / float(pOGWL->w), 2 * (1 - y / float(pOGWL->h)), 2);
+		pointf3 posInNorm = posOnScreen - vecf3(1.0f);
+		pointf3 posInWorld = (camera->GetProjectionMatrix() * camera->GetViewMatrix()).inverse() * posInNorm;
 
-		Ubpa::vecf3 dir = (posInWorld - camera->GetPos()).normalize();
+		vecf3 dir = (posInWorld - camera->GetPos()).normalize();
 		Ray ray(camera->GetPos(), dir);
 		rayIntersector->Init(&ray);
 		viewer->GetScene()->GetRoot()->Accept(rayIntersector);
@@ -62,7 +62,7 @@ void Picker::Init() {
 				auto pos = positions[closestRst.idx];
 				origPos = pos;
 				size_t idx = static_cast<size_t>(closestRst.idx);
-				this->dir = triMesh->GetNormals()[idx].cast_to<Ubpa::vecf3>();
+				this->dir = triMesh->GetNormals()[idx].cast_to<vecf3>();
 				printf("hit triMesh, idx:%d, pos: (%f,%f,%f)\n", closestRst.idx, pos[0], pos[1], pos[2]);
 				
 				deformRBF = DeformRBF::New(triMesh);
@@ -90,7 +90,7 @@ void Picker::Init() {
 						if (inner.find(u) != inner.end())
 							continue;
 
-						if (Ubpa::pointf3::distance(pos, positions[u]) < r)
+						if (pointf3::distance(pos, positions[u]) < r)
 							pool.push_back(u);
 						else
 							boundary.insert(u);
@@ -106,7 +106,7 @@ void Picker::Init() {
 			}
 		}
 		
-		Ui::Attribute::GetInstance()->SetSObj(closestRst.closestSObj);
+		Attribute::GetInstance()->SetSObj(closestRst.closestSObj);
 	}, true);
 	EventMngr::GetInstance().Reg(Qt::LeftButton, (void*)viewer->GetOGLW(), EventMngr::MOUSE_PRESS, MRB_PressOp);
 

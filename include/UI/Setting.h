@@ -2,7 +2,7 @@
 
 #include <UI/Grid.h>
 
-namespace Ui {
+namespace Ubpa {
 	class Setting : public Grid {
 	public:
 		using Grid::Grid;
@@ -11,8 +11,8 @@ namespace Ui {
 		virtual ~Setting() = default;
 
 	public:
-		static CppUtil::Basic::Ptr<Setting> GetInstance() {
-			static auto instance = CppUtil::Basic::New<Setting>();
+		static Ptr<Setting> GetInstance() {
+			static auto instance = Ubpa::New<Setting>();
 			return instance;
 		}
 	};

@@ -7,7 +7,7 @@
 #include <sstream>
 
 using namespace App;
-using namespace CppUtil::Basic;
+
 using namespace std;
 
 int Model::GetIDof(PtrC<Layer> layer) const {

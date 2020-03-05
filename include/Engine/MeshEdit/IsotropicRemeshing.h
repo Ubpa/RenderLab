@@ -5,48 +5,46 @@
 
 #include <UHEMesh/HEMesh.h>
 
-namespace CppUtil {
-	namespace Engine {
-		class TriMesh;
+namespace Ubpa {
+	class TriMesh;
 
-		class IsotropicRemeshing : public Basic::HeapObj {
+	class IsotropicRemeshing : public HeapObj {
+	public:
+		IsotropicRemeshing(Ptr<TriMesh> triMesh);
+
+	public:
+		static const Ptr<IsotropicRemeshing> New(Ptr<TriMesh> triMesh) {
+			return Ubpa::New<IsotropicRemeshing>(triMesh);
+		}
+
+	public:
+		bool Init(Ptr<TriMesh> triMesh);
+		void Clear();
+		bool Run(size_t n);
+
+	private:
+		bool Kernel(size_t n);
+
+	private:
+		class V;
+		class E;
+		class V : public TVertex<V, E> {
 		public:
-			IsotropicRemeshing(Basic::Ptr<TriMesh> triMesh);
-
+			V(const vecf3 pos = 0.f) : pos(pos) {}
 		public:
-			static const Basic::Ptr<IsotropicRemeshing> New(Basic::Ptr<TriMesh> triMesh) {
-				return Basic::New<IsotropicRemeshing>(triMesh);
-			}
-
+			const vecf3 Project(const vecf3& p, const normalf& norm) const;
 		public:
-			bool Init(Basic::Ptr<TriMesh> triMesh);
-			void Clear();
-			bool Run(size_t n);
-
-		private:
-			bool Kernel(size_t n);
-
-		private:
-			class V;
-			class E;
-			class V : public Ubpa::TVertex<V, E> {
-			public:
-				V(const Ubpa::vecf3 pos = 0.f) : pos(pos) {}
-			public:
-				const Ubpa::vecf3 Project(const Ubpa::vecf3& p, const Ubpa::normalf & norm) const;
-			public:
-				Ubpa::vecf3 pos;
-				Ubpa::vecf3 newPos;
-			};
-			class E : public Ubpa::TEdge<V, E> {
-			public:
-				float Length() const { return (HalfEdge()->Origin()->pos - HalfEdge()->End()->pos).norm(); }
-				Ubpa::vecf3 Centroid() const { return (HalfEdge()->Origin()->pos + HalfEdge()->End()->pos) / 2.f; }
-				bool IsCanCollapse(float min, float maxL) const;
-			};
-		private:
-			Basic::Ptr<TriMesh> triMesh;
-			const Basic::Ptr<Ubpa::HEMesh<V>> heMesh;
+			vecf3 pos;
+			vecf3 newPos;
 		};
-	}
+		class E : public TEdge<V, E> {
+		public:
+			float Length() const { return (HalfEdge()->Origin()->pos - HalfEdge()->End()->pos).norm(); }
+			vecf3 Centroid() const { return (HalfEdge()->Origin()->pos + HalfEdge()->End()->pos) / 2.f; }
+			bool IsCanCollapse(float min, float maxL) const;
+		};
+	private:
+		Ptr<TriMesh> triMesh;
+		const Ptr<HEMesh<V>> heMesh;
+	};
 }

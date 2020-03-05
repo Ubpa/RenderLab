@@ -12,9 +12,7 @@
 
 #include <Basic/LambdaOp.h>
 
-using namespace CppUtil::Engine;
-using namespace CppUtil::QT;
-using namespace CppUtil::Basic;
+using namespace Ubpa;
 
 Viewer::Viewer(RawAPI_OGLW * pOGLW, Ptr<Scene> scene, RasterType rasterType)
 	: pOGLW(pOGLW), scene(scene), roamer(Roamer::New(pOGLW)), picker(Picker::New(this)) {

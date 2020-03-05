@@ -1,9 +1,9 @@
 #include <Basic/Timer.h>
 #include <ctime>
 
-using namespace CppUtil::Basic;
-using namespace std;
+using namespace Ubpa;
 
+using namespace std;
 
 Timer::Timer(bool start, size_t maxLogNum)
 	: maxLogNum(maxLogNum){
@@ -15,11 +15,11 @@ Timer::Timer(bool start, size_t maxLogNum)
 bool Timer::Start() {
 	switch (state)
 	{
-	case Basic::Timer::ENUM_STATE_INIT:
+	case Timer::ENUM_STATE_INIT:
 		wholeTime = 0;
 		logs.push_front(0);
 		// no break
-	case Basic::Timer::ENUM_STATE_STOP:
+	case Timer::ENUM_STATE_STOP:
 		lastLogTime = GetCurTime();
 		state = ENUM_STATE_RUNNING;
 		return true;
@@ -31,7 +31,7 @@ bool Timer::Start() {
 bool Timer::Stop() {
 	switch (state)
 	{
-	case Basic::Timer::ENUM_STATE_RUNNING: {
+	case Timer::ENUM_STATE_RUNNING: {
 		double curTime = GetCurTime();
 		double deltaTime = curTime - lastLogTime;
 		wholeTime += deltaTime;
@@ -47,7 +47,7 @@ bool Timer::Stop() {
 double Timer::Log() {
 	switch (state)
 	{
-	case Basic::Timer::ENUM_STATE_RUNNING: {
+	case Timer::ENUM_STATE_RUNNING: {
 		double curTime = GetCurTime();
 		double deltaTime = curTime - lastLogTime;
 		wholeTime += deltaTime;
@@ -83,16 +83,16 @@ double Timer::GetCurTime() const {
 double Timer::GetWholeTime() const {
 	switch (state)
 	{
-	case CppUtil::Basic::Timer::ENUM_STATE_INIT:
+	case Timer::ENUM_STATE_INIT:
 		return 0;
 		break;
-	case CppUtil::Basic::Timer::ENUM_STATE_RUNNING: {
+	case Timer::ENUM_STATE_RUNNING: {
 		double curTime = GetCurTime();
 		double deltaTime = curTime - lastLogTime;
 		return wholeTime + deltaTime;
 		break;
 	}
-	case CppUtil::Basic::Timer::ENUM_STATE_STOP:
+	case Timer::ENUM_STATE_STOP:
 		return wholeTime;
 		break;
 	default:

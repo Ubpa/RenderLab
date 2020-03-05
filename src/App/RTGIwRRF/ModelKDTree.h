@@ -10,15 +10,15 @@
 namespace App {
 	class Model;
 
-	class ModelKDTree : public CppUtil::Basic::KDTree<ModelKDTree, CppUtil::Basic::Ptr<Model>> {
+	class ModelKDTree : public KDTree<ModelKDTree, Ptr<Model>> {
 	public:
-		typedef CppUtil::Basic::Ptr<Model> ModelPtr;
-		typedef CppUtil::Basic::KDTree<ModelKDTree, ModelPtr> BaseT;
+		typedef Ptr<Model> ModelPtr;
+		typedef KDTree<ModelKDTree, ModelPtr> BaseT;
 
 	public:
 		explicit ModelKDTree (
 			const int ID = -1,
-			CppUtil::Basic::Ptr<ModelKDTree> parent = nullptr,
+			Ptr<ModelKDTree> parent = nullptr,
 			const int inputDim = -1,
 			const int outputDim = -1,
 			const int axis = -1,
@@ -31,16 +31,16 @@ namespace App {
 			outputDim(outputDim) { }
 
 	public:
-		static const CppUtil::Basic::Ptr<ModelKDTree> New(
+		static const Ptr<ModelKDTree> New(
 			const int ID = -1,
-			CppUtil::Basic::Ptr<ModelKDTree> parent = nullptr,
+			Ptr<ModelKDTree> parent = nullptr,
 			const int inputDim = -1,
 			const int outputDim = -1,
 			const int axis = -1,
 			const float spiltVal = 0,
 			ModelPtr modelPtr = nullptr)
 		{
-			return CppUtil::Basic::New<ModelKDTree>(ID, parent, inputDim, outputDim, axis, spiltVal, modelPtr);
+			return New<ModelKDTree>(ID, parent, inputDim, outputDim, axis, spiltVal, modelPtr);
 		}
 
 	protected:

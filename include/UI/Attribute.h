@@ -9,18 +9,11 @@
 
 #include <map>
 
-namespace CppUtil {
-	namespace Engine {
-		class SObj;
-		class Component;
-	}
-	namespace QT {
-		class RawAPI_OGLW;
-	}
-}
+namespace Ubpa {
+	class RawAPI_OGLW;
+	class SObj;
+	class Component;
 
-
-namespace Ui {
 	class Grid;
 
 	class Attribute final {
@@ -28,16 +21,16 @@ namespace Ui {
 		Attribute();
 
 	public:
-		static Attribute * GetInstance() {
+		static Attribute* GetInstance() {
 			static Attribute instance;
 			return &instance;
 		}
 
 	public:
-		void Init(QToolBox * tbox, CppUtil::QT::RawAPI_OGLW * pOGLW);
-		void SetSObj(CppUtil::Basic::Ptr<CppUtil::Engine::SObj> sobj);
-		const CppUtil::Basic::Ptr<CppUtil::Engine::SObj> GetCurSObj() const { return curSObj.lock(); }
-		template<typename T, typename = std::enable_if_t<std::is_base_of_v<CppUtil::Engine::Component, T>>>
+		void Init(QToolBox* tbox, RawAPI_OGLW* pOGLW);
+		void SetSObj(Ptr<SObj> sobj);
+		const Ptr<SObj> GetCurSObj() const { return curSObj.lock(); }
+		template<typename T, typename = std::enable_if_t<std::is_base_of_v<Component, T>>>
 		void SetCurCmpt() {
 			auto target = componentType2item.find(typeid(T));
 			if (target == componentType2item.end())
@@ -47,21 +40,21 @@ namespace Ui {
 		}
 
 	private:
-		void AddController(CppUtil::Basic::Ptr<CppUtil::Engine::SObj> sobj);
+		void AddController(Ptr<SObj> sobj);
 
 	private:
 		class ComponentVisitor;
 		friend class ComponentVisitor;
 
-		QToolBox * tbox;
+		QToolBox* tbox;
 
-		CppUtil::Basic::TypeMap<QWidget *> componentType2item;
-		std::map<QWidget *, CppUtil::Basic::Ptr<Grid>> item2grid;
+		TypeMap<QWidget*> componentType2item;
+		std::map<QWidget*, Ptr<Grid>> item2grid;
 
-		CppUtil::Basic::Ptr<ComponentVisitor> visitor;
+		Ptr<ComponentVisitor> visitor;
 
-		CppUtil::Basic::WPtr<CppUtil::Engine::SObj> curSObj;
+		WPtr<SObj> curSObj;
 
-		CppUtil::QT::RawAPI_OGLW * pOGLW;
+		RawAPI_OGLW* pOGLW;
 	};
 }

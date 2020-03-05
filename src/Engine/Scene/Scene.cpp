@@ -8,8 +8,8 @@
 
 #include <Basic/Math.h>
 
-using namespace CppUtil::Engine;
-using namespace CppUtil::Basic;
+using namespace Ubpa;
+
 using namespace std;
 
 void Scene::SetWriteLock(bool isLock) {

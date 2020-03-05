@@ -43,10 +43,8 @@
 
 using namespace Define;
 using namespace std;
-using namespace CppUtil::Basic;
-using namespace CppUtil::Engine;
-using namespace CppUtil::OpenGL;
-using namespace CppUtil::QT;
+
+using namespace Ubpa;
 
 const int DeferredRaster::maxPointLights = 8;
 const int DeferredRaster::maxDirectionalLights = 8;
@@ -54,8 +52,8 @@ const int DeferredRaster::maxSpotLights = 8;
 
 const string rootPath = ROOT_PATH;
 
-DeferredRaster::DeferredRaster(RawAPI_OGLW * pOGLW, Ptr<Scene> scene, Ptr<Camera> camera)
-	: Raster(pOGLW,scene,camera), curMaterialShader(Shader::InValid)
+DeferredRaster::DeferredRaster(RawAPI_OGLW* pOGLW, Ptr<Scene> scene, Ptr<Camera> camera)
+	: Raster(pOGLW, scene, camera), curMaterialShader(Shader::InValid)
 {
 	RegMemberFunc<SObj>(&DeferredRaster::Visit);
 
@@ -85,7 +83,7 @@ void DeferredRaster::Init() {
 	InitShaders();
 
 	gbufferFBO = FBO(pOGLW->width(), pOGLW->height(), { 4,4,4,4 });
-	windowFBO = FBO(pOGLW->width(), pOGLW->height(), {3});
+	windowFBO = FBO(pOGLW->width(), pOGLW->height(), { 3 });
 }
 
 void DeferredRaster::InitShaders() {
@@ -123,7 +121,7 @@ void DeferredRaster::InitShader_GBuffer_Diffuse() {
 	diffuseShader.SetInt("diffuse.albedoTexture", 0);
 
 	diffuseShader.SetInt("ID", mngrMID.Get<BSDF_Diffuse>());
-	
+
 	BindUBO(diffuseShader);
 }
 
@@ -165,8 +163,8 @@ void DeferredRaster::InitShader_DirectLight() {
 	for (int i = 0; i < maxSpotLights; i++)
 		directLightShader.SetInt("spotLightDepthMap" + to_string(i), idx++);
 
-	ltcTex1 = Texture(LTCTex::SIZE, LTCTex::SIZE, LTCTex::data1, GL_FLOAT, GL_RGBA, GL_RGBA32F, Texture::MAG_FILTER::LINEAR);
-	ltcTex2 = Texture(LTCTex::SIZE, LTCTex::SIZE, LTCTex::data2, GL_FLOAT, GL_RGBA, GL_RGBA32F, Texture::MAG_FILTER::LINEAR);
+	ltcTex1 = Texture(LTC::TexSize, LTC::TexSize, LTC::data1, GL_FLOAT, GL_RGBA, GL_RGBA32F, Texture::MAG_FILTER::LINEAR);
+	ltcTex2 = Texture(LTC::TexSize, LTC::TexSize, LTC::data2, GL_FLOAT, GL_RGBA, GL_RGBA32F, Texture::MAG_FILTER::LINEAR);
 	directLightShader.SetInt("LTCTex1", idx++);
 	directLightShader.SetInt("LTCTex2", idx++);
 
@@ -205,7 +203,7 @@ void DeferredRaster::InitShader_Skybox() {
 
 void DeferredRaster::InitShader_PostProcess() {
 	postProcessShader = Shader(rootPath + str_Screen_vs, rootPath + "data/shaders/Engine/DeferredPipeline/postProcess.fs");
-	
+
 	postProcessShader.SetInt("img", 0);
 }
 
@@ -240,7 +238,7 @@ void DeferredRaster::Pass_GBuffer() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	modelVec.clear();
-	modelVec.push_back(Ubpa::transformf::eye());
+	modelVec.push_back(transformf::eye());
 	scene->GetRoot()->Accept(This());
 }
 
@@ -387,7 +385,7 @@ void DeferredRaster::Visit(Ptr<SObj> sobj) {
 
 void DeferredRaster::Visit(Ptr<BSDF_MetalWorkflow> metal) {
 	string strBSDF = "metal.";
-	metalShader.SetVecf3(strBSDF + "colorFactor", metal->colorFactor.cast_to<Ubpa::valf3>());
+	metalShader.SetVecf3(strBSDF + "colorFactor", metal->colorFactor.cast_to<valf3>());
 	metalShader.SetFloat(strBSDF + "metallicFactor", metal->metallicFactor);
 	metalShader.SetFloat(strBSDF + "roughnessFactor", metal->roughnessFactor);
 
@@ -410,7 +408,7 @@ void DeferredRaster::Visit(Ptr<BSDF_MetalWorkflow> metal) {
 
 void DeferredRaster::Visit(Ptr<BSDF_Diffuse> diffuse) {
 	string strBSDF = "diffuse.";
-	diffuseShader.SetVecf3(strBSDF + "colorFactor", diffuse->colorFactor.cast_to<Ubpa::valf3>());
+	diffuseShader.SetVecf3(strBSDF + "colorFactor", diffuse->colorFactor.cast_to<valf3>());
 	if (diffuse->albedoTexture && diffuse->albedoTexture->IsValid()) {
 		diffuseShader.SetBool(strBSDF + "haveAlbedoTexture", true);
 		pOGLW->GetTex(diffuse->albedoTexture).Use(0);
@@ -423,7 +421,7 @@ void DeferredRaster::Visit(Ptr<BSDF_Diffuse> diffuse) {
 
 void DeferredRaster::Visit(Ptr<BSDF_Frostbite> bsdf) {
 	string strBSDF = "bsdf.";
-	frostbiteShader.SetVecf3(strBSDF + "colorFactor", bsdf->colorFactor.cast_to<Ubpa::valf3>());
+	frostbiteShader.SetVecf3(strBSDF + "colorFactor", bsdf->colorFactor.cast_to<valf3>());
 	frostbiteShader.SetFloat(strBSDF + "metallicFactor", bsdf->metallicFactor);
 	frostbiteShader.SetFloat(strBSDF + "roughnessFactor", bsdf->roughnessFactor);
 
@@ -445,7 +443,7 @@ void DeferredRaster::Visit(Ptr<BSDF_Frostbite> bsdf) {
 }
 
 void DeferredRaster::Visit(Ptr<BSDF_Emission> emission) {
-	emissionShader.SetVecf3("emission.L", (emission->intensity * emission->color).cast_to<Ubpa::valf3>());
+	emissionShader.SetVecf3("emission.L", (emission->intensity * emission->color).cast_to<valf3>());
 
 	curMaterialShader = emissionShader;
 }

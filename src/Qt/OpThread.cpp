@@ -2,13 +2,13 @@
 #include <Basic/Op.h>
 #include <QMetaType>
 
-using namespace CppUtil::QT;
-using namespace CppUtil::Basic;
+using namespace Ubpa;
+
 using namespace std;
 
-OpThread::OpThread(CppUtil::Basic::Ptr<Op> op)
+OpThread::OpThread(Ptr<Op> op)
 	: op(op), isStop(false) {
-	qRegisterMetaType<Basic::Ptr<Basic::Op>>("Basic::Ptr<Basic::Op>");
+	qRegisterMetaType<Ptr<Op>>("Ptr<Op>");
 }
 
 void OpThread::run() {
@@ -20,6 +20,6 @@ void OpThread::run() {
 	isStop = true;
 }
 
-void OpThread::UI_Op_Run(CppUtil::Basic::Ptr<Op> op) {
+void OpThread::UI_Op_Run(Ptr<Op> op) {
 	emit UI_Op(op);
 }

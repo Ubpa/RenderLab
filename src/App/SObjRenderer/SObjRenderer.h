@@ -9,7 +9,7 @@
 #include <3rdParty/enum.h>
 #include <3rdParty/docopt/docopt.h>
 
-namespace CppUtil {
+namespace Ubpa {
 	namespace Basic {
 		class Op;
 	}
@@ -53,9 +53,9 @@ public:
 	virtual ~SObjRenderer();
 
 public:
-	CppUtil::Basic::Ptr<CppUtil::Engine::Scene> GetScene()const { return scene; }
+	Ptr<Scene> GetScene()const { return scene; }
 
-	void UI_Op(CppUtil::Basic::Ptr<CppUtil::Basic::Op> op);
+	void UI_Op(Ptr<Op> op);
 
 private:
 	void Init();
@@ -66,12 +66,12 @@ private:
 
 private:
 	Ui::SObjRendererClass ui;
-	CppUtil::Basic::Ptr<CppUtil::QT::PaintImgOpCreator::PaintImgOp> paintImgOp;
-	CppUtil::Basic::Ptr<CppUtil::Engine::Scene> scene;
-	CppUtil::Basic::Ptr<CppUtil::Engine::Viewer> viewer;
-	CppUtil::Basic::Ptr<CppUtil::Engine::RTX_Renderer> rtxRenderer;
-	CppUtil::Basic::Ptr<CppUtil::Engine::PathTracer> pathTracer;
-	CppUtil::Basic::Ptr<CppUtil::QT::OpThread> drawImgThread;
+	Ptr<PaintImgOpCreator::PaintImgOp> paintImgOp;
+	Ptr<Scene> scene;
+	Ptr<Viewer> viewer;
+	Ptr<RTX_Renderer> rtxRenderer;
+	Ptr<PathTracer> pathTracer;
+	Ptr<OpThread> drawImgThread;
 	QTimer * timer;
 
 private:

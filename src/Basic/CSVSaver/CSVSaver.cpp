@@ -1,6 +1,7 @@
 #include <Basic/CSVSaver.h>
 
-using namespace CppUtil::Basic;
+using namespace Ubpa;
+
 using namespace std;
 
 template<typename ValT>

@@ -13,9 +13,8 @@
 
 #include <stack>
 
-using namespace CppUtil;
-using namespace CppUtil::Engine;
-using namespace CppUtil::Basic;
+using namespace Ubpa;
+
 using namespace std;
 
 VisibilityChecker::VisibilityChecker() {
@@ -27,7 +26,7 @@ VisibilityChecker::VisibilityChecker() {
 	RegMemberFunc<Capsule>(&VisibilityChecker::Visit);
 }
 
-void VisibilityChecker::Init(const ERay & ray, const float tMax) {
+void VisibilityChecker::Init(const Ray & ray, const float tMax) {
 	this->ray = ray;
 
 	this->ray.tMax = tMax;
@@ -35,7 +34,7 @@ void VisibilityChecker::Init(const ERay & ray, const float tMax) {
 	rst.isIntersect = false;
 }
 
-bool VisibilityChecker::Intersect(const Ubpa::bboxf3 & bbox, const Ubpa::valf3 & invDir) const {
+bool VisibilityChecker::Intersect(const bboxf3 & bbox, const valf3 & invDir) const {
 	const auto & origin = ray.o;
 
 	float tMin = ray.tMin;
@@ -110,7 +109,7 @@ void VisibilityChecker::Visit(Ptr<Sphere> sphere) {
 	const auto & dir = ray.d;
 	const auto & origin = ray.o;
 
-	const Ubpa::vecf3 oc = origin.cast_to<Ubpa::vecf3>();
+	const vecf3 oc = origin.cast_to<vecf3>();
 	const float a = dir.dot(dir);
 	const float b = oc.dot(dir);
 	const float c = oc.dot(oc) - 1;
@@ -217,7 +216,7 @@ void VisibilityChecker::Visit(Ptr<Disk> disk) {
 	}
 
 	const auto pos = ray(t);
-	if (pos.cast_to<Ubpa::vecf3>().norm2() >= 1.f) {
+	if (pos.cast_to<vecf3>().norm2() >= 1.f) {
 		rst.isIntersect = false;
 		return;
 	}
@@ -263,7 +262,7 @@ void VisibilityChecker::Visit(Ptr<Capsule> capsule) {
 	float a = d.dot(d);
 
 	do {// …œ∞Î«Ú
-		Ubpa::pointf3 center(0, halfH, 0);
+		pointf3 center(0, halfH, 0);
 		auto oc = o - center;
 		float b = d.dot(oc);
 		float c = oc.norm2() - 1;
@@ -287,7 +286,7 @@ void VisibilityChecker::Visit(Ptr<Capsule> capsule) {
 	} while (false);
 
 	do {// œ¬∞Î«Ú
-		Ubpa::pointf3 center(0, -halfH, 0);
+		pointf3 center(0, -halfH, 0);
 		auto oc = o - center;
 		float b = d.dot(oc);
 		float c = oc.norm2() - 1;

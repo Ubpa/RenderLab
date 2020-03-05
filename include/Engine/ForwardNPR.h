@@ -2,33 +2,31 @@
 
 #include <Engine/ForwardRaster.h>
 
-namespace CppUtil {
-	namespace Engine {
-		class ForwardNPR : public ForwardRaster {
-		public:
-			ForwardNPR(QT::RawAPI_OGLW * pOGLW, Basic::Ptr<Scene> scene, Basic::Ptr<OpenGL::Camera> camera)
-				: ForwardRaster(pOGLW, scene, camera) { }
+namespace Ubpa {
+	class ForwardNPR : public ForwardRaster {
+	public:
+		ForwardNPR(RawAPI_OGLW* pOGLW, Ptr<Scene> scene, Ptr<Camera> camera)
+			: ForwardRaster(pOGLW, scene, camera) { }
 
-		public:
-			static Basic::Ptr<ForwardNPR> New(QT::RawAPI_OGLW * pOGLW, Basic::Ptr<Scene> scene, Basic::Ptr<OpenGL::Camera> camera) {
-				return Basic::New<ForwardNPR>(pOGLW, scene, camera);
-			}
+	public:
+		static Ptr<ForwardNPR> New(RawAPI_OGLW* pOGLW, Ptr<Scene> scene, Ptr<Camera> camera) {
+			return Ubpa::New<ForwardNPR>(pOGLW, scene, camera);
+		}
 
-		protected:
-			virtual ~ForwardNPR() = default;
+	protected:
+		virtual ~ForwardNPR() = default;
 
-		public:
-			virtual void Init() override;
+	public:
+		virtual void Init() override;
 
-		protected:
-			virtual void Visit(Basic::Ptr<Gooch> gooch) override;
+	protected:
+		virtual void Visit(Ptr<Gooch> gooch) override;
 
-		private:
-			void InitShaders();
-			void InitShaderGooch();
+	private:
+		void InitShaders();
+		void InitShaderGooch();
 
-		private:
-			OpenGL::Shader shaderGooch;
-		};
-	}
+	private:
+		Shader shaderGooch;
+	};
 }

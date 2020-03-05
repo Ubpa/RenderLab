@@ -14,9 +14,8 @@
 #include <ROOT_PATH.h>
 
 using namespace App;
-using namespace CppUtil::Engine;
-using namespace CppUtil::OpenGL;
-using namespace CppUtil::Basic;
+using namespace Ubpa;
+
 using namespace Define;
 using namespace std;
 

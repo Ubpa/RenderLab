@@ -3,51 +3,47 @@
 #include <Basic/HeapObj.h>
 #include <enum.h>
 
-namespace CppUtil {
-	namespace QT {
-		class RawAPI_OGLW;
-	}
+namespace Ubpa {
+	class RawAPI_OGLW;
 
-	namespace Engine {
-		class Scene;
+	class Scene;
 
-		class Raster;
-		class Roamer;
-		class Picker;
+	class Raster;
+	class Roamer;
+	class Picker;
 
-		BETTER_ENUM(RasterType, int, DirectIllum, DeferredPipeline, ForwardNPR, WireframeRaster);
+	BETTER_ENUM(RasterType, int, DirectIllum, DeferredPipeline, ForwardNPR, WireframeRaster);
 
-		class Viewer final : public Basic::HeapObj {
-		public:
-			Viewer(QT::RawAPI_OGLW * pOGLW, Basic::Ptr<Scene> scene, RasterType rasterType);
+	class Viewer final : public HeapObj {
+	public:
+		Viewer(RawAPI_OGLW* pOGLW, Ptr<Scene> scene, RasterType rasterType);
 
-		public:
-			static const Basic::Ptr<Viewer> New(QT::RawAPI_OGLW * pOGLW, Basic::Ptr<Scene> scene, RasterType rasterType) {
-				return Basic::New<Viewer>(pOGLW, scene, rasterType);
-			}
+	public:
+		static const Ptr<Viewer> New(RawAPI_OGLW* pOGLW, Ptr<Scene> scene, RasterType rasterType) {
+			return Ubpa::New<Viewer>(pOGLW, scene, rasterType);
+		}
 
-		protected:
-			virtual ~Viewer() = default;
+	protected:
+		virtual ~Viewer() = default;
 
-		public:
-			void SetRaster(RasterType rasterType);
+	public:
+		void SetRaster(RasterType rasterType);
 
-		public:
-			QT::RawAPI_OGLW * GetOGLW() const { return pOGLW; }
-			Basic::Ptr<Scene> GetScene() const { return scene; }
-			Basic::Ptr<Raster> GetRaster() const { return raster; }
-			Basic::Ptr<Roamer> GetRoamer() const { return roamer; }
-			Basic::Ptr<Picker> GetPicker() const { return picker; }
+	public:
+		RawAPI_OGLW* GetOGLW() const { return pOGLW; }
+		Ptr<Scene> GetScene() const { return scene; }
+		Ptr<Raster> GetRaster() const { return raster; }
+		Ptr<Roamer> GetRoamer() const { return roamer; }
+		Ptr<Picker> GetPicker() const { return picker; }
 
-		public:
-			void SetLock(bool isLock);
+	public:
+		void SetLock(bool isLock);
 
-		private:
-			QT::RawAPI_OGLW * pOGLW;
-			Basic::Ptr<Scene> scene;
-			Basic::Ptr<Raster> raster;
-			Basic::Ptr<Roamer> roamer;
-			Basic::Ptr<Picker> picker;
-		};
-	}
+	private:
+		RawAPI_OGLW* pOGLW;
+		Ptr<Scene> scene;
+		Ptr<Raster> raster;
+		Ptr<Roamer> roamer;
+		Ptr<Picker> picker;
+	};
 }

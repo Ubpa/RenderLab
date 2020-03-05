@@ -2,7 +2,8 @@
 
 #include <Basic/Math.h>
 
-using namespace CppUtil::Basic;
+using namespace Ubpa;
+
 using namespace std;
 
 void AliasMethod::Init(const vector<double> & distribution) {

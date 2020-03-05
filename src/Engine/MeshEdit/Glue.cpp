@@ -3,9 +3,8 @@
 #include <Engine/TriMesh.h>
 #include <map>
 
-using namespace CppUtil;
-using namespace CppUtil::Basic;
-using namespace CppUtil::Engine;
+using namespace Ubpa;
+
 using namespace std;
 
 bool Glue::Run() {
@@ -17,8 +16,8 @@ bool Glue::Run() {
 
 	auto & positions = triMesh->GetPositions();
 	vector<unsigned> indice;
-	vector<Ubpa::pointf3> uniquePos;
-	map<Ubpa::pointf3, unsigned> pos2idx;
+	vector<pointf3> uniquePos;
+	map<pointf3, unsigned> pos2idx;
 
 	for (auto triangle : triMesh->GetTriangles()) {
 		for (int i = 0; i < 3; i++) {

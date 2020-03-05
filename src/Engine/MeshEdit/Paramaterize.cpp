@@ -4,9 +4,8 @@
 
 #include <Engine/TriMesh.h>
 
-using namespace CppUtil;
-using namespace CppUtil::Basic;
-using namespace CppUtil::Engine;
+using namespace Ubpa;
+
 using namespace std;
 
 Paramaterize::Paramaterize(Ptr<TriMesh> triMesh)
@@ -54,7 +53,7 @@ bool Paramaterize::Run() {
 		return false;
 	}
 
-	vector<Ubpa::pointf2> texcoords;
+	vector<pointf2> texcoords;
 	// order remain, so we can directly get correct order
 	for (auto v : minSurf->heMesh->Vertices())
 		texcoords.push_back({ v->pos[0],v->pos[1] });
@@ -89,25 +88,25 @@ void Paramaterize::SetBoundPos() {
 	for (size_t i = 0; i < n; i++) {
 		float s = accDis / sumDis;
 
-		Ubpa::pointf2 pos;
+		pointf2 pos;
 		if (s < 0.25f) {
 			float t = 4.f * s;
-			pos = Ubpa::pointf2(0.f, t);
+			pos = pointf2(0.f, t);
 		}
 		else if (s < 0.50f) {
 			float t = 4.f * (s - 0.25f);
-			pos = Ubpa::pointf2(t, 1.f);
+			pos = pointf2(t, 1.f);
 		}
 		else if (s < 0.75f) {
 			float t = 4.f * (s - 0.50f);
-			pos = Ubpa::pointf2(1.f, 1.f - t);
+			pos = pointf2(1.f, 1.f - t);
 		}
 		else {
 			float t = 4.f * (s - 0.75f);
-			pos = Ubpa::pointf2(1.f - t, 0.f);
+			pos = pointf2(1.f - t, 0.f);
 		}
 
-		vertices[i]->pos = Ubpa::vecf3(pos[0], pos[1], 0.f);
+		vertices[i]->pos = vecf3(pos[0], pos[1], 0.f);
 
 		accDis += disVec[i];
 	}

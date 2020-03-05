@@ -2,24 +2,22 @@
 
 #include <Basic/Element.h>
 
-namespace CppUtil {
-	namespace Engine {
-		class SObj;
+namespace Ubpa {
+	class SObj;
 
-		class Component : public Basic::Element {
-		protected:
-			Component(Basic::Ptr<SObj> sobj) : wSObj(sobj) { }
-			virtual ~Component() = default;
+	class Component : public Element {
+	protected:
+		Component(Ptr<SObj> sobj) : wSObj(sobj) { }
+		virtual ~Component() = default;
 
-		protected:
-			virtual void Init_AfterGenPtr() override;
+	protected:
+		virtual void Init_AfterGenPtr() override;
 
-		public:
-			const Basic::Ptr<SObj> GetSObj() const { return wSObj.lock(); }
+	public:
+		const Ptr<SObj> GetSObj() const { return wSObj.lock(); }
 
-		private:
-			friend SObj;
-			Basic::WPtr<SObj> wSObj;
-		};
-	}
+	private:
+		friend SObj;
+		WPtr<SObj> wSObj;
+	};
 }

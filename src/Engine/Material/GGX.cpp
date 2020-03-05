@@ -2,11 +2,9 @@
 
 #include <Engine/SurfCoord.h>
 
-using namespace CppUtil;
-using namespace CppUtil::Basic;
-using namespace CppUtil::Engine;
+using namespace Ubpa;
 
-float GGX::D(const Ubpa::normalf & wh) const {
+float GGX::D(const normalf & wh) const {
 	if (SurfCoord::CosTheta(wh) < 0)
 		return 0.f;
 
@@ -15,10 +13,10 @@ float GGX::D(const Ubpa::normalf & wh) const {
 	
 	float t = (alpha2 - 1) * cos2Theta + 1;
 
-	return alpha2 / (Ubpa::PI<float> * t * t);
+	return alpha2 / (PI<float> * t * t);
 }
 
-float GGX::Lambda(const Ubpa::normalf & w) const {
+float GGX::Lambda(const normalf & w) const {
 	auto absTanTheta = std::abs(SurfCoord::TanTheta(w));
 	if (std::isnan(absTanTheta))
 		return 98e8f;
@@ -28,7 +26,7 @@ float GGX::Lambda(const Ubpa::normalf & w) const {
 	return (-1.f + std::sqrt(1.f + alpha2Tan2Theta)) / 2.f;
 }
 
-const Ubpa::normalf GGX::Sample_wh() const {
+const normalf GGX::Sample_wh() const {
 	// sample
 	const float Xi1 = Math::Rand_F();
 	const float Xi2 = Math::Rand_F();
@@ -39,7 +37,7 @@ const Ubpa::normalf GGX::Sample_wh() const {
 	const auto sinTheta = sqrt(1 - cos2Theta);
 
 	// phi
-	const auto phi = 2 * Ubpa::PI<float> * Xi2;
+	const auto phi = 2 * PI<float> * Xi2;
 
 	return SurfCoord::SphericalDirection(sinTheta, cosTheta, phi);
 }

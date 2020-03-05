@@ -3,62 +3,60 @@
 #include <Engine/BSDF.h>
 #include <Engine/GGX.h>
 
-namespace CppUtil {
-	namespace Engine {
-		class BSDF_Frostbite : public BSDF {
-		public:
-			BSDF_Frostbite(const Ubpa::rgbf & colorFactor = Ubpa::rgbf(1.f), float roughnessFactor = 1.f, float metallicFactor = 1.f)
-				: colorFactor(colorFactor), roughnessFactor(roughnessFactor), metallicFactor(metallicFactor),
-				albedoTexture(nullptr), metallicTexture(nullptr), aoTexture(nullptr), roughnessTexture(nullptr), normalTexture(nullptr) { }
+namespace Ubpa {
+	class BSDF_Frostbite : public BSDF {
+	public:
+		BSDF_Frostbite(const rgbf& colorFactor = rgbf(1.f), float roughnessFactor = 1.f, float metallicFactor = 1.f)
+			: colorFactor(colorFactor), roughnessFactor(roughnessFactor), metallicFactor(metallicFactor),
+			albedoTexture(nullptr), metallicTexture(nullptr), aoTexture(nullptr), roughnessTexture(nullptr), normalTexture(nullptr) { }
 
-		public:
-			static const Basic::Ptr<BSDF_Frostbite> New(const Ubpa::rgbf & colorFactor = Ubpa::rgbf(1.f), float roughnessFactor = 1.f, float metallicFactor = 1.f) {
-				return Basic::New<BSDF_Frostbite>(colorFactor, roughnessFactor, metallicFactor);
-			}
+	public:
+		static const Ptr<BSDF_Frostbite> New(const rgbf& colorFactor = rgbf(1.f), float roughnessFactor = 1.f, float metallicFactor = 1.f) {
+			return Ubpa::New<BSDF_Frostbite>(colorFactor, roughnessFactor, metallicFactor);
+		}
 
-		protected:
-			virtual ~BSDF_Frostbite() = default;
+	protected:
+		virtual ~BSDF_Frostbite() = default;
 
-		public:
-			virtual const Ubpa::rgbf F(const Ubpa::normalf & wo, const Ubpa::normalf & wi, const Ubpa::pointf2 & texcoord) override;
+	public:
+		virtual const rgbf F(const normalf& wo, const normalf& wi, const pointf2& texcoord) override;
 
-			// probability density function
-			virtual float PDF(const Ubpa::normalf & wo, const Ubpa::normalf & wi, const Ubpa::pointf2 & texcoord) override;
+		// probability density function
+		virtual float PDF(const normalf& wo, const normalf& wi, const pointf2& texcoord) override;
 
-			// PD is probability density
-			// return albedo
-			virtual const Ubpa::rgbf Sample_f(const Ubpa::normalf & wo, const Ubpa::pointf2 & texcoord, Ubpa::normalf & wi, float & PD) override;
+		// PD is probability density
+		// return albedo
+		virtual const rgbf Sample_f(const normalf& wo, const pointf2& texcoord, normalf& wi, float& PD) override;
 
-			virtual void ChangeNormal(const Ubpa::pointf2 & texcoord, const Ubpa::normalf & tangent, Ubpa::normalf & normal) const override;
+		virtual void ChangeNormal(const pointf2& texcoord, const normalf& tangent, normalf& normal) const override;
 
-		private:
-			// Fresnel
-			static const Ubpa::rgbf Fr(const Ubpa::normalf & w, const Ubpa::normalf & h, const Ubpa::rgbf & albedo, float metallic);
+	private:
+		// Fresnel
+		static const rgbf Fr(const normalf& w, const normalf& h, const rgbf& albedo, float metallic);
 
-			const Ubpa::rgbf GetAlbedo(const Ubpa::pointf2 & texcoord) const;
-			float GetMetallic(const Ubpa::pointf2 & texcoord) const;
-			float GetRoughness(const Ubpa::pointf2 & texcoord) const;
-			float GetAO(const Ubpa::pointf2 & texcoord) const;
+		const rgbf GetAlbedo(const pointf2& texcoord) const;
+		float GetMetallic(const pointf2& texcoord) const;
+		float GetRoughness(const pointf2& texcoord) const;
+		float GetAO(const pointf2& texcoord) const;
 
-			static const float Fr_DisneyDiffuse(const Ubpa::normalf & wo, const Ubpa::normalf & wi, float linearRoughness);
+		static const float Fr_DisneyDiffuse(const normalf& wo, const normalf& wi, float linearRoughness);
 
-		public:
-			GGX ggx;
+	public:
+		GGX ggx;
 
-			Ubpa::rgbf colorFactor;
-			Basic::Ptr<Basic::Image> albedoTexture;
+		rgbf colorFactor;
+		Ptr<Image> albedoTexture;
 
-			// 0--1
-			float metallicFactor;
-			Basic::Ptr<Basic::Image> metallicTexture;
+		// 0--1
+		float metallicFactor;
+		Ptr<Image> metallicTexture;
 
-			// 0--1
-			float roughnessFactor;
-			Basic::Ptr<Basic::Image> roughnessTexture;
+		// 0--1
+		float roughnessFactor;
+		Ptr<Image> roughnessTexture;
 
-			Basic::Ptr<Basic::Image> aoTexture; // 只用与实时渲染
+		Ptr<Image> aoTexture; // 只用与实时渲染
 
-			Basic::Ptr<Basic::Image> normalTexture;
-		};
-	}
+		Ptr<Image> normalTexture;
+	};
 }

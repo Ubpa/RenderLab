@@ -5,11 +5,11 @@
 #include <OpenGL/FBO.h>
 
 namespace App {
-	using namespace CppUtil;
-	using namespace CppUtil::Basic;
-	using namespace CppUtil::Engine;
-	using namespace CppUtil::OpenGL;
-	using namespace CppUtil::QT;
+	using namespace Ubpa;
+	
+	using namespace Ubpa;
+	
+	using namespace Ubpa;
 
 	class SampleRaster : public ForwardRaster {
 	public:
@@ -18,7 +18,7 @@ namespace App {
 
 	public:
 		static const Ptr<SampleRaster> New(RawAPI_OGLW * pOGLW, Ptr<Scene> scene, Ptr<Camera> camera) {
-			return Basic::New<SampleRaster>(pOGLW, scene, camera);
+			return Ubpa::New<SampleRaster>(pOGLW, scene, camera);
 		}
 
 	protected:
@@ -49,11 +49,11 @@ namespace App {
 		void InitShaderScreen();
 
 	private:
-		CppUtil::OpenGL::VAO screen;
-		CppUtil::OpenGL::FBO gBuffer;
+		VAO screen;
+		FBO gBuffer;
 
-		CppUtil::OpenGL::Shader shader_screen;
-		CppUtil::OpenGL::Shader shader_sampleFrostedGlass;
+		Shader shader_screen;
+		Shader shader_sampleFrostedGlass;
 
 		bool haveSampled;
 	};

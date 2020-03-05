@@ -1,25 +1,23 @@
 #pragma once
 
-#include <Engine/Filter.h>
+#include <Engine/ImgFilter.h>
 
-namespace CppUtil {
-	namespace Engine {
-		class FilterBox : public Filter {
-		public:
-			FilterBox(const Ubpa::vecf2 & radius) : Filter(radius) { }
+namespace Ubpa {
+	class FilterBox : public ImgFilter {
+	public:
+		FilterBox(const vecf2& radius) : ImgFilter(radius) { }
 
-		protected:
-			virtual ~FilterBox() = default;
+	protected:
+		virtual ~FilterBox() = default;
 
-		public:
-			const Basic::Ptr<FilterBox> New(const Ubpa::vecf2 & radius) {
-				return Basic::New<FilterBox>(radius);
-			}
+	public:
+		const Ptr<FilterBox> New(const vecf2& radius) {
+			return Ubpa::New<FilterBox>(radius);
+		}
 
-		public:
-			virtual float Evaluate(const Ubpa::pointf2 & p) const override {
-				return 1;
-			}
-		};
-	}
+	public:
+		virtual float Evaluate(const pointf2& p) const override {
+			return 1;
+		}
+	};
 }

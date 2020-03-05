@@ -1,17 +1,18 @@
-#include <Basic/Sphere.h>
+#include <Basic/ShapeMesh/SphereMesh.h>
 
 #include <Basic/Math.h>
 
 #include <cmath>
 
-using namespace CppUtil::Basic;
+using namespace Ubpa;
+
 using namespace std;
 
-Sphere::Sphere(unsigned n)
-	: Shape((n + 1)*(n + 1), 2 * n*n) {
-	texCoordsArr = vector<Ubpa::vecf2>(vertexNum);
-	indexArr = vector<Ubpa::valu3>(triNum);
-	tangentArr = vector<Ubpa::vecf3>(vertexNum);
+SphereMesh::SphereMesh(unsigned n)
+	: ShapeMesh((n + 1)*(n + 1), 2 * n*n) {
+	texCoordsArr = vector<vecf2>(vertexNum);
+	indexArr = vector<valu3>(triNum);
+	tangentArr = vector<vecf3>(vertexNum);
 
 	float inc = 1.0f / n;
 	for (unsigned i = 0; i <= n; i++) {
@@ -56,34 +57,34 @@ Sphere::Sphere(unsigned n)
 		normalArr.push_back(pos);
 }
 
-float * Sphere::GetNormalArr() {
+float * SphereMesh::GetNormalArr() {
 	return normalArr.front().data();
 }
 
-float * Sphere::GetTexCoordsArr() {
+float * SphereMesh::GetTexCoordsArr() {
 	return texCoordsArr.front().data();
 }
 
-unsigned * Sphere::GetIndexArr() {
+unsigned * SphereMesh::GetIndexArr() {
 	return indexArr.front().data();
 }
 
-float * Sphere::GetTangentArr() {
+float * SphereMesh::GetTangentArr() {
 	return tangentArr.front().data();
 }
 
-unsigned Sphere::GetNormalArrSize() {
+unsigned SphereMesh::GetNormalArrSize() {
 	return static_cast<unsigned>(normalArr.size() * 3 * sizeof(float));
 }
 
-unsigned Sphere::GetTexCoordsArrSize() {
+unsigned SphereMesh::GetTexCoordsArrSize() {
 	return static_cast<unsigned>(texCoordsArr.size() * 2 * sizeof(float));
 }
 
-unsigned Sphere::GetIndexArrSize() {
+unsigned SphereMesh::GetIndexArrSize() {
 	return static_cast<unsigned>(indexArr.size() * 3 * sizeof(unsigned));
 }
 
-unsigned Sphere::GetTangentArrSize() {
+unsigned SphereMesh::GetTangentArrSize() {
 	return static_cast<unsigned>(tangentArr.size() * 3 * sizeof(float));
 }

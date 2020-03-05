@@ -9,21 +9,21 @@
 #include <map>
 
 namespace App {
-	using namespace CppUtil;
-	using namespace CppUtil::Basic;
-	using namespace CppUtil::Engine;
-	using namespace CppUtil::QT;
+	using namespace Ubpa;
+	
+	using namespace Ubpa;
+	using namespace Ubpa;
 
 	BETTER_ENUM(MODE, int, DIRECT, INDIRECT, GLOBAL);
 
 	class RRF_Raster : public ForwardRaster {
 	public:
-		RRF_Raster(RawAPI_OGLW * pOGLW, Ptr<Scene> scene, Basic::Ptr<OpenGL::Camera> camera)
+		RRF_Raster(RawAPI_OGLW * pOGLW, Ptr<Scene> scene, Ptr<Camera> camera)
 			: ForwardRaster(pOGLW, scene, camera), interpolateRatio(0.2f) { }
 		
 	public:
-		static const Ptr<RRF_Raster> New(RawAPI_OGLW * pOGLW, Ptr<Scene> scene, Basic::Ptr<OpenGL::Camera> camera) {
-			return Basic::New<RRF_Raster>(pOGLW, scene, camera);
+		static const Ptr<RRF_Raster> New(RawAPI_OGLW * pOGLW, Ptr<Scene> scene, Ptr<Camera> camera) {
+			return Ubpa::New<RRF_Raster>(pOGLW, scene, camera);
 		}
 
 	protected:
@@ -44,7 +44,7 @@ namespace App {
 		void InitShader(int ID);
 
 	private:
-		std::map<int, CppUtil::OpenGL::Shader> id2shader;
+		std::map<int, Shader> id2shader;
 		int curID;
 		float interpolateRatio;
 	};

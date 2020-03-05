@@ -45,13 +45,11 @@
 
 #include <tuple>
 
-using namespace Ui;
-using namespace CppUtil;
-using namespace CppUtil::Engine;
-using namespace CppUtil::Basic;
-using namespace CppUtil::Basic::Math;
-using namespace CppUtil::OpenGL;
-using namespace CppUtil::QT;
+using namespace Ubpa;
+
+using namespace Ubpa::Math;
+
+using namespace Ubpa;
 using namespace std;
 
 class Attribute::ComponentVisitor : public Visitor {
@@ -92,8 +90,8 @@ public:
 	}
 
 public:
-	static const Basic::Ptr<ComponentVisitor> New(Attribute * attr) {
-		return Basic::New<ComponentVisitor>(attr);
+	static const Ptr<ComponentVisitor> New(Attribute * attr) {
+		return Ubpa::New<ComponentVisitor>(attr);
 	}
 
 protected:

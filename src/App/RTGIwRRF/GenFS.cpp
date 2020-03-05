@@ -15,7 +15,7 @@
 #include <functional>
 
 using namespace App;
-using namespace CppUtil::Basic;
+
 using namespace jay::util;
 using namespace rapidjson;
 using namespace std;

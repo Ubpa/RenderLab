@@ -5,9 +5,8 @@
 #include <Engine/Sphere.h>
 #include <Basic/Math.h>
 
-using namespace CppUtil;
-using namespace CppUtil::Basic;
-using namespace CppUtil::Engine;
+using namespace Ubpa;
+
 using namespace std;
 
 void InfiniteAreaLight::SetImg(Ptr<Image> img) {
@@ -28,7 +27,7 @@ void InfiniteAreaLight::SetImg(Ptr<Image> img) {
 	vector<double> distribution(w*h);
 	double sum = 0.f;
 	for (int y = 0; y < h; y++) {
-		double sinTheta = sin(Ubpa::PI<float> * (y + 0.5) / static_cast<double>(h));
+		double sinTheta = sin(PI<float> * (y + 0.5) / static_cast<double>(h));
 		for (int x = 0; x < w; x++) {
 			int idx = img->xy2idx(x, y);
 			distribution[idx] = sinTheta * img->GetPixel(x, y).to_rgb().illumination();
@@ -42,11 +41,11 @@ void InfiniteAreaLight::SetImg(Ptr<Image> img) {
 	aliasMethod.Init(distribution);
 }
 
-const Ubpa::rgbf InfiniteAreaLight::Sample_L(const Ubpa::pointf3 & p, Ubpa::normalf & wi, float & distToLight, float & PD) const {
+const rgbf InfiniteAreaLight::Sample_L(const pointf3 & p, normalf & wi, float & distToLight, float & PD) const {
 	distToLight = FLT_MAX;
 
 	if (!img || !img->IsValid()) {
-		wi = BasicSampler::UniformOnSphere(PD).cast_to<Ubpa::normalf>();
+		wi = BasicSampler::UniformOnSphere(PD).cast_to<normalf>();
 		return intensity * colorFactor;
 	}
 
@@ -64,12 +63,12 @@ const Ubpa::rgbf InfiniteAreaLight::Sample_L(const Ubpa::pointf3 & p, Ubpa::norm
 	wi = sphereCoord.ToDir();
 
 	auto p_uv = static_cast<float>(pOfPixel * w * h);
-	PD = p_uv / (2.f * Ubpa::PI<float> * Ubpa::PI<float> * std::sin(sphereCoord.theta));
+	PD = p_uv / (2.f * PI<float> * PI<float> * std::sin(sphereCoord.theta));
 
 	return GetColor({ u,v });
 }
 
-float InfiniteAreaLight::PDF(const Ubpa::pointf3 & p, const Ubpa::normalf & wi) const {
+float InfiniteAreaLight::PDF(const pointf3 & p, const normalf & wi) const {
 	if (!img || !img->IsValid())
 		return BasicSampler::PDofUniformOnSphere();
 
@@ -87,15 +86,15 @@ float InfiniteAreaLight::PDF(const Ubpa::pointf3 & p, const Ubpa::normalf & wi) 
 
 	auto pOfPixel = aliasMethod.P(idx);
 	auto p_uv = static_cast<float>(pOfPixel * w * h);
-	return p_uv / (2.f * Ubpa::PI<float> * Ubpa::PI<float> * std::sin(sphereCoord.theta));
+	return p_uv / (2.f * PI<float> * PI<float> * std::sin(sphereCoord.theta));
 }
 
-const Ubpa::rgbf InfiniteAreaLight::Le(const ERay & ray) const {
-	auto texcoord = Sphere::TexcoordOf(ray.d.cast_to<Ubpa::normalf>());
+const rgbf InfiniteAreaLight::Le(const Ray & ray) const {
+	auto texcoord = Sphere::TexcoordOf(ray.d.cast_to<normalf>());
 	return GetColor(texcoord);
 }
 
-const Ubpa::rgbf InfiniteAreaLight::GetColor(const Ubpa::pointf2 & texcoord) const {
+const rgbf InfiniteAreaLight::GetColor(const pointf2 & texcoord) const {
 	if (!img || !img->IsValid())
 		return intensity * colorFactor;
 

@@ -15,11 +15,8 @@
 
 #include <ROOT_PATH.h>
 
-using namespace CppUtil::Engine;
-using namespace CppUtil::QT;
-using namespace CppUtil::OpenGL;
-using namespace CppUtil::Basic;
-using namespace CppUtil;
+using namespace Ubpa;
+
 using namespace Define;
 using namespace std;
 
@@ -44,7 +41,7 @@ void ForwardNPR::InitShaderGooch() {
 void ForwardNPR::Visit(Ptr<Gooch> gooch) {
 	SetCurShader(shaderGooch);
 
-	shaderGooch.SetVecf3("gooch.colorFactor", gooch->colorFactor.cast_to<Ubpa::valf3>());
+	shaderGooch.SetVecf3("gooch.colorFactor", gooch->colorFactor.cast_to<valf3>());
 	if (gooch->colorTexture && gooch->colorTexture->IsValid()) {
 		shaderGooch.SetBool("gooch.haveColorTexture", true);
 		pOGLW->GetTex(gooch->colorTexture).Use(0);

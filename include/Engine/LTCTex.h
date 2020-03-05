@@ -1,12 +1,11 @@
 #pragma once
 
-namespace CppUtil {
-	namespace Engine {
-		namespace LTCTex {
-			static const int SIZE = 64;
+namespace Ubpa {
+	namespace LTC {
+		static const size_t TexSize = 64;
 
-			// GGX m(0,0) m(2,0) m(0,2) m(2,2)
-			static const float data1[4 * SIZE*SIZE] = {
+		// GGX m(0,0) m(2,0) m(0,2) m(2,2)
+		static const float data1[4 * TexSize * TexSize] = {
 				1.f,
 				0.f,
 				0.f,
@@ -16391,10 +16390,10 @@ namespace CppUtil {
 				-0.0808124f,
 				0.0489007f,
 				1.6577f,
-			};
+		};
 
-			// GGX norm, fresnel, 0(unused), sphere
-			static const float data2[4 * SIZE*SIZE] = {
+		// GGX norm, fresnel, 0(unused), sphere
+		static const float data2[4 * TexSize * TexSize] = {
 				1.f,
 				0.f,
 				0.f,
@@ -32778,8 +32777,7 @@ namespace CppUtil {
 				0.932164f,
 				0.0471899f,
 				0.f,
-				1.f 
-			};
-		}
+				1.f
+		};
 	}
 }

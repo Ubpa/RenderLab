@@ -6,9 +6,9 @@
 
 #include <OpenGL/CommonDefine.h>
 
-#include <Basic/Sphere.h>
-#include <Basic/Plane.h>
-#include <Basic/Capsule.h>
+#include <Basic/ShapeMesh/SphereMesh.h>
+#include <Basic/ShapeMesh/PlaneMesh.h>
+#include <Basic/ShapeMesh/CapsuleMesh.h>
 
 #include <Basic/GStorage.h>
 #include <Basic/EventManager.h>
@@ -17,10 +17,8 @@
 #include <qevent.h>
 #include <qnamespace.h>
 
-using namespace CppUtil::QT;
-using namespace CppUtil::Engine;
-using namespace CppUtil::OpenGL;
-using namespace CppUtil::Basic;
+using namespace Ubpa;
+
 using namespace std;
 
 const PtrC<TriMesh> RawAPI_OGLW::cube = TriMesh::GenCube();
@@ -101,7 +99,7 @@ void RawAPI_OGLW::wheelEvent(QWheelEvent *event) {
 
 void RawAPI_OGLW::InitShapeVAOs() {
 	// sphere
-	Sphere sphere(50);
+	SphereMesh sphere(50);
 	vector<VAO::VBO_DataPatch> P3_Sphere_Vec_VBO_Data_Patch = {
 		{sphere.GetPosArr(), sphere.GetPosArrSize(), 3},
 		{sphere.GetNormalArr(), sphere.GetNormalArrSize(), 3},
@@ -134,7 +132,7 @@ void RawAPI_OGLW::InitShapeVAOs() {
 	VAO_P3N3T2T3_Disk = VAO(P3_Disk_Vec_VBO_Data_Patch, disk->GetIndice().data(), static_cast<uint>(disk->GetIndice().size() * sizeof(uint)));
 
 	// capsule
-	Capsule capsule(50);
+	CapsuleMesh capsule(50);
 	vector<VAO::VBO_DataPatch> P3_Capsule_Vec_VBO_Data_Patch = {
 		{capsule.GetPosArr(), capsule.GetPosArrSize(), 3},
 		{capsule.GetNormalArr(), capsule.GetNormalArrSize(), 3},

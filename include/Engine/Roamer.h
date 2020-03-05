@@ -2,46 +2,39 @@
 
 #include <Basic/HeapObj.h>
 
-namespace CppUtil {
-	namespace QT {
-		class RawAPI_OGLW;
-	}
+namespace Ubpa {
+	class RawAPI_OGLW;
+	class Camera;
 
-	namespace OpenGL {
-		class Camera;
-	}
+	class Roamer final : public HeapObj {
+	public:
+		Roamer(RawAPI_OGLW* pOGLW);
 
-	namespace Engine {
-		class Roamer final : public Basic::HeapObj {
-		public:
-			Roamer(QT::RawAPI_OGLW * pOGLW);
+	public:
+		static const Ptr<Roamer> New(RawAPI_OGLW* pOGLW) {
+			return Ubpa::New<Roamer>(pOGLW);
+		}
 
-		public:
-			static const Basic::Ptr<Roamer> New(QT::RawAPI_OGLW * pOGLW) {
-				return Basic::New<Roamer>(pOGLW);
-			}
+	protected:
+		virtual ~Roamer() = default;
 
-		protected:
-			virtual ~Roamer() = default;
+	public:
+		void Init();
+		void SetWH(int w, int h);
 
-		public:
-			void Init();
-			void SetWH(int w, int h);
+		RawAPI_OGLW* GetOGLW() { return pOGLW; }
+		Ptr<Camera> GetCamera() { return camera; }
 
-			QT::RawAPI_OGLW * GetOGLW() { return pOGLW; }
-			Basic::Ptr<OpenGL::Camera> GetCamera() { return camera; }
+	public:
+		void SetLock(bool isLock) { lock = isLock; }
 
-		public:
-			void SetLock(bool isLock) { lock = isLock; }
+	private:
+		void ListenerInit();
+		void UpdateCamera();
 
-		private:
-			void ListenerInit();
-			void UpdateCamera();
-
-			QT::RawAPI_OGLW * pOGLW;
-			unsigned int cameraUBO;
-			Basic::Ptr<OpenGL::Camera> camera;
-			bool lock;
-		};
-	}
+		RawAPI_OGLW* pOGLW;
+		unsigned int cameraUBO;
+		Ptr<Camera> camera;
+		bool lock;
+	};
 }

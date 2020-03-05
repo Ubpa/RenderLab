@@ -3,19 +3,18 @@
 #include <Engine/BVHAccel.h>
 #include <Basic/Math.h>
 
-using namespace CppUtil;
-using namespace CppUtil::Engine;
-using namespace CppUtil::Basic;
+using namespace Ubpa;
+
 using namespace std;
 
-void BVHNode::Build(const unordered_map<Ptr<Shape>, Ubpa::bboxf3> & shape2wbbox, vector<Ptr<Shape>> & shapes) {
+void BVHNode::Build(const unordered_map<Ptr<Shape>, bboxf3> & shape2wbbox, vector<Ptr<Shape>> & shapes) {
 	// Build bvh form shapesOffset to shapesOffset + shapesNum
 
 	constexpr int bucketNum = 12;
 	constexpr int maxLeafSize = 4;
 	constexpr double t_trav = 0.125;
 
-	Ubpa::bboxf3 extentBox;
+	bboxf3 extentBox;
 	for (size_t i = shapesOffset; i < shapesOffset + shapesNum; i++) {
 		auto target = shape2wbbox.find(shapes[i]);
 		assert(target != shape2wbbox.cend());
@@ -39,7 +38,7 @@ void BVHNode::Build(const unordered_map<Ptr<Shape>, Ubpa::bboxf3> & shape2wbbox,
 		// 1. compute buckets
 
 		vector<vector<Ptr<Shape>>> buckets(bucketNum);
-		vector<Ubpa::bboxf3> boxesOfBuckets(bucketNum);
+		vector<bboxf3> boxesOfBuckets(bucketNum);
 		{// 将 shape 放到 bucket 中，计算好每个 bucket 的 box
 			double bucketLen = extentBox.diagonal()[dim] / bucketNum;
 			if (bucketLen == 0)
@@ -61,9 +60,9 @@ void BVHNode::Build(const unordered_map<Ptr<Shape>, Ubpa::bboxf3> & shape2wbbox,
 
 		// 2. accumulate buckets
 
-		vector<Ubpa::bboxf3> leftBox(bucketNum);
+		vector<bboxf3> leftBox(bucketNum);
 		vector<size_t> leftAccNum(bucketNum);
-		vector<Ubpa::bboxf3> rightBox(bucketNum);
+		vector<bboxf3> rightBox(bucketNum);
 		vector<size_t> rightAccNum(bucketNum);
 		leftAccNum[0] = 0;
 		rightAccNum[0] = 0;

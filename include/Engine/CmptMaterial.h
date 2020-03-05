@@ -2,25 +2,23 @@
 
 #include <Engine/Component.h>
 
-namespace CppUtil {
-	namespace Engine {
-		class Material;
+namespace Ubpa {
+	class Material;
 
-		class CmptMaterial final : public Component {
-		public:
-			CmptMaterial(Basic::Ptr<SObj> sobj, Basic::Ptr<Material> material)
-				: Component(sobj), material(material) { }
+	class CmptMaterial final : public Component {
+	public:
+		CmptMaterial(Ptr<SObj> sobj, Ptr<Material> material)
+			: Component(sobj), material(material) { }
 
-		public:
-			static const Basic::Ptr<CmptMaterial> New(Basic::Ptr<SObj> sobj, Basic::Ptr<Material> material) {
-				return Basic::New<CmptMaterial>(sobj, material);
-			}
+	public:
+		static const Ptr<CmptMaterial> New(Ptr<SObj> sobj, Ptr<Material> material) {
+			return Ubpa::New<CmptMaterial>(sobj, material);
+		}
 
-		protected:
-			virtual ~CmptMaterial() = default;
+	protected:
+		virtual ~CmptMaterial() = default;
 
-		public:
-			Basic::Ptr<Material> material;
-		};
-	}
+	public:
+		Ptr<Material> material;
+	};
 }

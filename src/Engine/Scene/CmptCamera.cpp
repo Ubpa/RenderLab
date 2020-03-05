@@ -5,19 +5,19 @@
 
 #include <Basic/Math.h>
 
-using namespace CppUtil;
-using namespace CppUtil::Engine;
-using namespace CppUtil::Basic;
-using namespace CppUtil::Basic::Math;
+using namespace Ubpa;
 
-void CmptCamera::Coordinate::Init(const Ubpa::transformf & tsfm) {
+
+using namespace Ubpa::Math;
+
+void CmptCamera::Coordinate::Init(const transformf & tsfm) {
 	pos = tsfm.decompose_position();
-	front = (tsfm * Ubpa::normalf(0, 0, -1)).normalize();
-	right = (tsfm * Ubpa::normalf(1, 0, 0)).normalize();
-	up = (tsfm * Ubpa::normalf(0, 1, 0)).normalize();
+	front = (tsfm * normalf(0, 0, -1)).normalize();
+	right = (tsfm * normalf(1, 0, 0)).normalize();
+	up = (tsfm * normalf(0, 1, 0)).normalize();
 }
 
-CmptCamera::CmptCamera(Basic::Ptr<SObj> sobj, float fov, float ar, float near, float far)
+CmptCamera::CmptCamera(Ptr<SObj> sobj, float fov, float ar, float near, float far)
 	:
 	Component(sobj),
 	ar(ar),
@@ -25,13 +25,13 @@ CmptCamera::CmptCamera(Basic::Ptr<SObj> sobj, float fov, float ar, float near, f
 	nearPlane(near),
 	farPlane(far)
 {
-	h = 2 * tanf(fov / 2 / 180  * PI);
+	h = 2 * tanf(fov / 2 / 180  * PI<float>);
 	w = h * ar;
 }
 
 void CmptCamera::SetFOV(float fov) {
 	this->fov = fov;
-	h = 2 * tanf(fov / 2 / 180 * PI);
+	h = 2 * tanf(fov / 2 / 180 * PI<float>);
 	w = h * ar;
 }
 
@@ -42,7 +42,7 @@ void CmptCamera::SetAspectRatio(float ar) {
 
 bool CmptCamera::InitCoordinate() {
 	if (!GetSObj()) {
-		coordinate.Init(Ubpa::transformf::eye());
+		coordinate.Init(transformf::eye());
 		return false;
 	}
 
@@ -50,8 +50,8 @@ bool CmptCamera::InitCoordinate() {
 	return true;
 }
 
-const ERay CmptCamera::GenRay(float u, float v) const {
+const Ray CmptCamera::GenRay(float u, float v) const {
 	const auto R = w * (u - 0.5f) * coordinate.right;
 	const auto U = h * (v - 0.5f) * coordinate.up;
-	return ERay(coordinate.pos, (coordinate.front + R + U).cast_to<Ubpa::vecf3>());
+	return Ray(coordinate.pos, (coordinate.front + R + U).cast_to<vecf3>());
 }

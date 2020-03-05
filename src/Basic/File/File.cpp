@@ -8,10 +8,9 @@
 #include <cstdlib>
 #include <cstdarg>
 
-
 using namespace std;
-using namespace CppUtil::Basic;
 
+using namespace Ubpa;
 
 File::File(const std::string & fileName, Mode mode) {
 	this->fileName = fileName;
@@ -124,7 +123,6 @@ string File::ModeToStr(Mode mode) {
 		break;
 	}
 }
-
 
 const string File::ReadAll(const std::string & fileName) {
 	File file(fileName, Mode::READ);

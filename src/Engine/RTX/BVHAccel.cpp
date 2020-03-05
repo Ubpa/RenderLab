@@ -15,9 +15,8 @@
 #include <Basic/Visitor.h>
 #include <Basic/Timer.h>
 
-using namespace CppUtil;
-using namespace CppUtil::Engine;
-using namespace CppUtil::Basic;
+using namespace Ubpa;
+
 using namespace std;
 
 // ------------ BVHInitVisitor ------------
@@ -35,11 +34,11 @@ public:
 	}
 
 public:
-	unordered_map<Ptr<Shape>, Ubpa::bboxf3> shape2wbbox;
+	unordered_map<Ptr<Shape>, bboxf3> shape2wbbox;
 
 public:
 	static const Ptr<BVHInitVisitor> New(BVHAccel * holder) {
-		return Basic::New<BVHInitVisitor>(holder);
+		return Ubpa::New<BVHInitVisitor>(holder);
 	}
 
 protected:
@@ -94,7 +93,7 @@ private:
 	BVHAccel * holder;
 };
 
-const Ubpa::transformf & BVHAccel::GetShapeW2LMat(Ptr<Shape> shape) const {
+const transformf & BVHAccel::GetShapeW2LMat(Ptr<Shape> shape) const {
 	const auto target = worldToLocalMatrixes.find(shape->GetPrimitive());
 	assert(target != worldToLocalMatrixes.cend());
 

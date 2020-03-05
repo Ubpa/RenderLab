@@ -1,9 +1,9 @@
 #include <Basic/EventManager.h>
 
+using namespace Ubpa;
+
 #include <Basic/OpQueue.h>
 #include <Basic/LambdaOp.h>
-
-using namespace CppUtil::Basic;
 
 void EventMngr::Reg(size_t event, Ptr<Op> op) {
 	if (directory.find(event) == directory.end())

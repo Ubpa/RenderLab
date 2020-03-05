@@ -22,23 +22,20 @@
 
 #include <ROOT_PATH.h>
 
-using namespace CppUtil;
-using namespace CppUtil::QT;
-using namespace CppUtil::Engine;
-using namespace CppUtil::OpenGL;
-using namespace CppUtil::Basic;
+using namespace Ubpa;
+
 using namespace std;
 
-const Ubpa::transformf EnvGenerator::captureViews[6] = {
-	Ubpa::transformf::look_at(Ubpa::pointf3(0.0f, 0.0f, 0.0f), Ubpa::pointf3(1.0f,  0.0f,  0.0f), Ubpa::vecf3(0.0f, -1.0f,  0.0f)),
-	Ubpa::transformf::look_at(Ubpa::pointf3(0.0f, 0.0f, 0.0f), Ubpa::pointf3(-1.0f,  0.0f,  0.0f), Ubpa::vecf3(0.0f, -1.0f,  0.0f)),
-	Ubpa::transformf::look_at(Ubpa::pointf3(0.0f, 0.0f, 0.0f), Ubpa::pointf3(0.0f,  1.0f,  0.0f), Ubpa::vecf3(0.0f,  0.0f,  1.0f)),
-	Ubpa::transformf::look_at(Ubpa::pointf3(0.0f, 0.0f, 0.0f), Ubpa::pointf3(0.0f, -1.0f,  0.0f), Ubpa::vecf3(0.0f,  0.0f, -1.0f)),
-	Ubpa::transformf::look_at(Ubpa::pointf3(0.0f, 0.0f, 0.0f), Ubpa::pointf3(0.0f,  0.0f,  1.0f), Ubpa::vecf3(0.0f, -1.0f,  0.0f)),
-	Ubpa::transformf::look_at(Ubpa::pointf3(0.0f, 0.0f, 0.0f), Ubpa::pointf3(0.0f,  0.0f, -1.0f), Ubpa::vecf3(0.0f, -1.0f,  0.0f))
+const transformf EnvGenerator::captureViews[6] = {
+	transformf::look_at(pointf3(0.0f, 0.0f, 0.0f), pointf3(1.0f,  0.0f,  0.0f), vecf3(0.0f, -1.0f,  0.0f)),
+	transformf::look_at(pointf3(0.0f, 0.0f, 0.0f), pointf3(-1.0f,  0.0f,  0.0f), vecf3(0.0f, -1.0f,  0.0f)),
+	transformf::look_at(pointf3(0.0f, 0.0f, 0.0f), pointf3(0.0f,  1.0f,  0.0f), vecf3(0.0f,  0.0f,  1.0f)),
+	transformf::look_at(pointf3(0.0f, 0.0f, 0.0f), pointf3(0.0f, -1.0f,  0.0f), vecf3(0.0f,  0.0f, -1.0f)),
+	transformf::look_at(pointf3(0.0f, 0.0f, 0.0f), pointf3(0.0f,  0.0f,  1.0f), vecf3(0.0f, -1.0f,  0.0f)),
+	transformf::look_at(pointf3(0.0f, 0.0f, 0.0f), pointf3(0.0f,  0.0f, -1.0f), vecf3(0.0f, -1.0f,  0.0f))
 };
 
-const OpenGL::FBO::TexTarget EnvGenerator::mapper[6] = {
+const FBO::TexTarget EnvGenerator::mapper[6] = {
 	FBO::TexTarget::TEXTURE_CUBE_MAP_POSITIVE_X,
 	FBO::TexTarget::TEXTURE_CUBE_MAP_NEGATIVE_X,
 	FBO::TexTarget::TEXTURE_CUBE_MAP_POSITIVE_Y,
@@ -47,7 +44,7 @@ const OpenGL::FBO::TexTarget EnvGenerator::mapper[6] = {
 	FBO::TexTarget::TEXTURE_CUBE_MAP_NEGATIVE_Z,
 };
 
-EnvGenerator::EnvGenerator(QT::RawAPI_OGLW * pOGLW)
+EnvGenerator::EnvGenerator(RawAPI_OGLW * pOGLW)
 	: pOGLW(pOGLW), skyboxSize(1024), irradianceSize(128), prefilterSize(1024), brdfSize(128)
 {
 	RegMemberFunc<Scene>(&EnvGenerator::Visit);
@@ -87,7 +84,7 @@ void EnvGenerator::InitShader_genSkybox() {
 
 	shader_genSkybox.SetInt("equirectangularMap", 0);
 
-	auto captureProjection = Ubpa::transformf::perspective(Ubpa::to_radian(90.f), 1.0f, 0.1f, 10.0f);
+	auto captureProjection = transformf::perspective(to_radian(90.f), 1.0f, 0.1f, 10.0f);
 	shader_genSkybox.SetMatf4("projection", captureProjection.data());
 }
 
@@ -98,7 +95,7 @@ void EnvGenerator::InitShader_genIrradiance() {
 
 	shader_genIrradiance.SetInt("equirectangularMap", 0);
 
-	auto captureProjection = Ubpa::transformf::perspective(Ubpa::to_radian(90.f), 1.0f, 0.1f, 10.0f);
+	auto captureProjection = transformf::perspective(to_radian(90.f), 1.0f, 0.1f, 10.0f);
 	shader_genIrradiance.SetMatf4("projection", captureProjection.data());
 }
 
@@ -109,7 +106,7 @@ void EnvGenerator::InitShader_Prefilter() {
 
 	shader_prefilter.SetInt("equirectangularMap", 0);
 
-	auto captureProjection = Ubpa::transformf::perspective(Ubpa::to_radian(90.f), 1.0f, 0.1f, 10.0f);
+	auto captureProjection = transformf::perspective(to_radian(90.f), 1.0f, 0.1f, 10.0f);
 	shader_prefilter.SetMatf4("projection", captureProjection.data());
 }
 

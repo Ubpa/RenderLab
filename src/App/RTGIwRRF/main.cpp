@@ -14,7 +14,7 @@
 #include <ROOT_PATH.h>
 
 using namespace App;
-using namespace CppUtil::Basic;
+
 using namespace std;
 
 void ShowArgRst(const map<string, docopt::value> & rst);

@@ -16,7 +16,7 @@
   <widget class="QWidget" name="centralWidget">
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
-     <widget class="CppUtil::QT::RawAPI_OGLW" name="OGLW_Raster">
+     <widget class="RawAPI_OGLW" name="OGLW_Raster">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
         <horstretch>0</horstretch>
@@ -37,7 +37,7 @@
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
-   <class>CppUtil::QT::RawAPI_OGLW</class>
+   <class>RawAPI_OGLW</class>
    <extends>QOpenGLWidget</extends>
    <header location="global">Qt/RawAPI_OGLW.h</header>
   </customwidget>

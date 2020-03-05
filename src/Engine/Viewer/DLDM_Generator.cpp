@@ -23,27 +23,22 @@
 
 #include <ROOT_PATH.h>
 
-using namespace CppUtil;
-using namespace CppUtil::QT;
-using namespace CppUtil::Engine;
-using namespace CppUtil::OpenGL;
-using namespace CppUtil::Basic;
+using namespace Ubpa;
+
 using namespace Define;
 using namespace std;
 
 const string rootPath = ROOT_PATH;
 
-namespace CppUtil {
-	namespace Engine {
-		const string str_PointLight_prefix = "data/shaders/Engine/PointLight/";
-		const string str_genDepth = "genDepth";
-		const string str_genDepth_vs = str_PointLight_prefix + str_genDepth + ".vs";
-		const string str_genDepth_gs = str_PointLight_prefix + str_genDepth + ".gs";
-		const string str_genDepth_fs = str_PointLight_prefix + str_genDepth + ".fs";
-	}
+namespace Ubpa {
+	const string str_PointLight_prefix = "data/shaders/Engine/PointLight/";
+	const string str_genDepth = "genDepth";
+	const string str_genDepth_vs = str_PointLight_prefix + str_genDepth + ".vs";
+	const string str_genDepth_gs = str_PointLight_prefix + str_genDepth + ".gs";
+	const string str_genDepth_fs = str_PointLight_prefix + str_genDepth + ".fs";
 }
 
-DLDM_Generator::DLDM_Generator(QT::RawAPI_OGLW * pOGLW, Ptr<Camera> camera)
+DLDM_Generator::DLDM_Generator(RawAPI_OGLW * pOGLW, Ptr<Camera> camera)
 	: pOGLW(pOGLW), camera(camera), depthMapSize(1024)
 {
 	RegMemberFunc<Scene>(&DLDM_Generator::Visit);
@@ -75,7 +70,7 @@ void DLDM_Generator::Visit(Ptr<Scene> scene) {
 	glGetIntegerv(GL_VIEWPORT, origViewport);
 
 	modelVec.clear();
-	modelVec.push_back(Ubpa::transformf::eye());
+	modelVec.push_back(transformf::eye());
 
 	// regist
 	for (auto cmptLight : scene->GetCmptLights()) {
@@ -92,10 +87,10 @@ void DLDM_Generator::Visit(Ptr<Scene> scene) {
 	}
 
 	const auto corners = camera->Corners();
-	Ubpa::vecf3 sum{ 0.f };
+	vecf3 sum{ 0.f };
 	for (auto p : corners)
-		sum += p.cast_to<Ubpa::vecf3>();
-	const auto center = (sum/corners.size()).cast_to<Ubpa::pointf3>();
+		sum += p.cast_to<vecf3>();
+	const auto center = (sum/corners.size()).cast_to<pointf3>();
 
 	light2pv.clear();
 	auto nextIt = lightMap.begin();
@@ -114,7 +109,7 @@ void DLDM_Generator::Visit(Ptr<Scene> scene) {
 		glViewport(0, 0, depthMapSize, depthMapSize);
 		glClear(GL_DEPTH_BUFFER_BIT);
 
-		auto nDir = (lightComponent->GetSObj()->GetLocalToWorldMatrix() * Ubpa::vecf3(0, -1, 0)).normalize();
+		auto nDir = (lightComponent->GetSObj()->GetLocalToWorldMatrix() * vecf3(0, -1, 0)).normalize();
 		float minD = FLT_MAX;
 		float maxD = -FLT_MAX;
 		for (auto corner : corners) {
@@ -129,7 +124,7 @@ void DLDM_Generator::Visit(Ptr<Scene> scene) {
 		float extent = maxD - minD;
 		auto pos = center + (minD - extent * backRatio ) * nDir;
 
-		auto view = Ubpa::transformf::look_at(pos, center);
+		auto view = transformf::look_at(pos, center);
 		
 		float maxX = 0.f;
 		float maxY = 0.f;
@@ -141,7 +136,7 @@ void DLDM_Generator::Visit(Ptr<Scene> scene) {
 			if (absCornerInCam[1] > maxY)
 				maxY = absCornerInCam[1];
 		}
-		auto proj = Ubpa::transformf::orthographic(2 * maxX, 2 * maxY, 0, extent * (1 + backRatio));
+		auto proj = transformf::orthographic(2 * maxX, 2 * maxY, 0, extent * (1 + backRatio));
 
 		shader_genDepth.SetMatf4("view", view.data());
 		shader_genDepth.SetMatf4("proj", proj.data());
@@ -177,7 +172,6 @@ void DLDM_Generator::Visit(Ptr<SObj> sobj) {
 	if (cmptTransform != nullptr)
 		modelVec.pop_back();
 }
-
 
 void DLDM_Generator::Visit(Ptr<Sphere> sphere) {
 	shader_genDepth.SetMatf4("model", modelVec.back().data());
@@ -215,10 +209,10 @@ const Texture DLDM_Generator::GetDepthMap(PtrC<CmptLight> light) const {
 	return target->second.tex;
 }
 
-const Ubpa::transformf DLDM_Generator::GetProjView(PtrC<CmptLight> light) const {
+const transformf DLDM_Generator::GetProjView(PtrC<CmptLight> light) const {
 	auto target = light2pv.find(light);
 	if (target == light2pv.cend())
-		return Ubpa::transformf();
+		return transformf();
 
 	return target->second;
 }

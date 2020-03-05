@@ -7,7 +7,7 @@
 #include <sstream>
 
 using namespace App;
-using namespace CppUtil::Basic;
+
 using namespace std;
 
 const float ModelKDTree::interpolateRatio = 0.2f;
