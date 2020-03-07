@@ -47,7 +47,6 @@ const FBO::TexTarget EnvGenerator::mapper[6] = {
 EnvGenerator::EnvGenerator(RawAPI_OGLW * pOGLW)
 	: pOGLW(pOGLW), skyboxSize(1024), irradianceSize(128), prefilterSize(1024), brdfSize(128)
 {
-	RegMemberFunc<Scene>(&EnvGenerator::Visit);
 }
 
 void EnvGenerator::Init() {

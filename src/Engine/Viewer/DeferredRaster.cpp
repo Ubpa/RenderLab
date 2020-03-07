@@ -55,20 +55,14 @@ const string rootPath = ROOT_PATH;
 DeferredRaster::DeferredRaster(RawAPI_OGLW* pOGLW, Ptr<Scene> scene, Ptr<Camera> camera)
 	: Raster(pOGLW, scene, camera), curMaterialShader(Shader::InValid)
 {
-	RegMemberFunc<SObj>(&DeferredRaster::Visit);
-
 	// primitive
-	RegMemberFunc<Sphere>(&DeferredRaster::Visit);
-	RegMemberFunc<Plane>(&DeferredRaster::Visit);
-	RegMemberFunc<TriMesh>(&DeferredRaster::Visit);
-	RegMemberFunc<Disk>(&DeferredRaster::Visit);
-	RegMemberFunc<Capsule>(&DeferredRaster::Visit);
+	Regist<Sphere, Plane, TriMesh, Disk, Capsule>();
 
 	// material
-	RegMemberFunc<BSDF_MetalWorkflow>(&DeferredRaster::Visit);
-	RegMemberFunc<BSDF_Diffuse>(&DeferredRaster::Visit);
-	RegMemberFunc<BSDF_Frostbite>(&DeferredRaster::Visit);
-	RegMemberFunc<BSDF_Emission>(&DeferredRaster::Visit);
+	Regist<BSDF_MetalWorkflow,
+		BSDF_Diffuse,
+		BSDF_Frostbite,
+		BSDF_Emission>();
 
 	// regist ID
 	mngrMID.Reg<BSDF_MetalWorkflow>(0);
@@ -239,7 +233,7 @@ void DeferredRaster::Pass_GBuffer() {
 
 	modelVec.clear();
 	modelVec.push_back(transformf::eye());
-	scene->GetRoot()->Accept(This());
+	Visit(scene->GetRoot());
 }
 
 void DeferredRaster::Pass_DirectLight() {
@@ -371,19 +365,19 @@ void DeferredRaster::Visit(Ptr<SObj> sobj) {
 			break;
 
 		curMaterialShader = Shader::InValid;
-		cmptMaterial->material->Accept(This());
+		Visit(cmptMaterial->material);
 
-		geometry->primitive->Accept(This());
+		Visit(geometry->primitive);
 	} while (false);
 
 	for (auto child : children)
-		child->Accept(This());
+		Visit(child);
 
 	if (cmptTransform != nullptr)
 		modelVec.pop_back();
 }
 
-void DeferredRaster::Visit(Ptr<BSDF_MetalWorkflow> metal) {
+void DeferredRaster::ImplVisit(Ptr<BSDF_MetalWorkflow> metal) {
 	string strBSDF = "metal.";
 	metalShader.SetVecf3(strBSDF + "colorFactor", metal->colorFactor.cast_to<valf3>());
 	metalShader.SetFloat(strBSDF + "metallicFactor", metal->metallicFactor);
@@ -406,7 +400,7 @@ void DeferredRaster::Visit(Ptr<BSDF_MetalWorkflow> metal) {
 	curMaterialShader = metalShader;
 }
 
-void DeferredRaster::Visit(Ptr<BSDF_Diffuse> diffuse) {
+void DeferredRaster::ImplVisit(Ptr<BSDF_Diffuse> diffuse) {
 	string strBSDF = "diffuse.";
 	diffuseShader.SetVecf3(strBSDF + "colorFactor", diffuse->colorFactor.cast_to<valf3>());
 	if (diffuse->albedoTexture && diffuse->albedoTexture->IsValid()) {
@@ -419,7 +413,7 @@ void DeferredRaster::Visit(Ptr<BSDF_Diffuse> diffuse) {
 	curMaterialShader = diffuseShader;
 }
 
-void DeferredRaster::Visit(Ptr<BSDF_Frostbite> bsdf) {
+void DeferredRaster::ImplVisit(Ptr<BSDF_Frostbite> bsdf) {
 	string strBSDF = "bsdf.";
 	frostbiteShader.SetVecf3(strBSDF + "colorFactor", bsdf->colorFactor.cast_to<valf3>());
 	frostbiteShader.SetFloat(strBSDF + "metallicFactor", bsdf->metallicFactor);
@@ -442,13 +436,13 @@ void DeferredRaster::Visit(Ptr<BSDF_Frostbite> bsdf) {
 	curMaterialShader = frostbiteShader;
 }
 
-void DeferredRaster::Visit(Ptr<BSDF_Emission> emission) {
+void DeferredRaster::ImplVisit(Ptr<BSDF_Emission> emission) {
 	emissionShader.SetVecf3("emission.L", (emission->intensity * emission->color).cast_to<valf3>());
 
 	curMaterialShader = emissionShader;
 }
 
-void DeferredRaster::Visit(Ptr<Sphere> sphere) {
+void DeferredRaster::ImplVisit(Ptr<Sphere> sphere) {
 	if (!curMaterialShader.IsValid())
 		return;
 
@@ -457,7 +451,7 @@ void DeferredRaster::Visit(Ptr<Sphere> sphere) {
 	pOGLW->GetVAO(RawAPI_OGLW::ShapeType::Sphere).Draw(curMaterialShader);
 }
 
-void DeferredRaster::Visit(Ptr<Plane> plane) {
+void DeferredRaster::ImplVisit(Ptr<Plane> plane) {
 	if (!curMaterialShader.IsValid())
 		return;
 
@@ -466,7 +460,7 @@ void DeferredRaster::Visit(Ptr<Plane> plane) {
 	pOGLW->GetVAO(RawAPI_OGLW::ShapeType::Plane).Draw(curMaterialShader);
 }
 
-void DeferredRaster::Visit(Ptr<TriMesh> mesh) {
+void DeferredRaster::ImplVisit(Ptr<TriMesh> mesh) {
 	if (!curMaterialShader.IsValid())
 		return;
 
@@ -475,7 +469,7 @@ void DeferredRaster::Visit(Ptr<TriMesh> mesh) {
 	pOGLW->GetVAO(mesh).Draw(curMaterialShader);
 }
 
-void DeferredRaster::Visit(Ptr<Disk> disk) {
+void DeferredRaster::ImplVisit(Ptr<Disk> disk) {
 	if (!curMaterialShader.IsValid())
 		return;
 
@@ -484,7 +478,7 @@ void DeferredRaster::Visit(Ptr<Disk> disk) {
 	pOGLW->GetVAO(RawAPI_OGLW::ShapeType::Disk).Draw(curMaterialShader);
 }
 
-void DeferredRaster::Visit(Ptr<Capsule> capsule) {
+void DeferredRaster::ImplVisit(Ptr<Capsule> capsule) {
 	if (!curMaterialShader.IsValid())
 		return;
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Basic/Element.h>
+#include <Basic/HeapObj.h>
 
 #include <UGM/bbox.h>
 #include <UGM/transform.h>
@@ -15,7 +15,7 @@ namespace Ubpa {
 
 	class BVHNode;
 
-	class BVHAccel : public Element {
+	class BVHAccel : public HeapObj {
 	public:
 		BVHAccel() = default;
 

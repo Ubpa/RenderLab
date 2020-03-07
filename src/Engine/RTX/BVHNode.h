@@ -7,7 +7,7 @@
 #include <unordered_map>
 
 namespace Ubpa {
-	class BVHNode final : public Element {
+	class BVHNode final : public HeapObj {
 	public:
 		BVHNode(const std::unordered_map<Ptr<Shape>, bboxf3>& shape2wbbox, std::vector<Ptr<Shape>>& shapes, size_t shapesOffset, size_t shapesNum)
 			: shapesOffset(shapesOffset), shapesNum(shapesNum) {

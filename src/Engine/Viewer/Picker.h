@@ -7,7 +7,7 @@
 namespace Ubpa {
 	class Viewer;
 
-	class RayIntersector;
+	class ClosestIntersector;
 
 	class Picker final : public HeapObj {
 	public:
@@ -29,7 +29,7 @@ namespace Ubpa {
 	private:
 		Viewer* viewer;
 
-		Ptr<RayIntersector> rayIntersector;
+		Ptr<ClosestIntersector> closestIntersector;
 		Ptr<DeformRBF> deformRBF;
 		std::vector<DeformRBF::Constraint> cons;
 		std::vector<size_t> deformIndice;

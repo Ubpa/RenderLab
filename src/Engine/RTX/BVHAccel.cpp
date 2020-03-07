@@ -12,25 +12,19 @@
 
 #include <Engine/SObj.h>
 
-#include <Basic/Visitor.h>
 #include <Basic/Timer.h>
 
-using namespace Ubpa;
+#include <UDP/Visitor.h>
 
 using namespace std;
+using namespace Ubpa;
 
 // ------------ BVHInitVisitor ------------
 
-class BVHAccel::BVHInitVisitor : public Visitor {
+class BVHAccel::BVHInitVisitor final : public SharedPtrVisitor<BVHAccel::BVHInitVisitor, Primitive>, public HeapObj{
 public:
-	BVHInitVisitor(BVHAccel * holder)
-		: holder(holder) {
-		RegMemberFunc<CmptGeometry>(&BVHAccel::BVHInitVisitor::Visit);
-		RegMemberFunc<Sphere>(&BVHAccel::BVHInitVisitor::Visit);
-		RegMemberFunc<Plane>(&BVHAccel::BVHInitVisitor::Visit);
-		RegMemberFunc<TriMesh>(&BVHAccel::BVHInitVisitor::Visit);
-		RegMemberFunc<Disk>(&BVHAccel::BVHInitVisitor::Visit);
-		RegMemberFunc<Capsule>(&BVHAccel::BVHInitVisitor::Visit);
+	BVHInitVisitor(BVHAccel * holder) : holder(holder) {
+		Regist<Sphere, Plane, TriMesh, Disk, Capsule>();
 	}
 
 public:
@@ -45,6 +39,7 @@ protected:
 	virtual ~BVHInitVisitor() = default;
 
 public:
+	using SharedPtrVisitor<BVHAccel::BVHInitVisitor, Primitive>::Visit;
 	void Visit(Ptr<CmptGeometry> geo) {
 		auto primitive = geo->primitive;
 		if (!primitive)
@@ -54,22 +49,23 @@ public:
 		holder->worldToLocalMatrixes[primitive] = w2l;
 
 		holder->primitive2sobj[geo->primitive] = geo->GetSObj();
-		geo->primitive->Accept(This());
+		Visit(geo->primitive);
 	}
 
-	void Visit(Ptr<Sphere> sphere) {
+protected:
+	void ImplVisit(Ptr<Sphere> sphere) {
 		const auto l2w = holder->GetShapeW2LMat(sphere).inverse();
 		holder->shapes.push_back(sphere);
 		shape2wbbox[sphere] = l2w * sphere->GetBBox();
 	}
 
-	void Visit(Ptr<Plane> plane) {
+	void ImplVisit(Ptr<Plane> plane) {
 		const auto l2w = holder->GetShapeW2LMat(plane).inverse();
 		holder->shapes.push_back(plane);
 		shape2wbbox[plane] = l2w * plane->GetBBox();
 	}
 
-	void Visit(Ptr<TriMesh> mesh) {
+	void ImplVisit(Ptr<TriMesh> mesh) {
 		const auto l2w = holder->GetShapeW2LMat(mesh).inverse();
 		for (auto triangle : mesh->GetTriangles()) {
 			holder->shapes.push_back(triangle);
@@ -77,13 +73,13 @@ public:
 		}
 	}
 
-	void Visit(Ptr<Disk> disk) {
+	void ImplVisit(Ptr<Disk> disk) {
 		const auto l2w = holder->GetShapeW2LMat(disk).inverse();
 		holder->shapes.push_back(disk);
 		shape2wbbox[disk] = l2w * disk->GetBBox();
 	}
 
-	void Visit(Ptr<Capsule> capsule) {
+	void ImplVisit(Ptr<Capsule> capsule) {
 		const auto l2w = holder->GetShapeW2LMat(capsule).inverse();
 		holder->shapes.push_back(capsule);
 		shape2wbbox[capsule] = l2w * capsule->GetBBox();
@@ -120,7 +116,7 @@ void BVHAccel::Init(Ptr<SObj> root) {
 	auto geos = root->GetComponentsInChildren<CmptGeometry>();
 	auto initVisitor = BVHInitVisitor::New(this);
 	for (auto geo : geos)
-		geo->Accept(initVisitor);
+		initVisitor->Visit(geo);
 
 	printf("Building BVH...\n");
 	Timer timer;

@@ -2,7 +2,7 @@
 
 #include <Engine/CmptTransform.h>
 
-#include <Basic/Visitor.h>
+#include <UDP/Visitor.h>
 
 #include <Engine/SObj.h>
 
@@ -12,22 +12,17 @@ using namespace std;
 
 transformf CmptLight::GetLightToWorldMatrixWithoutScale() const {
 	auto tsfm = transformf::eye();
-	auto sobj = GetSObj();
-	if (!sobj)
-		return tsfm;
 
-	auto visitor = Visitor::New();
-	visitor->Reg([&tsfm](Ptr<SObj> sobj) {
-		auto cmptTransform = sobj->GetComponent<CmptTransform>();
+	for (auto cur = GetSObj(); cur != nullptr; cur = cur->GetParent()) {
+		auto cmptTransform = cur->GetComponent<CmptTransform>();
 		if (!cmptTransform)
-			return;
+			continue;
 
 		auto pos = cmptTransform->GetPosition();
 		auto rotation = cmptTransform->GetRotation();
 		// tsfm = T * R * tsfm
 		tsfm = transformf(pos.cast_to<vecf3>()) * transformf(rotation) * tsfm;
-	});
-	sobj->AscendAccept(visitor);
+	}
 
 	return tsfm;
 }

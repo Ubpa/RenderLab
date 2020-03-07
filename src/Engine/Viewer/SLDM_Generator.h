@@ -1,12 +1,17 @@
 #pragma once
 
-#include <Basic/Visitor.h>
 #include <OpenGL/FBO.h>
 #include <OpenGL/Texture.h>
 #include <OpenGL/VAO.h>
 #include <OpenGL/Shader.h>
 
+#include <Basic/HeapObj.h>
+
 #include <UGM/transform.h>
+
+#include <UDP/Visitor.h>
+
+#include <map>
 
 namespace Ubpa {
 	class RawAPI_OGLW;
@@ -15,6 +20,7 @@ namespace Ubpa {
 	class Scene;
 	class SObj;
 
+	class Primitive;
 	class Sphere;
 	class Plane;
 	class TriMesh;
@@ -24,7 +30,7 @@ namespace Ubpa {
 	class CmptLight;
 
 	// Spot Light Depth Map Generator
-	class SLDM_Generator : public Visitor {
+	class SLDM_Generator final : public HeapObj, public SharedPtrVisitor<SLDM_Generator, Primitive> {
 	public:
 		SLDM_Generator(RawAPI_OGLW* pOGLW, Ptr<Camera> camera, float lightNear, float lightFar);
 
@@ -41,15 +47,16 @@ namespace Ubpa {
 		const Texture GetDepthMap(PtrC<CmptLight> light) const;
 		const transformf GetProjView(PtrC<CmptLight> light) const;
 
-	private:
 		void Visit(Ptr<Scene> scene);
+	protected:
 		void Visit(Ptr<SObj> sobj);
+		using SharedPtrVisitor<SLDM_Generator, Primitive>::Visit;
 
-		void Visit(Ptr<Sphere> sphere);
-		void Visit(Ptr<Plane> plane);
-		void Visit(Ptr<TriMesh> mesh);
-		void Visit(Ptr<Disk> disk);
-		void Visit(Ptr<Capsule> capsule);
+		void ImplVisit(Ptr<Sphere> sphere);
+		void ImplVisit(Ptr<Plane> plane);
+		void ImplVisit(Ptr<TriMesh> mesh);
+		void ImplVisit(Ptr<Disk> disk);
+		void ImplVisit(Ptr<Capsule> capsule);
 
 	private:
 		RawAPI_OGLW* pOGLW;

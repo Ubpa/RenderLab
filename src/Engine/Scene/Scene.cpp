@@ -37,27 +37,23 @@ bool Scene::GenID() {
 	name2ID.clear();
 	ID2name.clear();
 
-	bool isFailed = false;
-	auto visitor = Visitor::New();
-	visitor->Reg([&](Ptr<SObj> sobj) {
+	std::function<bool(Ptr<SObj>)> genID;
+
+	genID = [this, &genID](Ptr<SObj> sobj)->bool {
 		auto target = name2ID.find(sobj->name);
 		if (target != name2ID.end()) {
 			printf("ERROR: two sobjs have same name.\n");
-			isFailed = true;
-			return;
+			return false;
 		}
-
 		name2ID[sobj->name] = 0;//tmp invalid ID
 		for (auto child : sobj->GetChildren()) {
-			child->Accept(visitor);
-			if (isFailed)
-				return;
+			if (!genID(child))
+				return false;
 		}
-	});
+		return true;
+	};
 
-	root->Accept(visitor);
-
-	if (isFailed) {
+	if (!genID(root)) {
 		name2ID.clear();
 		ID2name.clear();
 		return false;

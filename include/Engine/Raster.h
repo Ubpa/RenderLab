@@ -2,7 +2,7 @@
 
 #include <OpenGL/Shader.h>
 
-#include <Basic/Visitor.h>
+#include <Basic/HeapObj.h>
 
 #include <map>
 
@@ -28,7 +28,7 @@ namespace Ubpa {
 	/*
 	¹âÕ¤Æ÷
 	*/
-	class Raster : public Visitor {
+	class Raster : public HeapObj {
 	protected:
 		Raster(RawAPI_OGLW* pOGLW, Ptr<Scene> scene, Ptr<Camera> camera);
 		virtual ~Raster() = default;

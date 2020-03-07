@@ -1,4 +1,4 @@
-#include <Engine/RayIntersector.h>
+#include <Engine/Intersector/ClosestIntersector.h>
 
 #include <Engine/SObj.h>
 #include <Engine/Ray.h>
@@ -24,25 +24,18 @@ using namespace Ubpa;
 
 using namespace std;
 
-RayIntersector::RayIntersector() {
-	RegMemberFunc<BVHAccel>(&RayIntersector::Visit);
-	RegMemberFunc<SObj>(&RayIntersector::Visit);
-	RegMemberFunc<Sphere>(&RayIntersector::Visit);
-	RegMemberFunc<Plane>(&RayIntersector::Visit);
-	RegMemberFunc<Triangle>(&RayIntersector::Visit);
-	RegMemberFunc<TriMesh>(&RayIntersector::Visit);
-	RegMemberFunc<Disk>(&RayIntersector::Visit);
-	RegMemberFunc<Capsule>(&RayIntersector::Visit);
+ClosestIntersector::ClosestIntersector() {
+	Regist<Sphere, Plane, Triangle, TriMesh, Disk, Capsule>();
 }
 
-void RayIntersector::Init(Ray * ray) {
+void ClosestIntersector::Init(Ray * ray) {
 	this->ray = ray;
 
 	rst.closestSObj = nullptr;
 	rst.isIntersect = false;
 }
 
-bool RayIntersector::Intersect(const bboxf3 & bbox, const valf3 & invDir) const {
+bool ClosestIntersector::Intersect(const bboxf3 & bbox, const valf3 & invDir) const {
 	const auto & origin = ray->o;
 
 	float tMin = ray->tMin;
@@ -64,9 +57,7 @@ bool RayIntersector::Intersect(const bboxf3 & bbox, const valf3 & invDir) const 
 	return true;
 }
 
-void RayIntersector::Visit(Ptr<BVHAccel> bvhAccel) {
-	const auto visitor = This();
-
+void ClosestIntersector::Visit(Ptr<BVHAccel> bvhAccel) {
 	const auto origin = ray->o;
 	const auto dir = ray->d;
 	const auto invDir = ray->InvDir();
@@ -84,12 +75,12 @@ void RayIntersector::Visit(Ptr<BVHAccel> bvhAccel) {
 		
 		if (node.IsLeaf()) {
 			for (auto shapeIdx : node.ShapesIdx()) {
-				const auto shape = bvhAccel->GetShape(shapeIdx);
+				auto shape = bvhAccel->GetShape(shapeIdx);
 
 				auto bray = bvhAccel->GetShapeW2LMat(shape) * (*ray);
 				ray->o = bray.o;
 				ray->d = bray.d;
-				shape->Accept(visitor);
+				Visit(shape);
 				ray->o = origin;
 				ray->d = dir;
 
@@ -121,7 +112,7 @@ void RayIntersector::Visit(Ptr<BVHAccel> bvhAccel) {
 	}
 }
 
-void RayIntersector::Visit(Ptr<SObj> sobj) {
+void ClosestIntersector::Visit(Ptr<SObj> sobj) {
 	auto geometry = sobj->GetComponent<CmptGeometry>();
 	auto children = sobj->GetChildren();
 
@@ -137,13 +128,13 @@ void RayIntersector::Visit(Ptr<SObj> sobj) {
 	}
 
 	if (geometry && geometry->primitive) {
-		geometry->primitive->Accept(This());
+		Visit(geometry->primitive);
 		if (rst.isIntersect)
 			rst.closestSObj = sobj;
 	}
 
 	for (auto child : children)
-		child->Accept(This());
+		Visit(child);
 
 	if (cmptTransform) {
 		auto& tsfm = cmptTransform->GetTransform();
@@ -157,7 +148,7 @@ void RayIntersector::Visit(Ptr<SObj> sobj) {
 	}
 }
 
-void RayIntersector::Visit(Ptr<Sphere> sphere) {
+void ClosestIntersector::ImplVisit(Ptr<Sphere> sphere) {
 	const auto & dir = ray->d;
 	const auto & origin = ray->o;
 
@@ -193,7 +184,7 @@ void RayIntersector::Visit(Ptr<Sphere> sphere) {
 	rst.tangent = Sphere::TangentOf(rst.n);
 }
 
-void RayIntersector::Visit(Ptr<Plane> plane) {
+void ClosestIntersector::ImplVisit(Ptr<Plane> plane) {
 	const float t = -ray->o[1] / ray->d[1];
 	if (t<ray->tMin || t > ray->tMax) {
 		rst.isIntersect = false;
@@ -214,7 +205,7 @@ void RayIntersector::Visit(Ptr<Plane> plane) {
 	rst.tangent = normalf(1, 0, 0);
 }
 
-void RayIntersector::Visit(Ptr<Triangle> triangle) {
+void ClosestIntersector::ImplVisit(Ptr<Triangle> triangle) {
 	const auto mesh = triangle->GetMesh();
 	const int idx1 = triangle->idx[0];
 	const int idx2 = triangle->idx[1];
@@ -317,17 +308,17 @@ void RayIntersector::Visit(Ptr<Triangle> triangle) {
 	}
 }
 
-void RayIntersector::Visit(Ptr<TriMesh> mesh) {
+void ClosestIntersector::ImplVisit(Ptr<TriMesh> mesh) {
 	const auto visitor = This();
 	for (auto triangle : mesh->GetTriangles()) {
-		triangle->Accept(visitor);
+		Visit(triangle);
 		if (rst.isIntersect) {
 			return;
 		}
 	}
 }
 
-void RayIntersector::Visit(Ptr<Disk> disk) {
+void ClosestIntersector::ImplVisit(Ptr<Disk> disk) {
 	const float t = -ray->o[1] / ray->d[1];
 	if (t < ray->tMin || t > ray->tMax) {
 		rst.isIntersect = false;
@@ -348,7 +339,7 @@ void RayIntersector::Visit(Ptr<Disk> disk) {
 	rst.tangent = normalf(1, 0, 0);
 }
 
-void RayIntersector::Visit(Ptr<Capsule> capsule) {
+void ClosestIntersector::ImplVisit(Ptr<Capsule> capsule) {
 	const auto & o = ray->o;
 	const auto & d = ray->d;
 

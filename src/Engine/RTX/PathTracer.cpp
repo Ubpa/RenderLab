@@ -2,8 +2,8 @@
 
 #include <Engine/BVHAccel.h>
 
-#include <Engine/RayIntersector.h>
-#include <Engine/VisibilityChecker.h>
+#include <Engine/Intersector/ClosestIntersector.h>
+#include <Engine/Intersector/VisibilityChecker.h>
 
 #include <Engine/Scene.h>
 #include <Engine/SObj.h>
@@ -23,7 +23,7 @@ using namespace std;
 PathTracer::PathTracer()
 	:
 	maxDepth(20),
-	rayIntersector(RayIntersector::New()),
+	closestIntersector(ClosestIntersector::New()),
 	visibilityChecker(VisibilityChecker::New())
 { }
 
@@ -53,9 +53,9 @@ void PathTracer::Init(Ptr<Scene> scene, Ptr<BVHAccel> bvhAccel) {
 }
 
 const rgbf PathTracer::Trace(Ray & ray, int depth, rgbf pathThroughput) {
-	rayIntersector->Init(&ray);
-	bvhAccel->Accept(rayIntersector);
-	auto closestRst = rayIntersector->GetRst();
+	closestIntersector->Init(&ray);
+	closestIntersector->Visit(bvhAccel);
+	auto closestRst = closestIntersector->GetRst();
 	if (!closestRst.closestSObj) {
 		rgbf Le(0.f);
 		for (auto light : lights)
@@ -131,21 +131,10 @@ const rgbf PathTracer::SampleLightImpl(
 	// shadow ray 处于世界坐标
 	Ray shadowRay(posInWorldSpace, dirInWorld.cast_to<vecf3>());
 	visibilityChecker->Init(shadowRay, dist_ToLight - 0.001f);
-	bvhAccel->Accept(visibilityChecker);
+	visibilityChecker->Visit(bvhAccel);
 	auto shadowRst = visibilityChecker->GetRst();
 	if (shadowRst.IsIntersect())
 		return rgbf(0.f);
-
-	// 多重重要性采样 Multiple Importance Sampling (MIS)
-	if (!light->IsDelta()) {
-		for (int k = 0; k < lightNum; k++) {
-			if (k != lightID && !lights[k]->IsDelta()) {
-				const auto dirInLight = (worldToLightVec[k] * dirInWorld).normalize();
-				PD += lights[k]->PDF(posInLightSpace, dirInLight) * factorPD;
-			}
-		}
-		PD += bsdf->PDF(w_out, w_in, texcoord);
-	}
 
 	auto weight = (abs(w_in[2]) / PD) * f;
 	return weight * lightL;

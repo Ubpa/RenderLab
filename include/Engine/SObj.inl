@@ -19,39 +19,38 @@ bool SObj::DetachComponent() {
 
 template<typename T, typename>
 const Ptr<T> SObj::GetComponentInChildren() {
-	auto visitor = Visitor::New();
+	std::function<Ptr<T>(Ptr<SObj>)> getComponent;
+	getComponent = [&getComponent](Ptr<SObj> sobj)->Ptr<T> {
+		auto cmpt = sobj->GetComponent<T>();
+		if (cmpt)
+			return cmpt;
 
-	Ptr<T> componentOfT = nullptr;
-	visitor->Reg([&componentOfT, visitor](Ptr<SObj> sobj) {
-		auto tmpComponent = sobj->GetComponent<T>();
-		if (tmpComponent) {
-			componentOfT = tmpComponent;
-			return;
-		}
-		
 		for (auto child : sobj->GetChildren()) {
-			child->Accept(visitor);
-			if (componentOfT != nullptr)
-				return;
+			auto cmpt = getComponent(child);
+			if (cmpt)
+				return cmpt;
 		}
-	});
-	Accept(visitor);
-	return componentOfT;
+
+		return nullptr;
+	};
+	return getComponent(This<SObj>());
 }
 
 template<typename T, typename>
-const std::vector<Ptr<T> > SObj::GetComponentsInChildren() {
-	auto visitor = Visitor::New();
+const std::vector<Ptr<T>> SObj::GetComponentsInChildren() {
+	std::vector<Ptr<T>> rst;
+	std::function<void(Ptr<SObj>)> collectCmpt;
+	collectCmpt = [&rst, &collectCmpt](Ptr<SObj> sobj) {
+		auto cmpt = sobj->GetComponent<T>();
+		if (cmpt)
+			rst.push_back(cmpt);
 
-	std::vector<Ptr<T>> componentsOfT;
+		for (auto child : sobj->GetChildren())
+			collectCmpt(child);
+	};
 
-	visitor->Reg([&componentsOfT](Ptr<SObj> sobj) {
-		auto componentOfT = sobj->GetComponent<T>();
-		if (componentOfT)
-			componentsOfT.push_back(componentOfT);
-	});
-	TraverseAccept(visitor);
-	return componentsOfT;
+	collectCmpt(This<SObj>());
+	return rst;
 }
 
 template<typename T, typename ...Args, typename>

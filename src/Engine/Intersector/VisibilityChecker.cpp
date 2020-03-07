@@ -1,4 +1,4 @@
-#include <Engine/VisibilityChecker.h>
+#include <Engine/Intersector/VisibilityChecker.h>
 
 #include <Engine/SObj.h>
 #include <Engine/Ray.h>
@@ -18,12 +18,7 @@ using namespace Ubpa;
 using namespace std;
 
 VisibilityChecker::VisibilityChecker() {
-	RegMemberFunc<BVHAccel>(&VisibilityChecker::Visit);
-	RegMemberFunc<Sphere>(&VisibilityChecker::Visit);
-	RegMemberFunc<Plane>(&VisibilityChecker::Visit);
-	RegMemberFunc<Triangle>(&VisibilityChecker::Visit);
-	RegMemberFunc<Disk>(&VisibilityChecker::Visit);
-	RegMemberFunc<Capsule>(&VisibilityChecker::Visit);
+	Regist<Sphere, Plane, Triangle, Disk, Capsule>();
 }
 
 void VisibilityChecker::Init(const Ray & ray, const float tMax) {
@@ -57,8 +52,6 @@ bool VisibilityChecker::Intersect(const bboxf3 & bbox, const valf3 & invDir) con
 }
 
 void VisibilityChecker::Visit(Ptr<BVHAccel> bvhAccel) {
-	const auto visitor = This();
-
 	const auto origin = ray.o;
 	const auto dir = ray.d;
 	const auto invDir = ray.InvDir();
@@ -76,12 +69,12 @@ void VisibilityChecker::Visit(Ptr<BVHAccel> bvhAccel) {
 
 		if (node.IsLeaf()) {
 			for (auto shapeIdx : node.ShapesIdx()) {
-				const auto shape = bvhAccel->GetShape(shapeIdx);
+				auto shape = bvhAccel->GetShape(shapeIdx);
 
 				auto bray = bvhAccel->GetShapeW2LMat(shape) * ray;
 				ray.o = bray.o;
 				ray.d = bray.d;
-				shape->Accept(visitor);
+				Visit(shape);
 
 				if (rst.isIntersect)
 					return;
@@ -105,7 +98,7 @@ void VisibilityChecker::Visit(Ptr<BVHAccel> bvhAccel) {
 	}
 }
 
-void VisibilityChecker::Visit(Ptr<Sphere> sphere) {
+void VisibilityChecker::ImplVisit(Ptr<Sphere> sphere) {
 	const auto & dir = ray.d;
 	const auto & origin = ray.o;
 
@@ -137,7 +130,7 @@ void VisibilityChecker::Visit(Ptr<Sphere> sphere) {
 	rst.isIntersect = true;
 }
 
-void VisibilityChecker::Visit(Ptr<Plane> plane) {
+void VisibilityChecker::ImplVisit(Ptr<Plane> plane) {
 	const float t = -ray.o[1] / ray.d[1];
 	if (t<ray.tMin || t>ray.tMax) {
 		rst.isIntersect = false;
@@ -153,7 +146,7 @@ void VisibilityChecker::Visit(Ptr<Plane> plane) {
 	rst.isIntersect = true;
 }
 
-void VisibilityChecker::Visit(Ptr<Triangle> triangle) {
+void VisibilityChecker::ImplVisit(Ptr<Triangle> triangle) {
 	const auto mesh = triangle->GetMesh();
 
 	const auto & positions = mesh->GetPositions();
@@ -208,7 +201,7 @@ void VisibilityChecker::Visit(Ptr<Triangle> triangle) {
 	rst.isIntersect = true;
 }
 
-void VisibilityChecker::Visit(Ptr<Disk> disk) {
+void VisibilityChecker::ImplVisit(Ptr<Disk> disk) {
 	const float t = -ray.o[1] / ray.d[1];
 	if (t<ray.tMin || t>ray.tMax) {
 		rst.isIntersect = false;
@@ -224,7 +217,7 @@ void VisibilityChecker::Visit(Ptr<Disk> disk) {
 	rst.isIntersect = true;
 }
 
-void VisibilityChecker::Visit(Ptr<Capsule> capsule) {
+void VisibilityChecker::ImplVisit(Ptr<Capsule> capsule) {
 	const auto & o = ray.o;
 	const auto & d = ray.d;
 	const float tMin = ray.tMin;

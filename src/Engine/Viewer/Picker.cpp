@@ -6,7 +6,7 @@
 #include <Engine/Viewer.h>
 #include <Engine/Scene.h>
 #include <Engine/SObj.h>
-#include <Engine/RayIntersector.h>
+#include <Engine/Intersector/ClosestIntersector.h>
 #include <Engine/Ray.h>
 #include <Engine/Roamer.h>
 #include <Engine/CmptGeometry.h>
@@ -28,7 +28,7 @@ using namespace Ubpa;
 using namespace std;
 
 Picker::Picker(Viewer * viewer)
-	: viewer(viewer), rayIntersector(RayIntersector::New()), deformRBF(DeformRBF::New(nullptr)) { }
+	: viewer(viewer), closestIntersector(ClosestIntersector::New()), deformRBF(DeformRBF::New(nullptr)) { }
 
 void Picker::Init() {
 	auto MRB_PressOp = LambdaOp_New([this]() {
@@ -46,9 +46,9 @@ void Picker::Init() {
 
 		vecf3 dir = (posInWorld - camera->GetPos()).normalize();
 		Ray ray(camera->GetPos(), dir);
-		rayIntersector->Init(&ray);
-		viewer->GetScene()->GetRoot()->Accept(rayIntersector);
-		auto closestRst = rayIntersector->GetRst();
+		closestIntersector->Init(&ray);
+		closestIntersector->Visit(viewer->GetScene()->GetRoot());
+		auto closestRst = closestIntersector->GetRst();
 
 		bool canDeform = false;
 		GS::GetV("canDeform", canDeform);

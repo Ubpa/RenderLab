@@ -8,39 +8,36 @@ using namespace tinyxml2;
 using namespace std;
 
 SObjSaver::SObjSaver() {
-	RegMemberFunc<SObj>(&SObjSaver::Visit);
+	Regist<CmptCamera,
+		CmptGeometry,
+		CmptLight,
+		CmptMaterial,
+		CmptTransform>();
 
-	RegMemberFunc<CmptCamera>(&SObjSaver::Visit);
+	Regist<Sphere,
+		Plane,
+		TriMesh,
+		Capsule,
+		Disk>();
 
-	RegMemberFunc<CmptGeometry>(&SObjSaver::Visit);
-	RegMemberFunc<Sphere>(&SObjSaver::Visit);
-	RegMemberFunc<Plane>(&SObjSaver::Visit);
-	RegMemberFunc<TriMesh>(&SObjSaver::Visit);
-	RegMemberFunc<Capsule>(&SObjSaver::Visit);
-	RegMemberFunc<Disk>(&SObjSaver::Visit);
+	Regist<AreaLight,
+		PointLight,
+		DirectionalLight,
+		SpotLight,
+		InfiniteAreaLight,
+		SphereLight,
+		DiskLight,
+		CapsuleLight>();
 
-	RegMemberFunc<CmptLight>(&SObjSaver::Visit);
-	RegMemberFunc<AreaLight>(&SObjSaver::Visit);
-	RegMemberFunc<PointLight>(&SObjSaver::Visit);
-	RegMemberFunc<DirectionalLight>(&SObjSaver::Visit);
-	RegMemberFunc<SpotLight>(&SObjSaver::Visit);
-	RegMemberFunc<InfiniteAreaLight>(&SObjSaver::Visit);
-	RegMemberFunc<SphereLight>(&SObjSaver::Visit);
-	RegMemberFunc<DiskLight>(&SObjSaver::Visit);
-	RegMemberFunc<CapsuleLight>(&SObjSaver::Visit);
-
-	RegMemberFunc<CmptMaterial>(&SObjSaver::Visit);
-	RegMemberFunc<BSDF_CookTorrance>(&SObjSaver::Visit);
-	RegMemberFunc<BSDF_Diffuse>(&SObjSaver::Visit);
-	RegMemberFunc<BSDF_Emission>(&SObjSaver::Visit);
-	RegMemberFunc<BSDF_Glass>(&SObjSaver::Visit);
-	RegMemberFunc<BSDF_MetalWorkflow>(&SObjSaver::Visit);
-	RegMemberFunc<BSDF_Mirror>(&SObjSaver::Visit);
-	RegMemberFunc<BSDF_FrostedGlass>(&SObjSaver::Visit);
-	RegMemberFunc<Gooch>(&SObjSaver::Visit);
-	RegMemberFunc<BSDF_Frostbite>(&SObjSaver::Visit);
-
-	RegMemberFunc<CmptTransform>(&SObjSaver::Visit);
+	Regist<BSDF_CookTorrance,
+		BSDF_Diffuse,
+		BSDF_Emission,
+		BSDF_Glass,
+		BSDF_MetalWorkflow,
+		BSDF_Mirror,
+		BSDF_FrostedGlass,
+		BSDF_Frostbite,
+		Gooch>();
 }
 
 void SObjSaver::Init(const string & path) {
@@ -87,13 +84,13 @@ void SObjSaver::Visit(Ptr<SObj> sobj) {
 		// components
 		NewEle(str::SObj::components, [=]() {
 			for (auto component : sobj->GetAllComponents())
-				component->Accept(This());
+				Visit(component);
 		});
 
 		// children
 		NewEle(str::SObj::children, [=]() {
 			for (auto child : sobj->GetChildren())
-				child->Accept(This());
+				Visit(child);
 		});
 	});
 
@@ -104,7 +101,7 @@ void SObjSaver::Visit(Ptr<SObj> sobj) {
 
 // ----------------- Camera -----------------
 
-void SObjSaver::Visit(Ptr<CmptCamera> cmpt) {
+void SObjSaver::ImplVisit(Ptr<CmptCamera> cmpt) {
 	NewEle(str::CmptCamera::type, [=]() {
 		NewEle(str::CmptCamera::fov, cmpt->GetFOV());
 		NewEle(str::CmptCamera::ar, cmpt->GetAspectRatio());
@@ -115,7 +112,7 @@ void SObjSaver::Visit(Ptr<CmptCamera> cmpt) {
 
 // ----------------- transformf -----------------
 
-void SObjSaver::Visit(Ptr<CmptTransform> cmpt) {
+void SObjSaver::ImplVisit(Ptr<CmptTransform> cmpt) {
 	NewEle(str::CmptTransform::type, [=]() {
 		NewEle(str::CmptTransform::Position, cmpt->GetPosition());
 		NewEle(str::CmptTransform::Rotation, cmpt->GetRotation());
@@ -125,24 +122,24 @@ void SObjSaver::Visit(Ptr<CmptTransform> cmpt) {
 
 // ----------------- Geometry -----------------
 
-void SObjSaver::Visit(Ptr<CmptGeometry> cmpt) {
+void SObjSaver::ImplVisit(Ptr<CmptGeometry> cmpt) {
 	NewEle(str::CmptGeometry::type, [=]() {
 		NewEle(str::CmptGeometry::primitive, [=]() {
 			if (cmpt->primitive)
-				cmpt->primitive->Accept(This());
+				Visit(cmpt->primitive);
 		});
 	});
 }
 
-void SObjSaver::Visit(Ptr<Sphere> sphere) {
+void SObjSaver::ImplVisit(Ptr<Sphere> sphere) {
 	NewEle(str::Sphere::type);
 }
 
-void SObjSaver::Visit(Ptr<Plane> plane) {
+void SObjSaver::ImplVisit(Ptr<Plane> plane) {
 	NewEle(str::Plane::type);
 }
 
-void SObjSaver::Visit(Ptr<TriMesh> mesh) {
+void SObjSaver::ImplVisit(Ptr<TriMesh> mesh) {
 	NewEle(str::TriMesh::type, [=]() {
 		if (mesh->GetType() == TriMesh::ENUM_TYPE::INVALID)
 			return;
@@ -189,28 +186,28 @@ void SObjSaver::Visit(Ptr<TriMesh> mesh) {
 	});
 }
 
-void SObjSaver::Visit(Ptr<Capsule> capsule) {
+void SObjSaver::ImplVisit(Ptr<Capsule> capsule) {
 	NewEle(str::Capsule::type, [=]() {
 		NewEle(str::Capsule::height, capsule->height);
 	});
 }
 
-void SObjSaver::Visit(Ptr<Disk> disk) {
+void SObjSaver::ImplVisit(Ptr<Disk> disk) {
 	NewEle(str::Disk::type);
 }
 
 // ----------------- Light -----------------
 
-void SObjSaver::Visit(Ptr<CmptLight> cmpt) {
+void SObjSaver::ImplVisit(Ptr<CmptLight> cmpt) {
 	NewEle(str::CmptLight::type, [=]() {
 		NewEle(str::CmptLight::light, [=]() {
 			if (cmpt->light)
-				cmpt->light->Accept(This());
+				Visit(cmpt->light);
 		});
 	});
 }
 
-void SObjSaver::Visit(Ptr<AreaLight> areaLight) {
+void SObjSaver::ImplVisit(Ptr<AreaLight> areaLight) {
 	NewEle(str::AreaLight::type, [=]() {
 		NewEle(str::AreaLight::color, areaLight->color);
 		NewEle(str::AreaLight::intensity, areaLight->intensity);
@@ -219,7 +216,7 @@ void SObjSaver::Visit(Ptr<AreaLight> areaLight) {
 	});
 }
 
-void SObjSaver::Visit(Ptr<PointLight> pointLight) {
+void SObjSaver::ImplVisit(Ptr<PointLight> pointLight) {
 	NewEle(str::PointLight::type, [=]() {
 		NewEle(str::PointLight::color, pointLight->color);
 		NewEle(str::PointLight::intensity, pointLight->intensity);
@@ -227,14 +224,14 @@ void SObjSaver::Visit(Ptr<PointLight> pointLight) {
 	});
 }
 
-void SObjSaver::Visit(Ptr<DirectionalLight> directionalLight) {
+void SObjSaver::ImplVisit(Ptr<DirectionalLight> directionalLight) {
 	NewEle(str::DirectionalLight::type, [=]() {
 		NewEle(str::PointLight::color, directionalLight->color);
 		NewEle(str::PointLight::intensity, directionalLight->intensity);
 	});
 }
 
-void SObjSaver::Visit(Ptr<SpotLight> spotLight) {
+void SObjSaver::ImplVisit(Ptr<SpotLight> spotLight) {
 	NewEle(str::SpotLight::type, [=]() {
 		NewEle(str::SpotLight::color, spotLight->color);
 		NewEle(str::SpotLight::intensity, spotLight->intensity);
@@ -244,7 +241,7 @@ void SObjSaver::Visit(Ptr<SpotLight> spotLight) {
 	});
 }
 
-void SObjSaver::Visit(Ptr<InfiniteAreaLight> infiniteAreaLight) {
+void SObjSaver::ImplVisit(Ptr<InfiniteAreaLight> infiniteAreaLight) {
 	NewEle(str::InfiniteAreaLight::type, [=]() {
 		NewEle(str::InfiniteAreaLight::colorFactor, infiniteAreaLight->colorFactor);
 		NewEle(str::InfiniteAreaLight::intensity, infiniteAreaLight->intensity);
@@ -254,7 +251,7 @@ void SObjSaver::Visit(Ptr<InfiniteAreaLight> infiniteAreaLight) {
 	});
 }
 
-void SObjSaver::Visit(Ptr<DiskLight> diskLight) {
+void SObjSaver::ImplVisit(Ptr<DiskLight> diskLight) {
 	NewEle(str::DiskLight::type, [=]() {
 		NewEle(str::DiskLight::color, diskLight->color);
 		NewEle(str::DiskLight::intensity, diskLight->intensity);
@@ -262,7 +259,7 @@ void SObjSaver::Visit(Ptr<DiskLight> diskLight) {
 	});
 }
 
-void SObjSaver::Visit(Ptr<SphereLight> sphereLight) {
+void SObjSaver::ImplVisit(Ptr<SphereLight> sphereLight) {
 	NewEle(str::SphereLight::type, [=]() {
 		NewEle(str::SphereLight::color, sphereLight->color);
 		NewEle(str::SphereLight::intensity, sphereLight->intensity);
@@ -270,7 +267,7 @@ void SObjSaver::Visit(Ptr<SphereLight> sphereLight) {
 	});
 }
 
-void SObjSaver::Visit(Ptr<CapsuleLight> capsuleLight) {
+void SObjSaver::ImplVisit(Ptr<CapsuleLight> capsuleLight) {
 	NewEle(str::CapsuleLight::type, [=]() {
 		NewEle(str::CapsuleLight::color, capsuleLight->color);
 		NewEle(str::CapsuleLight::intensity, capsuleLight->intensity);
@@ -281,16 +278,16 @@ void SObjSaver::Visit(Ptr<CapsuleLight> capsuleLight) {
 
 // ----------------- Material -----------------
 
-void SObjSaver::Visit(Ptr<CmptMaterial> cmpt) {
+void SObjSaver::ImplVisit(Ptr<CmptMaterial> cmpt) {
 	NewEle(str::CmptMaterial::type, [=]() {
 		NewEle(str::CmptMaterial::material, [=]() {
 			if (cmpt->material)
-				cmpt->material->Accept(This());
+				Visit(cmpt->material);
 		});
 	});
 }
 
-void SObjSaver::Visit(Ptr<BSDF_CookTorrance> bsdf){
+void SObjSaver::ImplVisit(Ptr<BSDF_CookTorrance> bsdf){
 	NewEle(str::BSDF_CookTorrance::type, [=]() {
 		NewEle(str::BSDF_CookTorrance::ior, bsdf->ior);
 		NewEle(str::BSDF_CookTorrance::roughness, bsdf->m);
@@ -299,7 +296,7 @@ void SObjSaver::Visit(Ptr<BSDF_CookTorrance> bsdf){
 	});
 }
 
-void SObjSaver::Visit(Ptr<BSDF_Diffuse> bsdf){
+void SObjSaver::ImplVisit(Ptr<BSDF_Diffuse> bsdf){
 	NewEle(str::BSDF_Diffuse::type, [=]() {
 		NewEle(str::BSDF_Diffuse::colorFactor, bsdf->colorFactor);
 		NewEle(str::BSDF_Diffuse::albedoTexture, [=]() {
@@ -308,14 +305,14 @@ void SObjSaver::Visit(Ptr<BSDF_Diffuse> bsdf){
 	});
 }
 
-void SObjSaver::Visit(Ptr<BSDF_Emission> bsdf){
+void SObjSaver::ImplVisit(Ptr<BSDF_Emission> bsdf){
 	NewEle(str::BSDF_Emission::type, [=]() {
 		NewEle(str::BSDF_Emission::color, bsdf->color);
 		NewEle(str::BSDF_Emission::intensity, bsdf->intensity);
 	});
 }
 
-void SObjSaver::Visit(Ptr<BSDF_Glass> bsdf){
+void SObjSaver::ImplVisit(Ptr<BSDF_Glass> bsdf){
 	NewEle(str::BSDF_Glass::type, [=]() {
 		NewEle(str::BSDF_Glass::ior, bsdf->ior);
 		NewEle(str::BSDF_Glass::transmittance, bsdf->transmittance);
@@ -323,7 +320,7 @@ void SObjSaver::Visit(Ptr<BSDF_Glass> bsdf){
 	});
 }
 
-void SObjSaver::Visit(Ptr<BSDF_MetalWorkflow> bsdf){
+void SObjSaver::ImplVisit(Ptr<BSDF_MetalWorkflow> bsdf){
 	NewEle(str::BSDF_MetalWorkflow::type, [=]() {
 		NewEle(str::BSDF_MetalWorkflow::colorFactor, bsdf->colorFactor);
 		NewEle(str::BSDF_MetalWorkflow::albedoTexture, bsdf->albedoTexture);
@@ -340,7 +337,7 @@ void SObjSaver::Visit(Ptr<BSDF_MetalWorkflow> bsdf){
 	});
 }
 
-void SObjSaver::Visit(Ptr<BSDF_FrostedGlass> bsdf) {
+void SObjSaver::ImplVisit(Ptr<BSDF_FrostedGlass> bsdf) {
 	NewEle(str::BSDF_FrostedGlass::type, [=]() {
 		NewEle(str::BSDF_FrostedGlass::IOR, bsdf->ior);
 
@@ -356,20 +353,20 @@ void SObjSaver::Visit(Ptr<BSDF_FrostedGlass> bsdf) {
 	});
 }
 
-void SObjSaver::Visit(Ptr<BSDF_Mirror> bsdf){
+void SObjSaver::ImplVisit(Ptr<BSDF_Mirror> bsdf){
 	NewEle(str::BSDF_Mirror::type, [=]() {
 		NewEle(str::BSDF_Mirror::reflectance, bsdf->reflectance);
 	});
 }
 
-void SObjSaver::Visit(Ptr<Gooch> gooch) {
+void SObjSaver::ImplVisit(Ptr<Gooch> gooch) {
 	NewEle(str::Gooch::type, [=]() {
 		NewEle(str::Gooch::colorFactor, gooch->colorFactor);
 		NewEle(str::Gooch::colorTexture, gooch->colorTexture);
 	});
 }
 
-void SObjSaver::Visit(Ptr<BSDF_Frostbite> bsdf) {
+void SObjSaver::ImplVisit(Ptr<BSDF_Frostbite> bsdf) {
 	NewEle(str::BSDF_Frostbite::type, [=]() {
 		NewEle(str::BSDF_Frostbite::colorFactor, bsdf->colorFactor);
 		NewEle(str::BSDF_Frostbite::albedoTexture, bsdf->albedoTexture);

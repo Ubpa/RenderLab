@@ -9,8 +9,6 @@
 #include <Engine/MeshEdit/DeformRBF.h>
 #include <Engine/MeshEdit/IsotropicRemeshing.h>
 
-#include <Qt/RawAPI_OGLW.h>
-
 #include <Engine/SObj.h>
 #include <Engine/AllComponents.h>
 
@@ -34,13 +32,15 @@
 
 #include <OpenGL/Camera.h>
 
-#include <Basic/Visitor.h>
 #include <Basic/Math.h>
 #include <Basic/EventManager.h>
+
+#include <UDP/MultiVisitor.h>
 
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QDoubleSpinBox>
 #include <QtWidgets/QLabel>
+#include <Qt/RawAPI_OGLW.h>
 #include <qcombobox.h>
 
 #include <tuple>
@@ -52,41 +52,39 @@ using namespace Ubpa::Math;
 using namespace Ubpa;
 using namespace std;
 
-class Attribute::ComponentVisitor : public Visitor {
+class Attribute::ComponentVisitor : public HeapObj,
+	public SharedPtrMultiVisitor<Attribute::ComponentVisitor,
+		Component, Light, Primitive, Material>
+{
 public:
-	ComponentVisitor(Attribute * attr)
-		: attr(attr) {
-		RegMemberFunc<CmptCamera>(&Attribute::ComponentVisitor::Visit);
+	ComponentVisitor(Attribute * attr) : attr(attr) {
+		Regist<CmptCamera, CmptGeometry, CmptLight, CmptMaterial, CmptTransform>();
 
-		RegMemberFunc<CmptGeometry>(&Attribute::ComponentVisitor::Visit);
-		RegMemberFunc<Sphere>(&Attribute::ComponentVisitor::Visit);
-		RegMemberFunc<Plane>(&Attribute::ComponentVisitor::Visit);
-		RegMemberFunc<TriMesh>(&Attribute::ComponentVisitor::Visit);
-		RegMemberFunc<Disk>(&Attribute::ComponentVisitor::Visit);
-		RegMemberFunc<Capsule>(&Attribute::ComponentVisitor::Visit);
+		Regist<Sphere,
+			Plane,
+			TriMesh,
+			Disk,
+			Capsule>();
 
-		RegMemberFunc<CmptLight>(&Attribute::ComponentVisitor::Visit);
-		RegMemberFunc<AreaLight>(&Attribute::ComponentVisitor::Visit);
-		RegMemberFunc<PointLight>(&Attribute::ComponentVisitor::Visit);
-		RegMemberFunc<DirectionalLight>(&Attribute::ComponentVisitor::Visit);
-		RegMemberFunc<SpotLight>(&Attribute::ComponentVisitor::Visit);
-		RegMemberFunc<InfiniteAreaLight>(&Attribute::ComponentVisitor::Visit);
-		RegMemberFunc<SphereLight>(&Attribute::ComponentVisitor::Visit);
-		RegMemberFunc<DiskLight>(&Attribute::ComponentVisitor::Visit);
-		RegMemberFunc<CapsuleLight>(&Attribute::ComponentVisitor::Visit);
+		Regist<AreaLight,
+			PointLight,
+			DirectionalLight,
+			SpotLight,
+			InfiniteAreaLight,
+			SphereLight,
+			DiskLight,
+			CapsuleLight>();
 
-		RegMemberFunc<CmptMaterial>(&Attribute::ComponentVisitor::Visit);
-		RegMemberFunc<BSDF_Diffuse>(&Attribute::ComponentVisitor::Visit);
-		RegMemberFunc<BSDF_Glass>(&Attribute::ComponentVisitor::Visit);
-		RegMemberFunc<BSDF_Mirror>(&Attribute::ComponentVisitor::Visit);
-		RegMemberFunc<BSDF_Emission>(&Attribute::ComponentVisitor::Visit);
-		RegMemberFunc<BSDF_CookTorrance>(&Attribute::ComponentVisitor::Visit);
-		RegMemberFunc<BSDF_MetalWorkflow>(&Attribute::ComponentVisitor::Visit);
-		RegMemberFunc<BSDF_FrostedGlass>(&Attribute::ComponentVisitor::Visit);
-		RegMemberFunc<BSDF_Frostbite>(&Attribute::ComponentVisitor::Visit);
-		RegMemberFunc<Gooch>(&Attribute::ComponentVisitor::Visit);
-
-		RegMemberFunc<CmptTransform>(&Attribute::ComponentVisitor::Visit);
+		Regist<CmptMaterial,
+			BSDF_Diffuse,
+			BSDF_Glass,
+			BSDF_Mirror,
+			BSDF_Emission,
+			BSDF_CookTorrance,
+			BSDF_MetalWorkflow,
+			BSDF_FrostedGlass,
+			BSDF_Frostbite,
+			Gooch>();
 	}
 
 public:
@@ -97,38 +95,38 @@ public:
 protected:
 	virtual ~ComponentVisitor() = default;
 
-public:
-	void Visit(Ptr<CmptCamera> cmpt);
+protected:
+	void ImplVisit(Ptr<CmptCamera> cmpt);
 
-	void Visit(Ptr<CmptGeometry> cmpt);
-	void Visit(Ptr<Sphere> sphere);
-	void Visit(Ptr<Plane> plane);
-	void Visit(Ptr<TriMesh> mesh);
-	void Visit(Ptr<Disk> disk);
-	void Visit(Ptr<Capsule> capsule);
+	void ImplVisit(Ptr<CmptGeometry> cmpt);
+	void ImplVisit(Ptr<Sphere> sphere);
+	void ImplVisit(Ptr<Plane> plane);
+	void ImplVisit(Ptr<TriMesh> mesh);
+	void ImplVisit(Ptr<Disk> disk);
+	void ImplVisit(Ptr<Capsule> capsule);
 
-	void Visit(Ptr<CmptLight> cmpt);
-	void Visit(Ptr<AreaLight> light);
-	void Visit(Ptr<PointLight> light);
-	void Visit(Ptr<DirectionalLight> light);
-	void Visit(Ptr<SpotLight> light);
-	void Visit(Ptr<InfiniteAreaLight> light);
-	void Visit(Ptr<SphereLight> light);
-	void Visit(Ptr<DiskLight> light);
-	void Visit(Ptr<CapsuleLight> light);
+	void ImplVisit(Ptr<CmptLight> cmpt);
+	void ImplVisit(Ptr<AreaLight> light);
+	void ImplVisit(Ptr<PointLight> light);
+	void ImplVisit(Ptr<DirectionalLight> light);
+	void ImplVisit(Ptr<SpotLight> light);
+	void ImplVisit(Ptr<InfiniteAreaLight> light);
+	void ImplVisit(Ptr<SphereLight> light);
+	void ImplVisit(Ptr<DiskLight> light);
+	void ImplVisit(Ptr<CapsuleLight> light);
 
-	void Visit(Ptr<CmptMaterial> cmpt);
-	void Visit(Ptr<BSDF_Diffuse> bsdf);
-	void Visit(Ptr<BSDF_Emission> bsdf);
-	void Visit(Ptr<BSDF_Glass> bsdf);
-	void Visit(Ptr<BSDF_Mirror> bsdf);
-	void Visit(Ptr<BSDF_CookTorrance> bsdf);
-	void Visit(Ptr<BSDF_MetalWorkflow> bsdf);
-	void Visit(Ptr<BSDF_FrostedGlass> bsdf);
-	void Visit(Ptr<Gooch> gooch);
-	void Visit(Ptr<BSDF_Frostbite> bsdf);
+	void ImplVisit(Ptr<CmptMaterial> cmpt);
+	void ImplVisit(Ptr<BSDF_Diffuse> bsdf);
+	void ImplVisit(Ptr<BSDF_Emission> bsdf);
+	void ImplVisit(Ptr<BSDF_Glass> bsdf);
+	void ImplVisit(Ptr<BSDF_Mirror> bsdf);
+	void ImplVisit(Ptr<BSDF_CookTorrance> bsdf);
+	void ImplVisit(Ptr<BSDF_MetalWorkflow> bsdf);
+	void ImplVisit(Ptr<BSDF_FrostedGlass> bsdf);
+	void ImplVisit(Ptr<Gooch> gooch);
+	void ImplVisit(Ptr<BSDF_Frostbite> bsdf);
 
-	void Visit(Ptr<CmptTransform> cmpt);
+	void ImplVisit(Ptr<CmptTransform> cmpt);
 
 private:
 	QWidget * GenItem(Ptr<Component> component, const QString & str) {
@@ -155,7 +153,7 @@ private:
 
 // -------------- Transform --------------
 
-void Attribute::ComponentVisitor::Visit(Ptr<CmptTransform> transform) {
+void Attribute::ComponentVisitor::ImplVisit(Ptr<CmptTransform> transform) {
 	auto item = GenItem(transform, "Transform");
 	auto grid = GetGrid(item);
 
@@ -179,7 +177,7 @@ void Attribute::ComponentVisitor::Visit(Ptr<CmptTransform> transform) {
 
 // -------------- Camera --------------
 
-void Attribute::ComponentVisitor::Visit(Ptr<CmptCamera> camera) {
+void Attribute::ComponentVisitor::ImplVisit(Ptr<CmptCamera> camera) {
 	auto item = GenItem(camera, "Camera");
 	auto grid = GetGrid(item);
 	
@@ -190,14 +188,14 @@ void Attribute::ComponentVisitor::Visit(Ptr<CmptCamera> camera) {
 	grid->AddButton("- To Roamer Camera", [camera]() {
 		WPtr<Camera> wptrRoamerCam;
 		if (!GS::GetV("Roamer::camera", wptrRoamerCam)) {
-			printf("ERROR::Attribute::ComponentVisitor::Visit(Ptr<CmptCamera>):\n"
+			printf("ERROR::Attribute::ComponentVisitor::ImplVisit(Ptr<CmptCamera>):\n"
 				"\t""GS::GetV(\"Roamer::camera\") fail\n");
 			return;
 		}
 
 		auto roamerCam = wptrRoamerCam.lock();
 		if (!roamerCam) {
-			printf("ERROR::Attribute::ComponentVisitor::Visit(Ptr<CmptCamera>):\n"
+			printf("ERROR::Attribute::ComponentVisitor::ImplVisit(Ptr<CmptCamera>):\n"
 				"\t""roamerCam is nullptr\n");
 			return;
 		}
@@ -214,14 +212,14 @@ void Attribute::ComponentVisitor::Visit(Ptr<CmptCamera> camera) {
 	grid->AddButton("- From Roamer Camera", [camera]() {
 		WPtr<Camera> wptrRoamerCam;
 		if (!GS::GetV("Roamer::camera", wptrRoamerCam)) {
-			printf("ERROR::Attribute::ComponentVisitor::Visit(Ptr<CmptCamera>):\n"
+			printf("ERROR::Attribute::ComponentVisitor::ImplVisit(Ptr<CmptCamera>):\n"
 				"\t""GS::GetV(\"Roamer::camera\") fail\n");
 			return;
 		}
 
 		auto roamerCam = wptrRoamerCam.lock();
 		if (!roamerCam) {
-			printf("ERROR::Attribute::ComponentVisitor::Visit(Ptr<CmptCamera>):\n"
+			printf("ERROR::Attribute::ComponentVisitor::ImplVisit(Ptr<CmptCamera>):\n"
 				"\t""roamerCam is nullptr\n");
 			return;
 		}
@@ -243,17 +241,19 @@ void Attribute::ComponentVisitor::Visit(Ptr<CmptCamera> camera) {
 
 // -------------- Geometry --------------
 
-void Attribute::ComponentVisitor::Visit(Ptr<CmptGeometry> geo) {
+void Attribute::ComponentVisitor::ImplVisit(Ptr<CmptGeometry> geo) {
 	auto item = GenItem(geo, "Geometry");
 	auto grid = GetGrid(item);
 
 	string typeStr;
-	auto getTypeStr = Visitor::New();
-	getTypeStr->Reg([&typeStr](Ptr<Sphere>) { typeStr = "Sphere"; });
-	getTypeStr->Reg([&typeStr](Ptr<Plane>) { typeStr = "Plane"; });
-	getTypeStr->Reg([&typeStr](Ptr<TriMesh>) { typeStr = "TriMesh"; });
-	getTypeStr->Reg([&typeStr](Ptr<Disk>) { typeStr = "Disk"; });
-	getTypeStr->Reg([&typeStr](Ptr<Capsule>) { typeStr = "Capsule"; });
+	BasicSharedPtrVisitor<Primitive> getTypeStr;
+	getTypeStr.Regist(
+		[&typeStr](Ptr<Sphere>) { typeStr = "Sphere"; },
+		[&typeStr](Ptr<Plane>) { typeStr = "Plane"; },
+		[&typeStr](Ptr<TriMesh>) { typeStr = "TriMesh"; },
+		[&typeStr](Ptr<Disk>) { typeStr = "Disk"; },
+		[&typeStr](Ptr<Capsule>) { typeStr = "Capsule"; }
+	);
 
 	Grid::pSlotMap pSlotMap(new Grid::SlotMap);
 	Grid::wpSlotMap wpSlotMap = pSlotMap;
@@ -271,7 +271,7 @@ void Attribute::ComponentVisitor::Visit(Ptr<CmptGeometry> geo) {
 
 		auto sphere = Sphere::New();
 		geo->primitive = sphere;
-		geo->primitive->Accept(This());
+		Visit(geo->primitive);
 	};
 	(*pSlotMap)["Plane"] = [=]() {
 		grid->Clear();
@@ -279,7 +279,7 @@ void Attribute::ComponentVisitor::Visit(Ptr<CmptGeometry> geo) {
 
 		auto plane = Plane::New();
 		geo->primitive = plane;
-		geo->primitive->Accept(This());
+		Visit(geo->primitive);
 	};
 	(*pSlotMap)["TriMesh"] = [=]() {
 		// not support now
@@ -293,7 +293,7 @@ void Attribute::ComponentVisitor::Visit(Ptr<CmptGeometry> geo) {
 
 		auto disk = Disk::New();
 		geo->primitive = disk;
-		geo->primitive->Accept(This());
+		Visit(geo->primitive);
 	};
 	(*pSlotMap)["Capsule"] = [=]() {
 		grid->Clear();
@@ -301,32 +301,32 @@ void Attribute::ComponentVisitor::Visit(Ptr<CmptGeometry> geo) {
 
 		auto capsule = Capsule::New();
 		geo->primitive = capsule;
-		geo->primitive->Accept(This());
+		Visit(geo->primitive);
 	};
 
 	if (geo->primitive) {
-		geo->primitive->Accept(getTypeStr);
+		getTypeStr.Visit(geo->primitive);
 		grid->AddComboBox(combobox, "Type", typeStr, pSlotMap);
 
-		geo->primitive->Accept(This());
+		Visit(geo->primitive);
 	}
 	else
 		grid->AddComboBox(combobox, "Type", "None", pSlotMap);
 }
 
-void Attribute::ComponentVisitor::Visit(Ptr<Sphere> sphere) {
+void Attribute::ComponentVisitor::ImplVisit(Ptr<Sphere> sphere) {
 	auto grid = GetGrid(attr->componentType2item[typeid(CmptGeometry)]);
 }
 
-void Attribute::ComponentVisitor::Visit(Ptr<Plane> plane) {
+void Attribute::ComponentVisitor::ImplVisit(Ptr<Plane> plane) {
 	auto grid = GetGrid(attr->componentType2item[typeid(CmptGeometry)]);
 }
 
-void Attribute::ComponentVisitor::Visit(Ptr<Disk> disk) {
+void Attribute::ComponentVisitor::ImplVisit(Ptr<Disk> disk) {
 	auto grid = GetGrid(attr->componentType2item[typeid(CmptGeometry)]);
 }
 
-void Attribute::ComponentVisitor::Visit(Ptr<TriMesh> mesh) {
+void Attribute::ComponentVisitor::ImplVisit(Ptr<TriMesh> mesh) {
 	auto grid = GetGrid(attr->componentType2item[typeid(CmptGeometry)]);
 	grid->AddText("- Triangle", mesh->GetIndice().size() / 3);
 	grid->AddText("- Vertex", mesh->GetPositions().size());
@@ -377,28 +377,30 @@ void Attribute::ComponentVisitor::Visit(Ptr<TriMesh> mesh) {
 	});
 }
 
-void Attribute::ComponentVisitor::Visit(Ptr<Capsule> capsule) {
+void Attribute::ComponentVisitor::ImplVisit(Ptr<Capsule> capsule) {
 	auto grid = GetGrid(attr->componentType2item[typeid(CmptGeometry)]);
 	grid->AddEditVal("- Height", capsule->height, 0.f, 100.f, 1000);
 }
 
 // -------------- Material --------------
 
-void Attribute::ComponentVisitor::Visit(Ptr<CmptMaterial> cmpt) {
+void Attribute::ComponentVisitor::ImplVisit(Ptr<CmptMaterial> cmpt) {
 	auto item = GenItem(cmpt, "Material");
 	auto grid = GetGrid(item);
 
 	string typeStr;
-	auto getTypeStr = Visitor::New();
-	getTypeStr->Reg([&typeStr](Ptr<BSDF_Diffuse>) { typeStr = "BSDF_Diffuse"; });
-	getTypeStr->Reg([&typeStr](Ptr<BSDF_Emission>) { typeStr = "BSDF_Emission"; });
-	getTypeStr->Reg([&typeStr](Ptr<BSDF_Glass>) { typeStr = "BSDF_Glass"; });
-	getTypeStr->Reg([&typeStr](Ptr<BSDF_Mirror>) { typeStr = "BSDF_Mirror"; });
-	getTypeStr->Reg([&typeStr](Ptr<BSDF_CookTorrance>) { typeStr = "BSDF_CookTorrance"; });
-	getTypeStr->Reg([&typeStr](Ptr<BSDF_MetalWorkflow>) { typeStr = "BSDF_MetalWorkflow"; });
-	getTypeStr->Reg([&typeStr](Ptr<BSDF_FrostedGlass>) { typeStr = "BSDF_FrostedGlass"; });
-	getTypeStr->Reg([&typeStr](Ptr<Gooch>) { typeStr = "Gooch"; });
-	getTypeStr->Reg([&typeStr](Ptr<BSDF_Frostbite>) { typeStr = "BSDF_Frostbite"; });
+	BasicSharedPtrVisitor<Material> getTypeStr;
+	getTypeStr.Regist(
+		[&typeStr](Ptr<BSDF_Diffuse>) { typeStr = "BSDF_Diffuse"; },
+		[&typeStr](Ptr<BSDF_Emission>) { typeStr = "BSDF_Emission"; },
+		[&typeStr](Ptr<BSDF_Glass>) { typeStr = "BSDF_Glass"; },
+		[&typeStr](Ptr<BSDF_Mirror>) { typeStr = "BSDF_Mirror"; },
+		[&typeStr](Ptr<BSDF_CookTorrance>) { typeStr = "BSDF_CookTorrance"; },
+		[&typeStr](Ptr<BSDF_MetalWorkflow>) { typeStr = "BSDF_MetalWorkflow"; },
+		[&typeStr](Ptr<BSDF_FrostedGlass>) { typeStr = "BSDF_FrostedGlass"; },
+		[&typeStr](Ptr<Gooch>) { typeStr = "Gooch"; },
+		[&typeStr](Ptr<BSDF_Frostbite>) { typeStr = "BSDF_Frostbite"; }
+	);
 
 	const int materialNum = 10;
 	tuple<string, function<Ptr<Material>()>> bsdfArr[materialNum] = {
@@ -425,45 +427,45 @@ void Attribute::ComponentVisitor::Visit(Ptr<CmptMaterial> cmpt) {
 			auto bsdf = get<1>(bsdfArr[i])();
 			cmpt->material = bsdf;
 			if(bsdf != nullptr)
-				bsdf->Accept(This());
+				Visit(bsdf);
 		};
 	}
 
 	if (cmpt->material) {
-		cmpt->material->Accept(getTypeStr);
+		getTypeStr.Visit(cmpt->material);
 		grid->AddComboBox("Type", typeStr, pSlotMap);
 
-		cmpt->material->Accept(This());
+		Visit(cmpt->material);
 	}
 	else
 		grid->AddComboBox("Type", "None", pSlotMap);
 }
 
-void Attribute::ComponentVisitor::Visit(Ptr<BSDF_Diffuse> bsdf) {
+void Attribute::ComponentVisitor::ImplVisit(Ptr<BSDF_Diffuse> bsdf) {
 	auto grid = GetGrid(attr->componentType2item[typeid(CmptMaterial)]);
 	grid->AddEditColor("- Albedo", bsdf->colorFactor);
 	grid->AddEditImage("- Albedo Texture", bsdf->albedoTexture);
 }
 
-void Attribute::ComponentVisitor::Visit(Ptr<BSDF_Emission> bsdf) {
+void Attribute::ComponentVisitor::ImplVisit(Ptr<BSDF_Emission> bsdf) {
 	auto grid = GetGrid(attr->componentType2item[typeid(CmptMaterial)]);
 	grid->AddEditColor("- Color", bsdf->color);
 	grid->AddEditVal("- Intensity", bsdf->intensity, 0, 20, 2000);
 }
 
-void Attribute::ComponentVisitor::Visit(Ptr<BSDF_Glass> bsdf) {
+void Attribute::ComponentVisitor::ImplVisit(Ptr<BSDF_Glass> bsdf) {
 	auto grid = GetGrid(attr->componentType2item[typeid(CmptMaterial)]);
 	grid->AddEditColor("- Transmittance", bsdf->transmittance);
 	grid->AddEditColor("- Reflectance", bsdf->reflectance);
 	grid->AddEditVal("- ior", bsdf->ior, 0.01);
 }
 
-void Attribute::ComponentVisitor::Visit(Ptr<BSDF_Mirror> bsdf) {
+void Attribute::ComponentVisitor::ImplVisit(Ptr<BSDF_Mirror> bsdf) {
 	auto grid = GetGrid(attr->componentType2item[typeid(CmptMaterial)]);
 	grid->AddEditColor("- Reflectance", bsdf->reflectance);
 }
 
-void Attribute::ComponentVisitor::Visit(Ptr<BSDF_CookTorrance> bsdf) {
+void Attribute::ComponentVisitor::ImplVisit(Ptr<BSDF_CookTorrance> bsdf) {
 	auto grid = GetGrid(attr->componentType2item[typeid(CmptMaterial)]);
 	grid->AddEditColor("- Reflectance", bsdf->refletance);
 	grid->AddEditColor("- Albedo", bsdf->albedo);
@@ -471,7 +473,7 @@ void Attribute::ComponentVisitor::Visit(Ptr<BSDF_CookTorrance> bsdf) {
 	grid->AddEditVal("- Roughness", bsdf->m, 0, 1, 100);
 }
 
-void Attribute::ComponentVisitor::Visit(Ptr<BSDF_MetalWorkflow> bsdf) {
+void Attribute::ComponentVisitor::ImplVisit(Ptr<BSDF_MetalWorkflow> bsdf) {
 	auto grid = GetGrid(attr->componentType2item[typeid(CmptMaterial)]);
 
 	grid->AddEditColor("- Albedo Color", bsdf->colorFactor);
@@ -488,7 +490,7 @@ void Attribute::ComponentVisitor::Visit(Ptr<BSDF_MetalWorkflow> bsdf) {
 	grid->AddEditImage("- Normal Texture", bsdf->normalTexture);
 }
 
-void Attribute::ComponentVisitor::Visit(Ptr<BSDF_FrostedGlass> bsdf) {
+void Attribute::ComponentVisitor::ImplVisit(Ptr<BSDF_FrostedGlass> bsdf) {
 	auto grid = GetGrid(attr->componentType2item[typeid(CmptMaterial)]);
 
 	grid->AddEditVal("- IOR", bsdf->ior, 1., 20., 190);
@@ -503,14 +505,14 @@ void Attribute::ComponentVisitor::Visit(Ptr<BSDF_FrostedGlass> bsdf) {
 	grid->AddEditImage("- Normal Texture", bsdf->normalTexture);
 }
 
-void Attribute::ComponentVisitor::Visit(Ptr<Gooch> gooch) {
+void Attribute::ComponentVisitor::ImplVisit(Ptr<Gooch> gooch) {
 	auto grid = GetGrid(attr->componentType2item[typeid(CmptMaterial)]);
 
 	grid->AddEditColor("- Color Factor", gooch->colorFactor);
 	grid->AddEditImage("- Color Texture", gooch->colorTexture);
 }
 
-void Attribute::ComponentVisitor::Visit(Ptr<BSDF_Frostbite> bsdf) {
+void Attribute::ComponentVisitor::ImplVisit(Ptr<BSDF_Frostbite> bsdf) {
 	auto grid = GetGrid(attr->componentType2item[typeid(CmptMaterial)]);
 
 	grid->AddEditColor("- Albedo Color", bsdf->colorFactor);
@@ -529,20 +531,22 @@ void Attribute::ComponentVisitor::Visit(Ptr<BSDF_Frostbite> bsdf) {
 
 // -------------- Light --------------
 
-void Attribute::ComponentVisitor::Visit(Ptr<CmptLight> cmpt) {
+void Attribute::ComponentVisitor::ImplVisit(Ptr<CmptLight> cmpt) {
 	auto item = GenItem(cmpt, "Light");
 	auto grid = GetGrid(item);
 
-	auto getTypeStr = Visitor::New();
 	string typeStr;
-	getTypeStr->Reg([&typeStr](Ptr<AreaLight>) { typeStr = "AreaLight"; });
-	getTypeStr->Reg([&typeStr](Ptr<PointLight>) { typeStr = "PointLight"; });
-	getTypeStr->Reg([&typeStr](Ptr<DirectionalLight>) { typeStr = "DirectionalLight"; });
-	getTypeStr->Reg([&typeStr](Ptr<SpotLight>) { typeStr = "SpotLight"; });
-	getTypeStr->Reg([&typeStr](Ptr<InfiniteAreaLight>) { typeStr = "InfiniteAreaLight"; });
-	getTypeStr->Reg([&typeStr](Ptr<SphereLight>) { typeStr = "SphereLight"; });
-	getTypeStr->Reg([&typeStr](Ptr<DiskLight>) { typeStr = "DiskLight"; });
-	getTypeStr->Reg([&typeStr](Ptr<CapsuleLight>) { typeStr = "CapsuleLight"; });
+	BasicSharedPtrVisitor<Light> getTypeStr;
+	getTypeStr.Regist(
+		[&typeStr](Ptr<AreaLight>) { typeStr = "AreaLight"; },
+		[&typeStr](Ptr<PointLight>) { typeStr = "PointLight"; },
+		[&typeStr](Ptr<DirectionalLight>) { typeStr = "DirectionalLight"; },
+		[&typeStr](Ptr<SpotLight>) { typeStr = "SpotLight"; },
+		[&typeStr](Ptr<InfiniteAreaLight>) { typeStr = "InfiniteAreaLight"; },
+		[&typeStr](Ptr<SphereLight>) { typeStr = "SphereLight"; },
+		[&typeStr](Ptr<DiskLight>) { typeStr = "DiskLight"; },
+		[&typeStr](Ptr<CapsuleLight>) { typeStr = "CapsuleLight"; }
+	);
 
 	const int lightNum = 9;
 	tuple<string, function<Ptr<Light>()>> lightArr[lightNum] = {
@@ -568,21 +572,21 @@ void Attribute::ComponentVisitor::Visit(Ptr<CmptLight> cmpt) {
 			auto lightbase = get<1>(lightArr[i])();
 			cmpt->light = lightbase;
 			if (lightbase != nullptr)
-				lightbase->Accept(This());
+				Visit(lightbase);
 		};
 	}
 
 	if (cmpt->light) {
-		cmpt->light->Accept(getTypeStr);
+		getTypeStr.Visit(cmpt->light);
 		grid->AddComboBox("Type", typeStr, pSlotMap);
 
-		cmpt->light->Accept(This());
+		Visit(cmpt->light);
 	}
 	else
 		grid->AddComboBox("Type", "None", pSlotMap);
 }
 
-void Attribute::ComponentVisitor::Visit(Ptr<AreaLight> light) {
+void Attribute::ComponentVisitor::ImplVisit(Ptr<AreaLight> light) {
 	auto grid = GetGrid(attr->componentType2item[typeid(CmptLight)]);
 	grid->AddEditColor("- Color", light->color);
 	grid->AddEditVal("- Intensity", light->intensity, 0, 10000, 100000);
@@ -621,20 +625,20 @@ void Attribute::ComponentVisitor::Visit(Ptr<AreaLight> light) {
 	});
 }
 
-void Attribute::ComponentVisitor::Visit(Ptr<PointLight> light) {
+void Attribute::ComponentVisitor::ImplVisit(Ptr<PointLight> light) {
 	auto grid = GetGrid(attr->componentType2item[typeid(CmptLight)]);
 	grid->AddEditColor("- Color", light->color);
 	grid->AddEditVal("- Intensity", light->intensity, 0, 10000, 100000);
 	grid->AddEditVal("- Radius", light->radius, 0, 100.0, 1000);
 }
 
-void Attribute::ComponentVisitor::Visit(Ptr<DirectionalLight> light) {
+void Attribute::ComponentVisitor::ImplVisit(Ptr<DirectionalLight> light) {
 	auto grid = GetGrid(attr->componentType2item[typeid(CmptLight)]);
 	grid->AddEditColor("- Color", light->color);
 	grid->AddEditVal("- Intensity", light->intensity, 0, 10000, 100000);
 }
 
-void Attribute::ComponentVisitor::Visit(Ptr<SpotLight> light) {
+void Attribute::ComponentVisitor::ImplVisit(Ptr<SpotLight> light) {
 	auto grid = GetGrid(attr->componentType2item[typeid(CmptLight)]);
 	grid->AddEditColor("- Color", light->color);
 	grid->AddEditVal("- Intensity", light->intensity, 0, 10000, 100000);
@@ -643,7 +647,7 @@ void Attribute::ComponentVisitor::Visit(Ptr<SpotLight> light) {
 	grid->AddEditVal("- Full Ratio", light->fullRatio, 0.0, 1.0, 100);
 }
 
-void Attribute::ComponentVisitor::Visit(Ptr<InfiniteAreaLight> light) {
+void Attribute::ComponentVisitor::ImplVisit(Ptr<InfiniteAreaLight> light) {
 	auto grid = GetGrid(attr->componentType2item[typeid(CmptLight)]);
 	grid->AddEditVal("- Intensity", light->intensity, 0, 20, 2000);
 	grid->AddEditColor("- Color Factor", light->colorFactor);
@@ -652,7 +656,7 @@ void Attribute::ComponentVisitor::Visit(Ptr<InfiniteAreaLight> light) {
 	});
 }
 
-void Attribute::ComponentVisitor::Visit(Ptr<SphereLight> light) {
+void Attribute::ComponentVisitor::ImplVisit(Ptr<SphereLight> light) {
 	auto grid = GetGrid(attr->componentType2item[typeid(CmptLight)]);
 	grid->AddEditVal("- Intensity", light->intensity, 0, 10000, 100000);
 	grid->AddEditColor("- Color", light->color);
@@ -691,7 +695,7 @@ void Attribute::ComponentVisitor::Visit(Ptr<SphereLight> light) {
 	});
 }
 
-void Attribute::ComponentVisitor::Visit(Ptr<DiskLight> light) {
+void Attribute::ComponentVisitor::ImplVisit(Ptr<DiskLight> light) {
 	auto grid = GetGrid(attr->componentType2item[typeid(CmptLight)]);
 	grid->AddEditVal("- Intensity", light->intensity, 0, 10000, 100000);
 	grid->AddEditColor("- Color", light->color);
@@ -730,7 +734,7 @@ void Attribute::ComponentVisitor::Visit(Ptr<DiskLight> light) {
 	});
 }
 
-void Attribute::ComponentVisitor::Visit(Ptr<CapsuleLight> light) {
+void Attribute::ComponentVisitor::ImplVisit(Ptr<CapsuleLight> light) {
 	auto grid = GetGrid(attr->componentType2item[typeid(CmptLight)]);
 	grid->AddEditVal("- Intensity", light->intensity, 0, 10000, 100000);
 	grid->AddEditColor("- Color", light->color);
@@ -810,7 +814,7 @@ void Attribute::SetSObj(Ptr<SObj> sobj) {
 		return;
 
 	for (auto component : sobj->GetAllComponents())
-		component->Accept(visitor);
+		visitor->Visit(component);
 
 	AddController(sobj);
 }
@@ -880,7 +884,7 @@ void Attribute::AddController(Ptr<SObj> sobj) {
 			return;
 
 		sobj->AttachComponent(component);
-		component->Accept(visitor);
+		visitor->Visit(component);
 	};
 
 	auto delBtnSlot = [=](const string & item) {

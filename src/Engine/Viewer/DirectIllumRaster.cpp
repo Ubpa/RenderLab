@@ -61,7 +61,7 @@ void DirectIllumRaster::InitShaderFrostedGlass() {
 	RegShader(shader_frostedGlass, 4);
 }
 
-void DirectIllumRaster::Visit(Ptr<BSDF_Diffuse> bsdf) {
+void DirectIllumRaster::ImplVisit(Ptr<BSDF_Diffuse> bsdf) {
 	SetCurShader(shader_diffuse);
 
 	string strBSDF = "bsdf.";
@@ -76,7 +76,7 @@ void DirectIllumRaster::Visit(Ptr<BSDF_Diffuse> bsdf) {
 	UseLightTex(shader_diffuse);
 }
 
-void DirectIllumRaster::Visit(Ptr<BSDF_MetalWorkflow> bsdf) {
+void DirectIllumRaster::ImplVisit(Ptr<BSDF_MetalWorkflow> bsdf) {
 	SetCurShader(shader_metalWorkflow);
 
 	string strBSDF = "bsdf.";
@@ -101,7 +101,7 @@ void DirectIllumRaster::Visit(Ptr<BSDF_MetalWorkflow> bsdf) {
 	UseLightTex(shader_metalWorkflow);
 }
 
-void DirectIllumRaster::Visit(Ptr<BSDF_FrostedGlass> bsdf) {
+void DirectIllumRaster::ImplVisit(Ptr<BSDF_FrostedGlass> bsdf) {
 	SetCurShader(shader_frostedGlass);
 
 	string strBSDF = "bsdf.";

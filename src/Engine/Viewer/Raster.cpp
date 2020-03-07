@@ -37,13 +37,13 @@ Raster::Raster(RawAPI_OGLW * pOGLW, Ptr<Scene> scene, Ptr<Camera> camera)
 }
 
 void Raster::UpdateShadowMap() {
-	scene->Accept(pldmGenerator);
-	scene->Accept(dldmGenerator);
-	scene->Accept(sldmGenerator);
+	pldmGenerator->Visit(scene);
+	dldmGenerator->Visit(scene);
+	sldmGenerator->Visit(scene);
 }
 
 void Raster::UpdateEnvironment() {
-	scene->Accept(envGenerator);
+	envGenerator->Visit(scene);
 }
 
 void Raster::Init() {

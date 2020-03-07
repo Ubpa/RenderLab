@@ -1,12 +1,12 @@
 #pragma once
 
-#include <Basic/Element.h>
+#include <Basic/HeapObj.h>
 #include <UGM/bbox.h>
 
 namespace Ubpa {
 	class Primitive;
 
-	class Shape : public Element {
+	class Shape : public HeapObj {
 	protected:
 		Shape() = default;
 		virtual ~Shape() = default;

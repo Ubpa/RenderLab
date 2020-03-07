@@ -20,7 +20,7 @@ namespace Ubpa {
 		virtual void Init() override;
 
 	protected:
-		virtual void Visit(Ptr<Gooch> gooch) override;
+		virtual void ImplVisit(Ptr<Gooch> gooch) override;
 
 	private:
 		void InitShaders();

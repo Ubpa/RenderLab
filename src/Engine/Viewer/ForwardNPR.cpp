@@ -38,7 +38,7 @@ void ForwardNPR::InitShaderGooch() {
 	RegShader(shaderGooch, 1);
 }
 
-void ForwardNPR::Visit(Ptr<Gooch> gooch) {
+void ForwardNPR::ImplVisit(Ptr<Gooch> gooch) {
 	SetCurShader(shaderGooch);
 
 	shaderGooch.SetVecf3("gooch.colorFactor", gooch->colorFactor.cast_to<valf3>());

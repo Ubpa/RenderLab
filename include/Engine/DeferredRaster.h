@@ -5,14 +5,18 @@
 #include <OpenGL/FBO.h>
 #include <OpenGL/Texture.h>
 
-#include <UGM/transform.h>
 #include <Basic/TypeMap.h>
+
+#include <UGM/transform.h>
+
+#include <UDP/MultiVisitor.h>
 
 #include <set>
 
 namespace Ubpa {
 	class SObj;
 
+	class Primitive;
 	class Sphere;
 	class Plane;
 	class TriMesh;
@@ -25,7 +29,7 @@ namespace Ubpa {
 	class BSDF_Frostbite;
 	class BSDF_Emission;
 
-	class DeferredRaster : public Raster {
+	class DeferredRaster : public Raster, public SharedPtrMultiVisitor<DeferredRaster, Material, Primitive>{
 	public:
 		DeferredRaster(RawAPI_OGLW* pOGLW, Ptr<Scene> scene, Ptr<Camera> camera);
 
@@ -51,19 +55,20 @@ namespace Ubpa {
 		void InitShader_Skybox();
 		void InitShader_PostProcess();
 
-	private:
+	protected:
+		using SharedPtrMultiVisitor<DeferredRaster, Material, Primitive>::Visit;
 		virtual void Visit(Ptr<SObj> sobj);
 
-		virtual void Visit(Ptr<BSDF_MetalWorkflow> bsdf);
-		virtual void Visit(Ptr<BSDF_Diffuse> bsdf);
-		virtual void Visit(Ptr<BSDF_Frostbite> bsdf);
-		virtual void Visit(Ptr<BSDF_Emission> emission);
+		virtual void ImplVisit(Ptr<BSDF_MetalWorkflow> bsdf);
+		virtual void ImplVisit(Ptr<BSDF_Diffuse> bsdf);
+		virtual void ImplVisit(Ptr<BSDF_Frostbite> bsdf);
+		virtual void ImplVisit(Ptr<BSDF_Emission> emission);
 
-		virtual void Visit(Ptr<Sphere> sphere);
-		virtual void Visit(Ptr<Plane> plane);
-		virtual void Visit(Ptr<TriMesh> mesh);
-		virtual void Visit(Ptr<Disk> disk);
-		virtual void Visit(Ptr<Capsule> capsule);
+		virtual void ImplVisit(Ptr<Sphere> sphere);
+		virtual void ImplVisit(Ptr<Plane> plane);
+		virtual void ImplVisit(Ptr<TriMesh> mesh);
+		virtual void ImplVisit(Ptr<Disk> disk);
+		virtual void ImplVisit(Ptr<Capsule> capsule);
 
 	private:
 		void Pass_GBuffer();

@@ -1,6 +1,11 @@
 #pragma once
 
-#include <Engine/Intersector.h>
+#include "Intersector.h"
+
+#include <Basic/Ptr.h>
+#include <Basic/HeapObj.h>
+#include <Engine/Shape.h>
+
 #include <UGM/point.h>
 #include <UGM/point.h>
 #include <UGM/normal.h>
@@ -12,7 +17,7 @@ namespace Ubpa {
 	class Element;
 
 	// 寻找最近的交点
-	class RayIntersector final : public Intersector {
+	class ClosestIntersector final : public HeapObj, public SharedPtrVisitor<ClosestIntersector, Shape>, public Intersector {
 	public:
 		// isIntersect 用于判断与 Primitive 是否相交
 		// closestSObj 用于记录最近的 SObj
@@ -29,34 +34,36 @@ namespace Ubpa {
 			Ptr<Triangle> triangle;
 			int idx;
 		private:
-			friend class RayIntersector;
+			friend class ClosestIntersector;
 			bool isIntersect;
 		};
 
 	public:
-		RayIntersector();
+		ClosestIntersector();
 
 		void Init(Ray* ray);
 
+		using SharedPtrVisitor<ClosestIntersector, Shape>::Visit;
+		void Visit(Ptr<BVHAccel> bvhAccel);
+		void Visit(Ptr<SObj> sobj);
+
 	protected:
-		virtual ~RayIntersector() = default;
+		virtual ~ClosestIntersector() = default;
 
 	public:
-		static const Ptr<RayIntersector> New() { return Ubpa::New<RayIntersector>(); }
+		static const Ptr<ClosestIntersector> New() { return Ubpa::New<ClosestIntersector>(); }
 
 	public:
 		const Rst& GetRst() { return rst; }
 
-	private:
+	protected:
 		// 设置 rst，如果相交，则会修改 ray.tMax
-		void Visit(Ptr<BVHAccel> bvhAccel);
-		void Visit(Ptr<SObj> sobj);
-		void Visit(Ptr<Sphere> sphere);
-		void Visit(Ptr<Plane> plane);
-		void Visit(Ptr<Triangle> triangle);
-		void Visit(Ptr<TriMesh> mesh);
-		void Visit(Ptr<Disk> disk);
-		void Visit(Ptr<Capsule> capsule);
+		void ImplVisit(Ptr<Sphere> sphere);
+		void ImplVisit(Ptr<Plane> plane);
+		void ImplVisit(Ptr<Triangle> triangle);
+		void ImplVisit(Ptr<TriMesh> mesh);
+		void ImplVisit(Ptr<Disk> disk);
+		void ImplVisit(Ptr<Capsule> capsule);
 
 	private:
 		bool Intersect(const bboxf3& bbox, const valf3& invDir) const;

@@ -3,7 +3,7 @@
 #include <Engine/ForwardRaster.h>
 
 namespace Ubpa {
-	class DirectIllumRaster final : public ForwardRaster {
+	class DirectIllumRaster : public ForwardRaster {
 	public:
 		DirectIllumRaster(RawAPI_OGLW* pOGLW, Ptr<Scene> scene, Ptr<Camera> camera)
 			: ForwardRaster(pOGLW, scene, camera) { }
@@ -20,9 +20,9 @@ namespace Ubpa {
 		virtual void Init() override;
 
 	protected:
-		virtual void Visit(Ptr<BSDF_Diffuse> bsdf) override;
-		virtual void Visit(Ptr<BSDF_MetalWorkflow> bsdf) override;
-		virtual void Visit(Ptr<BSDF_FrostedGlass> bsdf) override;
+		virtual void ImplVisit(Ptr<BSDF_Diffuse> bsdf) override;
+		virtual void ImplVisit(Ptr<BSDF_MetalWorkflow> bsdf) override;
+		virtual void ImplVisit(Ptr<BSDF_FrostedGlass> bsdf) override;
 
 	private:
 		void InitShaders();

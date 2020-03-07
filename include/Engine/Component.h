@@ -1,11 +1,11 @@
 #pragma once
 
-#include <Basic/Element.h>
+#include <Basic/HeapObj.h>
 
 namespace Ubpa {
 	class SObj;
 
-	class Component : public Element {
+	class Component : public HeapObj {
 	protected:
 		Component(Ptr<SObj> sobj) : wSObj(sobj) { }
 		virtual ~Component() = default;

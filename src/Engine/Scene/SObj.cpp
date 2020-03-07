@@ -7,7 +7,7 @@
 #include <Engine/Component.h>
 #include <Engine/CmptTransform.h>
 
-#include <Basic/Visitor.h>
+#include <UDP/Visitor.h>
 
 #include <Basic/StrAPI.h>
 
@@ -37,15 +37,11 @@ const std::vector<Ptr<Component>> SObj::GetAllComponents() const {
 
 const transformf SObj::GetLocalToWorldMatrix() {
 	auto tsfm = transformf::eye();
-
-	auto getMatVisitor = Visitor::New();
-	getMatVisitor->Reg([&](Ptr<SObj> sobj) {
-		auto cmpt = sobj->GetComponent<CmptTransform>();
-		if (cmpt != nullptr)
+	for (auto cur = This<SObj>(); cur != nullptr; cur = cur->GetParent()) {
+		auto cmpt = cur->GetComponent<CmptTransform>();
+		if (cmpt)
 			tsfm = cmpt->GetTransform() * tsfm;
-	});
-
-	AscendAccept(getMatVisitor);
+	}
 	return tsfm;
 }
 
@@ -63,7 +59,7 @@ bool SObj::Save(const string & path) {
 	else
 		saver->Init(path + ".sobj");
 
-	Accept(saver);
+	saver->Visit(This<SObj>());
 	return true;
 }
 

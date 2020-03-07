@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Basic/Element.h>
+#include <Basic/HeapObj.h>
 
 #include <string>
 #include <vector>
@@ -15,7 +15,7 @@ namespace Ubpa {
 
 	class InfiniteAreaLight;
 
-	class Scene : public Element {
+	class Scene : public HeapObj {
 	public:
 		Scene(Ptr<SObj> root, const std::string& name = "")
 			: root(root), name(name) { }

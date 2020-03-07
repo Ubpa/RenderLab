@@ -1,12 +1,12 @@
 #pragma once
 
-#include <Basic/Element.h>
+#include <Basic/HeapObj.h>
 
 #include <set>
 
 namespace Ubpa {
 	template<typename ImplT>
-	class Node : public Element {
+	class Node : public HeapObj {
 	protected:
 		Node(Ptr<ImplT> parent = nullptr)
 			: parent(parent) { }
@@ -48,7 +48,7 @@ namespace Ubpa {
 		}
 
 	public:
-		void TraverseAccept(Ptr<Visitor> visitor) {
+		/*void TraverseAccept(Ptr<Visitor> visitor) {
 			Accept(visitor);
 			for (auto child : GetChildren())
 				child->TraverseAccept(visitor);
@@ -59,7 +59,7 @@ namespace Ubpa {
 			const auto parent = GetParent();
 			if (parent)
 				parent->AscendAccept(visitor);
-		}
+		}*/
 
 	protected:
 		virtual void Init_AfterGenPtr() override {

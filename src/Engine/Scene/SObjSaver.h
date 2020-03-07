@@ -1,7 +1,9 @@
 #pragma once
 
-#include <Basic/Visitor.h>
-#include <3rdParty/tinyxml2.h>
+#include <Basic/Ptr.h>
+#include <Basic/HeapObj.h>
+
+#include <UDP/MultiVisitor.h>
 #include <UGM/transform.h>
 
 #include <UGM/point.h>
@@ -10,25 +12,33 @@
 #include <UGM/rgb.h>
 #include <UGM/rgba.h>
 
+#include <3rdParty/tinyxml2.h>
+
 #include <stack>
 #include <functional>
 #include <sstream>
+#include <map>
 
 namespace Ubpa {
 	class Image;
 
 	class SObj;
 
+	class Component;
 	class CmptCamera;
-
 	class CmptGeometry;
+	class CmptLight;
+	class CmptMaterial;
+	class CmptTransform;
+
+	class Primitive;
 	class Sphere;
 	class Plane;
 	class TriMesh;
 	class Capsule;
 	class Disk;
 
-	class CmptLight;
+	class Light;
 	class AreaLight;
 	class PointLight;
 	class DirectionalLight;
@@ -38,7 +48,7 @@ namespace Ubpa {
 	class DiskLight;
 	class CapsuleLight;
 
-	class CmptMaterial;
+	class Material;
 	class BSDF_CookTorrance;
 	class BSDF_Diffuse;
 	class BSDF_Emission;
@@ -49,9 +59,7 @@ namespace Ubpa {
 	class Gooch;
 	class BSDF_Frostbite;
 
-	class CmptTransform;
-
-	class SObjSaver : public Visitor {
+	class SObjSaver final : public SharedPtrMultiVisitor<SObjSaver, Component, Primitive, Material, Light>, public HeapObj {
 	public:
 		SObjSaver();
 
@@ -62,42 +70,45 @@ namespace Ubpa {
 
 		void Init(const std::string& path);
 
+		void Visit(Ptr<SObj> sobj);
+
 	private:
 		void Visit(PtrC<Image> img);
 		void Visit(Ptr<Image> img);
+		using SharedPtrMultiVisitor<SObjSaver, Component, Primitive, Material, Light>::Visit;
 
-		void Visit(Ptr<SObj> sobj);
-		void Visit(Ptr<CmptCamera> camera);
+	protected:
+		void ImplVisit(Ptr<CmptCamera> camera);
 
-		void Visit(Ptr<CmptGeometry> geometry);
-		void Visit(Ptr<Sphere> sphere);
-		void Visit(Ptr<Plane> plane);
-		void Visit(Ptr<TriMesh> mesh);
-		void Visit(Ptr<Capsule> capsule);
-		void Visit(Ptr<Disk> disk);
+		void ImplVisit(Ptr<CmptGeometry> geometry);
+		void ImplVisit(Ptr<Sphere> sphere);
+		void ImplVisit(Ptr<Plane> plane);
+		void ImplVisit(Ptr<TriMesh> mesh);
+		void ImplVisit(Ptr<Capsule> capsule);
+		void ImplVisit(Ptr<Disk> disk);
 
-		void Visit(Ptr<CmptLight> light);
-		void Visit(Ptr<AreaLight> areaLight);
-		void Visit(Ptr<PointLight> pointLight);
-		void Visit(Ptr<DirectionalLight> directionalLight);
-		void Visit(Ptr<SpotLight> spotLight);
-		void Visit(Ptr<InfiniteAreaLight> infiniteAreaLight);
-		void Visit(Ptr<SphereLight> sphereLight);
-		void Visit(Ptr<DiskLight> diskLight);
-		void Visit(Ptr<CapsuleLight> diskLight);
+		void ImplVisit(Ptr<CmptLight> light);
+		void ImplVisit(Ptr<AreaLight> areaLight);
+		void ImplVisit(Ptr<PointLight> pointLight);
+		void ImplVisit(Ptr<DirectionalLight> directionalLight);
+		void ImplVisit(Ptr<SpotLight> spotLight);
+		void ImplVisit(Ptr<InfiniteAreaLight> infiniteAreaLight);
+		void ImplVisit(Ptr<SphereLight> sphereLight);
+		void ImplVisit(Ptr<DiskLight> diskLight);
+		void ImplVisit(Ptr<CapsuleLight> diskLight);
 
-		void Visit(Ptr<CmptMaterial> meterial);
-		void Visit(Ptr<BSDF_CookTorrance> bsdf);
-		void Visit(Ptr<BSDF_Diffuse> bsdf);
-		void Visit(Ptr<BSDF_Emission> bsdf);
-		void Visit(Ptr<BSDF_Glass> bsdf);
-		void Visit(Ptr<BSDF_MetalWorkflow> bsdf);
-		void Visit(Ptr<BSDF_Mirror> bsdf);
-		void Visit(Ptr<BSDF_FrostedGlass> bsdf);
-		void Visit(Ptr<Gooch> gooch);
-		void Visit(Ptr<BSDF_Frostbite> bsdf);
+		void ImplVisit(Ptr<CmptMaterial> meterial);
+		void ImplVisit(Ptr<BSDF_CookTorrance> bsdf);
+		void ImplVisit(Ptr<BSDF_Diffuse> bsdf);
+		void ImplVisit(Ptr<BSDF_Emission> bsdf);
+		void ImplVisit(Ptr<BSDF_Glass> bsdf);
+		void ImplVisit(Ptr<BSDF_MetalWorkflow> bsdf);
+		void ImplVisit(Ptr<BSDF_Mirror> bsdf);
+		void ImplVisit(Ptr<BSDF_FrostedGlass> bsdf);
+		void ImplVisit(Ptr<Gooch> gooch);
+		void ImplVisit(Ptr<BSDF_Frostbite> bsdf);
 
-		void Visit(Ptr<CmptTransform> transform);
+		void ImplVisit(Ptr<CmptTransform> transform);
 
 	private:
 		tinyxml2::XMLText* NewText(const char* text) {

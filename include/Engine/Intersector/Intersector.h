@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Basic/Visitor.h>
+#include <UDP/Visitor.h>
 
 namespace Ubpa {
 	class SObj;
@@ -13,9 +13,5 @@ namespace Ubpa {
 	class Disk;
 	class Capsule;
 
-	class Intersector : public Visitor {
-	protected:
-		Intersector() = default;
-		virtual ~Intersector() = default;
-	};
+	class Intersector { };
 }

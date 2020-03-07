@@ -12,7 +12,7 @@ namespace Ubpa {
 	class Light;
 	class BVHAccel;
 
-	class RayIntersector;
+	class ClosestIntersector;
 	class VisibilityChecker;
 
 	class BSDF;
@@ -83,7 +83,7 @@ namespace Ubpa {
 		std::vector<transformf> worldToLightVec;
 		std::vector<transformf> lightToWorldVec;
 
-		Ptr<RayIntersector> rayIntersector;
+		Ptr<ClosestIntersector> closestIntersector;
 		Ptr<VisibilityChecker> visibilityChecker;
 	};
 }

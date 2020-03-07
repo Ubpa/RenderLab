@@ -8,7 +8,7 @@
 
 #include <Engine/AreaLight.h>
 #include <Engine/InfiniteAreaLight.h>
-#include <Engine/RayIntersector.h>
+#include <Engine/Intersector/ClosestIntersector.h>
 #include <Engine/Sphere.h>
 #include <Engine/Plane.h>
 #include <Engine/Ray.h>

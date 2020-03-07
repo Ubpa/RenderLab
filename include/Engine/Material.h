@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Basic/Element.h>
+#include <Basic/HeapObj.h>
 #include <UGM/point.h>
 #include <UGM/vec.h>
 #include <UGM/normal.h>
@@ -11,7 +11,7 @@
 namespace Ubpa {
 	class Image;
 
-	class Material : public Element {
+	class Material : public HeapObj {
 	protected:
 		Material() = default;
 		virtual ~Material() = default;

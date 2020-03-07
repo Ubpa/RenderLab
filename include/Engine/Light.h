@@ -2,7 +2,7 @@
 
 #include <Engine/Ray.h>
 
-#include <Basic/Element.h>
+#include <Basic/HeapObj.h>
 
 #include <UGM/rgb.h>
 #include <UGM/point.h>
@@ -10,7 +10,7 @@
 #include <UGM/normal.h>
 
 namespace Ubpa {
-	class Light : public Element {
+	class Light : public HeapObj {
 	protected:
 		Light() = default;
 		virtual ~Light() = default;

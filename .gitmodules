@@ -10,3 +10,6 @@
 [submodule "external/UTemplate"]
 	path = external/UTemplate
 	url = https://github.com/Ubpa/UTemplate
+[submodule "external/UDP"]
+	path = external/UDP
+	url = https://github.com/Ubpa/UDP

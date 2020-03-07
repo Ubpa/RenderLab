@@ -1,12 +1,16 @@
 #pragma once
 
-#include <Engine/Intersector.h>
+#include <Engine/Intersector/Intersector.h>
 #include <UGM/bbox.h>
+
+#include <Basic/Ptr.h>
+#include <Basic/HeapObj.h>
+#include <Engine/Shape.h>
 
 #include <Engine/Ray.h>
 
 namespace Ubpa {
-	class VisibilityChecker final : public Intersector {
+	class VisibilityChecker final : public SharedPtrVisitor<VisibilityChecker, Shape>, public HeapObj, public Intersector {
 	public:
 		struct Rst {
 			friend class VisibilityChecker;
@@ -29,16 +33,17 @@ namespace Ubpa {
 	public:
 		void Init(const Ray& ray, float tMax);
 
+		using SharedPtrVisitor<VisibilityChecker, Shape>::Visit;
+		void Visit(Ptr<BVHAccel> bvhAccel);
 		Rst& GetRst() { return rst; }
 
-	private:
+	protected:
 		// 设置 rst，如果相交，则会修改 ray.tMax
-		void Visit(Ptr<BVHAccel> bvhAccel);
-		void Visit(Ptr<Sphere> sphere);
-		void Visit(Ptr<Plane> plane);
-		void Visit(Ptr<Triangle> triangle);
-		void Visit(Ptr<Disk> disk);
-		void Visit(Ptr<Capsule> capsule);
+		void ImplVisit(Ptr<Sphere> sphere);
+		void ImplVisit(Ptr<Plane> plane);
+		void ImplVisit(Ptr<Triangle> triangle);
+		void ImplVisit(Ptr<Disk> disk);
+		void ImplVisit(Ptr<Capsule> capsule);
 
 	private:
 		bool Intersect(const bboxf3& bbox, const valf3& invDir) const;

@@ -63,24 +63,21 @@ bool ForwardRaster::ShaderCompare::operator()(const Shader & lhs, const Shader &
 }
 
 ForwardRaster::ForwardRaster(RawAPI_OGLW * pOGLW, Ptr<Scene> scene, Ptr<Camera> camera)
-	: Raster(pOGLW, scene, camera) {
-	RegMemberFunc<SObj>(&ForwardRaster::Visit);
-
+	: Raster(pOGLW, scene, camera)
+{
 	// primitive
-	RegMemberFunc<Sphere>(&ForwardRaster::Visit);
-	RegMemberFunc<Plane>(&ForwardRaster::Visit);
-	RegMemberFunc<TriMesh>(&ForwardRaster::Visit);
+	Regist<Sphere, Plane, TriMesh>();
 
 	// bsdf
-	RegMemberFunc<BSDF_Diffuse>(&ForwardRaster::Visit);
-	RegMemberFunc<BSDF_Emission>(&ForwardRaster::Visit);
-	RegMemberFunc<BSDF_Glass>(&ForwardRaster::Visit);
-	RegMemberFunc<BSDF_Mirror>(&ForwardRaster::Visit);
-	RegMemberFunc<BSDF_CookTorrance>(&ForwardRaster::Visit);
-	RegMemberFunc<BSDF_MetalWorkflow>(&ForwardRaster::Visit);
-	RegMemberFunc<BSDF_FrostedGlass>(&ForwardRaster::Visit);
-	RegMemberFunc<BSDF_Frostbite>(&ForwardRaster::Visit);
-	RegMemberFunc<Gooch>(&ForwardRaster::Visit);
+	Regist<BSDF_Diffuse,
+		BSDF_Emission,
+		BSDF_Glass,
+		BSDF_Mirror,
+		BSDF_CookTorrance,
+		BSDF_MetalWorkflow,
+		BSDF_FrostedGlass,
+		BSDF_Frostbite,
+		Gooch>();
 }
 
 void ForwardRaster::Draw() {
@@ -96,7 +93,7 @@ void ForwardRaster::Draw() {
 
 	modelVec.clear();
 	modelVec.push_back(transformf::eye());
-	scene->GetRoot()->Accept(This());
+	Visit(scene->GetRoot());
 
 	if(drawSky)
 		DrawEnvironment();
@@ -142,28 +139,28 @@ void ForwardRaster::Visit(Ptr<SObj> sobj) {
 		modelVec.push_back(modelVec.back() * cmptTransform->GetTransform());
 
 	if (geometry && geometry->primitive && material && material->material) {
-		material->material->Accept(This());
-		geometry->primitive->Accept(This());
+		Visit(material->material);
+		Visit(geometry->primitive);
 	}
 
 	for (auto child : children)
-		child->Accept(This());
+		Visit(child);
 
 	if (cmptTransform != nullptr)
 		modelVec.pop_back();
 }
 
-void ForwardRaster::Visit(Ptr<Sphere> sphere) {
+void ForwardRaster::ImplVisit(Ptr<Sphere> sphere) {
 	curShader.SetMatf4("model", modelVec.back().data());
 	pOGLW->GetVAO(RawAPI_OGLW::ShapeType::Sphere).Draw(curShader);
 }
 
-void ForwardRaster::Visit(Ptr<Plane> plane) {
+void ForwardRaster::ImplVisit(Ptr<Plane> plane) {
 	curShader.SetMatf4("model", modelVec.back().data());
 	pOGLW->GetVAO(RawAPI_OGLW::ShapeType::Plane).Draw(curShader);
 }
 
-void ForwardRaster::Visit(Ptr<TriMesh> mesh) {
+void ForwardRaster::ImplVisit(Ptr<TriMesh> mesh) {
 	curShader.SetMatf4("model", modelVec.back().data());
 	pOGLW->GetVAO(mesh).Draw(curShader);
 }
@@ -276,39 +273,39 @@ void ForwardRaster::DrawEnvironment() {
 	glDepthFunc(GL_LESS);
 }
 
-void ForwardRaster::Visit(Ptr<BSDF_Diffuse> bsdf) {
+void ForwardRaster::ImplVisit(Ptr<BSDF_Diffuse> bsdf) {
 	curShader = shader_basic;
 	curShader.SetVecf3("color", bsdf->colorFactor.cast_to<valf3>());
 }
-void ForwardRaster::Visit(Ptr<BSDF_Glass> bsdf) {
+void ForwardRaster::ImplVisit(Ptr<BSDF_Glass> bsdf) {
 	curShader = shader_basic;
 	curShader.SetVecf3("color", bsdf->transmittance.cast_to<valf3>());
 }
-void ForwardRaster::Visit(Ptr<BSDF_Mirror> bsdf) {
+void ForwardRaster::ImplVisit(Ptr<BSDF_Mirror> bsdf) {
 	curShader = shader_basic;
 	curShader.SetVecf3("color", bsdf->reflectance.cast_to<valf3>());
 }
-void ForwardRaster::Visit(Ptr<BSDF_Emission> bsdf) {
+void ForwardRaster::ImplVisit(Ptr<BSDF_Emission> bsdf) {
 	curShader = shader_basic;
 	curShader.SetVecf3("color", bsdf->color.cast_to<valf3>());
 }
-void ForwardRaster::Visit(Ptr<BSDF_CookTorrance> bsdf) {
+void ForwardRaster::ImplVisit(Ptr<BSDF_CookTorrance> bsdf) {
 	curShader = shader_basic;
 	curShader.SetVecf3("color", bsdf->albedo.cast_to<valf3>());
 }
-void ForwardRaster::Visit(Ptr<BSDF_MetalWorkflow> bsdf) {
+void ForwardRaster::ImplVisit(Ptr<BSDF_MetalWorkflow> bsdf) {
 	curShader = shader_basic;
 	curShader.SetVecf3("color", bsdf->colorFactor.cast_to<valf3>());
 }
-void ForwardRaster::Visit(Ptr<BSDF_FrostedGlass> bsdf) {
+void ForwardRaster::ImplVisit(Ptr<BSDF_FrostedGlass> bsdf) {
 	curShader = shader_basic;
 	curShader.SetVecf3("color", bsdf->colorFactor.cast_to<valf3>());
 }
-void ForwardRaster::Visit(Ptr<BSDF_Frostbite> bsdf) {
+void ForwardRaster::ImplVisit(Ptr<BSDF_Frostbite> bsdf) {
 	curShader = shader_basic;
 	curShader.SetVecf3("color", bsdf->colorFactor.cast_to<valf3>());
 }
-void ForwardRaster::Visit(Ptr<Gooch> gooch) {
+void ForwardRaster::ImplVisit(Ptr<Gooch> gooch) {
 	curShader = shader_basic;
 	curShader.SetVecf3("color", gooch->colorFactor.cast_to<valf3>());
 }

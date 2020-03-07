@@ -3,11 +3,11 @@
 #include <Basic/LStorage.h>
 #include <Basic/Node.h>
 #include <Basic/TypeMap.h>
-#include <Basic/Visitor.h>
 #include <UGM/transform.h>
 
 #include <string>
 #include <vector>
+#include <functional>
 
 namespace Ubpa {
 	class Component;

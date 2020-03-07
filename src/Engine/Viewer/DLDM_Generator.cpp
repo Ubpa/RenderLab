@@ -41,14 +41,7 @@ namespace Ubpa {
 DLDM_Generator::DLDM_Generator(RawAPI_OGLW * pOGLW, Ptr<Camera> camera)
 	: pOGLW(pOGLW), camera(camera), depthMapSize(1024)
 {
-	RegMemberFunc<Scene>(&DLDM_Generator::Visit);
-	RegMemberFunc<SObj>(&DLDM_Generator::Visit);
-
-	RegMemberFunc<Sphere>(&DLDM_Generator::Visit);
-	RegMemberFunc<Plane>(&DLDM_Generator::Visit);
-	RegMemberFunc<TriMesh>(&DLDM_Generator::Visit);
-	RegMemberFunc<Disk>(&DLDM_Generator::Visit);
-	RegMemberFunc<Capsule>(&DLDM_Generator::Visit);
+	Regist<Sphere, Plane, TriMesh, Disk, Capsule>();
 }
 
 void DLDM_Generator::Init() {
@@ -143,7 +136,7 @@ void DLDM_Generator::Visit(Ptr<Scene> scene) {
 
 		light2pv[lightComponent] = proj * view;
 
-		scene->GetRoot()->Accept(This());
+		Visit(scene->GetRoot());
 	}
 
 	glBindFramebuffer(GL_FRAMEBUFFER, origFBO);
@@ -164,37 +157,37 @@ void DLDM_Generator::Visit(Ptr<SObj> sobj) {
 		modelVec.push_back(modelVec.back() * cmptTransform->GetTransform());
 
 	if (geometry && geometry->primitive)
-		geometry->primitive->Accept(This());
+		Visit(geometry->primitive);
 
 	for (auto child : children)
-		child->Accept(This());
+		Visit(child);
 
 	if (cmptTransform != nullptr)
 		modelVec.pop_back();
 }
 
-void DLDM_Generator::Visit(Ptr<Sphere> sphere) {
+void DLDM_Generator::ImplVisit(Ptr<Sphere> sphere) {
 	shader_genDepth.SetMatf4("model", modelVec.back().data());
 	pOGLW->GetVAO(RawAPI_OGLW::ShapeType::Sphere).Draw(shader_genDepth);
 }
 
-void DLDM_Generator::Visit(Ptr<Plane> plane) {
+void DLDM_Generator::ImplVisit(Ptr<Plane> plane) {
 	shader_genDepth.SetMatf4("model", modelVec.back().data());
 	pOGLW->GetVAO(RawAPI_OGLW::ShapeType::Plane).Draw(shader_genDepth);
 }
 
-void DLDM_Generator::Visit(Ptr<TriMesh> mesh) {
+void DLDM_Generator::ImplVisit(Ptr<TriMesh> mesh) {
 	shader_genDepth.SetMatf4("model", modelVec.back().data());
 	pOGLW->GetVAO(mesh).Draw(shader_genDepth);
 }
 
-void DLDM_Generator::Visit(Ptr<Disk> disk) {
+void DLDM_Generator::ImplVisit(Ptr<Disk> disk) {
 	shader_genDepth.SetMatf4("model", modelVec.back().data());
 	shader_genDepth.SetBool("isOffset", false);
 	pOGLW->GetVAO(RawAPI_OGLW::ShapeType::Disk).Draw(shader_genDepth);
 }
 
-void DLDM_Generator::Visit(Ptr<Capsule> capsule) {
+void DLDM_Generator::ImplVisit(Ptr<Capsule> capsule) {
 	shader_genDepth.SetMatf4("model", modelVec.back().data());
 	shader_genDepth.SetBool("isOffset", true);
 	shader_genDepth.SetFloat("offset", capsule->height / 2 - 1);

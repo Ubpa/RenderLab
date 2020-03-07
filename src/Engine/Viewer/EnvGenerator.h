@@ -1,12 +1,15 @@
 #pragma once
 
-#include <Basic/Visitor.h>
 #include <OpenGL/FBO.h>
 #include <OpenGL/Texture.h>
 #include <OpenGL/VAO.h>
 #include <OpenGL/Shader.h>
 
+#include <Basic/HeapObj.h>
+
 #include <UGM/transform.h>
+
+#include <UDP/Visitor.h>
 
 namespace Ubpa {
 	class Image;
@@ -23,7 +26,7 @@ namespace Ubpa {
 	class InfiniteAreaLight;
 
 	// Cubemap Generator, GPU-driven
-	class EnvGenerator : public Visitor {
+	class EnvGenerator : public HeapObj {
 	public:
 		EnvGenerator(RawAPI_OGLW* pOGLW);
 
@@ -42,7 +45,7 @@ namespace Ubpa {
 		const Texture GetPrefilterMap(PtrC<Image> img) const;
 		const Texture GetBRDF_LUT() const { return brdfFBO.GetColorTexture(0); }
 
-	private:
+	public:
 		void Visit(Ptr<Scene> scene);
 
 	private:

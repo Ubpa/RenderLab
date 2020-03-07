@@ -7,6 +7,8 @@
 
 #include <UGM/transform.h>
 
+#include <UDP/MultiVisitor.h>
+
 namespace Ubpa {
 	class Operation;
 	class Image;
@@ -17,10 +19,12 @@ namespace Ubpa {
 	class Scene;
 	class SObj;
 
+	class Primitive;
 	class Sphere;
 	class Plane;
 	class TriMesh;
 
+	class Material;
 	class BSDF_Diffuse;
 	class BSDF_Mirror;
 	class BSDF_Glass;
@@ -31,7 +35,7 @@ namespace Ubpa {
 	class BSDF_Frostbite;
 	class Gooch;
 
-	class ForwardRaster : public Raster {
+	class ForwardRaster : public Raster, public SharedPtrMultiVisitor<ForwardRaster, Primitive, Material> {
 	protected:
 		ForwardRaster(RawAPI_OGLW* pOGLW, Ptr<Scene> scene, Ptr<Camera> camera);
 		virtual ~ForwardRaster() = default;
@@ -48,25 +52,26 @@ namespace Ubpa {
 
 	protected:
 		virtual void Visit(Ptr<SObj> sobj);
+		using SharedPtrMultiVisitor<ForwardRaster, Primitive, Material>::Visit;
 
 		// SetCurShader for Primitive
-		virtual void Visit(Ptr<BSDF_Diffuse> bsdf);
-		virtual void Visit(Ptr<BSDF_Glass> bsdf);
-		virtual void Visit(Ptr<BSDF_Mirror> bsdf);
-		virtual void Visit(Ptr<BSDF_Emission> bsdf);
-		virtual void Visit(Ptr<BSDF_CookTorrance> bsdf);
-		virtual void Visit(Ptr<BSDF_MetalWorkflow> bsdf);
-		virtual void Visit(Ptr<BSDF_FrostedGlass> bsdf);
-		virtual void Visit(Ptr<BSDF_Frostbite> bsdf);
-		virtual void Visit(Ptr<Gooch> gooch);
+		virtual void ImplVisit(Ptr<BSDF_Diffuse> bsdf);
+		virtual void ImplVisit(Ptr<BSDF_Glass> bsdf);
+		virtual void ImplVisit(Ptr<BSDF_Mirror> bsdf);
+		virtual void ImplVisit(Ptr<BSDF_Emission> bsdf);
+		virtual void ImplVisit(Ptr<BSDF_CookTorrance> bsdf);
+		virtual void ImplVisit(Ptr<BSDF_MetalWorkflow> bsdf);
+		virtual void ImplVisit(Ptr<BSDF_FrostedGlass> bsdf);
+		virtual void ImplVisit(Ptr<BSDF_Frostbite> bsdf);
+		virtual void ImplVisit(Ptr<Gooch> gooch);
 
 	protected:
 		void SetDrawSky(bool drawSky) { this->drawSky = drawSky; }
 
-	private: // no need to change
-		/*virtual */void Visit(Ptr<Sphere> sphere);
-		/*virtual */void Visit(Ptr<Plane> plane);
-		/*virtual */void Visit(Ptr<TriMesh> mesh);
+	protected: // no need to change
+		/*virtual */void ImplVisit(Ptr<Sphere> sphere);
+		/*virtual */void ImplVisit(Ptr<Plane> plane);
+		/*virtual */void ImplVisit(Ptr<TriMesh> mesh);
 
 	private:
 		void InitShaders();
