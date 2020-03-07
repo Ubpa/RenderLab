@@ -12,4 +12,9 @@ if(TARGET assimp::assimp)
 	add_definitions(-DUSE_ASSIMP)
 endif()
 
+if(TARGET tinyxml2::tinyxml2)
+	list(APPEND libs tinyxml2::tinyxml2)
+	add_definitions(-DUSE_TINYXML2)
+endif()
+
 Ubpa_AddTarget(MODE "LIB" SOURCES ${sources} LIBS ${libs})

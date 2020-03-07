@@ -7,8 +7,10 @@
 
 using namespace Ubpa;
 
-using namespace tinyxml2;
 using namespace std;
+
+#ifdef USE_TINYXML2
+using namespace tinyxml2;
 
 template<>
 const float SObjLoader::To(const Key & key) {
@@ -79,7 +81,6 @@ static Ptr<Image> SObjLoader::Load(EleP ele) {
 
 	return img;
 }
-
 // ------------ SObj ----------------
 
 template<>
@@ -105,8 +106,10 @@ static Ptr<SObj> SObjLoader::Load(XMLElement * ele) {
 
 	return sobj;
 }
+#endif
 
 Ptr<SObj> SObjLoader::Load(const string & path) {
+#ifdef USE_TINYXML2
 	XMLDocument doc;
 
 	if (doc.LoadFile(path.c_str()) != XML_SUCCESS)
@@ -115,8 +118,15 @@ Ptr<SObj> SObjLoader::Load(const string & path) {
 	auto tmp = SObj::New();
 
 	return Load<Ptr<SObj>>(doc.FirstChildElement(str::SObj::type));
+#else
+	cout << "ERROR::SObjLoader:" << endl
+		<< "\t" << "no tinyxml2 because not found it when cmake, read setup.md for more details" << endl
+		<< "\t" << "load fail" << endl;
+	return nullptr;
+#endif
 }
 
+#ifdef USE_TINYXML2
 template<>
 static vector<Ptr<Component>> SObjLoader::Load(XMLElement * ele) {
 	FuncMap funcMap;
@@ -618,3 +628,4 @@ static Ptr<CmptTransform> SObjLoader::Load(XMLElement * ele){
 
 	return cmpt;
 }
+#endif

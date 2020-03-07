@@ -60,6 +60,13 @@ if(TARGET assimp::assimp)
 endif()
 
 message(STATUS "----------")
+find_package(tinyxml2)
+if(TARGET tinyxml2::tinyxml2)
+	message(STATUS "tinyxml2_FOUND: ${tinyxml2_FOUND}")
+	message(STATUS "tinyxml2_DIR: ${tinyxml2_DIR}")
+endif()
+
+message(STATUS "----------")
 # https://eigen.tuxfamily.org/dox/TopicCMakeGuide.html
 # https://gitlab.com/libeigen/eigen/-/blob/master/cmake/Eigen3Config.cmake.in
 # https://gitlab.com/libeigen/eigen/-/blob/master/cmake/UseEigen3.cmake

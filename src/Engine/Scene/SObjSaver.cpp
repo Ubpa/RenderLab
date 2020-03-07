@@ -3,11 +3,17 @@
 #include "SL_Common.h"
 
 using namespace Ubpa;
-
-using namespace tinyxml2;
 using namespace std;
 
+#ifdef USE_TINYXML2
+using namespace tinyxml2;
+#else
+#include <iostream>
+#endif // USE_TINYXML2
+
+
 SObjSaver::SObjSaver() {
+#ifdef USE_TINYXML2
 	Regist<CmptCamera,
 		CmptGeometry,
 		CmptLight,
@@ -38,14 +44,18 @@ SObjSaver::SObjSaver() {
 		BSDF_FrostedGlass,
 		BSDF_Frostbite,
 		Gooch>();
+#endif
 }
 
 void SObjSaver::Init(const string & path) {
 	this->path = path;
+#ifdef USE_TINYXML2
 	doc.Clear();
 	parentEleStack.clear();
+#endif
 }
 
+#ifdef USE_TINYXML2
 void SObjSaver::Member(XMLElement * parent, const function<void()> & func) {
 	parentEleStack.push_back(parent);
 	func();
@@ -68,8 +78,10 @@ void SObjSaver::Visit(PtrC<Image> img) {
 void SObjSaver::Visit(Ptr<Image> img) {
 	Visit(PtrC<Image>(img));
 }
+#endif
 
 void SObjSaver::Visit(Ptr<SObj> sobj) {
+#ifdef USE_TINYXML2
 	// sobj
 	auto ele = doc.NewElement(str::SObj::type);
 	if (parentEleStack.empty())
@@ -97,8 +109,14 @@ void SObjSaver::Visit(Ptr<SObj> sobj) {
 	// save
 	if (parentEleStack.empty())
 		doc.SaveFile(path.c_str());
+#else
+	cout << "ERROR::SObjSaver:" << endl
+		<< "\t" << "no tinyxml2 because not found it when cmake, read setup.md for more details" << endl
+		<< "\t" << "save fail" << endl;
+#endif
 }
 
+#ifdef USE_TINYXML2
 // ----------------- Camera -----------------
 
 void SObjSaver::ImplVisit(Ptr<CmptCamera> cmpt) {
@@ -382,3 +400,4 @@ void SObjSaver::ImplVisit(Ptr<BSDF_Frostbite> bsdf) {
 		NewEle(str::BSDF_Frostbite::normalTexture, bsdf->normalTexture);
 	});
 }
+#endif

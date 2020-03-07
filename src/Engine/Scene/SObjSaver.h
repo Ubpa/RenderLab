@@ -12,7 +12,9 @@
 #include <UGM/rgb.h>
 #include <UGM/rgba.h>
 
-#include <3rdParty/tinyxml2.h>
+#ifdef USE_TINYXML2
+#include <tinyxml2.h>
+#endif // !USE_TINYXML2
 
 #include <stack>
 #include <functional>
@@ -110,6 +112,7 @@ namespace Ubpa {
 
 		void ImplVisit(Ptr<CmptTransform> transform);
 
+#ifdef USE_TINYXML2
 	private:
 		tinyxml2::XMLText* NewText(const char* text) {
 			return NewText(std::string(text));
@@ -214,6 +217,9 @@ namespace Ubpa {
 		tinyxml2::XMLDocument doc;
 		std::map<Ptr<SObj>, tinyxml2::XMLElement*> sobj2ele;
 		std::vector<tinyxml2::XMLElement*> parentEleStack;
+#endif
+	
+	private:
 		std::string path;
 	};
 }

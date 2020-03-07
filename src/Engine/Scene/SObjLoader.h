@@ -1,6 +1,10 @@
 #pragma once
 
-#include <3rdParty/tinyxml2.h>
+#ifdef USE_TINYXML2
+#include <tinyxml2.h>
+#endif // USE_TINYXML2
+
+
 #include <Basic/Ptr.h>
 
 #include <UGM/point.h>
@@ -22,7 +26,7 @@ namespace Ubpa {
 	class SObjLoader {
 	public:
 		static Ptr<SObj> Load(const std::string& path);
-
+#ifdef USE_TINYXML2
 	private:
 		using EleP = tinyxml2::XMLElement*;
 		template <typename ...argType>
@@ -146,5 +150,6 @@ namespace Ubpa {
 				((*obj).*setVal)(ptr);
 				});
 		}
+#endif
 	};
 }
