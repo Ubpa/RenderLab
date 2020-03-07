@@ -1,6 +1,6 @@
-#include <Engine/BSDF_MetalWorkflow.h>
+#include <Engine/Material/BSDF_MetalWorkflow.h>
 
-#include <Basic/CosineWeightedHemisphereSampler3D.h>
+#include <Basic/Sampler/CosHsSampler3D.h>
 
 #include <Basic/Image.h>
 #include <Basic/Math.h>
@@ -67,7 +67,7 @@ const rgbf BSDF_MetalWorkflow::Sample_f(const normalf & wo, const pointf2 & texc
 		wi = normalf::reflect(-wo, wh);
 	}
 	else {
-		CosineWeightedHemisphereSampler3D sampler;
+		CosHsSampler3D sampler;
 		wi = sampler.GetSample().cast_to<normalf>();
 		wh = (wo + wi).normalize();
 	}

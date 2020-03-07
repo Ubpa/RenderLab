@@ -1,6 +1,6 @@
-#include <Engine/DiskLight.h>
+#include <Engine/Light/DiskLight.h>
 
-#include <Basic/BasicSampler.h>
+#include <Basic/Sampler/BasicSampler.h>
 
 using namespace Ubpa;
 

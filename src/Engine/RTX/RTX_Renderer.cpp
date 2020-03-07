@@ -1,11 +1,15 @@
-#include <Engine/RTX_Renderer.h>
+#include <Engine/Viewer/RTX_Renderer.h>
 
-#include <Engine/Scene.h>
-#include <Engine/SObj.h>
-#include <Engine/RayTracer.h>
-#include <Engine/CmptCamera.h>
-#include <Engine/SObj.h>
-#include <Engine/Ray.h>
+#include <Engine/Viewer/BVHAccel.h>
+#include <Engine/Viewer/RayTracer.h>
+#include <Engine/Viewer/Ray.h>
+
+#include <Engine/Scene/Scene.h>
+#include <Engine/Scene/SObj.h>
+#include <Engine/Scene/CmptCamera.h>
+#include <Engine/Scene/SObj.h>
+
+#include <Engine/Filter/FilterMitchell.h>
 
 #include <Basic/Image.h>
 #include <Basic/ImgPixelSet.h>
@@ -15,8 +19,6 @@
 
 #include "Film.h"
 #include "FilmTile.h"
-#include <Engine/BVHAccel.h>
-#include <Engine/FilterMitchell.h>
 
 #ifdef NDEBUG
 #define THREAD_NUM omp_get_num_procs() - 1

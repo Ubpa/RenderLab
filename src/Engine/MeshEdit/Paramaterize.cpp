@@ -2,7 +2,7 @@
 
 #include <Engine/MeshEdit/MinSurf.h>
 
-#include <Engine/TriMesh.h>
+#include <Engine/Primitive/TriMesh.h>
 
 using namespace Ubpa;
 

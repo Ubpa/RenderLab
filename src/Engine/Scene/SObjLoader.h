@@ -2,13 +2,14 @@
 
 #include <3rdParty/tinyxml2.h>
 #include <Basic/Ptr.h>
-#include <Basic/FunctionTraits.h>
 
 #include <UGM/point.h>
 #include <UGM/vec.h>
 #include <UGM/normal.h>
 #include <UGM/rgb.h>
 #include <UGM/rgba.h>
+
+#include <UTemplate/FuncTraits.h>
 
 #include <string>
 #include <map>
@@ -92,9 +93,8 @@ namespace Ubpa {
 
 		template<typename LambdaExpr>
 		static void Reg_Text_Lambda(FuncMap& funcMap, Key key, LambdaExpr lambda) {
-			using ValType = typename FunctionTraitsLambda<decltype(lambda)>::template arg<0>::type;
-			using rawValType = typename std::remove_cv<typename std::remove_reference<ValType>::type>::type;
-			const Func<const rawValType&> func = lambda;
+			using ValType = Front_t<typename FuncTraits<LambdaExpr>::ArgList>;
+			const Func<const std::decay_t<ValType>&> func = lambda;
 			Reg_Text_Func(funcMap, key, func);
 		}
 
@@ -110,8 +110,7 @@ namespace Ubpa {
 		// 将 name == key 的 ele 的 text 以 T 做参数调用 obj 的 setVal
 		template<typename ValType, typename ObjType, typename RetType>
 		static void Reg_Text_setVal(FuncMap& funcMap, Key key, Ptr<ObjType> obj, RetType(ObjType::* setVal)(ValType)) {
-			using rawValType = typename std::remove_cv<typename std::remove_reference<ValType>::type>::type;
-			Reg_Text_Lambda(funcMap, key, [=](const rawValType& val) {
+			Reg_Text_Lambda(funcMap, key, [=](const std::decay_t<ValType>& val) {
 				((*obj).*setVal)(val);
 				});
 		}
@@ -127,9 +126,8 @@ namespace Ubpa {
 
 		template<typename LambdaExpr>
 		static void Reg_Load_Lambda(FuncMap& funcMap, Key key, LambdaExpr lambda) {
-			using ValType = typename FunctionTraitsLambda<decltype(lambda)>::template arg<0>::type;
-			using rawValType = typename std::remove_cv<typename std::remove_reference<ValType>::type>::type;
-			const Func<const rawValType&> func = lambda;
+			using ValType = Front_t<typename FuncTraits<LambdaExpr>::ArgList>;
+			const Func<const std::decay_t<ValType>&> func = lambda;
 			Reg_Load_Func(funcMap, key, func);
 		}
 

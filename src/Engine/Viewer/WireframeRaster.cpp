@@ -1,8 +1,8 @@
-#include <Engine/WireframeRaster.h>
+#include <Engine/Viewer/WireframeRaster.h>
 
-#include <Engine/AllBSDFs.h>
+#include <Engine/Material/AllBSDFs.h>
 
-#include <Engine/Gooch.h>
+#include <Engine/Material/Gooch.h>
 
 #include <Qt/RawAPI_OGLW.h>
 #include <Qt/RawAPI_Define.h>

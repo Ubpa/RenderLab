@@ -2,7 +2,7 @@
 
 #include "FilmTile.h"
 
-#include <Engine/ImgFilter.h>
+#include <Engine/Filter/ImgFilter.h>
 #include <Basic/Image.h>
 
 using namespace Ubpa;

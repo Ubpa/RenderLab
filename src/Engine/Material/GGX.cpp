@@ -1,6 +1,6 @@
-#include <Engine/GGX.h>
+#include <Engine/Material/GGX.h>
 
-#include <Engine/SurfCoord.h>
+#include <Engine/Material/SurfCoord.h>
 
 using namespace Ubpa;
 

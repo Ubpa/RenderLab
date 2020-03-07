@@ -1,6 +1,6 @@
 #include <Engine/MeshEdit/LoopSubdivision.h>
 
-#include <Engine/TriMesh.h>
+#include <Engine/Primitive/TriMesh.h>
 #include <Basic/Math.h>
 #include <Basic/Parallel.h>
 

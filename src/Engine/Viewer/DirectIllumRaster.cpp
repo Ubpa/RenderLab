@@ -1,6 +1,6 @@
-#include <Engine/DirectIllumRaster.h>
+#include <Engine/Viewer/DirectIllumRaster.h>
 
-#include <Engine/AllBSDFs.h>
+#include <Engine/Material/AllBSDFs.h>
 
 #include <Qt/RawAPI_OGLW.h>
 #include <Qt/RawAPI_Define.h>

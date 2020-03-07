@@ -7,14 +7,14 @@
 #include <assimp/pbrmaterial.h>
 #endif
 
-#include <Engine/SObj.h>
+#include <Engine/Scene/SObj.h>
 
-#include <Engine/CmptMaterial.h>
-#include <Engine/CmptTransform.h>
-#include <Engine/CmptGeometry.h>
+#include <Engine/Scene/CmptMaterial.h>
+#include <Engine/Scene/CmptTransform.h>
+#include <Engine/Scene/CmptGeometry.h>
 
-#include <Engine/TriMesh.h>
-#include <Engine/BSDF_Frostbite.h>
+#include <Engine/Primitive/TriMesh.h>
+#include <Engine/Material/BSDF_Frostbite.h>
 
 #include <Basic/StrAPI.h>
 #include <Basic/Image.h>

@@ -3,20 +3,20 @@
 #include <UI/Attribute.h>
 
 #include <Engine/MeshEdit/DeformRBF.h>
-#include <Engine/Viewer.h>
-#include <Engine/Scene.h>
-#include <Engine/SObj.h>
+#include <Engine/Viewer/Viewer.h>
+#include <Engine/Scene/Scene.h>
+#include <Engine/Scene/SObj.h>
 #include <Engine/Intersector/ClosestIntersector.h>
-#include <Engine/Ray.h>
-#include <Engine/Roamer.h>
-#include <Engine/CmptGeometry.h>
-#include <Engine/TriMesh.h>
+#include <Engine/Viewer/Ray.h>
+#include <Engine/Viewer/Roamer.h>
+#include <Engine/Scene/CmptGeometry.h>
+#include <Engine/Primitive/TriMesh.h>
 
 #include <Qt/RawAPI_OGLW.h>
 
 #include <OpenGL/Camera.h>
 
-#include <Basic/LambdaOp.h>
+#include <Basic/Op/LambdaOp.h>
 #include <Basic/EventManager.h>
 
 #include <QtWidgets/QApplication>

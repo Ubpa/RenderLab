@@ -1,6 +1,6 @@
 #include <Engine/MeshEdit/IsotropicRemeshing.h>
 
-#include <Engine/TriMesh.h>
+#include <Engine/Primitive/TriMesh.h>
 #include <Basic/Math.h>
 #include <Basic/Parallel.h>
 #include <Basic/Geometry.h>

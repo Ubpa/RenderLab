@@ -1,8 +1,8 @@
-#include <Engine/ForwardNPR.h>
+#include <Engine/Viewer/ForwardNPR.h>
 
-#include <Engine/AllBSDFs.h>
+#include <Engine/Material/AllBSDFs.h>
 
-#include <Engine/Gooch.h>
+#include <Engine/Material/Gooch.h>
 
 #include <Qt/RawAPI_OGLW.h>
 #include <Qt/RawAPI_Define.h>

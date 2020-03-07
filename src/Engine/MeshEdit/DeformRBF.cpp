@@ -1,6 +1,6 @@
 #include <Engine/MeshEdit/DeformRBF.h>
 
-#include <Engine/TriMesh.h>
+#include <Engine/Primitive/TriMesh.h>
 
 #include <Eigen/Dense>
 

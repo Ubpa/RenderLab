@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Basic/HeapObj.h>
-#include <Engine/TriMesh.h>
+#include <Engine/Primitive/TriMesh.h>
 #include <UGM/UGM>
 
 namespace Ubpa {

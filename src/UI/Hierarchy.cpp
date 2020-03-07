@@ -2,10 +2,10 @@
 
 #include <UI/Attribute.h>
 
-#include <Engine/Scene.h>
-#include <Engine/SObj.h>
+#include <Engine/Scene/Scene.h>
+#include <Engine/Scene/SObj.h>
 
-#include <Engine/CmptTransform.h>
+#include <Engine/Scene/CmptTransform.h>
 
 #include <UDP/Visitor.h>
 

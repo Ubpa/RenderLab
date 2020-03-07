@@ -1,6 +1,6 @@
-#include <Engine/CapsuleLight.h>
+#include <Engine/Light/CapsuleLight.h>
 
-#include <Basic/BasicSampler.h>
+#include <Basic/Sampler/BasicSampler.h>
 #include <Basic/Math.h>
 
 using namespace Ubpa;

@@ -1,4 +1,6 @@
-#include <Engine/DeferredRaster.h>
+#include <Engine/Viewer/DeferredRaster.h>
+
+#include <Engine/Viewer/LTCTex.h>
 
 #include "DLDM_Generator.h"
 #include "PLDM_Generator.h"
@@ -8,36 +10,33 @@
 #include <Qt/RawAPI_OGLW.h>
 #include <Qt/RawAPI_Define.h>
 
-#include <Engine/Scene.h>
-#include <Engine/SObj.h>
+#include <Engine/Scene/Scene.h>
+#include <Engine/Scene/SObj.h>
+#include <Engine/Scene/CmptGeometry.h>
+#include <Engine/Scene/CmptTransform.h>
+#include <Engine/Scene/CmptMaterial.h>
+#include <Engine/Scene/CmptLight.h>
 
-#include <Engine/CmptGeometry.h>
-#include <Engine/CmptTransform.h>
-#include <Engine/CmptMaterial.h>
-#include <Engine/CmptLight.h>
+#include <Engine/Primitive/Sphere.h>
+#include <Engine/Primitive/Plane.h>
+#include <Engine/Primitive/TriMesh.h>
+#include <Engine/Primitive/Disk.h>
+#include <Engine/Primitive/Capsule.h>
 
-#include <Engine/Sphere.h>
-#include <Engine/Plane.h>
-#include <Engine/TriMesh.h>
-#include <Engine/Disk.h>
-#include <Engine/Capsule.h>
-
-#include <Engine/PointLight.h>
-#include <Engine/DirectionalLight.h>
-#include <Engine/SpotLight.h>
-#include <Engine/InfiniteAreaLight.h>
+#include <Engine/Light/PointLight.h>
+#include <Engine/Light/DirectionalLight.h>
+#include <Engine/Light/SpotLight.h>
+#include <Engine/Light/InfiniteAreaLight.h>
 
 // support material
-#include <Engine/BSDF_MetalWorkflow.h>
-#include <Engine/BSDF_Diffuse.h>
-#include <Engine/BSDF_Frostbite.h>
-#include <Engine/BSDF_Emission.h>
+#include <Engine/Material/BSDF_MetalWorkflow.h>
+#include <Engine/Material/BSDF_Diffuse.h>
+#include <Engine/Material/BSDF_Frostbite.h>
+#include <Engine/Material/BSDF_Emission.h>
 
 #include <OpenGL/CommonDefine.h>
 
 #include <Basic/Image.h>
-
-#include <Engine/LTCTex.h>
 
 #include <ROOT_PATH.h>
 

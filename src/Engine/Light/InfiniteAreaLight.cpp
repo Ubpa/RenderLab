@@ -1,8 +1,8 @@
-#include <Engine/InfiniteAreaLight.h>
+#include <Engine/Light/InfiniteAreaLight.h>
 
 #include <Basic/Image.h>
-#include <Basic/BasicSampler.h>
-#include <Engine/Sphere.h>
+#include <Basic/Sampler/BasicSampler.h>
+#include <Engine/Primitive/Sphere.h>
 #include <Basic/Math.h>
 
 using namespace Ubpa;

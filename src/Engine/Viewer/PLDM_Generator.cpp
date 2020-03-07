@@ -3,20 +3,20 @@
 #include <Qt/RawAPI_Define.h>
 #include <Qt/RawAPI_OGLW.h>
 
-#include <Engine/Scene.h>
-#include <Engine/SObj.h>
+#include <Engine/Scene/Scene.h>
+#include <Engine/Scene/SObj.h>
 
-#include <Engine/CmptTransform.h>
+#include <Engine/Scene/CmptTransform.h>
 
-#include <Engine/CmptLight.h>
-#include <Engine/PointLight.h>
+#include <Engine/Scene/CmptLight.h>
+#include <Engine/Light/PointLight.h>
 
-#include <Engine/CmptGeometry.h>
-#include <Engine/Sphere.h>
-#include <Engine/Plane.h>
-#include <Engine/TriMesh.h>
-#include <Engine/Disk.h>
-#include <Engine/Capsule.h>
+#include <Engine/Scene/CmptGeometry.h>
+#include <Engine/Primitive/Sphere.h>
+#include <Engine/Primitive/Plane.h>
+#include <Engine/Primitive/TriMesh.h>
+#include <Engine/Primitive/Disk.h>
+#include <Engine/Primitive/Capsule.h>
 
 #include <ROOT_PATH.h>
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Basic/ShapeMesh/ShapeMesh.h>
+#include "ShapeMesh.h"
 
 namespace Ubpa {
 	class CubeMesh : public ShapeMesh {

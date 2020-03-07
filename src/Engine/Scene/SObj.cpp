@@ -1,11 +1,11 @@
-#include <Engine/SObj.h>
+#include <Engine/Scene/SObj.h>
 
 #include "SObjSaver.h"
 #include "SObjLoader.h"
 #include "AssimpLoader.h"
 
-#include <Engine/Component.h>
-#include <Engine/CmptTransform.h>
+#include <Engine/Scene/Component.h>
+#include <Engine/Scene/CmptTransform.h>
 
 #include <UDP/Visitor.h>
 

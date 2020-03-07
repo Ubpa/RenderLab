@@ -1,11 +1,11 @@
-#include <Engine/Roamer.h>
+#include <Engine/Viewer/Roamer.h>
 
 #include <Qt/RawAPI_OGLW.h>
 #include <Qt/RawAPI_Define.h>
 
 #include <OpenGL/Camera.h>
 
-#include <Basic/LambdaOp.h>
+#include <Basic/Op/LambdaOp.h>
 #include <Basic/EventManager.h>
 #include <Basic/GStorage.h>
 

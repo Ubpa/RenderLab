@@ -1,6 +1,6 @@
-#include <Engine/Beckmann.h>
+#include <Engine/Material/Beckmann.h>
 
-#include <Engine/SurfCoord.h>
+#include <Engine/Material/SurfCoord.h>
 
 using namespace Ubpa;
 

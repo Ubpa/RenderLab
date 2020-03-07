@@ -1,22 +1,22 @@
-#include <Engine/Raster.h>
+#include <Engine/Viewer/Raster.h>
 
 #include "DLDM_Generator.h"
 #include "PLDM_Generator.h"
 #include "SLDM_Generator.h"
 #include "EnvGenerator.h"
 
-#include <Engine/Scene.h>
-#include <Engine/SObj.h>
+#include <Engine/Scene/Scene.h>
+#include <Engine/Scene/SObj.h>
 
-#include <Engine/CmptLight.h>
-#include <Engine/PointLight.h>
-#include <Engine/DirectionalLight.h>
-#include <Engine/SpotLight.h>
-#include <Engine/InfiniteAreaLight.h>
-#include <Engine/SphereLight.h>
-#include <Engine/DiskLight.h>
-#include <Engine/AreaLight.h>
-#include <Engine/CapsuleLight.h>
+#include <Engine/Scene/CmptLight.h>
+#include <Engine/Light/PointLight.h>
+#include <Engine/Light/DirectionalLight.h>
+#include <Engine/Light/SpotLight.h>
+#include <Engine/Light/InfiniteAreaLight.h>
+#include <Engine/Light/SphereLight.h>
+#include <Engine/Light/DiskLight.h>
+#include <Engine/Light/AreaLight.h>
+#include <Engine/Light/CapsuleLight.h>
 
 #include <Qt/RawAPI_OGLW.h>
 #include <Qt/RawAPI_Define.h>

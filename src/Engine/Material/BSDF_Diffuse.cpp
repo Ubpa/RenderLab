@@ -1,4 +1,4 @@
-#include <Engine/BSDF_Diffuse.h>
+#include <Engine/Material/BSDF_Diffuse.h>
 
 #include <Basic/Math.h>
 #include <Basic/Image.h>

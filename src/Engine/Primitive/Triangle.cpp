@@ -1,6 +1,6 @@
-#include <Engine/Triangle.h>
+#include <Engine/Primitive/Triangle.h>
 
-#include <Engine/TriMesh.h>
+#include <Engine/Primitive/TriMesh.h>
 #include <UGM/bbox.h>
 
 using namespace Ubpa;

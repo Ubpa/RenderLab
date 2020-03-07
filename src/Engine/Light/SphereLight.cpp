@@ -1,6 +1,6 @@
-#include <Engine/SphereLight.h>
+#include <Engine/Light/SphereLight.h>
 
-#include <Basic/BasicSampler.h>
+#include <Basic/Sampler/BasicSampler.h>
 
 using namespace Ubpa;
 

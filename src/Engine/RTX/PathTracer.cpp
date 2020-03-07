@@ -1,18 +1,18 @@
-#include <Engine/PathTracer.h>
+#include <Engine/Viewer/PathTracer.h>
 
-#include <Engine/BVHAccel.h>
+#include <Engine/Viewer/BVHAccel.h>
 
 #include <Engine/Intersector/ClosestIntersector.h>
 #include <Engine/Intersector/VisibilityChecker.h>
 
-#include <Engine/Scene.h>
-#include <Engine/SObj.h>
+#include <Engine/Scene/Scene.h>
+#include <Engine/Scene/SObj.h>
 
-#include <Engine/CmptMaterial.h>
-#include <Engine/BSDF.h>
+#include <Engine/Scene/CmptMaterial.h>
+#include <Engine/Material/BSDF.h>
 
-#include <Engine/CmptLight.h>
-#include <Engine/Light.h>
+#include <Engine/Scene/CmptLight.h>
+#include <Engine/Light/Light.h>
 
 #include <Basic/Math.h>
 

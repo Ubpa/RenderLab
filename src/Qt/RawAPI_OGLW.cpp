@@ -1,6 +1,6 @@
 #include <Qt/RawAPI_OGLW.h>
 
-#include <Engine/TriMesh.h>
+#include <Engine/Primitive/TriMesh.h>
 
 #include <Qt/RawAPI_Define.h>
 
@@ -12,7 +12,7 @@
 
 #include <Basic/GStorage.h>
 #include <Basic/EventManager.h>
-#include <Basic/OpQueue.h>
+#include <Basic/Op/OpQueue.h>
 
 #include <qevent.h>
 #include <qnamespace.h>

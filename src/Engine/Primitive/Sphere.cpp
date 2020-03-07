@@ -1,4 +1,4 @@
-#include <Engine/Sphere.h>
+#include <Engine/Primitive/Sphere.h>
 
 #include <UGM/point.h>
 

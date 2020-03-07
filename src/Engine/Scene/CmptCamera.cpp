@@ -1,7 +1,7 @@
-#include <Engine/CmptCamera.h>
+#include <Engine/Scene/CmptCamera.h>
 
-#include <Engine/Ray.h>
-#include <Engine/SObj.h>
+#include <Engine/Viewer/Ray.h>
+#include <Engine/Scene/SObj.h>
 
 #include <Basic/Math.h>
 

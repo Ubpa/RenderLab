@@ -1,16 +1,16 @@
-#include <Engine/Viewer.h>
+#include <Engine/Viewer/Viewer.h>
 
-#include <Engine/DirectIllumRaster.h>
-#include <Engine/DeferredRaster.h>
-#include <Engine/ForwardNPR.h>
-#include <Engine/WireframeRaster.h>
+#include <Engine/Viewer/DirectIllumRaster.h>
+#include <Engine/Viewer/DeferredRaster.h>
+#include <Engine/Viewer/ForwardNPR.h>
+#include <Engine/Viewer/WireframeRaster.h>
 
-#include <Engine/Roamer.h>
+#include <Engine/Viewer/Roamer.h>
 #include "Picker.h"
 
 #include <Qt/RawAPI_OGLW.h>
 
-#include <Basic/LambdaOp.h>
+#include <Basic/Op/LambdaOp.h>
 
 using namespace Ubpa;
 

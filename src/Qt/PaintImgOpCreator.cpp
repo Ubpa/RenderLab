@@ -9,8 +9,8 @@
 #include <OpenGL/CommonDefine.h>
 #include <OpenGL/FBO.h>
 
-#include <Basic/OpQueue.h>
-#include <Basic/LambdaOp.h>
+#include <Basic/Op/OpQueue.h>
+#include <Basic/Op/LambdaOp.h>
 #include <Basic/GStorage.h>
 #include <Basic/Image.h>
 

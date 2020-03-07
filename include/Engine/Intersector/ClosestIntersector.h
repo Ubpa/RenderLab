@@ -4,14 +4,14 @@
 
 #include <Basic/Ptr.h>
 #include <Basic/HeapObj.h>
-#include <Engine/Shape.h>
+#include <Engine/Primitive/Shape.h>
 
 #include <UGM/point.h>
 #include <UGM/point.h>
 #include <UGM/normal.h>
 #include <UGM/bbox.h>
 
-#include <Engine/Ray.h>
+#include <Engine/Viewer/Ray.h>
 
 namespace Ubpa {
 	class Element;

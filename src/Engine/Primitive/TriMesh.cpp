@@ -1,12 +1,12 @@
-#include <Engine/TriMesh.h>
+#include <Engine/Primitive/TriMesh.h>
 
-#include <Engine/Triangle.h>
+#include <Engine/Primitive/Triangle.h>
 
 #include <Basic/ShapeMesh/CubeMesh.h>
 #include <Basic/ShapeMesh/SphereMesh.h>
 #include <Basic/ShapeMesh/PlaneMesh.h>
 #include <Basic/ShapeMesh/DiskMesh.h>
-#include <Basic/BasicSampler.h>
+#include <Basic/Sampler/BasicSampler.h>
 #include <Basic/Parallel.h>
 
 #include <mutex>

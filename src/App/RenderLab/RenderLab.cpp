@@ -9,15 +9,15 @@
 #include <Qt/PaintImgOpCreator.h>
 #include <Qt/OpThread.h>
 
-#include <Engine/RTX_Renderer.h>
-#include <Engine/PathTracer.h>
-#include <Engine/Viewer.h>
-#include <Engine/Scene.h>
-#include <Engine/SObj.h>
-#include <Engine/OptixAIDenoiser.h>
+#include <Engine/Viewer/RTX_Renderer.h>
+#include <Engine/Viewer/PathTracer.h>
+#include <Engine/Viewer/Viewer.h>
+#include <Engine/Scene/Scene.h>
+#include <Engine/Scene/SObj.h>
+#include <Engine/Viewer/OptixAIDenoiser.h>
 
 #include <Basic/Image.h>
-#include <Basic/LambdaOp.h>
+#include <Basic/Op/LambdaOp.h>
 #include <Basic/GStorage.h>
 #include <Basic/Math.h>
 

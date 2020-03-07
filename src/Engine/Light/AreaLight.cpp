@@ -1,4 +1,4 @@
-#include <Engine/AreaLight.h>
+#include <Engine/Light/AreaLight.h>
 
 #include <UGM/point.h>
 

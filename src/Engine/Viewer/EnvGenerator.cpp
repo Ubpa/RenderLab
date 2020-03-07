@@ -3,17 +3,17 @@
 #include <Qt/RawAPI_Define.h>
 #include <Qt/RawAPI_OGLW.h>
 
-#include <Engine/Scene.h>
-#include <Engine/SObj.h>
+#include <Engine/Scene/Scene.h>
+#include <Engine/Scene/SObj.h>
 
-#include <Engine/CmptTransform.h>
+#include <Engine/Scene/CmptTransform.h>
 
-#include <Engine/CmptLight.h>
-#include <Engine/InfiniteAreaLight.h>
+#include <Engine/Scene/CmptLight.h>
+#include <Engine/Light/InfiniteAreaLight.h>
 
-#include <Engine/CmptGeometry.h>
-#include <Engine/Sphere.h>
-#include <Engine/Plane.h>
+#include <Engine/Scene/CmptGeometry.h>
+#include <Engine/Primitive/Sphere.h>
+#include <Engine/Primitive/Plane.h>
 
 #include <OpenGL/Camera.h>
 #include <OpenGL/CommonDefine.h>

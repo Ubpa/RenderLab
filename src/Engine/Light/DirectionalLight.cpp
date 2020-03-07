@@ -1,4 +1,4 @@
-#include <Engine/DirectionalLight.h>
+#include <Engine/Light/DirectionalLight.h>
 
 using namespace Ubpa;
 

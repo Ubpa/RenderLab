@@ -1,10 +1,10 @@
-#include <Engine/CmptLight.h>
+#include <Engine/Scene/CmptLight.h>
 
-#include <Engine/CmptTransform.h>
+#include <Engine/Scene/CmptTransform.h>
 
 #include <UDP/Visitor.h>
 
-#include <Engine/SObj.h>
+#include <Engine/Scene/SObj.h>
 
 using namespace Ubpa;
 

@@ -2,6 +2,8 @@
 
 #include <cmath>
 
+#include <array>
+
 using namespace Ubpa;
 
 using namespace std;

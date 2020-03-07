@@ -2,8 +2,8 @@
 
 using namespace Ubpa;
 
-#include <Basic/OpQueue.h>
-#include <Basic/LambdaOp.h>
+#include <Basic/Op/OpQueue.h>
+#include <Basic/Op/LambdaOp.h>
 
 void EventMngr::Reg(size_t event, Ptr<Op> op) {
 	if (directory.find(event) == directory.end())

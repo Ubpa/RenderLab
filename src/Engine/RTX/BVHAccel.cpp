@@ -1,16 +1,16 @@
-#include <Engine/BVHAccel.h>
+#include <Engine/Viewer/BVHAccel.h>
 
 #include "BVHNode.h"
 
-#include <Engine/Sphere.h>
-#include <Engine/Plane.h>
-#include <Engine/TriMesh.h>
-#include <Engine/Disk.h>
-#include <Engine/Capsule.h>
+#include <Engine/Primitive/Sphere.h>
+#include <Engine/Primitive/Plane.h>
+#include <Engine/Primitive/TriMesh.h>
+#include <Engine/Primitive/Disk.h>
+#include <Engine/Primitive/Capsule.h>
 
-#include <Engine/CmptGeometry.h>
+#include <Engine/Scene/CmptGeometry.h>
 
-#include <Engine/SObj.h>
+#include <Engine/Scene/SObj.h>
 
 #include <Basic/Timer.h>
 

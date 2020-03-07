@@ -1,4 +1,4 @@
-#include <Basic/UniformGridSampler2D.h>
+#include <Basic/Sampler/UniformGridSampler2D.h>
 
 #include <Basic/Math.h>
 

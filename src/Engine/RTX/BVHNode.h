@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Engine/Shape.h>
+#include <Engine/Primitive/Shape.h>
 #include <UGM/bbox.h>
 
 #include <vector>

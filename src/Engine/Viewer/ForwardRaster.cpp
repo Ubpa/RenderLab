@@ -1,30 +1,30 @@
-#include <Engine/ForwardRaster.h>
+#include <Engine/Viewer/ForwardRaster.h>
 
 #include "DLDM_Generator.h"
 #include "PLDM_Generator.h"
 #include "SLDM_Generator.h"
 #include "EnvGenerator.h"
 
-#include <Engine/Scene.h>
-#include <Engine/SObj.h>
+#include <Engine/Scene/Scene.h>
+#include <Engine/Scene/SObj.h>
 
-#include <Engine/CmptMaterial.h>
+#include <Engine/Scene/CmptMaterial.h>
 
-#include <Engine/CmptTransform.h>
+#include <Engine/Scene/CmptTransform.h>
 
-#include <Engine/CmptGeometry.h>
-#include <Engine/Sphere.h>
-#include <Engine/Plane.h>
-#include <Engine/TriMesh.h>
+#include <Engine/Scene/CmptGeometry.h>
+#include <Engine/Primitive/Sphere.h>
+#include <Engine/Primitive/Plane.h>
+#include <Engine/Primitive/TriMesh.h>
 
-#include <Engine/AllBSDFs.h>
-#include <Engine/Gooch.h>
+#include <Engine/Material/AllBSDFs.h>
+#include <Engine/Material/Gooch.h>
 
-#include <Engine/CmptLight.h>
-#include <Engine/PointLight.h>
-#include <Engine/DirectionalLight.h>
-#include <Engine/SpotLight.h>
-#include <Engine/InfiniteAreaLight.h>
+#include <Engine/Scene/CmptLight.h>
+#include <Engine/Light/PointLight.h>
+#include <Engine/Light/DirectionalLight.h>
+#include <Engine/Light/SpotLight.h>
+#include <Engine/Light/InfiniteAreaLight.h>
 
 #include <Qt/RawAPI_OGLW.h>
 #include <Qt/RawAPI_Define.h>
@@ -36,7 +36,7 @@
 #include <OpenGL/Camera.h>
 #include <OpenGL/FBO.h>
 
-#include <Basic/LambdaOp.h>
+#include <Basic/Op/LambdaOp.h>
 #include <Basic/Image.h>
 
 #include <ROOT_PATH.h>

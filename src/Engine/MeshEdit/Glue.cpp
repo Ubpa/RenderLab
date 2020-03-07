@@ -1,6 +1,6 @@
 #include <Engine/MeshEdit/Glue.h>
 
-#include <Engine/TriMesh.h>
+#include <Engine/Primitive/TriMesh.h>
 #include <map>
 
 using namespace Ubpa;

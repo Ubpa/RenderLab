@@ -1,4 +1,4 @@
-#include <Engine/SpotLight.h>
+#include <Engine/Light/SpotLight.h>
 
 using namespace Ubpa;
 

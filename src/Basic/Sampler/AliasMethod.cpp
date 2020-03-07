@@ -1,4 +1,4 @@
-#include <Basic/AliasMethod.h>
+#include <Basic/Sampler/AliasMethod.h>
 
 #include <Basic/Math.h>
 

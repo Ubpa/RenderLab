@@ -1,6 +1,6 @@
-#include <Engine/Component.h>
+#include <Engine/Scene/Component.h>
 
-#include <Engine/SObj.h>
+#include <Engine/Scene/SObj.h>
 
 using namespace Ubpa;
 

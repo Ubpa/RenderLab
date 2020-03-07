@@ -1,10 +1,10 @@
-#include <Engine/Scene.h>
+#include <Engine/Scene/Scene.h>
 
-#include <Engine/SObj.h>
+#include <Engine/Scene/SObj.h>
 
-#include <Engine/CmptCamera.h>
-#include <Engine/CmptLight.h>
-#include <Engine/InfiniteAreaLight.h>
+#include <Engine/Scene/CmptCamera.h>
+#include <Engine/Scene/CmptLight.h>
+#include <Engine/Light/InfiniteAreaLight.h>
 
 #include <Basic/Math.h>
 

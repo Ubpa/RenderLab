@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Basic/Singleton.h>
 #include <Basic/LStorage.h>
 #include <string>
 
@@ -8,11 +7,11 @@ namespace Ubpa {
 	class GS {
 	private:
 		template<typename ID_Type, typename T>
-		class _GStorage final : public Singleton<_GStorage<ID_Type, T>>, public LStorage<ID_Type, T> {
-			friend class Singleton<_GStorage<ID_Type, T>>;
+		class _GStorage final : public LStorage<ID_Type, T> {
 		public:
 			static _GStorage<ID_Type, T>* GetInstance() {
-				return Singleton<_GStorage<ID_Type, T>>::GetInstance();
+				static _GStorage instance;
+				return &instance;
 			}
 		private:
 			_GStorage() = default;

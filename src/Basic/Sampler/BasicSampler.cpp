@@ -1,4 +1,4 @@
-#include <Basic/BasicSampler.h>
+#include <Basic/Sampler/BasicSampler.h>
 
 #include <Basic/Math.h>
 #include <UGM/vec.h>

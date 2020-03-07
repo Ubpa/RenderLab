@@ -3,7 +3,6 @@
 #include <UGM/vec.h>
 
 #include <vector>
-#include <array>
 
 namespace Ubpa {
 	class ShapeMesh {

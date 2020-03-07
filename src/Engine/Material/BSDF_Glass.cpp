@@ -1,6 +1,6 @@
-#include <Engine/BSDF_Glass.h>
+#include <Engine/Material/BSDF_Glass.h>
 
-#include <Engine/SurfCoord.h>
+#include <Engine/Material/SurfCoord.h>
 
 using namespace Ubpa;
 

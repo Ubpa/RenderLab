@@ -9,26 +9,26 @@
 #include <Engine/MeshEdit/DeformRBF.h>
 #include <Engine/MeshEdit/IsotropicRemeshing.h>
 
-#include <Engine/SObj.h>
-#include <Engine/AllComponents.h>
+#include <Engine/Scene/SObj.h>
+#include <Engine/Scene/AllComponents.h>
 
-#include <Engine/Sphere.h>
-#include <Engine/Plane.h>
-#include <Engine/TriMesh.h>
-#include <Engine/Disk.h>
-#include <Engine/Capsule.h>
+#include <Engine/Primitive/Sphere.h>
+#include <Engine/Primitive/Plane.h>
+#include <Engine/Primitive/TriMesh.h>
+#include <Engine/Primitive/Disk.h>
+#include <Engine/Primitive/Capsule.h>
 
-#include <Engine/AllBSDFs.h>
-#include <Engine/Gooch.h>
+#include <Engine/Material/AllBSDFs.h>
+#include <Engine/Material/Gooch.h>
 
-#include <Engine/AreaLight.h>
-#include <Engine/PointLight.h>
-#include <Engine/DirectionalLight.h>
-#include <Engine/SpotLight.h>
-#include <Engine/InfiniteAreaLight.h>
-#include <Engine/SphereLight.h>
-#include <Engine/DiskLight.h>
-#include <Engine/CapsuleLight.h>
+#include <Engine/Light/AreaLight.h>
+#include <Engine/Light/PointLight.h>
+#include <Engine/Light/DirectionalLight.h>
+#include <Engine/Light/SpotLight.h>
+#include <Engine/Light/InfiniteAreaLight.h>
+#include <Engine/Light/SphereLight.h>
+#include <Engine/Light/DiskLight.h>
+#include <Engine/Light/CapsuleLight.h>
 
 #include <OpenGL/Camera.h>
 

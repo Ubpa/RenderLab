@@ -1,8 +1,8 @@
-#include <Engine/BSDF_Frostbite.h>
+#include <Engine/Material/BSDF_Frostbite.h>
 
 #include <Basic/Image.h>
 #include <Basic/Math.h>
-#include <Basic/CosineWeightedHemisphereSampler3D.h>
+#include <Basic/Sampler/CosHsSampler3D.h>
 
 using namespace Ubpa;
 
@@ -98,7 +98,7 @@ const rgbf BSDF_Frostbite::Sample_f(const normalf & wo, const pointf2 & texcoord
 		wi = normalf::reflect(-wo, wh);
 	}
 	else {
-		CosineWeightedHemisphereSampler3D sampler;
+		CosHsSampler3D sampler;
 		wi = sampler.GetSample().cast_to<normalf>();
 		wh = (wo + wi).normalize();
 	}

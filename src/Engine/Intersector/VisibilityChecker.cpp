@@ -1,15 +1,15 @@
 #include <Engine/Intersector/VisibilityChecker.h>
 
-#include <Engine/SObj.h>
-#include <Engine/Ray.h>
+#include <Engine/Scene/SObj.h>
+#include <Engine/Viewer/Ray.h>
 
-#include <Engine/BVHAccel.h>
-#include <Engine/Sphere.h>
-#include <Engine/Plane.h>
-#include <Engine/Triangle.h>
-#include <Engine/TriMesh.h>
-#include <Engine/Disk.h>
-#include <Engine/Capsule.h>
+#include <Engine/Viewer/BVHAccel.h>
+#include <Engine/Primitive/Sphere.h>
+#include <Engine/Primitive/Plane.h>
+#include <Engine/Primitive/Triangle.h>
+#include <Engine/Primitive/TriMesh.h>
+#include <Engine/Primitive/Disk.h>
+#include <Engine/Primitive/Capsule.h>
 
 #include <stack>
 

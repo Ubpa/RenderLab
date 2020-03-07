@@ -1,6 +1,6 @@
 #include "BVHNode.h"
 
-#include <Engine/BVHAccel.h>
+#include <Engine/Viewer/BVHAccel.h>
 #include <Basic/Math.h>
 
 using namespace Ubpa;

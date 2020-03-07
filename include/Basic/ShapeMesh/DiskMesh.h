@@ -1,6 +1,7 @@
 #pragma once
 
-#include <Basic/ShapeMesh/ShapeMesh.h>
+#include "ShapeMesh.h"
+
 #include <UGM/val.h>
 
 namespace Ubpa {
