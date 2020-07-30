@@ -40,7 +40,7 @@ include(FetchContent)
 FetchContent_Declare(
   UGit
   GIT_REPOSITORY https://github.com/Ubpa/UGit
-  GIT_TAG        3c3cd3f
+  GIT_TAG        feed9ab
 )
 FetchContent_MakeAvailable(UGit)
 

@@ -1,5 +1,11 @@
 # 安装步骤
 
+2020/07/30 更新
+
+cmake 过后，将 [Num.h](external/UTemplate/include/UTemplate/Num.h) 的 29-46 行注释
+
+---
+
 - 下载 RenderLab 的源码
 
 - 下载资源文件（百度网盘）
