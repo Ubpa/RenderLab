@@ -61,7 +61,7 @@
 
 CMake: 3.1.0 以上
 
-Visual Studio: 2017
+Visual Studio: 2019
 
 系统：windows 64位
 
